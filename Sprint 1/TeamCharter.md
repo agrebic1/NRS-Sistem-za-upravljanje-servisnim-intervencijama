@@ -1,29 +1,29 @@
 # Team Charter
 
-Naziv tima: Grupa 2
+## Naziv tima: Grupa 2
 
-Članovi tima: 
+## Članovi tima: 
 _____________
 
-Amina Grebić, 259-ST, agrebic1@etf.unsa.ba
-Hamza Bunar, -ST, hbunar1@etf.unsa.ba
-Hadrijan Dedović, 182-ST, hdedovic2@etf.unsa.ba
-Suada Peci, 245-ST, speci1@etf.unsa.ba
-Ajla Ćesir, 261-ST, acesir1@etf.unsa.ba
-Ičić Ajna, 263-ST, aicic1@etf.unsa.ba
-Gazić Kerim, 226-ST, kgazic2@etf.unsa.ba
-Eldin Begić, 257-ST, ebegic4@etf.unsa.ba
+Amina Grebić, 259-ST, agrebic1@etf.unsa.ba  
+Hamza Bunar, -ST, hbunar1@etf.unsa.ba  
+Hadrijan Dedović, 182-ST, hdedovic2@etf.unsa.ba  
+Suada Peci, 245-ST, speci1@etf.unsa.ba  
+Ajla Ćesir, 261-ST, acesir1@etf.unsa.ba  
+Ičić Ajna, 263-ST, aicic1@etf.unsa.ba  
+Gazić Kerim, 226-ST, kgazic2@etf.unsa.ba  
+Eldin Begić, 257-ST, ebegic4@etf.unsa.ba  
 
 
-Način komunikacije
-__________________
+## Način komunikacije
+---
 
 Primarni kanal komunikacije: grupa, Trello - alat za kolaboraciju
 Očekivano vrijeme odgovora:
 Način zakazivanja sastanaka: 
 
 
-Radna pravila tima
+##Radna pravila tima
 __________________
 
 1. "Pretpostavka je majka svakog problema"
@@ -32,7 +32,7 @@ __________________
 2. "Ništa se ne podrazumijeva, sve se provjerava"
 Članovi tima postavljaju pitanja kada god nešto nije u potpunosti jasno i potvrđuju ispravnost u rezonovanju prije nego što nastave sa radom.
 
-Pravila rada na GitHubu
+### Pravila rada na GitHubu
 _______________________
 
 1. Dosljedno imenovanje fileova i foldera
@@ -60,7 +60,7 @@ Veće izmjene trebaju biti pregledane od strane barem jednog člana tima(a pože
 Nakon spajanja izmjena obavezno se provjerava da li repozitorij i projekt funkcionišu ispravno. Potrebno je osigurati da nove izmjene nisu narušile postojeću funkcionalnost, strukturu ili konzistentnost projekta. U slučaju uočenih problema, odgovorni član tima dužan je odmah reagovati i, u dogovoru s timom, izvršiti potrebne ispravke.
 
 
-Pravila odnosa prema ostalim članovima tima
+### Pravila odnosa prema ostalim članovima tima
 ___________________________________________
 
 1. Poštovanje i profesionalna komunikacija
@@ -81,9 +81,9 @@ Očekuje se aktivno učešće, proaktivnost i ravnopravan doprinos svih članova
 6. Aktivna komunikacija i uključenost
 Pasivnost i ignorisanje komunikacije nisu prihvatljivi, očekuje se pravovremena i aktivna komunikacija svih članova tima.
 
-Početne odgovornosti
+## Početne odgovornosti
 ____________________
 
 
-Pravila u slučaju neispunjavanja obaveza
+## Pravila u slučaju neispunjavanja obaveza
 ________________________________________
