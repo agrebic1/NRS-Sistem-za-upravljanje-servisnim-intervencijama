@@ -7,18 +7,18 @@ _____________
 
 Amina Grebić, 259-ST, agrebic1@etf.unsa.ba
 Hamza Bunar, -ST, hbunar1@etf.unsa.ba
-Hadrijan Dedović, -ST, hdedovic2@etf.unsa.ba
-Suada Peci, , -ST, speci1@etf.unsa.ba
-Ajla Ćesir, -ST, acesir1@etf.unsa.ba
+Hadrijan Dedović, 182-ST, hdedovic2@etf.unsa.ba
+Suada Peci, 245-ST, speci1@etf.unsa.ba
+Ajla Ćesir, 261-ST, acesir1@etf.unsa.ba
 Ičić Ajna, 263-ST, aicic1@etf.unsa.ba
-Gazić Kerim, -ST, kgazic2@etf.unsa.ba
-Eldin Begić, -ST, ebegic4@etf.unsa.ba
+Gazić Kerim, 226-ST, kgazic2@etf.unsa.ba
+Eldin Begić, 257-ST, ebegic4@etf.unsa.ba
 
 
 Način komunikacije
 __________________
 
-Primarni kanal komunikacije: 
+Primarni kanal komunikacije: grupa, Trello - alat za kolaboraciju
 Očekivano vrijeme odgovora:
 Način zakazivanja sastanaka: 
 
