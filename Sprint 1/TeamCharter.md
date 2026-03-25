@@ -6,7 +6,7 @@
 
 
 Amina Grebić, 259-ST, agrebic1@etf.unsa.ba  
-Hamza Bunar, -ST, hbunar1@etf.unsa.ba  
+Hamza Bunar, 165-ST, hbunar1@etf.unsa.ba  
 Hadrijan Dedović, 182-ST, hdedovic2@etf.unsa.ba  
 Suada Peci, 245-ST, speci1@etf.unsa.ba  
 Ajla Ćesir, 261-ST, acesir1@etf.unsa.ba  
