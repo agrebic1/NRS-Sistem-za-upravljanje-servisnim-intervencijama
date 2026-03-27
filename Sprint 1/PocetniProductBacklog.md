@@ -58,14 +58,16 @@ Backlog: Stavka koja još nije dodijeljena nijednom sprintu.
 |PB-001| Prijava kvara | Kao korisnik, želim da prijavim kvar unosom mjesta, lokacije i opisa kako bih pokrenuo proces servisiranja. | Feature | Visok | 5 | To Do | Sprint 2 (Razrada) / Release 1.0 | Osnova za sve ostale procese.|    
 |PB-002| Planiranje izlazaka na teren | Kao dispečer(koordinator), želim da vidim kalendar dostupnosti servisera kako bi planiranje izlazaka na teren bilo efikasnije. | Feature | Visok | 8 | To Do | Sprint 3 (Dizajn) / Release 1.0 | Najkompleksniji dio poslovne logike koji je ključan za optimizaciju logistike. | 
 |PB-003| Evidencija rada servisera | Kao serviser, želim unijeti utrošeni materijal i vrijeme te prateće slike kvara, kako bih dokumentovao početak i završetak posla. | Feature | Srednji | 5 | To Do | Sprint 4 (Skeleton) / Release 1.0 | Serviseri unose podatke putem mobilnog interfejsa. | 
-| PB-004 | Prijava korisnika | Kao registrovani korisnik, želim se prijaviti pomoću emaila i lozikne kako bih pristupio svojim podacima i informacijama. | Feature | Visok | 3 | To Do | Sprint 2 | Osnovna funkcionalnost |
-| PB-005 | Dashboard  | Kao korisnik želim vidjeti pregled statusa kvarova kako bih imao uvid u njihovo stanje. | Feature | Srednji | 3 | To Do | Sprint 3 | Pregled stanja za korisnike |
+|PB-004| Prijava korisnika | Kao registrovani korisnik, želim se prijaviti pomoću emaila i lozinke kako bih pristupio svojim podacima i informacijama. | Feature | Visok | 3 | To Do | Sprint 2 | Osnovna funkcionalnost |
+|PB-005| Dashboard  | Kao korisnik želim vidjeti pregled statusa kvarova kako bih imao uvid u njihovo stanje. | Feature | Srednji | 3 | To Do | Sprint 3 | Pregled stanja za korisnike |
 |PB-006| Registracija korisnika | Kao novi korisnik želim napraviti korisnički račun kako bih mogao koristiti sistem. | Feature | Visok | 5 | To Do | Sprint 2 (Razrada) / Release 1.0 | Osnova za korištenje ostalih funkcija.| 
-| PB-007 | Dodjela intervencije serviseru | Kao administrator želim dodijeliti intervenciju serviseru kako bi se kvar mogao riješiti. | Feature | Visok | 5 | To Do | Sprint 3 | Ključni korak u procesu rješavanja kvara |
-| PB-008 | Ažuriranje statusa intervencije | Kao serviser želim ažurirati status intervencije kako bih pratio napredak rada. | Feature | Visok | 3 | To Do | Sprint 3 | Praćenje stanja problema |
-| PB-009 | Historija intervencija | Kao korisnik želim vidjeti historiju intervencija kako bih imao pregled prethodnih kvarova. | Feature | Srednji | 5 | To Do | Sprint 4 | Pregled ranijih aktivnosti |
-| PB-010 | Dodjela više servisera | Kao administrator želim dodijeliti više servisera na jednu intervenciju kako bi se složeniji kvarovi brže riješili. | Feature | Visok | 5 | To Do | Sprint 4 | Podrška za kompleksne zadatke |
-| PB-011 | Potvrda zatvaranja intervencije | Kao korisnik želim potvrditi završetak intervencije kako bih bio siguran da je problem riješen. | Feature | Srednji | 3 | To Do | Sprint 4 | Validacija završetka rada |
+|PB-007| Dodjela intervencije serviseru | Kao administrator želim dodijeliti intervenciju serviseru kako bi se kvar mogao riješiti. | Feature | Visok | 5 | To Do | Sprint 3 | Ključni korak u procesu rješavanja kvara |
+|PB-008| Ažuriranje statusa intervencije | Kao serviser želim ažurirati status intervencije kako bih pratio napredak rada. | Feature | Visok | 3 | To Do | Sprint 3 | Praćenje stanja problema |
+|PB-009| Historija intervencija | Kao korisnik želim vidjeti historiju intervencija kako bih imao pregled prethodnih kvarova. | Feature | Srednji | 5 | To Do | Sprint 4 | Pregled ranijih aktivnosti |
+|PB-010| Dodjela više servisera | Kao administrator želim dodijeliti više servisera na jednu intervenciju kako bi se složeniji kvarovi brže riješili. | Feature | Visok | 5 | To Do | Sprint 4 | Podrška za kompleksne zadatke |
+|PB-011| Potvrda zatvaranja intervencije | Kao korisnik želim potvrditi završetak intervencije kako bih bio siguran da je problem riješen. | Feature | Srednji | 3 | To Do | Sprint 4 | Validacija završetka rada |
+|PB-012| Kontrola pristupa (Role Based Access Control) | Kao administrator, želim definisati uloge (klijent, serviser, dispečer) kako bih osigurao da korisnici vide samo dozvoljene podatke. | Technical Task | Visok | 5 | To Do | Sprint 3 | Ključna funkcionalnost za sigurnost i privatnost podataka. | 
+|PB-013| Pregled Audit loga (historije promjena) | Kao administrator, želim imati uvid u historiju izmjena na svakom nalogu, kako bih znao ko je, kada i šta tačno promijenio. | Feature | Srednji | 5 | To Do | Sprint 4/5 | Funkcionalnost koja je bitna za sigurnost i integritet podataka. | 
 
 
 Stavke sa visokim prioritetom predstavljaju osnovne funkcije potrebne za rad za MVP verziju sistema.
