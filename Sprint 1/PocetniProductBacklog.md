@@ -61,5 +61,4 @@ Backlog: Stavka koja još nije dodijeljena nijednom sprintu.
 | PB-006 | Prijava korisnika | Omogućiti korisnicima prijavu u sistem pomoću emaila i lozinke | Feature | Visok | 5 | To Do | Sprint 2 | Osnovna funkcionalnost |
 | PB-007 | Dashboard sistem | Pregled ključnih informacija (broj kvarova, statusi) | Feature | Srednji | 3 | To Do | Sprint 3 | Pregled stanja za korisnike |
 |PB-001| Registracija korisnika | Omogućiti kreiranje korisničkog računa | Feature | Visok | 5 | To Do | Sprint 2 (Razrada) / Release 1.0 | Osnova za korištenje ostalih funkcija.|    
-
 |PB-004| Pregled statusa intervencije | Kreiranje dashboarda za klijente i admine za praćenje faza intervencije. | Feature | Srednji | 3 | To Do | Sprint 2 (Razrada) / Release 1.0 | Ključno za praćenje toka rada, povećava transparentnost prema klijentu. | 
