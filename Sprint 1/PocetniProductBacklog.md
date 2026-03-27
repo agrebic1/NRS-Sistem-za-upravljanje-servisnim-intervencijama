@@ -55,10 +55,10 @@ Backlog: Stavka koja još nije dodijeljena nijednom sprintu.
 
 | ID | NAZIV STAVKE | KRATAK OPIS | TIP STAVKE | PRIORITET | PROCJENA SLOŽENOSTI ILI NAPORA | STATUS | VEZA SA SPRINTOM ILI RELEASE PLANOM | NAPOMENA |
 |----|--------------|-------------|------------|-----------|--------------------------------|--------|-------------------------------------|----------|
-|PB-001| Prijava kvara | Omogućiti korisniku unos podataka o kvaru, lokaciji i opisu problema. | Feature | Visok | 5 | To Do | Sprint 2 (Razrada) / Release 1.0 | Osnova za sve ostale procese.|    
-|PB-002| Planiranje izlazaka na teren | Kalendarski prikaz dostupnih servisera i dodjela naloga prema lokaciji. | Feature | Visok | 8 | To Do | Sprint 3 (Dizajn) / Release 1.0 | Najkompleksniji dio poslovne logike koji je ključan za optimizaciju logistike. | 
-|PB-003| Evidencija rada servisera | Mogućnost unosa utrošenog vremena, zamjenskih dijelova i opisa obavljenog posla na terenu. | Feature | Srednji | 5 | To Do | Sprint 4 (Skeleton) / Release 1.0 | Serviseri unose podatke putem mobilnog interfejsa. | 
-| PB-004 | Prijava korisnika | Omogućiti korisnicima prijavu u sistem pomoću emaila i lozinke | Feature | Visok | 5 | To Do | Sprint 2 | Osnovna funkcionalnost |
+|PB-001| Prijava kvara | Kao korisnik, želim da prijavim kvar unosom mjesta, lokacije i opisa kako bih pokrenuo proces servisiranja. | Feature | Visok | 5 | To Do | Sprint 2 (Razrada) / Release 1.0 | Osnova za sve ostale procese.|    
+|PB-002| Planiranje izlazaka na teren | Kao dispečer(koordinator), želim da vidim kalendar dostupnosti servisera kako bi planiranje izlazaka na teren bilo efikasnije. | Feature | Visok | 8 | To Do | Sprint 3 (Dizajn) / Release 1.0 | Najkompleksniji dio poslovne logike koji je ključan za optimizaciju logistike. | 
+|PB-003| Evidencija rada servisera | Kao serviser, želim unijeti utrošeni materijal i vrijeme te prateće slike kvara, kako bih dokumentovao početak i završetak posla. | Feature | Srednji | 5 | To Do | Sprint 4 (Skeleton) / Release 1.0 | Serviseri unose podatke putem mobilnog interfejsa. | 
+| PB-004 | Prijava korisnika | Kao registrovani korisnik, želim se prijaviti pomoću emaila i lozikne kako bih pristupio svojim podacima i informacijama. | Feature | Visok | 3 | To Do | Sprint 2 | Osnovna funkcionalnost |
 | PB-005 | Dashboard  | Pregled ključnih informacija (broj kvarova, statusi) | Feature | Srednji | 3 | To Do | Sprint 3 | Pregled stanja za korisnike |
 |PB-006| Registracija korisnika | Omogućiti kreiranje korisničkog računa | Feature | Visok | 5 | To Do | Sprint 2 (Razrada) / Release 1.0 | Osnova za korištenje ostalih funkcija.| 
 | PB-007 | Dodavanje slike kvara | Korisnik može uploadovati sliku uz opis problema | Feature | Srednji | 5 | To Do | Sprint 4 | Bolje razumijevanje problema |
