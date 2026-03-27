@@ -64,3 +64,6 @@ Backlog: Stavka koja još nije dodijeljena nijednom sprintu.
 | PB-007 | Dodavanje slike kvara | Korisnik može uploadovati sliku uz opis problema | Feature | Srednji | 5 | To Do | Sprint 4 | Bolje razumijevanje problema |
 | PB-008 | Dodjela intervencije serviseru | Prijavljeni kvar se prosljedjuje serviseru | Feature | Visok | 5 | To Do | Sprint 3 | TBD |
 | PB-009 | Ažuriranje statusa intervencije | Serviser može javiti stanje je li završeno,u toku itd. | Feature | Visok | 3 | To Do | Sprint 3 | Praćenje stanja problema |
+
+
+Stavke sa visokim prioritetom predstavljaju osnovne funkcije potrebne za rad za MVP verziju sistema.
