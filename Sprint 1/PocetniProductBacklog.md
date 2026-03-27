@@ -58,8 +58,8 @@ Backlog: Stavka koja još nije dodijeljena nijednom sprintu.
 |PB-001| Prijava kvara | Omogućiti korisniku unos podataka o kvaru, lokaciji i opisu problema. | Feature | Visok | 5 | To Do | Sprint 2 (Razrada) / Release 1.0 | Osnova za sve ostale procese.|    
 |PB-002| Planiranje izlazaka na teren | Kalendarski prikaz dostupnih servisera i dodjela naloga prema lokaciji. | Feature | Visok | 8 | To Do | Sprint 3 (Dizajn) / Release 1.0 | Najkompleksniji dio poslovne logike koji je ključan za optimizaciju logistike. | 
 |PB-003| Evidencija rada servisera | Mogućnost unosa utrošenog vremena, zamjenskih dijelova i opisa obavljenog posla na terenu. | Feature | Srednji | 5 | To Do | Sprint 4 (Skeleton) / Release 1.0 | Serviseri unose podatke putem mobilnog interfejsa. | 
-| PB-006 | Prijava korisnika | Omogućiti korisnicima prijavu u sistem pomoću emaila i lozinke | Feature | Visok | 5 | To Do | Sprint 2 | Osnovna funkcionalnost |
-| PB-007 | Dashboard sistem | Pregled ključnih informacija (broj kvarova, statusi) | Feature | Srednji | 3 | To Do | Sprint 3 | Pregled stanja za korisnike |
-|PB-008| Registracija korisnika | Omogućiti kreiranje korisničkog računa | Feature | Visok | 5 | To Do | Sprint 2 (Razrada) / Release 1.0 | Osnova za korištenje ostalih funkcija.| 
-| PB-012 | Dodavanje slike kvara | Korisnik može uploadovati sliku uz opis problema | Feature | Srednji | 5 | To Do | Sprint 4 | Bolje razumijevanje problema |
+| PB-004 | Prijava korisnika | Omogućiti korisnicima prijavu u sistem pomoću emaila i lozinke | Feature | Visok | 5 | To Do | Sprint 2 | Osnovna funkcionalnost |
+| PB-005 | Dashboard sistem | Pregled ključnih informacija (broj kvarova, statusi) | Feature | Srednji | 3 | To Do | Sprint 3 | Pregled stanja za korisnike |
+|PB-006| Registracija korisnika | Omogućiti kreiranje korisničkog računa | Feature | Visok | 5 | To Do | Sprint 2 (Razrada) / Release 1.0 | Osnova za korištenje ostalih funkcija.| 
+| PB-07 | Dodavanje slike kvara | Korisnik može uploadovati sliku uz opis problema | Feature | Srednji | 5 | To Do | Sprint 4 | Bolje razumijevanje problema |
 |PB-004| Pregled statusa intervencije | Kreiranje dashboarda za klijente i admine za praćenje faza intervencije. | Feature | Srednji | 3 | To Do | Sprint 2 (Razrada) / Release 1.0 | Ključno za praćenje toka rada, povećava transparentnost prema klijentu. | 
