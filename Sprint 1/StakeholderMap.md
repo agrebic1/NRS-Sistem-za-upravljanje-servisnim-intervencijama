@@ -1,8 +1,16 @@
-# Stakeholder Map
+----> UVOD ... 
 
-Stakeholder
-Uloga
-Interes
-Očekivanja
-Uticaj na sistem
-Prioritet komunikacije
+----> TABELA 
+| Stakeholder | Uloga | Interes | Očekivanja | Uticaj na sistem | Prioritet komunikacije |
+|-------------|-------|---------|------------|------------------|------------------------|
+| Klijent | | | | | |
+| Dispačer | | | | | |
+| Serviser | | | | | |
+| Glavni serviser | | | | | |
+| Menadžer | | | | | |
+| Administrator | | | | | |
+| CEO/Vlasnik | | | | | |
+| HR/Finansije | | | | | |
+| IT tim | | | | | |
+
+----> ZAKLJUČAK 
