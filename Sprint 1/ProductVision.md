@@ -8,27 +8,27 @@ Sistem za upravljanje servisnim intervencijama - Service Track
 
 ## Problem koji sistem rješava
 
-U procesu servisnih intervencija često se koristi više nepoveyanih alata, kao što su Excel tabele, telefonski pozivi i poruke. Tok intervencije, koji uključuje prijavu kvara, dodjelu servisera, izvršenje rada i završetak zahtjeva, nije centralizovan u jednom sistemu, što otežava praćenje i upravljanje procesom.
+U procesu servisnih intervencija često se koristi više nepovezanih alata, kao što su Excel tabele, telefonski pozivi i poruke. Tok intervencije, koji uključuje prijavu kvara, dodjelu servisera, izvršenje rada i završetak zahtjeva, nije centralizovan u jednom sistemu, što otežava praćenje i upravljanje procesom.
 
-Zbog ovakvog načina rada dolazi do loše koordinacije između zaposlenih, nejasnog statusa intervencija i kašnjenja u obavljannju zadataka. Serviseri nemaju uvijek potpune informacije, dok administarcija nema jasan pregled svih aktivnih intervencija. Kao rezultat toga jeste da dolazi do smanjenja efikasnosti rada i nezadovoljstvo klijenata, što ukazuje na potrebu za jedinstvenim sistemom koji bi povezao cijeli proces servisnih intervencija.
+Zbog ovakvog načina rada dolazi do loše koordinacije između zaposlenih, nejasnog statusa intervencija i kašnjenja u obavljanju zadataka. Serviseri nemaju uvijek potpune informacije, dok administracija nema jasan pregled svih aktivnih intervencija. Kao rezultat toga jeste da dolazi do smanjenja efikasnosti rada i nezadovoljstva klijenata, što ukazuje na potrebu za jedinstvenim sistemom koji bi povezao cijeli proces servisnih intervencija.
 
 ---
 
 ## Ciljni korisnici
 
-Ciljni korisnici ovog sistema uključuju servisne kompanije kao organizaciju, kao i korisnike sistema kao što su dispečeri, serviseri i klijenti. Svaka od ovih grupa ima jasno definisanu i važnu ulogu u procesu servisnih intervencija i realizaciji servisnih zahtjeva.
+Ciljni korisnici ovog sistema uključuju servisne kompanije kao organizaciju, kao i konkretne korisnike sistema: dispečere, servisere i klijente. Svaka od ovih grupa ima jasno definisanu i važnu ulogu u procesu servisnih intervencija i realizaciji servisnih zahtjeva.
 
-Klijenti koriste sistem za prijavu kvarova, praćenja statusa svojih zahtjeva i to im omogućava bolju informisanost i sigurnost da će njihov problem biti riješen na vrijeme. Dispečeri imaju ključnu ulogu jer upravljaju zaprimljenim zahtjevima, dodjeljuju intervencije serviserima i prate njihov tok. Serviseri koriste sistem kako bi dobili informacije o intervencijama, izvršili zadatke na terenu i evidentirali status završenog posla. Na ovaj način sistem povezuje sve grupe u jedinstven proces.
+Klijenti koriste sistem za prijavu kvarova, praćenje statusa svojih zahtjeva i to im omogućava bolju informisanost i sigurnost da će njihov problem biti riješen na vrijeme. Dispečeri imaju ključnu ulogu jer upravljaju zaprimljenim zahtjevima, dodjeljuju intervencije serviserima i prate njihov tok. Serviseri koriste sistem kako bi dobili informacije o intervencijama, izvršili zadatke na terenu i evidentirali status završenog posla. Na ovaj način sistem povezuje sve grupe u jedinstven proces.
 
 ---
 
 ## Vrijednost sistema
 
-Vrijednost ovog sistema ogleda se u tome često omogućava centralizovan pregled svih servisnih intervencija na jednom mjestu i jasan tok njihovog izvršavanja. Sistem ima jasan pregled servisnih zahtjeva, preciznu dodjelu zadataka, prikaz statusa intervencija i evidenciju izvršenog rada. Na taj način se smanjuje mogućnost grešaka, ubrzava proces rada i olakšava koordinaciju između dispečera i servisera.
+Vrijednost ovog sistema ogleda se u tome što omogućava centralizovan pregled svih servisnih intervencija na jednom mjestu i jasan tok njihovog izvršavanja. Sistem ima jasan pregled servisnih zahtjeva, preciznu dodjelu zadataka, prikaz statusa intervencija i evidenciju izvršenog rada. Na taj način se smanjuje mogućnost grešaka, ubrzava proces rada i olakšava koordinaciju između dispečera i servisera.
 
-Za razliku od trenutnog načina rada koji se oslanja na nepovezane alate, sistem uvodi jedinstven i organizovan proces upravljanja intervencijama. Dispečeri imaju bolju kontrolu nad svim postavljenim zahtjevima, dok serviseri dobijaju tačne i pravovremene informacije potrebne za rad na terenu.
+Za razliku od trenutnog načina rada koji se oslanja na nepovezane alate, sistem uvodi jedinstven i organizovan proces upravljanja intervencijama. Dispečeri imaju bolju kontrolu nad svim zaprimljenim zahtjevima, dok serviseri dobijaju tačne i pravovremene informacije potrebne za rad na terenu.
 
-Sistem pomaže također i u određivanju prioriteta ili kategorije intervencija, ali konačnu odluku donosi korisnik, čime se zadržava kontrola nad procesom. Na ovaj način sistem ne služi samo kao evidencija, već kao operativni alat koji aktivno podržava upravljanje servisnim intervencijama i omogućava efikasniji rad.
+Sistem također pomaže u određivanju prioriteta ili kategorije intervencija, ali konačnu odluku donosi korisnik, čime se zadržava kontrola nad procesom. Na ovaj način sistem ne služi samo kao evidencija, već kao operativni alat koji aktivno podržava upravljanje servisnim intervencijama i omogućava efikasniji rad.
 
 ---
 
