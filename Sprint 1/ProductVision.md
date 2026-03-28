@@ -112,26 +112,26 @@ Funkcionalnosti koje neće biti dio početne verzije:
 
 ### Ključna ograničenja
 
-* Ograničeno vrijeme razvoja sistema
+* Ograničeno vrijeme razvoja sistema  
 Projekat se realizuje u okviru trajanja jednog semestra, zbog čega raspoloživo vrijeme za analizu, dizajn, implementaciju i testiranje ostaje ograničeno. 
 
-* Ograničeni  razvojni resursi
+* Ograničeni  razvojni resursi  
 Iako tim broji 8 članova, stvarni razvojni kapaciteti projekta i dalje su ograničeni u odnosu na složenost sistema koji se razvija. Članovi tima imaju različit nivo tehničkog znanja, iskustva i usmjerenosti, a značajan dio vremena tokom semestra ne odlazi samo na implementaciju, nego i na analizu zahtjeva, definisanje poslovne logike, modeliranje procesa, dizajn, dokumentaciju i testiranje. 
 
-* Tehnološka ograničenja
+* Tehnološka ograničenja  
 Sistem se razvija kao web aplikacija dostupna na desktop i mobilnim uređajima putem preglednika. Pri tome se polazi od toga da različiti korisnici sistem koriste u različitim situacijama i na različitim uređajima, pa se interfejs i funkcionalnosti tome i prilagođavaju. Dispečer i administrator će veći dio posla prirodnije obavljati na većem ekranu, dok su serviseru i klijentu važnije funkcije koje su lako dostupne i putem mobilnog uređaja. Na taj način sistem ostaje jedinstven, ali istovremeno prati stvarne potrebe korisnika i način na koji ga koriste u praksi. Sistem u početnoj verziji neće podržavati offline rad, dok složenije integracije sa drugim poslovnim sistemima neće biti u fokusu MVP-a. Po potrebi, mogu se koristiti ograničeni eksterni servisi koji podržavaju ključne funkcionalnosti sistema, kao što su AI podrška ili mapni servisi. 
 
-* Budžetska ograničenja
+* Budžetska ograničenja  
 Kako se projekat razvija u okviru studentskog rada i bez značajnijih finansijskih ulaganja, potrebno je pažljivo birati tehnologije, dodatne servise i obim funkcionalnosti koje će biti uključene u prvu verziju sistema. Zbog toga će se pri izboru tehnoloških rješenja težiti open source i besplatnim alatima i servisima koji mogu zadovoljiti potrebe sistema bez dodatnih troškova.
 
-* Fokus na operativni modul
+* Fokus na operativni modul  
 Zbog ograničenja vremena i opsega, MVP je usmjeren na osnovni tok servisne intervencije i primarne korisnike sistema, prije svega dispečera, servisera i korisnika koji prijavljuje zahtjev. Potrebe sekundarnih stakeholdera i napredni moduli ostavljaju se za kasnije faze razvoja.
 
-* Ograničenje složenih poslovnih scenarija
+* Ograničenje složenih poslovnih scenarija  
 Napredniji scenariji, kao što su rad više servisera na jednoj intervenciji, kompleksne eskalacije i napredno planiranje izlazaka na teren, nisu obuhvaćeni MVP-om.
 
-* Ograničena integracija AI i eksternih servisa
-U početnoj verziji sistema moguće je koristiti određene eksterne servise, poput AI podrške ili mapnih servisa, ali samo u mjeri u kojoj oni pomažu osnovnim funkcionalnostima sistema. Njihova uloga nije da samostalno vode proces ili donose konačne odluke, nego da korisnicima olakšaju rad kroz prijedloge, obradu informacija i dodatni kontekst. Time se zadržava kontrola od strane ljudskog faktora.
+* Ograničena integracija AI i eksternih servisa  
+U početnoj verziji sistema moguće je koristiti određene eksterne servise, poput AI podrške ili mapnih servisa, ali samo u mjeri u kojoj oni pomažu osnovnim funkcionalnostima sistema. Njihova uloga nije da samostalno vode proces ili donose konačne odluke, nego da korisnicima olakšaju rad kroz prijedloge, obradu informacija i dodatni kontekst. Time se zadržava kontrola od strane ljudskog faktora.  
 
 Sva prethodno navedena ograničenja zajedno određuju obim i fokus MVP verzije sistema. Zbog toga je početna verzija usmjerena na najvažnije funkcionalnosti koje podržavaju osnovni tok servisne intervencije i korisnicima donose stvarnu vrijednost u svakodnevnom radu, dok se složenije funkcionalnosti i zahtjevnija proširenja ostavljaju za kasnije faze razvoja, kada za njih budu postojali odgovarajući resursi i uslovi. Kako je riječ o MVP verziji, cilj nije razviti potpuno zaokružen proizvod, nego kroz ključne funkcionalnosti pokazati kako sistem može odgovoriti na stvarne potrebe korisnika i donijeti im konkretnu vrijednost u praksi.
 
