@@ -57,23 +57,23 @@ Funkcionalnosti koje neće biti dio početne verzije:
 
   Prva verzija sistema Service Track neće sadržavati sve funkcije. One koje nisu potrebne za osnovno korištenje servisnim intervencijama će se razvijati kasnije.
 
-*Mobilna aplikacija za servisere
+* Mobilna aplikacija za servisere
 
   Za sada, sistem će biti dostupan samo kao web aplikacija. Mobilna aplikacija će se razviti kasnije.
 
-*Automatske notifikacije
+* Automatske notifikacije
 
   Automatske obavijesti neće izvještavati o statusu svog servisnog zahtjeva putem e-maila ili SMS-a.
 
-*Napredni izvještaji klijentima
+* Napredni izvještaji klijentima
 
   Klijenti neće dobijati detaljne statistike, izvještaje o radu servisera ili analize efikasnosti servisa.
 
-*Integracija sa drugim sistemima
+* Integracija sa drugim sistemima
 
   Sistem neće biti povezan sa drugim poslovnim alatima, kao što je računovodstvo ili Enterprise Resource Planning.
 
-*Sistem za ocjenjivanje zadovoljstva klijenata
+* Sistem za ocjenjivanje zadovoljstva klijenata
 
   Ocjene od klijenata neće biti prikazivane u inicijalnoj fazi sistema.
 
