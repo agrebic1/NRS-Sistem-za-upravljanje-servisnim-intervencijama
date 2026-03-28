@@ -8,9 +8,9 @@ Sistem za upravljanje servisnim intervencijama - Service Track
 
 ## Problem koji sistem rješava
 
-Većina današnjih kompanija koje se bave servisnim intervencijama nemaju jednostavan sistem za upravljanje zahtjevima. Mnoge kompanije koriste različite alate, kao što su Excel tabele, što dosta otežava pregled svih aktivnih i završenih intervencija. Javljaju se problemi u praćenju zahtjeva kao i sam problem komunikacije između zaposlenih, servisera na terenu i administracije.
+U procesu servisnih intervencija često se koristi više nepoveyanih alata, kao što su Excel tabele, telefonski pozivi i poruke. Tok intervencije, koji uključuje prijavu kvara, dodjelu servisera, izvršenje rada i završetak zahtjeva, nije centralizovan u jednom sistemu, što otežava praćenje i upravljanje procesom.
 
-Kao rezultat ovoga, često dolazi do kašnjenja ili zaboravljanja zahtjeva a i smanjene efikasnosti u radu. Klijenti mogu biti nezadovoljni zbog nedostataka informacija o statusu svojih zahtjeva, ćime gube vrijeme i kvalitet zbog loše organizacije. Samim tim se ukazuje na potrebu za jednostavnim sistemom koji će omogućiti bolje upravljanje servisnim intervencijama, bolju komunikaciju između zaposlenih i povećati ukupnu efikasnost poslovanja.  
+Zbog ovakvog načina rada dolazi do loše koordinacije između zaposlenih, nejasnog statusa intervencija i kašnjenja u obavljannju zadataka. Serviseri nemaju uvijek potpune informacije, dok administarcija nema jasan pregled svih aktivnih intervencija. Kao rezultat toga jeste da dolazi do smanjenja efikasnosti rada i nezadovoljstvo klijenata, što ukazuje na potrebu za jedinstvenim sistemom koji bi povezao cijeli proces servisnih intervencija.
 
 ---
 
