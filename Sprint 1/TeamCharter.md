@@ -69,47 +69,35 @@ Force push nije dozvoljen, osim u izuzetnim situacijama koje su prethodno dogovo
 7. Obavezan pregled prije spajanja  
 Veće izmjene trebaju biti pregledane od strane barem jednog člana tima(a poželjno bi bilo i svih članova tima) prije merge-a.  
 8. Obavezna provjera nakon spajanja  
-Nakon spajanja izmjena obavezno se provjerava da li repozitorij i projekt funkcionišu ispravno. Potrebno je osigurati da nove izmjene nisu narušile postojeću funkcionalnost, strukturu ili konzistentnost projekta. U slučaju uočenih problema, odgovorni član tima dužan je odmah reagovati i, u dogovoru s timom, izvršiti potrebne ispravke.  
-
+Nakon spajanja izmjena obavezno se provjerava da li repozitorij i projekt funkcionišu ispravno. Potrebno je osigurati da nove izmjene nisu narušile postojeću funkcionalnost, strukturu ili konzistentnost projekta. U slučaju uočenih problema, odgovorni član tima dužan je odmah reagovati i, u dogovoru s timom, izvršiti potrebne ispravke.
+---
 
 ### Pravila odnosa prema ostalim članovima tima
+*(pravila su napisana tako da budu kratka i jasna, kako bi ih svi stvarno pročitali i pridržavali ih se.)*
 
-1. Poštovanje i profesionalna komunikacija
-Svi članovi tima komuniciraju međusobno s poštovanjem, bez obzira na neslaganja. Kritika se iznosi konstruktivno i usmjerena je na problem, a ne na osobu.
----
-2. Otvorena i jasna komunikacija
+#### Komunikacija i međusobni odnos
+
+**1. Poštovanje i profesionalna komunikacija**  
+Članovi tima komuniciraju međusobno s poštovanjem, bez obzira na neslaganja. Kritika se iznosi konstruktivno i usmjerena je na problem, a ne na osobu.  
+
+**2. Otvorena i jasna komunikacija**  
 Članovi tima jasno i pravovremeno dijele informacije, ideje i probleme. Nejasnoće se odmah razjašnjavaju kako bi se izbjegli nesporazumi.
+
+**3. Aktivna komunikacija i uključenost**  
+Pasivnost i ignorisanje komunikacije nisu prihvatljivi. Očekuje se pravovremena i kontinuirana komunikacija svih članova tima.
+
 ---
-3. Podrška i saradnja
+
+#### Učešće i saradnja
+
+**4. Podrška i saradnja**  
 Članovi tima međusobno pomažu kada je potrebno i dijele znanje kako bi se osigurao uspjeh cijelog tima.
----
-4. Rješavanje konflikata
-Nesuglasice se rješavaju otvoreno, smireno i uz međusobno uvažavanje. Konflikti se ne "guraju pod tepih" ili ignorišu, već se rješavaju na vrijeme kroz razgovor.
----
-5. Aktivno učešće i proaktivnost
-Očekuje se aktivno učešće, proaktivnost i ravnopravan doprinos svih članova tima.
-----
-6. Aktivna komunikacija i uključenost
-Pasivnost i ignorisanje komunikacije nisu prihvatljivi, očekuje se pravovremena i aktivna komunikacija svih članova tima.
 
----
+**5. Aktivno učešće i proaktivnost**  
+Od članova tima se očekuje aktivno učešće, proaktivnost i ravnopravan doprinos.
 
-7. Odgovornost prema timu  
-Članovi tima trebaju biti svjesni da njihov rad direktno utiče na ostale članove. Kašnjenje u izvršavanju obaveza ili njihovo neizvršavanje negativno utiče na tim, stvara dodatni pritisak, stres i potencijalne nesuglasice, te može dovesti do prekomjernog opterećenja drugih članova, posebno u završnim fazama rada.
-
-Nedostatak ili nepravovremena komunikacija smatra se neodgovornim ponašanjem jer može uzrokovati nesporazume, kašnjenja i ugroziti rad i napredak tima.
-
----
-
-8. Pravovremeno obavještavanje  
-Članovi tima su dužni pravovremeno obavijestiti ostale članove u slučaju bilo kakvih prepreka u izvršavanju obaveza (nedostatak vremena, nerazumijevanje zadatka, nesigurnost ili drugi razlozi), kako bi tim mogao reagovati na vrijeme i prilagoditi plan sprinta.
-
-Ukoliko član tima ne obavijesti tim na vrijeme ili uopšte ne obavijesti o nastalim poteškoćama, snosi odgovornost za posljedice koje takvo ponašanje može imati na rad i napredak cjelokupnog tima.
-
----
-
-9. Izbjegavanje pasivnosti  
-Pasivno ponašanje, neuključivanje u rad i oslanjanje na druge članove tima nisu prihvatljivi. Svaki član tima je dužan ispuniti svoje obaveze, uz očekivanje aktivnog i kontinuiranog učešća u radu tima.
+**6. Izbjegavanje pasivnosti**  
+Pasivno ponašanje, neuključivanje u rad i oslanjanje na druge članove tima nisu prihvatljivi. Svaki član tima je dužan ispuniti svoje obaveze i aktivno učestvovati u radu tima.  
 
 Minimalne obaveze uključuju:
 - prisustvo sastancima ili pravovremeno nadoknađivanje propuštenog  
@@ -118,35 +106,67 @@ Minimalne obaveze uključuju:
 - izvršavanje dodijeljenih zadataka u definisanim rokovima  
 - upoznatost sa radom i napretkom tima u okviru sprinta  
 
-Aktivno učešće, dodatni angažman i doprinos izvan minimalnih obaveza su poželjni i doprinose kvalitetu projekta.
+Neispunjavanje ovih obaveza smatra se pasivnim ponašanjem.  
+
+Dodatni angažman i inicijativa su poželjni i doprinose kvalitetu projekta.  
 
 ---
 
-10. Fokus na rješenja  
-U slučaju problema, članovi tima se fokusiraju na pronalaženje rješenja, a ne na traženje krivca ili prebacivanje odgovornosti. Međusobno optuživanje, prebacivanje krivice i drugi oblici nekonstruktivnog pristupa nisu prihvatljivi.
+#### Odgovornost i transparentnost
 
-Problemi se rješavaju zajednički, kroz konstruktivnu komunikaciju i razmjenu mišljenja, s ciljem pronalaženja najboljeg mogućeg rješenja.
+**7. Odgovornost prema timu**  
+Članovi tima trebaju biti svjesni da njihov rad direktno utiče na ostale članove. Kašnjenje u izvršavanju obaveza ili njihovo neizvršavanje negativno utiče na tim, stvara pritisak i može dovesti do dodatnog opterećenja drugih članova, posebno u završnim fazama rada.  
 
-Važno je imati na umu da članovi tima nisu jedni protiv drugih, već zajedno rade na rješavanju problema.
+Nedostatak ili nepravovremena komunikacija smatra se neodgovornim ponašanjem jer može uzrokovati nesporazume, kašnjenja i ugroziti rad i napredak tima.  
 
----
+**8. Pravovremeno obavještavanje**  
+Članovi tima su dužni pravovremeno obavijestiti ostale članove u slučaju bilo kakvih prepreka u izvršavanju obaveza (nedostatak vremena, nerazumijevanje zadatka, nesigurnost ili drugi razlozi), kako bi tim mogao reagovati na vrijeme i prilagoditi plan sprinta.
 
-11. Poštivanje dogovora  
-Dogovoreni rokovi, zadaci i pravila rada se poštuju. Odluke se donose u interesu projekta i obavezuju sve članove tima.
-
-Ukoliko član tima smatra da postoji bolje rješenje ili način unapređenja projekta, dužan je svoj prijedlog pravovremeno iznijeti timu. O prijedlogu se zajednički raspravlja i donosi odluka, nakon čega se novi dogovor poštuje.
-
-Samoinicijativno odstupanje od dogovorenih rješenja bez prethodne konsultacije sa timom nije dozvoljeno.
+**9. Posljedice nepravovremenog obavještavanja**  
+Ukoliko član tima ne obavijesti tim na vrijeme ili uopšte ne obavijesti o nastalim poteškoćama, snosi odgovornost za posljedice koje takvo ponašanje može imati na rad i napredak tima.
 
 ---
 
-12. Konstruktivna povratna informacija  
-Članovi tima su otvoreni za primanje i davanje konstruktivne povratne informacije, s ciljem poboljšanja rješenja i ukupnog rada na projektu. Povratna informacija se iznosi na dogovoren i profesionalan način, uz međusobno uvažavanje.
+#### Rješavanje problema i donošenje odluka
 
-Fokus povratne informacije je na unapređenju rješenja i načina rada, a ne na kritici pojedinca. Članovi koji primaju povratnu informaciju trebaju je posmatrati kao priliku za unapređenje, a ne kao ličnu kritiku.
+**10. Rješavanje konflikata**  
+Nesuglasice se rješavaju otvoreno, smireno i uz međusobno uvažavanje. Konflikti se ne "guraju pod tepih" ili ignorišu, već se rješavaju na vrijeme kroz razgovor.
+
+**11. Fokus na rješenja**  
+U slučaju problema, članovi tima fokusiraju se na pronalaženje rješenja, a ne na traženje krivca ili prebacivanje odgovornosti.  
+
+Međusobno optuživanje, prebacivanje krivice i drugi oblici nekonstruktivnog pristupa nisu prihvatljivi.  
+
+Problemi se rješavaju zajednički, kroz konstruktivnu komunikaciju i razmjenu mišljenja.  
+Cilj je pronaći najbolje moguće rješenje.  
+
+Važno je imati na umu da članovi tima nisu jedni protiv drugih, već zajedno rade na rješavanju problema.  
+
+---
+
+#### Dogovor i unapređenje rada
+
+**12. Poštivanje dogovora**  
+Dogovoreni rokovi, zadaci i pravila rada se poštuju. Odluke se donose u interesu projekta i obavezuju sve članove tima.  
+
+Ukoliko član tima smatra da postoji bolje rješenje ili način unapređenja projekta, dužan je prijedlog pravovremeno iznijeti timu. O prijedlogu se zajednički raspravlja i donosi odluka.  
+
+Nakon usvajanja odluke, dogovor se poštuje.  
+
+Samoinicijativno odstupanje od dogovorenih rješenja bez prethodne konsultacije sa timom nije dozvoljeno.  
+
+**13. Konstruktivna povratna informacija**  
+Članovi tima su otvoreni za primanje i davanje konstruktivne povratne informacije, s ciljem poboljšanja rješenja i rada na projektu. Povratna informacija se iznosi na dogovoren i profesionalan način, uz međusobno uvažavanje.  
+
+Fokus povratne informacije je na unapređenju rješenja i načina rada, a ne na kritici pojedinca.  
+
+Članovi koji primaju povratnu informaciju trebaju je posmatrati kao priliku za unapređenje, a ne kao ličnu kritiku.    
+
+---
 
 ## Početne odgovornosti
 
+---
 
 ## Pravila u slučaju neispunjavanja obaveza
 ### 1. Nedolazak na sastanak sa asistentima  
