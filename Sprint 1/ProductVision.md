@@ -4,29 +4,35 @@
 
 Sistem za upravljanje servisnim intervencijama - Service Track 
 
+---
 
-**Problem koji sistem rješava:**
+## Problem koji sistem rješava
 
 Većina današnjih kompanija koje se bave servisnim intervencijama nemaju jednostavan sistem za upravljanje zahtjevima. Mnoge kompanije koriste različite alate, kao što su Excel tabele, što dosta otežava pregled svih aktivnih i završenih intervencija. Javljaju se problemi u praćenju zahtjeva kao i sam problem komunikacije između zaposlenih, servisera na terenu i administracije.
 
 Kao rezultat ovoga, često dolazi do kašnjenja ili zaboravljanja zahtjeva a i smanjene efikasnosti u radu. Klijenti mogu biti nezadovoljni zbog nedostataka informacija o statusu svojih zahtjeva, ćime gube vrijeme i kvalitet zbog loše organizacije. Samim tim se ukazuje na potrebu za jednostavnim sistemom koji će omogućiti bolje upravljanje servisnim intervencijama, bolju komunikaciju između zaposlenih i povećati ukupnu efikasnost poslovanja.  
 
+---
 
-**Ciljni korisnici:**
+## Ciljni korisnici
 
 Ciljni korisnici ovog sistema jesu servisne kompanije, serviseri koji obavljaju intervencije na terenu i klijenti koji koriste njihove servisne usluge. Sve tri grupe imaju važnu ulogu u procesu servisiranja i svakodnevno učestvuju u prijavi, organizaciji i realizaciji servisnih zahtjeva.
 
 Servisne kompanije koriste sistem kako bi lakše pregledale zahtjeve, poboljšale organizaciju rada i jednostavnije dodjeljivali zadatke serviserima. Serviseri koriste sistem kako bi dobili tačne informacije o intervencijama, lokaciji, vrsti kvara, te kako bi mogli evidentirati status završenog posla. Klijenti koriste sistem za prijavu kvarova, praćenja statusa svojih zahtjeva i to im omogućava bolju informisanost i sigurnost da će njihov problem biti riješen na vrijeme. 
 
-**Vrijednost sistema**
+---
+
+## Vrijednost sistema
 
 Vrijednost ovog sistema ogleda se u unapređenju organizacije i efikasnosti rada sevisnih kompanija pri radu sa intervencijama. Sistem ima jasan pregled servisnih zahtjeva i lakšu podjelu zadataka. Na taj način se smanjuje mogućnost grešaka, ubrzava proces rada i olakšava komunikaciju između klijent-administrator, administator-serviser.
 
 Pored toga, sistem donosi veliku vrijednost i klijentima koji korisne servisne usluge. Klijentima je omogućeno da na jednostavan način prijave kvar i prate status i vrijeme rada svog zahtjeva. Time se povećava njihova informisanost i povjerenje u uslugu, jer imaju jasnu sliku o tome kada i kako će njihov problem biti riješen.
 
-Sistem doprinosi digitalizaciji poslovanja i modernizaciji procesa rada unutar kompanija. Ovakvim rješenjem smanjuje se potreba za manuelnim vođenjem evidencije, a dugoročno gledano, sistem može doprinijeti smanjenju troškova, boljoj organizaciji resursa i unepređenju kvaliteta usluga. 
+Sistem doprinosi digitalizaciji poslovanja i modernizaciji procesa rada unutar kompanija. Ovakvim rješenjem smanjuje se potreba za manuelnim vođenjem evidencije, a dugoročno gledano, sistem može doprinijeti smanjenju troškova, boljoj organizaciji resursa i unepređenju kvaliteta usluga.
 
-**Scope MVP verzije**
+---
+
+## Scope MVP verzije
 
 Naš sistem za praćenje servisa će vam olakšati vođenje servisa, pregled zahtjeva i komunikaciju između zaposlenih i vanjskih servisa.
 
@@ -64,13 +70,11 @@ Sistem treba omogućiti jednostavnu razmjenu kratkih poruka i napomena između d
 
 * Dashboard sa pregledom ključnih informacija  
 
+---
 
-
-**Šta ne ulazi u MVP**
+## Šta ne ulazi u MVP
 
 Funkcionalnosti koje neće biti dio početne verzije:
-
-  Prva verzija sistema Service Track neće sadržavati sve funkcije. One koje nisu potrebne za osnovno korištenje servisnim intervencijama će se razvijati kasnije.
 
 * Mobilna aplikacija za servisere 
 
@@ -102,29 +106,41 @@ Funkcionalnosti koje neće biti dio početne verzije:
 
 * Upravljanje ugovorima i klijentima
 
+---
 
+## Ključna ograničenja i pretpostavke
 
-**Ključna ograničenja**
+### Ključna ograničenja
 
-* Imamo ograničeno vrijeme za razvoj sistema. Zbog toga će prva verzija sadržavati samo osnovne stvari koje su potrebne za efikasnu funkcionalnost.
+* Ograničeno vrijeme razvoja sistema
+Projekat se realizuje u okviru trajanja jednog semestra, zbog čega raspoloživo vrijeme za analizu, dizajn, implementaciju i testiranje ostaje ograničeno. 
 
-  Sistem će se razvijati u kratkom roku, pa će zbog toga sadržavati samo osnovne funkcionalnosti. To znači da neke stvari neće biti dostupne odmah.
-
-* Ograničeni resursi
-
-  Naš tim broji manji broj ljudi, pa ne možemo učiniti sve što želimo u prvoj verziji sistema. Moramo birati što je najvažnije.
+* Ograničeni  razvojni resursi
+Iako tim broji 8 članova, stvarni razvojni kapaciteti projekta i dalje su ograničeni u odnosu na složenost sistema koji se razvija. Članovi tima imaju različit nivo tehničkog znanja, iskustva i usmjerenosti, a značajan dio vremena tokom semestra ne odlazi samo na implementaciju, nego i na analizu zahtjeva, definisanje poslovne logike, modeliranje procesa, dizajn, dokumentaciju i testiranje. 
 
 * Tehnološka ograničenja
-
-  Sistem će biti web aplikacija, a ne mobilna aplikacija. Neće biti povezan sa drugim sistemima.
+Sistem se razvija kao web aplikacija dostupna na desktop i mobilnim uređajima putem preglednika. Pri tome se polazi od toga da različiti korisnici sistem koriste u različitim situacijama i na različitim uređajima, pa se interfejs i funkcionalnosti tome i prilagođavaju. Dispečer i administrator će veći dio posla prirodnije obavljati na većem ekranu, dok su serviseru i klijentu važnije funkcije koje su lako dostupne i putem mobilnog uređaja. Na taj način sistem ostaje jedinstven, ali istovremeno prati stvarne potrebe korisnika i način na koji ga koriste u praksi. Sistem u početnoj verziji neće podržavati offline rad, dok složenije integracije sa drugim poslovnim sistemima neće biti u fokusu MVP-a. Po potrebi, mogu se koristiti ograničeni eksterni servisi koji podržavaju ključne funkcionalnosti sistema, kao što su AI podrška ili mapni servisi. 
 
 * Budžetska ograničenja
+Kako se projekat razvija u okviru studentskog rada i bez značajnijih finansijskih ulaganja, potrebno je pažljivo birati tehnologije, dodatne servise i obim funkcionalnosti koje će biti uključene u prvu verziju sistema. Zbog toga će se pri izboru tehnoloških rješenja težiti open source i besplatnim alatima i servisima koji mogu zadovoljiti potrebe sistema bez dodatnih troškova.
 
-  Imamo ograničen budžet, pa ćemo se fokusirati na stvari koje su najvažnije za upravljanje servisnim intervencijama.
+* Fokus na operativni modul
+Zbog ograničenja vremena i opsega, MVP je usmjeren na osnovni tok servisne intervencije i primarne korisnike sistema, prije svega dispečera, servisera i korisnika koji prijavljuje zahtjev. Potrebe sekundarnih stakeholdera i napredni moduli ostavljaju se za kasnije faze razvoja.
 
-**Pretpostavke:**
+* Ograničenje složenih poslovnih scenarija
+Napredniji scenariji, kao što su rad više servisera na jednoj intervenciji, kompleksne eskalacije i napredno planiranje izlazaka na teren, nisu obuhvaćeni MVP-om.
 
-Administratori će redovno unositi i updateovati servisne zahtjeve u sistemu. 
-Serviseri će imati pristup sistemu i moći će pregledati i updejtovati informacije o intervencijama. 
-Korisnici sistema će znati osnove kako raditi i koristiti web aplikaciju. 
-Kompanija koja koristi sistem će imati dobro organizovan servis i zaposlene servisere koji će izvršavati intervencije. 
+* Ograničena integracija AI i eksternih servisa
+U početnoj verziji sistema moguće je koristiti određene eksterne servise, poput AI podrške ili mapnih servisa, ali samo u mjeri u kojoj oni pomažu osnovnim funkcionalnostima sistema. Njihova uloga nije da samostalno vode proces ili donose konačne odluke, nego da korisnicima olakšaju rad kroz prijedloge, obradu informacija i dodatni kontekst. Time se zadržava kontrola od strane ljudskog faktora.
+
+Sva prethodno navedena ograničenja zajedno određuju obim i fokus MVP verzije sistema. Zbog toga je početna verzija usmjerena na najvažnije funkcionalnosti koje podržavaju osnovni tok servisne intervencije i korisnicima donose stvarnu vrijednost u svakodnevnom radu, dok se složenije funkcionalnosti i zahtjevnija proširenja ostavljaju za kasnije faze razvoja, kada za njih budu postojali odgovarajući resursi i uslovi. Kako je riječ o MVP verziji, cilj nije razviti potpuno zaokružen proizvod, nego kroz ključne funkcionalnosti pokazati kako sistem može odgovoriti na stvarne potrebe korisnika i donijeti im konkretnu vrijednost u praksi.
+
+### Pretpostavke:
+Ovlašteni korisnici će redovno unositi i ažurirati podatke o servisnim zahtjevima i intervencijama u skladu sa svojom ulogom u sistemu.
+Serviseri će imati pristup sistemu putem odgovarajućeg uređaja i moći će pregledati i ažurirati informacije relevantne za intervencije na kojima rade.
+Korisnici sistema posjeduju osnovna znanja potrebna za korištenje web aplikacije ili će za njen rad dobiti odgovarajuće upute.
+Organizacija koja koristi sistem ima osnovno definisane uloge i odgovornosti u procesu prijave, dodjele i izvršavanja servisnih intervencija.
+Pretpostavlja se dostupnost internet konekcije u trenucima kada korisnici pristupaju sistemu.
+Pretpostavlja se da će za svaku intervenciju biti dostupni osnovni podaci, kao što su opis problema, lokacija i podaci o prijavi.
+Pretpostavlja se da će korisnici unositi tačne i dovoljno potpune informacije kako bi sistem mogao pravilno podržati tok rada i obradu intervencija.
+Ukoliko se koriste eksterni servisi, pretpostavlja se njihova osnovna dostupnost u mjeri potrebnoj za podršku ključnim funkcionalnostima MVP-a.
