@@ -1,5 +1,8 @@
 ----> UVOD ... 
 
+----> Stakeholder matrica
+<img width="754" height="749" alt="stakeholder_matrica" src="https://github.com/user-attachments/assets/3c12226e-6f8e-4271-9dc4-0fa14df417fa" />
+
 ----> TABELA 
 | Stakeholder | Uloga | Interes | Očekivanja | Uticaj na sistem | Prioritet komunikacije |
 |-------------|-------|---------|------------|------------------|------------------------|
