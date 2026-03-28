@@ -1,10 +1,8 @@
 # Team Charter
 
-## Naziv tima: Grupa 2
+Naziv tima: Grupa 2  
 
-## Članovi tima: 
-
-
+Članovi tima:  
 Amina Grebić, 259-ST, agrebic1@etf.unsa.ba  
 Hamza Bunar, 165-ST, hbunar1@etf.unsa.ba  
 Hadrijan Dedović, 182-ST, hdedovic2@etf.unsa.ba  
@@ -17,13 +15,37 @@ Eldin Begić, 257-ST, ebegic4@etf.unsa.ba
 
 ## Način komunikacije
 
+**Primarni kanal komunikacije:**   
+* grupni chat (WhatsApp) za svakodnevnu komunikaciju  
+* Trello kao alat za kolaboraciju, praćenje zadataka i organizaciju rada
+  
+**Očekivano vrijeme odgovora:** 
+* do 12h za opštu komunikaciju
+* do 6h za komunikaciju vezano za aktivne zadatke u toku sprinta
+  
+**Način zakazivanja sastanaka:** 
+* sastanci se zakazuju putem grupnog chata, uz prethodni dogovor, kako bi sve informacije bile transparentne i dostupne svim članovima tima
+* termin sastanka se definiše na osnovu konsenzusa, odnosno većinom glasova, uz uvažavanje obaveza i raspoloživog vremena članova tima 
+* ostavlja se mogućnost sazivanja vanrednih sastanaka, u slučaju hitnih situacija ili potrebe za dodatnom koordinacijom
 
-Primarni kanal komunikacije: grupa, Trello - alat za kolaboraciju
-Očekivano vrijeme odgovora:
-Način zakazivanja sastanaka: 
+**Napomene:**  
+*Svi članovi tima dužni su redovno pratiti navedene komunikacione kanale,*  
+kako bi bili pravovremeno informisani o svim aktivnostima, zadacima i promjenama. 
 
+*Komunikacija vezana za aktivne zadatke i rokove ima prioritet*  
+u odnosu na ostalu komunikaciju i zahtijeva bržu reakciju.  
 
-##Radna pravila tima
+*Trello se koristi kao centralni alat za praćenje zadataka i njihovog statusa,*  
+sve ključne informacije vezane za zadatke evidentiraju se na alatu za kolaboraciju(Trello).  
+
+*Radi lakše dostupnosti, važne informacije i obavještenja dijele se i putem grupnog chata,*  
+kako bi svi članovi tima bili pravovremeno informisani u slučaju da neko ima poteškoća sa korištenjem alata za kolaboraciju.
+
+*Ukoliko se u toku projekta odabrani alat za kolaboraciju iz bilo kojih razloga pokaže kao neefikasan,*  
+(npr. zbog tehničkih problema, ograničenja ili poteškoća u korištenju i prilagodbi rada od strane članova tima)  
+tim zadržava mogućnost njegove promjene, koja se u tom slučaju donosi zajedničkom odlukom, uz saglasnost većine članova tima, uz obavezu da se rad nastavi bez prekida i da svi članovi i dalje imaju pristup svim važnim informacijama.  
+
+## Radna pravila tima
 
 1. "Pretpostavka je majka svakog problema"  
 Članovi tima ne prave pretpostavke. U slučaju bilo kakvih nejasnoća postavljaju konkretna i adekvatna pitanja, kako bi se smanjila mogućnost nastanka nesporazuma i osiguralo ispravno razumijevanje od strane svih članova tima.  
