@@ -24,11 +24,11 @@ Klijenti koriste sistem za prijavu kvarova, praćenja statusa svojih zahtjeva i 
 
 ## Vrijednost sistema
 
-Vrijednost ovog sistema ogleda se u unapređenju organizacije i efikasnosti rada sevisnih kompanija pri radu sa intervencijama. Sistem ima jasan pregled servisnih zahtjeva i lakšu podjelu zadataka. Na taj način se smanjuje mogućnost grešaka, ubrzava proces rada i olakšava komunikaciju između klijent-administrator, administator-serviser.
+Vrijednost ovog sistema ogleda se u tome često omogućava centralizovan pregled svih servisnih intervencija na jednom mjestu i jasan tok njihovog izvršavanja. Sistem ima jasan pregled servisnih zahtjeva, preciznu dodjelu zadataka, prikaz statusa intervencija i evidenciju izvršenog rada. Na taj način se smanjuje mogućnost grešaka, ubrzava proces rada i olakšava koordinaciju između dispečera i servisera.
 
-Pored toga, sistem donosi veliku vrijednost i klijentima koji korisne servisne usluge. Klijentima je omogućeno da na jednostavan način prijave kvar i prate status i vrijeme rada svog zahtjeva. Time se povećava njihova informisanost i povjerenje u uslugu, jer imaju jasnu sliku o tome kada i kako će njihov problem biti riješen.
+Za razliku od trenutnog načina rada koji se oslanja na nepovezane alate, sistem uvodi jedinstven i organizovan proces upravljanja intervencijama. Dispečeri imaju bolju kontrolu nad svim postavljenim zahtjevima, dok serviseri dobijaju tačne i pravovremene informacije potrebne za rad na terenu.
 
-Sistem doprinosi digitalizaciji poslovanja i modernizaciji procesa rada unutar kompanija. Ovakvim rješenjem smanjuje se potreba za manuelnim vođenjem evidencije, a dugoročno gledano, sistem može doprinijeti smanjenju troškova, boljoj organizaciji resursa i unepređenju kvaliteta usluga.
+Sistem pomaže također i u određivanju prioriteta ili kategorije intervencija, ali konačnu odluku donosi korisnik, čime se zadržava kontrola nad procesom. Na ovaj način sistem ne služi samo kao evidencija, već kao operativni alat koji aktivno podržava upravljanje servisnim intervencijama i omogućava efikasniji rad.
 
 ---
 
