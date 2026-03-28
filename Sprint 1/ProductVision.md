@@ -135,7 +135,7 @@ U početnoj verziji sistema moguće je koristiti određene eksterne servise, pop
 
 Sva prethodno navedena ograničenja zajedno određuju obim i fokus MVP verzije sistema. Zbog toga je početna verzija usmjerena na najvažnije funkcionalnosti koje podržavaju osnovni tok servisne intervencije i korisnicima donose stvarnu vrijednost u svakodnevnom radu, dok se složenije funkcionalnosti i zahtjevnija proširenja ostavljaju za kasnije faze razvoja, kada za njih budu postojali odgovarajući resursi i uslovi. Kako je riječ o MVP verziji, cilj nije razviti potpuno zaokružen proizvod, nego kroz ključne funkcionalnosti pokazati kako sistem može odgovoriti na stvarne potrebe korisnika i donijeti im konkretnu vrijednost u praksi.
 
-### Pretpostavke:
+### Pretpostavke
 Ovlašteni korisnici će redovno unositi i ažurirati podatke o servisnim zahtjevima i intervencijama u skladu sa svojom ulogom u sistemu. 
 
 Serviseri će imati pristup sistemu putem odgovarajućeg uređaja i moći će pregledati i ažurirati informacije relevantne za intervencije na kojima rade.
