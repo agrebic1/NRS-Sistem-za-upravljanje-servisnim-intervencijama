@@ -19,6 +19,7 @@ Ciljni korisnici ovog sistema jesu servisne kompanije, serviseri koji obavljaju 
 Servisne kompanije koriste sistem kako bi lakše pregledale zahtjeve, poboljšale organizaciju rada i jednostavnije dodjeljivali zadatke serviserima. Serviseri koriste sistem kako bi dobili tačne informacije o intervencijama, lokaciji, vrsti kvara, te kako bi mogli evidentirati status završenog posla. Klijenti koriste sistem za prijavu kvarova, praćenja statusa svojih zahtjeva i to im omogućava bolju informisanost i sigurnost da će njihov problem biti riješen na vrijeme. 
 
 **Vrijednost sistema**
+
 Vrijednost ovog sistema ogleda se u unapređenju organizacije i efikasnosti rada sevisnih kompanija pri radu sa intervencijama. Sistem ima jasan pregled servisnih zahtjeva i lakšu podjelu zadataka. Na taj način se smanjuje mogućnost grešaka, ubrzava proces rada i olakšava komunikaciju između klijent-administrator, administator-serviser.
 
 Pored toga, sistem donosi veliku vrijednost i klijentima koji korisne servisne usluge. Klijentima je omogućeno da na jednostavan način prijave kvar i prate status i vrijeme rada svog zahtjeva. Time se povećava njihova informisanost i povjerenje u uslugu, jer imaju jasnu sliku o tome kada i kako će njihov problem biti riješen.
