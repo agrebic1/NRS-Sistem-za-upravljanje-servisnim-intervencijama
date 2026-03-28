@@ -1,4 +1,4 @@
-----> UVOD ... 
+Ovaj dokument predstavlja analizu stakeholdera sistema za upravljanje servisnim intervencijama. U nastavku je prikazana stakeholder matrica koja vizualno pozicionira zainteresovane strane prema nivou uticaja i interesa, kao i detaljna tabela koja za svaku zainteresovanu stranu opisuje njenu ulogu, interese, očekivanja od sistema, uticaj na sistem i prioritet komunikacije.
 
 ----> Stakeholder matrica
 <img width="754" height="749" alt="stakeholder_matrica" src="https://github.com/user-attachments/assets/3c12226e-6f8e-4271-9dc4-0fa14df417fa" />
