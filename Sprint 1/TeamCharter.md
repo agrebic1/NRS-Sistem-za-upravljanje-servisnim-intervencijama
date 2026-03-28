@@ -50,7 +50,9 @@ tim zadržava mogućnost njegove promjene, koja se u tom slučaju donosi zajedni
 1. "Pretpostavka je majka svakog problema"  
 Članovi tima ne prave pretpostavke. U slučaju bilo kakvih nejasnoća postavljaju konkretna i adekvatna pitanja, kako bi se smanjila mogućnost nastanka nesporazuma i osiguralo ispravno razumijevanje od strane svih članova tima.  
 2. "Ništa se ne podrazumijeva, sve se provjerava"  
-Članovi tima postavljaju pitanja kada god nešto nije u potpunosti jasno i potvrđuju ispravnost u rezonovanju prije nego što nastave sa radom.  
+Članovi tima postavljaju pitanja kada god nešto nije u potpunosti jasno i potvrđuju ispravnost u rezonovanju prije nego što nastave sa radom.
+
+---
 
 ### Pravila rada na GitHubu
 
@@ -165,15 +167,95 @@ Fokus povratne informacije je na unapređenju rješenja i načina rada, a ne na 
 ---
 
 ## Početne odgovornosti
+*(raspodjela odgovornosti zasniva se na cilju da se maksimalno iskoriste jake strane svih članova tima, uz uvažavanje njihovog načina rada i onoga u čemu se osjećaju najugodnije, nastoji se izbjeći nametanje uloga koje nisu u skladu sa načinom rada i područjima u kojima članovi najviše doprinose)*  
+*(početne odgovornosti definišu raspodjelu zadataka u prvom sprintu, s ciljem efikasne organizacije rada i ravnomjernog doprinosa svih članova tima)*
+
+---
+
+### Raspodjela odgovornosti
+
+Svaki član tima ima svoju primarnu odgovornost, ali i učestvuje u dodatnim aktivnostima kao što su diskusija, pregled i unapređenje rada.  
+Raspodjela je napravljena u skladu sa trenutnim načinom rada i doprinosom članova tima, uz mogućnost prilagođavanja tokom projekta.
+
+**Koordinator tima:**(Amina)  
+Zadužen za organizaciju rada tima, raspodjelu zadataka i odgovornosti, iniciranje i vođenje komunikacije, organizaciju sastanaka i praćenje napretka rada.
+
+**Planiranje i podrška u donošenju odluka:**(Ajna(sekundarno))  
+Zadužen za aktivno učestvovanje u planiranju, razradi ideja i donošenju odluka, uz blisku saradnju sa koordinatorom.
+
+**QA / kontrola kvaliteta:**(Ajna, Amina(sekundarno))  
+Zadužen za pregled i unapređenje rada prije finalne verzije, provjeru kvaliteta i usklađenosti sa zahtjevima projekta.
+
+**Reviewer (pregled rada):**(Eldin, Ajla, Suada, Ajna, Amina)  
+Zadužen za pregled rada drugih članova, davanje sugestija i uočavanje eventualnih nedostataka.
+
+**Izrada zadataka (izvršioci):**(Kerim, Hamza, Hadrijan)  
+Zaduženi za samostalnu izradu dodijeljenih zadataka u skladu sa definisanim smjernicama.
+
+**Kreativni doprinos i ideje:**(svi članovi tima)  
+Zadužen za davanje ideja, prijedloga i kreativnih rješenja koja doprinose kvalitetu projekta.
+
+**Samostalni i asinhroni rad:**(Hamza)  
+Zadužen za izvršavanje zadataka uz fleksibilno učešće, uz obavezu praćenja komunikacije i usklađenosti sa timom.
+
+**Podrška timu:**(Amina, Ajna, Eldin, Ajla, Suada)  
+Zadužen za pomoć drugim članovima tima, učestvovanje u diskusijama i doprinos rješavanju problema.
+
+---
+
+### Raspodjela rada po deliverable-ima za trenutni (prvi) sprint
+
+Rad na projektnim dokumentima organizovan je tako da svaki dokument ima odgovorne članove tima, uz zajedničko učešće ostalih kroz pregled i unapređenje sadržaja.
+
+Raspodjela je definisana na sljedeći način:
+
+- **Team Charter:** Amina
+- **Product Vision:** Eldin, Kerim  
+- **Stakeholder Map:** Ajla, Suada  
+- **Početni Product Backlog:** Ajna, Hamza, Hadrijan
+
+Odgovorni članovi su zaduženi za inicijalnu izradu i strukturu dokumenta.
+
+Svi ostali članovi tima učestvuju kroz:
+- pregled (review)  
+- davanje sugestija i prijedloga  
+- dopune i unapređenja sadržaja  
+
+Na ovaj način se kombinuje individualna odgovornost i timski rad, s ciljem postizanja što kvalitetnijeg konačnog rezultata.
+
+---
+
+### Način rada
+
+Rad u timu se odvija kroz kombinaciju individualnog rada i zajedničke revizije:
+
+- svaki član tima dobija jasno definisan zadatak koji samostalno izrađuje  
+- prije početka rada definišu se očekivanja i sadržaj zadatka kroz sastanak i komunikacione kanale  
+- nakon izrade, ostali članovi tima pregledaju rad, daju sugestije i predlažu poboljšanja  
+- uočeni nedostaci se ispravljaju prije finalne verzije  
+- konačna verzija se usklađuje kroz zajednički pregled  
+
+---
+
+### Pregled i unapređenje rada (review)
+
+Svi članovi tima učestvuju u osnovnom pregledu rada kroz komentare, sugestije i prijedloge za poboljšanje.  
+Za kompleksnije aspekte rada (struktura, logika, usklađenost i kvalitet), dodatni pregled vrše članovi koji su preuzeli odgovornosti vezane za koordinaciju, planiranje i kontrolu kvaliteta.  
+Cilj je kombinovati različite perspektive i osigurati što kvalitetniji konačan rezultat.
+
+---
+
+### Napomena
+
+Uloge nisu fiksne i mogu se mijenjati tokom projekta u skladu sa napretkom tima i potrebama projekta.  
+Cilj je da svaki član doprinese na način koji mu najviše odgovara, uz razvoj novih vještina kroz rad.  
 
 ---
 
 ## Pravila u slučaju neispunjavanja obaveza
 ### 1. Nedolazak na sastanak sa asistentima  
 U slučaju nemogućnosti prisustvovanja sastanku sa asistentima, član tima je dužan pravovremeno obavijestiti tim i asistenta, te po mogućnosti navesti razlog odsustva.
-
 Ukoliko član ne obavijesti o svom odsustvu i ne prisustvuje sastanku, takvo ponašanje smatra se neodgovornim. Član snosi individualnu odgovornost za posljedice svog nedolaska, bez negativnog uticaja na ostatak tima.
-
 Nakon izostanka, član je dužan samostalno nadoknaditi propušteno i upoznati se sa svim informacijama relevantnim za nastavak rada.
 
 ---
@@ -192,9 +274,7 @@ Ukoliko član to ne učini, snosi odgovornost za eventualne nesporazume, pogreš
 
 ### 3. Neizvršavanje ili kašnjenje u izvršavanju zadataka  
 Član tima je dužan izvršiti dodijeljene zadatke u definisanom roku.
-
 U slučaju prepreka (nedostatak vremena, nerazumijevanje zadatka, nesigurnost i sl.), član je dužan pravovremeno obavijestiti tim kako bi se moglo reagovati na vrijeme.
-
 Ukoliko član ne izvrši zadatak i ne obavijesti tim:
 - snosi odgovornost za posljedice po tim  
 - zadatak može biti preraspodijeljen  
