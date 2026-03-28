@@ -72,6 +72,12 @@ Force push nije dozvoljen, osim u izuzetnim situacijama koje su prethodno dogovo
 Veće izmjene trebaju biti pregledane od strane barem jednog člana tima(a poželjno bi bilo i svih članova tima) prije merge-a.  
 8. Obavezna provjera nakon spajanja  
 Nakon spajanja izmjena obavezno se provjerava da li repozitorij i projekt funkcionišu ispravno. Potrebno je osigurati da nove izmjene nisu narušile postojeću funkcionalnost, strukturu ili konzistentnost projekta. U slučaju uočenih problema, odgovorni član tima dužan je odmah reagovati i, u dogovoru s timom, izvršiti potrebne ispravke.
+9. Rad sa branch-evima i commitanje  
+U početnim fazama projekta (izrada dokumentacije), dozvoljen je rad direktno na main branchu, uz obavezu da članovi tima vode računa o ažurnosti svojih promjena i izbjegavaju međusobno prepisivanje sadržaja.  
+U kasnijim fazama projekta, posebno u fazi implementacije, svaki član tima je dužan raditi na vlastitom branchu.  
+Promjene se zatim spajaju (merge) na main branch tek nakon pregleda i odobrenja, kako bi se izbjegli konflikti i gubitak podataka.  
+Cilj ovakvog pristupa je osigurati stabilnost projekta, bolju kontrolu izmjena i sprječavanje problema koji mogu nastati kada više članova tima istovremeno radi na istom branchu.
+
 ---
 
 ### Pravila odnosa prema ostalim članovima tima
@@ -180,7 +186,7 @@ Raspodjela je napravljena u skladu sa trenutnim načinom rada i doprinosom član
 **Koordinator tima:**(Amina)  
 Zadužen za organizaciju rada tima, raspodjelu zadataka i odgovornosti, iniciranje i vođenje komunikacije, organizaciju sastanaka i praćenje napretka rada.
 
-**Planiranje i podrška u donošenju odluka:**(Ajna(sekundarno))  
+**Planiranje i podrška u donošenju odluka:**(Ajna(sekundarno), Eldin(sekundarno))  
 Zadužen za aktivno učestvovanje u planiranju, razradi ideja i donošenju odluka, uz blisku saradnju sa koordinatorom.
 
 **QA / kontrola kvaliteta:**(Ajna, Amina(sekundarno))  
@@ -281,7 +287,7 @@ Ukoliko član ne izvrši zadatak i ne obavijesti tim:
 
 ---
 
-### 4. Nedolazak na završni (recap) sastanak  
+### 4. Nedolazak na završni sastanak  (retrospection)
 Završni sastanak je ključan za provjeru, usklađivanje i finalizaciju rada prije predaje.
 
 U slučaju izostanka, član je dužan:
