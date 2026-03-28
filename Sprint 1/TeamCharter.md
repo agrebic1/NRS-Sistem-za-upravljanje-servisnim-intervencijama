@@ -55,7 +55,7 @@ tim zadržava mogućnost njegove promjene, koja se u tom slučaju donosi zajedni
 2. "Ništa se ne podrazumijeva, sve se provjerava"  
 Članovi tima postavljaju pitanja kada god nešto nije u potpunosti jasno i potvrđuju ispravnost u rezonovanju prije nego što nastave sa radom.
 
-3. "Ako vidiš problem — reaguj"  
+3. "Ako vidiš problem, reaguj"  
 Članovi tima ne ignorišu uočene probleme, greške ili nelogičnosti u radu.  
 Svaki član ima odgovornost da ukaže na problem i predloži rješenje, umjesto da ga prešuti ili ostavi drugima.
 
@@ -72,7 +72,7 @@ Zadaci koji predstavljaju blokadu za ostale članove tima rješavaju se sa najvi
 Rad na zadacima treba biti raspoređen tokom sprinta.  
 Odgađanje obaveza za završne faze nije prihvatljivo jer direktno ugrožava kvalitet i rad ostatka tima.
 
-7. "Ako nisi siguran — pitaj odmah"  
+7. "Ako nisi siguran, pitaj odmah"  
 U slučaju nesigurnosti, član je dužan odmah tražiti pojašnjenje, a ne donositi pretpostavke ili samostalno mijenjati pravac rada.
 
 8. "Drži se dogovorenog pravca"  
