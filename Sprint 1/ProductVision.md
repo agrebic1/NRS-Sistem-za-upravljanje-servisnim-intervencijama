@@ -30,31 +30,39 @@ Sistem doprinosi digitalizaciji poslovanja i modernizaciji procesa rada unutar k
 
 Naš sistem za praćenje servisa će vam olakšati vođenje servisa, pregled zahtjeva i komunikaciju između zaposlenih i vanjskih servisa.
 
-Ove funkcionalnosti ćete moći koristiti:
+MVP verzija treba sadržavti sljedeće funkcionalnosti:
 
-* Kreiranje novog zahtjeva za servis
+* Registracija i prijava korisnika
+Sistem omogućava kreirnaje korisničkog naloga i prijavu u sistem putem osnovnih autentifikacijskih podataka (korisničko ime, lozinka).
 
-  Naši administratori će moći stvoriti novi zahtjev sa svim potrebnim detaljima, kao što su: šta se dogodilo, gdje se to dogodilo i ko će to riješiti.
+* Prijava zahtjeva za servisnu intervenciju
+Sistem treba omogućiti korisnicima kreiranje novog zahtjeva za intervencijom unosom osnovnih podataka o kvaru/problemu, lokaciji, kratkom opisu problema i vlastitim podacima.
 
-* Pregled svih servisa
+* Pregled otvorenih intervencija
+Dispečer i drugi ovlašteni korisnici mogu pregledati sve aktivne i otvorene intervencije, kako bi se jasno vidjelo koji zahtjevi čekaju na obradu, koji su dodijeljeni i koji su trenutno u toku.  
 
-  Imat ćete listu svih dostupnih servisa sa osnovnim informacijama i saznat ćete u kojem su stanju.
+* Pregled svih servisnih intervencija?
+Imat ćete listu svih dostupnih servisa sa osnovnim informacijama i saznat ćete u kojem su stanju.
 
-* Dodjeljivanje poslova
+* Pregled detalja pojedinačnih servisnih intervencija?
+//Svaki servis će imati svoju stranicu sa svim detaljima o zahtjevu i šta se s njim dešava.
 
-  Naši administratori će moći odrediti koja osoba odnosno serviser će obaviti koji zahtjev.
+* Dodjela intervencije odgovornom serviseru
+Sistem treba omogućiti generisanje prijedloga odgovornih servisera na osnovu osnovnih podataka o intervenciji, dok konačnu odluku o dodjeli donosi sam dispečer, Dispečer ima mogućnost da privati prijedlog koji mu je generisao sistem ili odbije i ručno odabere drugu osobu koju smatra pogodnijom za taj posao.
 
-* Promjena stanja servisa
+* Upravljanje statusom intervencije
+Sistem treba omogućiti postavljanje i promjenu statusa intervencija tako da status u svakom trenutnku što vjernije odražava njeno stvarno stanje na terenu i fazu u kojoj se intervencija nalazi. Time se obezbjeđuje da tok rada u sistemu prati prirodan, logičan i u praksi ustaljeni tok servisnog procesa, od trenutka prijave i dodjele, preko izvršenja radova, pa sve do samog završetka intervencije. Na taj način svi uključeni korisnici imaju jasniji uvid u to što je već urađeno , šta je u toku i koja je naredna faza postupanja. Miniminalni skup statusa koju sistem treba podržati obuhvata: kreirano, dodijeljeno, u toku i završeno.
 
-  Osoba koja obavlja posao ili administrator će moći update-ovati stanje servisa, kao što su otvoreno, u tijeku ili završeno.
+* Evidencija osnovnih informacija o izvršenom radu
+Sistem treba omogućiti evidentiranje izvršenog rada na način koji serviseru olakšava unos podataka i smanjuje administrativno opterećenje. Serviser unosi ključne informacije o intervenciji, dok sistem na osnovu njih može pripremiti pregledan i strukturisan zapis o obavljenom poslu. Na taj način evidencija rada postaje jasnija i ujednačenija, a istovremeno se zadržava kontrola ljudskog faktora, jer ovlašteni korisnik takav zapis može pregledati, potvrditi ili dopuniti prije konačnog spremanja u evidenciju.
 
-* Pregled detalja servisa
+* Određivanje prioriteta intervencija uz podršku sistema i potvrdu od strane dispečera
+Sistem treba omogućiti određivanje prioriteta intervencije na način da, na osnovu unesenih informacija o kvaru ili zahtjevu, može predložiti odgovarajući nivo prioriteta. Takav prijedlog služi kao podrška dispečeru u procjeni hitnosti i važnosti intervencije, ali konačnu odluku i dalje donosi ljudski faktor. Dispečer može prihvatiti predloženi prioritet, izmijeniti ga ili odabrati drugi nivo prioriteta u skladu sa svojom procjenom i konkretnom situacijom. Na taj način se olakšava donošenje odluka, postiže veća ujednačenost u obradi zahtjeva i zadržava potrebna kontrola nad procesom.
 
-  Svaki servis će imati svoju stranicu sa svim detaljima o zahtjevu i šta se s njim dešava.
+* Osnovna komunikacija između dispečera i servisera putem napomena
+Sistem treba omogućiti jednostavnu razmjenu kratkih poruka i napomena između dispečera i servisera u okviru konkretne intervencije. Na taj način se olakšava prenos važnih informacija vezanih za izlazak na teren, tok rada i eventualne promjene u vezi sa zadatkom. Cilj je da komunikacija bude vezana za samu intervenciju i dostupna na jednom mjestu, kako bi se smanjila potreba za dodatnim pozivima i nepovezanim kanalima komunikacije, a svi učesnici imali jasniji uvid u relevantne informacije.
 
-* Komunikacija između administratora i servisera
-
-  Sistem će omogućiti da se razmjenjuju kratke poruke ili napomene vezane za određeni posao, to jest izlazak na teren.
+* Dashboard sa pregledom ključnih informacija  
 
 
 
@@ -64,7 +72,7 @@ Funkcionalnosti koje neće biti dio početne verzije:
 
   Prva verzija sistema Service Track neće sadržavati sve funkcije. One koje nisu potrebne za osnovno korištenje servisnim intervencijama će se razvijati kasnije.
 
-* Mobilna aplikacija za servisere
+* Mobilna aplikacija za servisere 
 
   Za sada, sistem će biti dostupan samo kao web aplikacija. Mobilna aplikacija će se razviti kasnije.
 
@@ -72,9 +80,9 @@ Funkcionalnosti koje neće biti dio početne verzije:
 
   Automatske obavijesti neće izvještavati o statusu svog servisnog zahtjeva putem e-maila ili SMS-a.
 
-* Napredni izvještaji klijentima
+* Napredni izvještaji i analitika
 
-  Klijenti neće dobijati detaljne statistike, izvještaje o radu servisera ili analize efikasnosti servisa.
+ // Klijenti neće dobijati detaljne statistike, izvještaje o radu servisera ili analize efikasnosti servisa.
 
 * Integracija sa drugim sistemima
 
@@ -83,7 +91,16 @@ Funkcionalnosti koje neće biti dio početne verzije:
 * Sistem za ocjenjivanje zadovoljstva klijenata
 
   Ocjene od klijenata neće biti prikazivane u inicijalnoj fazi sistema.
+  
+* Potpuno automatsko određivanje prioriteta
 
+* Napredna komunikacija putem chata
+
+* Upravljanje materijalima i skladištem
+
+* Upravljanje finansijama i obračun usluga
+
+* Upravljanje ugovorima i klijentima
 
 
 
