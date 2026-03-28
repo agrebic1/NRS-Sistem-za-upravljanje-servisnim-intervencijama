@@ -19,6 +19,7 @@ Sistem za upravljanje servisnim intervencijama - Service Track
 Vrijednost sistema
 
 
+**Scope MVP verzije**
 
 Naš sistem za praćenje servisa će vam olakšati vođenje servisa, pregled zahtjeva i komunikaciju između zaposlenih i vanjskih servisa.
 
@@ -50,6 +51,8 @@ Ove funkcionalnosti ćete moći koristiti:
 
 
 
+**Šta ne ulazi u MVP**
+
 Funkcionalnosti koje neće biti dio početne verzije:
 
   Prva verzija sistema Service Track neće sadržavati sve funkcije. One koje nisu potrebne za osnovno korištenje servisnim intervencijama će se razvijati kasnije.
@@ -77,25 +80,25 @@ Funkcionalnosti koje neće biti dio početne verzije:
 
 
 
-Ključna ograničenja
+**Ključna ograničenja**
 
-*Imamo ograničeno vrijeme za razvoj sistema. Zbog toga će prva verzija sadržavati samo osnovne stvari koje su potrebne za efikasnu funkcionalnost.
+* Imamo ograničeno vrijeme za razvoj sistema. Zbog toga će prva verzija sadržavati samo osnovne stvari koje su potrebne za efikasnu funkcionalnost.
 
   Sistem će se razvijati u kratkom roku, pa će zbog toga sadržavati samo osnovne funkcionalnosti. To znači da neke stvari neće biti dostupne odmah.
 
-*Ograničeni resursi
+* Ograničeni resursi
 
   Naš tim broji manji broj ljudi, pa ne možemo učiniti sve što želimo u prvoj verziji sistema. Moramo birati što je najvažnije.
 
-*Tehnološka ograničenja
+* Tehnološka ograničenja
 
   Sistem će biti web aplikacija, a ne mobilna aplikacija. Neće biti povezan sa drugim sistemima.
 
-*Budžetska ograničenja
+* Budžetska ograničenja
 
   Imamo ograničen budžet, pa ćemo se fokusirati na stvari koje su najvažnije za upravljanje servisnim intervencijama.
 
-Pretpostavke:
+**Pretpostavke:**
 
 Administratori će redovno unositi i updateovati servisne zahtjeve u sistemu. 
 Serviseri će imati pristup sistemu i moći će pregledati i updejtovati informacije o intervencijama. 
