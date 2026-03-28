@@ -16,9 +16,9 @@ Zbog ovakvog načina rada dolazi do loše koordinacije između zaposlenih, nejas
 
 ## Ciljni korisnici
 
-Ciljni korisnici ovog sistema jesu servisne kompanije, serviseri koji obavljaju intervencije na terenu i klijenti koji koriste njihove servisne usluge. Sve tri grupe imaju važnu ulogu u procesu servisiranja i svakodnevno učestvuju u prijavi, organizaciji i realizaciji servisnih zahtjeva.
+Ciljni korisnici ovog sistema uključuju servisne kompanije kao organizaciju, kao i korisnike sistema kao što su dispečeri, serviseri i klijenti. Svaka od ovih grupa ima jasno definisanu i važnu ulogu u procesu servisnih intervencija i realizaciji servisnih zahtjeva.
 
-Servisne kompanije koriste sistem kako bi lakše pregledale zahtjeve, poboljšale organizaciju rada i jednostavnije dodjeljivali zadatke serviserima. Serviseri koriste sistem kako bi dobili tačne informacije o intervencijama, lokaciji, vrsti kvara, te kako bi mogli evidentirati status završenog posla. Klijenti koriste sistem za prijavu kvarova, praćenja statusa svojih zahtjeva i to im omogućava bolju informisanost i sigurnost da će njihov problem biti riješen na vrijeme. 
+Klijenti koriste sistem za prijavu kvarova, praćenja statusa svojih zahtjeva i to im omogućava bolju informisanost i sigurnost da će njihov problem biti riješen na vrijeme. Dispečeri imaju ključnu ulogu jer upravljaju zaprimljenim zahtjevima, dodjeljuju intervencije serviserima i prate njihov tok. Serviseri koriste sistem kako bi dobili informacije o intervencijama, izvršili zadatke na terenu i evidentirali status završenog posla. Na ovaj način sistem povezuje sve grupe u jedinstven proces.
 
 ---
 
