@@ -38,37 +38,37 @@ MVP verzija sistema obuhvata osnovne funkcionalnosti potrebne za prijavu, obradu
 
 MVP verzija treba sadržavati sljedeće funkcionalnosti:
 
-* Registracija i prijava korisnika
+* Registracija i prijava korisnika  
 Sistem treba omogućiti kreiranje korisničkog naloga i prijavu u sistem putem osnovnih autentifikacijskih podataka.
 
-* Prijava zahtjeva za servisnu intervenciju
+* Prijava zahtjeva za servisnu intervenciju  
 Sistem treba omogućiti korisnicima kreiranje novog zahtjeva za intervencijom unosom osnovnih podataka o kvaru ili problemu, lokaciji i kratkom opisu problema.
 
-* Pregled otvorenih intervencija
+* Pregled otvorenih intervencija  
 Sistem treba omogućiti dispečeru i drugim ovlaštenim korisnicima pregled svih aktivnih i otvorenih intervencija, kako bi se jasno vidjelo koji zahtjevi čekaju na obradu, koji su dodijeljeni i koji su trenutno u toku. U okviru ove funkcionalnosti omogućen je i detaljan pregled pojedinačne intervencije, kao i osnovni uvid u intervencije prema statusu, prioritetu i dodijeljenom serviseru.
 
-* Dodjela intervencije odgovornom serviseru ili timu
+* Dodjela intervencije odgovornom serviseru ili timu  
 Sistem treba omogućiti dodjelu intervencije odgovornom serviseru ili timu servisera, u skladu sa podacima o intervenciji i potrebama konkretnog zadatka. U slučaju timskog rada, potrebno je odrediti glavnog nosioca zadatka, a po potrebi i dodatne članove tima. 
 
-* Upravljanje statusom intervencije
+* Upravljanje statusom intervencije  
 Sistem treba omogućiti postavljanje i promjenu statusa intervencija tako da status u svakom trenutku što vjernije odražava njeno stvarno stanje na terenu i fazu u kojoj se intervencija nalazi, kako bi  sistemu pratio prirodan, logičan i u praksi ustaljeni tok servisnog procesa, od trenutka prijave i dodjele, preko izvršenja radova, pa sve do samog završetka intervencije. Minimalni skup statusa koju sistem treba podržati obuhvata: kreirano, dodijeljeno, u toku i završeno.
 
-* Evidencija osnovnih informacija o izvršenom radu
+* Evidencija osnovnih informacija o izvršenom radu  
 Sistem treba omogućiti evidentiranje osnovnih informacija o izvršenom radu, kako bi se za svaku intervenciju moglo zabilježiti šta je urađeno, koliko je rad trajao i kakav je bio ishod intervencije.
 
-* Određivanje prioriteta intervencija 
+* Određivanje prioriteta intervencija   
 Sistem treba omogućiti određivanje prioriteta intervencije na osnovu unesenih informacija o kvaru ili zahtjevu, kako bi se intervencije mogle pravovremeno obraditi i rasporediti u zavisnosti od njihovog stepena hitnosti i važnosti.
 
-* Osnovna komunikacija između dispečera i servisera putem napomena
+* Osnovna komunikacija između dispečera i servisera putem napomena  
 Sistem treba omogućiti jednostavnu razmjenu kratkih poruka i napomena između dispečera i servisera u okviru konkretne intervencije, kako bi sve važne informacije vezane za zadatak bile dostupne na jednom mjestu.
 
-* Osnovna historija aktivnosti intervencije
+* Osnovna historija aktivnosti intervencije  
 Sistem treba omogućiti pregled osnovnih aktivnosti vezanih za konkretnu intervenciju, kako bi korisnici na jednom  mjestu mogli vidjeti šta se dešavalo sa zahtjevom od trenutka prijave do trenutnog stanja.
 
-* Osnovna kontrola pristupa prema korisničkim ulogama (RBAC)
+* Osnovna kontrola pristupa prema korisničkim ulogama (RBAC)  
 Sistem treba omogućiti osnovno razlikovanje korisničkih uloga i njihovih prava pristupa (funkcionalnostima) u skladu sa odgovornostima pojedinih korisnika.
 
-* Planiranje intervencije
+* Planiranje intervencije  
 Sistem treba omogućiti planiranje intervencije kroz određivanje planiranog datuma, vremena, lokacije i odgovorne osobe ili tima, kako bi se zahtjevi mogli organizovati i izvršavati u skladu sa operativnim potrebama.
 
 ---
@@ -77,40 +77,40 @@ Sistem treba omogućiti planiranje intervencije kroz određivanje planiranog dat
 
 Funkcionalnosti koje neće biti dio početne verzije:
 
-* Mobilna aplikacija za servisere 
+* Mobilna aplikacija za servisere   
 U početnoj verziji, sistem će biti dostupan samo kao web aplikacija putem preglednika. Razvoj posebne mobilne aplikacije za servisere ostavlja se za kasniju fazu razvoja.
 
-* Automatske notifikacije
+* Automatske notifikacije  
 Početna verzija sistema neće podržavati automatsko obavještavanje korisnika o promjenama statusa intervencije putem e-maila, SMS-a ili drugih kanala. 
 
-* Napredni izvještaji i analitika
+* Napredni izvještaji i analitika  
 Početna verzija neće uključivati detaljne statistike, analize efikasnosti rada, izvještaje o učinku servisera niti napredne analitičke prikaze za menadžment i druge korisnike.
 
-* Integracija sa drugim sistemima
+* Integracija sa drugim sistemima  
 Početna verzija sistema neće uključivati složenije integracije sa drugim poslovnim sistemima, kao što su računovodstveni, ERP i drugi slični alati.
 
-* Sistem za ocjenjivanje zadovoljstva klijenata
+* Sistem za ocjenjivanje zadovoljstva klijenata  
 U početnoj verziji sistema neće biti podržano ocjenjivanje izvršene usluge, ostavljanje povratnih informacija niti mjerenje zadovoljstva korisnika nakon završetka intervencije.
   
-* Potpuno automatsko određivanje prioriteta
+* Potpuno automatsko određivanje prioriteta  
 Iako sistem može pružiti podršku pri određivanju prioriteta, u prvoj verziji nije planirano da ovu odluku donosi samostalno. Umjesto potpunog automatizma, koristiće se kombinovani pristup u kojem sistem pomaže, a konačnu odluku potvrđuje ovlašteni korisnik.
 
-* Napredna komunikacija putem chata
+* Napredna komunikacija putem chata  
 Početna verzija sistema ne uključuje poseban chat modul niti kontinuiranu komunikaciju između korisnika u realnom vremenu. Komunikacija je u MVP-u ograničena na osnovne napomene vezane za konkretnu intervenciju.
 
-* Upravljanje materijalima i skladištem
+* Upravljanje materijalima i skladištem  
 Praćenje utrošenih materijala, rezervnih dijelova, stanja zaliha i skladišnih evidencija nije obuhvaćeno MVP verzijom.
 
-* Upravljanje finansijama i obračun usluga
+* Upravljanje finansijama i obračun usluga  
 Početna verzija sistema neće podržavati obračun troškova, fakturiranje, evidenciju uplata niti druge finansijske funkcionalnosti.
 
-* Napredno upravljanje ugovorima i klijentima
+* Napredno upravljanje ugovorima i klijentima  
 Početna verzija sistema neće uključivati poseban modul za upravljanje ugovorima, detaljne profile klijenata, ugovorene uslove usluge niti naprednu evidenciju odnosa sa klijentima.
 
-* Napredna podrška za timski rad na intervencijama
+* Napredna podrška za timski rad na intervencijama  
 Iako početna verzija sistema omogućava dodjelu intervencije timu servisera, napredna pravila timske koordinacije, zasebne uloge unutar tima, složeniji tokovi odobravanja i detaljno praćenje rada svakog člana tima nisu dio početne verzije sistema.
 
-* Napredno planiranje i optimizacija izlazaka na teren
+* Napredno planiranje i optimizacija izlazaka na teren  
 Početna verzija sistema neće uključivati automatsko raspoređivanje intervencija prema lokaciji, optimizaciju ruta, napredno usklađivanje termina niti druge složenije mehanizme planiranja terenskog rada.
 
 ---
