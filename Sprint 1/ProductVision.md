@@ -8,27 +8,47 @@ Sistem za upravljanje servisnim intervencijama - Service Track
 
 ## Problem koji sistem rješava
 
-U procesu servisnih intervencija često se koristi više nepovezanih alata, kao što su Excel tabele, telefonski pozivi i poruke. Tok intervencije, koji uključuje prijavu kvara, dodjelu servisera, izvršenje rada i završetak zahtjeva, nije centralizovan u jednom sistemu, što otežava praćenje i upravljanje procesom.
+Trenutni način upravljanja servisnim intervencijama često se oslanja na više međusobno nepovezanih alata i kanala komunikacije, kao što su Excel tabele, telefonski pozivi, poruke i ručne evidencije. Takav pristup može privremeno funkcionisati dok je obim posla manji, ali sa rastom broja zahtjeva vrlo brzo postaje teško održiv. Osnovni problem ovakvog načina rada jeste to što ne postoji jedinstveno mjesto na kojem se može pratiti cijeli tok intervencije, od prijave kvara do njenog završetka.  
 
-Zbog ovakvog načina rada dolazi do loše koordinacije između zaposlenih, nejasnog statusa intervencija i kašnjenja u obavljanju zadataka. Serviseri nemaju uvijek potpune informacije, dok administracija nema jasan pregled svih aktivnih intervencija. Kao rezultat toga jeste da dolazi do smanjenja efikasnosti rada i nezadovoljstva klijenata, što ukazuje na potrebu za jedinstvenim sistemom koji bi povezao cijeli proces servisnih intervencija.
+U praksi servisna intervencija obuhvata više povezanih koraka: prijavu problema, procjenu situacije, određivanje prioriteta, dodjelu odgovorne osobe ili tima, planiranje izlaska na teren, izvršenje rada, evidentiranje ishoda i zatvaranje zahtjeva. Kada se ti koraci vode kroz nepovezane alate i neformalnu komunikaciju, informacije o intervenciji ostaju rasute na više mjesta, zbog čega nije uvijek jednostavno utvrditi ko je zadužen za određeni zadatak, u kojoj je fazi intervencija, šta je već urađeno i šta još treba biti završeno.  
+
+Ovakav način rada posebno otežava svakodnevni posao ljudima koji učestvuju u procesu, kao što su dispečeri i administracija koji svakodnevno troše dodatno vrijeme na ručno prikupljanje, provjeravanje i povezivanje informacija kako bi dobili pregled nad aktivnim intervencijama, raspoloživim resursima i prioritetima. Istovremeno, serviseri često dobijaju nepotpune ili zakašnjele informacije o zadatku, lokaciji ili hitnosti intervencije, što direktno utiče na brzinu otklanjanja kvara i može dovesti do dodatnih izlazaka na teren.  
+Bez jedinstvenog sistema otežano je i praćenje historije intervencija po klijentu, kao i pregled ukupnog opterećenja servisera i toka rada kroz vrijeme. Posljedice takvog pristupa ne ogledaju se samo u sporijem radu, nego i u većem administrativnom opterećenju, većoj mogućnosti grešaka i slabijoj preglednosti cijelog procesa. Kada informacije nisu dostupne na jednom mjestu i u istom trenutku svim relevantnim korisnicima, raste rizik od nesporazuma, kašnjenja, previda i nejasno definisanih odgovornosti, što vremenom utiče i na kvalitet usluge, kao i na povjerenje klijenata, jer proces djeluje manje transparentno, manje organizovano i manje pouzdano nego što bi trebao biti.  
+
+Zbog toga postoji jasna potreba za jedinstvenim sistemom koji će objediniti i digitalizovati cjelokupan tok servisne intervencije, koji treba omogućiti da se prijava zahtjeva, dodjela zadataka, planiranje intervencija, praćenje statusa, evidencija rada i pregled historije aktivnosti vode kroz jedan logički povezan i pregledan proces. Na taj način smanjuje se oslanjanje na nepovezane alate i neformalnu koordinaciju, olakšava se svakodnevni rad korisnika i stvara osnova za pouzdanije, efikasnije i preglednije upravljanje servisnim intervencijama.
 
 ---
 
 ## Ciljni korisnici
 
-Ciljni korisnici ovog sistema uključuju servisne kompanije kao organizaciju, kao i konkretne korisnike sistema: dispečere, servisere i klijente. Svaka od ovih grupa ima jasno definisanu i važnu ulogu u procesu servisnih intervencija i realizaciji servisnih zahtjeva.
-
-Klijenti koriste sistem za prijavu kvarova, praćenje statusa svojih zahtjeva i to im omogućava bolju informisanost i sigurnost da će njihov problem biti riješen na vrijeme. Dispečeri imaju ključnu ulogu jer upravljaju zaprimljenim zahtjevima, dodjeljuju intervencije serviserima i prate njihov tok. Serviseri koriste sistem kako bi dobili informacije o intervencijama, izvršili zadatke na terenu i evidentirali status završenog posla. Na ovaj način sistem povezuje sve grupe u jedinstven proces.
+Sistem je dizajniran da poveže sve aktere uključene u životni ciklus servisne intervencije, od trenutka nastanka kvara do finalne potvrde o završenom poslu. Korisnici su podijeljeni prema operativnim ulogama koje obavljaju unutar procesa:
+*	**Klijenti (Korisnici usluga):** predstavljaju primarnu tačku ulaza u sistem. Njima platforma služi kao direktan digitalni šalter za prijavu kvarova, čime se eliminiše potreba za čekanjem na telefonskoj liniji. Ključna vrijednost za klijenta je transparentnost to jeste mogućnost da u svakom trenutku imaju uvid u status svog zahtjeva i potvrdu da je njihova prijava zaprimljena i dodijeljena. 
+*	**Dispečeri (Koordinatori):** su odgovorni za prioritizaciju kvarova i planiranje izlazaka na teren kako bi resursi bili maksimalno iskorišteni. Umjesto ručnog vođenja evidencija, dispečeri koriste sistem za trijažu zahtjeva, određivanje prioriteta i brzo delegiranje posla slobodnim serviserima. Sistem im omogućava da vide "širu sliku" terena bez potrebe za stalnim pozivanjem radnika radi provjere statusa. 
+*	**Serviseri (Terenski radnici):** predstavljaju korisnike kojima je primarni fokus na brzom pristupu informacijama. Oni putem sistema dobijaju precizne detalje o kvaru, lokaciji i hitnosti zadatka i njjihova uloga je da u realnom vremenu evidentiraju napredak i završetak rada, što automatski ažurira bazu i obavještava ostale učesnike. 
+*	**Administracija i menadžment:** iako nisu nužno na terenu ili u stalnoj komunikaciji s klijentima, ovi korisnici sistem koriste za nadzor efikasnosti. Njima su potrebni podaci o opterećenosti resursa, vremenu potrebnom za rješavanje intervencija i historiji kvarova kako bi mogli donositi pametnije poslovne odluke.
+ 
+U početnoj fazi razvoja (MVP), fokus je primarno na operativnim korisnicima (klijent, dispečer, serviser) jer njihova sinhronizacija predstavlja srž problema koji rješavamo, te se standardizacijom njihovih interakcija postavlja temelj za stabilan i mjerljiv servisni proces.
 
 ---
 
 ## Vrijednost sistema
 
-Vrijednost ovog sistema ogleda se u tome što omogućava centralizovan pregled svih servisnih intervencija na jednom mjestu i jasan tok njihovog izvršavanja. Sistem ima jasan pregled servisnih zahtjeva, preciznu dodjelu zadataka, prikaz statusa intervencija i evidenciju izvršenog rada. Na taj način se smanjuje mogućnost grešaka, ubrzava proces rada i olakšava koordinaciju između dispečera i servisera.
+Glavna prednost sistema nije samo digitalizacija nego i uvođenje reda u proces koji je bez centralizacije često haotičan. Umjesto da ključne informacije o kvarovima ostanu u privatnim telefonima, viber grupama ili radnim sveskama, one postaju zajednički resurs dostupan svima u realnom vremenu.
 
-Za razliku od trenutnog načina rada koji se oslanja na nepovezane alate, sistem uvodi jedinstven i organizovan proces upravljanja intervencijama. Dispečeri imaju bolju kontrolu nad svim zaprimljenim zahtjevima, dok serviseri dobijaju tačne i pravovremene informacije potrebne za rad na terenu.
+Konkretne koristi sistema su:
 
-Sistem također pomaže u određivanju prioriteta ili kategorije intervencija, ali konačnu odluku donosi korisnik, čime se zadržava kontrola nad procesom. Na ovaj način sistem ne služi samo kao evidencija, već kao operativni alat koji aktivno podržava upravljanje servisnim intervencijama i omogućava efikasniji rad.
+**Operativna kontrola:** Za dispečere, sistem eliminiše desetine dnevnih poziva "gdje si i šta radiš". Vrijednost je u tome što kontrolna tabla daje trenutni presjek stanja na terenu, dok pametni alati omogućavaju brzu prioritizaciju bez nagađanja o tome ko je od servisera slobodan.
+
+**Standardizacija terenskog rada:** Uvođenjem jasnih procedura kroz aplikaciju, svaki serviser bez obzira na iskustvo prati isti protokol. To znači da svaki serviser sistemski mora unijeti relevantne i uniformne podatke koji su uvijek u istom formatu. Iako se svakom serviseru ostavlja za pravo da radi svoj posao na način na koji najbolje zna, podatke o utrošenom vremenu ili materijalu mora unijeti prema dogovorenom formatu kako bi upravljanje tim podacima bilo lakše.
+
+**Informisanost i rasterećenje servisera:** Sistem serviseru na terenu služi kao alat koji mu olakšava posao, a ne kao dodatni teret. Imajući na dlanu kompletnu historiju kvara, tačnu lokaciju i definisan prioritet serviser troši manje vremena na logistiku, a više na samo otklanjanje kvara. Digitalni unos podataka na licu mjesta sprečava da se ijedna intervencija "zagubi" u komunikaciji.
+
+**Poboljšanje usluge i zadovoljstvo korisnika:** Klijent više ne mora nagađati u kojoj je fazi njegov zahtjev. Mogućnost da klijent prati svoj zahtjev od prijave do zatvaranje poboljšava transparentnost i gradi povjerenje između kompanije i klijenta. Brži odgovor kompanije i slanje servisera na teren povećava zadovoljstvo korisnika i mogućnost ponovnog odabira kompanije u slučaju bilo kakvog kvara.
+
+**Skalabilnost i stabilna arhitektura**: Sistem je projektovan da raste zajedno sa obimom posla. Bez obzira da li firma ima dva ili dvadeset servisnih timova, centralizovana baza i Role-Based kontrola pristupa omogućavaju lako proširenje bez gubitka performansi ili sigurnosti podataka.
+
+Poseban fokus je na ulozi "pametnog asistenta" tako što sistem sugeriše prioritet kvara a konačna odluka ostaje u rukama dispečera, tako kombinujemo preciznost sistema i ljudsko iskustvo. 
+
 
 ---
 
