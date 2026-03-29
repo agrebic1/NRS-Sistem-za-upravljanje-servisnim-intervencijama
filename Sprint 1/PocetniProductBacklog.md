@@ -71,7 +71,3 @@ Označava kada planiramo raditi na stavci:
 **Sprint X:** Stavka je planirana za konkretnu sedmicu rada.
 
 **Release 1.0 (MVP):** Stavka je dio prve verzije sistema.
-
-**6. Acceptance Criteria (AC)**  
-**Kriteriji prihvaćanja:** specifični i mjerljivi uslovi koje svaka stavka u backlogu mora ispuniti da bi se smatrala završenom. AC precizno definiše pravila rada i testne scenarije (npr. "Sistem ne smije dozvoliti prazan unos."). Kriteriji prihvaćanja služe kao "ugovor o kvalitetu" između tima i naručioca posla. 
-
