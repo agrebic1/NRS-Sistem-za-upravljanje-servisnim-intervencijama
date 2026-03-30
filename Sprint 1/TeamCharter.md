@@ -290,9 +290,9 @@ Dogovoreni rokovi, zadaci i pravila rada se poštuju. Odluke se donose u interes
 
 Svaki član tima ima svoju primarnu odgovornost, ali i učestvuje u dodatnim aktivnostima kao što su diskusija, pregled i unapređenje rada. Raspodjela je napravljena u skladu sa trenutnim načinom rada i doprinosom članova tima, uz mogućnost prilagođavanja tokom projekta.
 
-**Pored osnovne raspodjele odgovornosti, tim definiše dodatne odgovornosti koje su važne za organizaciju i praćenje projektnog rada kroz cijeli semestar.**
+*Pored osnovne raspodjele odgovornosti, tim definiše dodatne odgovornosti koje su važne za organizaciju i praćenje projektnog rada kroz cijeli semestar.*
 
-**Ove odgovornosti mogu biti dodijeljene stalno ili se mogu rotirati među članovima tima, u zavisnosti od potreba projekta i razvoja tima.**
+*Ove odgovornosti mogu biti dodijeljene stalno ili se mogu rotirati među članovima tima, u zavisnosti od potreba projekta i razvoja tima.*
 
 **Koordinacija sprint aktivnosti i praćenje zadataka**  
 Zadužen za organizaciju sprinta, praćenje napretka i pravovremeno reagovanje u slučaju problema.  
@@ -311,12 +311,12 @@ Zaduženi: **Ajna, Hamza**
 
 **Tehničke i arhitektonske odluke**  
 Zadužen za razmatranje tehničkih rješenja, donošenje odluka i usmjeravanje tehničkog pravca projekta.  
-Zaduženi: **Eldin, Ajna, Amina**
+Zaduženi: **Eldin, Ajla, Ajna, Amina**
 
 
 **Planiranje i praćenje testiranja (QA)**  
 Zadužen za organizaciju testiranja i provjeru kvaliteta rada prije finalnih verzija.  
-Zaduženi: **Ajna, Suada**
+Zaduženi: **Suada, Ajla, Ajna**
 
 
 **Vođenje decision loga i AI usage loga**  
@@ -335,9 +335,9 @@ Zaduženi: **svi članovi tima**
 
 **Napomene:**
 
-**Dodjela ovih odgovornosti ne znači da ostali članovi tima nisu dužni razumjeti te dijelove rada.**
+*Dodjela ovih odgovornosti ne znači da ostali članovi tima nisu dužni razumjeti te dijelove rada.*
 
-**Svi članovi tima trebaju biti upoznati sa svim aspektima projekta i biti spremni aktivno učestvovati po potrebi.**
+*Svi članovi tima trebaju biti upoznati sa svim aspektima projekta i biti spremni aktivno učestvovati po potrebi.*
 
 
 
