@@ -435,3 +435,13 @@ Svaki član je dužan da:
 - nadoknadi propušteno  
 
 Neispunjavanje ovih obaveza smatra se neodgovornim ponašanjem koje može uticati na evaluaciju rada člana tima.
+
+### 6. Način upozoravanja člana tima
+U slučaju da član tima ne izvršava svoje obaveze, ne učestvuje dovoljno u radu tima, ne komunicira pravovremeno ili svojim ponašanjem otežava rad ostalim članovima, tim ga najprije upozorava interno. Prvi korak podrazumijeva da članovi tima skrenu pažnju na problem i ukažu na potrebu za korekcijom ponašanja ili pristupa radu. Ukoliko se problem nastavi, koordinator tima obavlja razgovor sa tim članom kako bi se situacija razjasnila i pokušala riješiti unutar tima. Ako je potrebno, u razgovor se mogu uključiti i ostali članovi tima. Cilj ovog upozorenja nije sankcionisanje, nego davanje prilike članu da popravi svoj odnos prema obavezama i ponovo se ravnopravno uključi u rad tima.
+
+### 7. Kada se problem prijavljuje nastavnom osoblju
+Problem se prijavljuje nastavnom osoblju samo u slučaju kada ga tim nije uspio riješiti interno, odnosno kada član i nakon upozorenja nastavi sa neodgovornim ponašanjem, neizvršavanjem obaveza ili neadekvatnom komunikacijom.
+Prijavu problema vrši koordinator tima. Ukoliko postoji dovoljno vremena prije sedmičnog sastanka, problem se može prijaviti nastavnom osoblju putem e-maila, u suprotnom problem se iznosi usmeno na početku sedmičnog sastanka sa asistentima, kako bi nastavno osoblje bilo pravovremeno upoznato sa situacijom. Cilj ovakvog postupanja jeste da eventualne posljedice ne utiču na ostale članove tima koji su svoje obaveze izvršavali odgovorno, pravovremeno i u skladu sa dogovorom. Ukoliko član nakon upozorenja popravi svoje ponašanje i ispuni svoje obaveze, ponovo ima pravo da ravnopravno učestvuje u radu tima zajedno sa ostalim članovima.
+
+### 8. Evidentiranje problema u timu
+Problemi vezani za neizvršavanje obaveza, kašnjenja, izostanke ili nepravovremenu komunikaciju evidentiraju se unutar grupnog chata tima ili sastanaka, te se na taj način osigurava transparentnost, pravovremena informisanost svih članova i vidljiv trag o tome da je problem uočen, da je na njega ukazano i da je timu ostavljen prostor da ga pokuša riješiti interno prije uključivanja nastavnog osoblja.
