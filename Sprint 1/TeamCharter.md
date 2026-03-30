@@ -288,64 +288,56 @@ Dogovoreni rokovi, zadaci i pravila rada se poštuju. Odluke se donose u interes
 
 ### Raspodjela odgovornosti
 
-Svaki član tima ima svoju primarnu odgovornost, ali i učestvuje u dodatnim aktivnostima kao što su diskusija, pregled i unapređenje rada.  
-Raspodjela je napravljena u skladu sa trenutnim načinom rada i doprinosom članova tima, uz mogućnost prilagođavanja tokom projekta.
+Svaki član tima ima svoju primarnu odgovornost, ali i učestvuje u dodatnim aktivnostima kao što su diskusija, pregled i unapređenje rada. Raspodjela je napravljena u skladu sa trenutnim načinom rada i doprinosom članova tima, uz mogućnost prilagođavanja tokom projekta.
 
-**Koordinator tima:**
-Zadužen za organizaciju rada tima, raspodjelu zadataka i odgovornosti, iniciranje i vođenje komunikacije, organizaciju sastanaka i praćenje napretka rada.
+**Pored osnovne raspodjele odgovornosti, tim definiše dodatne odgovornosti koje su važne za organizaciju i praćenje projektnog rada kroz cijeli semestar.**
 
-Zaduženi:
-* primarno: Amina
-* sekundarno: 
+**Ove odgovornosti mogu biti dodijeljene stalno ili se mogu rotirati među članovima tima, u zavisnosti od potreba projekta i razvoja tima.**
 
-**Planiranje i podrška u donošenju odluka:**
-Zadužen za aktivno učestvovanje u planiranju, razradi ideja i donošenju odluka, uz blisku saradnju sa koordinatorom.
+**Koordinacija sprint aktivnosti i praćenje zadataka**  
+Zadužen za organizaciju sprinta, praćenje napretka i pravovremeno reagovanje u slučaju problema.  
+Zaduženi: **Amina**
 
-Zaduženi:
-* primarno: Amina
-* sekundarno: Ajna, Eldin
 
-**QA / kontrola kvaliteta:**
-Zadužen za pregled i unapređenje rada prije finalne verzije, provjeru kvaliteta i usklađenosti sa zahtjevima projekta.
+**Komunikacija sa Product Ownerom / asistentima**  
+Zadužen za formalnu komunikaciju sa asistentima i prenošenje relevantnih informacija timu.  
+Zaduženi: **Amina**
 
-Zaduženi:
-* primarno: Ajna
-* sekundarno: Amina
 
-**Reviewer (pregled rada):**
-Zadužen za pregled rada drugih članova, davanje sugestija i uočavanje eventualnih nedostataka.
+**Održavanje product backloga**  
+Zadužen za ažuriranje, strukturiranje i održavanje product backloga u skladu sa promjenama i zahtjevima projekta.  
+Zaduženi: **Ajna, Hamza**
 
-Zaduženi:
-* primarno: Eldin
-* sekundarno: svi ostali članovi tima
 
-**Izrada zadataka (izvršioci):**
-Zaduženi za samostalnu izradu dodijeljenih zadataka u skladu sa definisanim smjernicama.
+**Tehničke i arhitektonske odluke**  
+Zadužen za razmatranje tehničkih rješenja, donošenje odluka i usmjeravanje tehničkog pravca projekta.  
+Zaduženi: **Eldin, Ajna, Amina**
 
-Zaduženi:
-* primarno: svi članovi tima 
-* sekundarno: 
 
-**Kreativni doprinos i ideje:** 
-Zadužen za davanje ideja, prijedloga i kreativnih rješenja koja doprinose kvalitetu projekta.
+**Planiranje i praćenje testiranja (QA)**  
+Zadužen za organizaciju testiranja i provjeru kvaliteta rada prije finalnih verzija.  
+Zaduženi: **Ajna, Suada**
 
-Zaduženi:
-* primarno: Ajla, Suada
-* sekundarno: svi članovi tima
 
-**Samostalni i asinhroni rad:**  
-Zadužen za izvršavanje zadataka uz fleksibilno učešće, uz obavezu praćenja komunikacije i usklađenosti sa timom.
+**Vođenje decision loga i AI usage loga**  
+Zadužen za evidentiranje ključnih odluka i korištenja AI alata tokom razvoja projekta.  
+Zaduženi: **Hadrijan, Kerim**
 
-Zaduženi:
-* primarno: Hamza
-* sekundarno: ostali članovi tima po potrebi
 
-**Podrška timu:**
-Zadužen za pomoć drugim članovima tima, učestvovanje u diskusijama i doprinos rješavanju problema.   
+**Priprema sprint review i retrospektive**  
+Zadužen za organizaciju i pripremu završnih sastanaka sprinta.  
+Zaduženi: **Amina**
 
-Zaduženi:
-* primarno: Amina, Ajna, Eldin, Ajla, Suada
-* sekundarno: ostali članovi tima
+**Priprema završne demonstracije**  
+Zadužen za pripremu prezentacije projekta i demonstraciju rezultata rada.  
+Zaduženi: **svi članovi tima**
+
+
+**Napomene:**
+
+**Dodjela ovih odgovornosti ne znači da ostali članovi tima nisu dužni razumjeti te dijelove rada.**
+
+**Svi članovi tima trebaju biti upoznati sa svim aspektima projekta i biti spremni aktivno učestvovati po potrebi.**
 
 
 
@@ -390,7 +382,7 @@ Cilj je kombinovati različite perspektive i osigurati što kvalitetniji konača
 
 
 
-### Napomena
+**Napomena:**
 
 Uloge nisu fiksne i mogu se mijenjati tokom projekta u skladu sa napretkom tima i potrebama projekta.  
 Cilj je da svaki član doprinese na način koji mu najviše odgovara, uz razvoj novih vještina kroz rad.  
