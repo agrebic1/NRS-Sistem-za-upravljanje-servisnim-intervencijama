@@ -2,7 +2,7 @@
 
  **Naziv projekta:**
 
-Sistem za upravljanje servisnim intervencijama - Service Track 
+Sistem za upravljanje servisnim intervencijama - Service Tracker 
 
 ---
 
