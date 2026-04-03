@@ -19,6 +19,9 @@ U ovom dokumentu je prikazan početni product backlog sistema za upravljanje ser
 |PB-013| Potvrda zatvaranja intervencije | Kao dispečer želim potvrditi završetak intervencije kako bih bio siguran da je problem riješen. | Feature | Srednji | 3 | To Do | Sprint 4 | Finalna validacija od strane dispečera prije arhiviranja. |
 |PB-014| Pregled Audit loga (historije promjena) | Kao administrator želim imati uvid u historiju izmjena na svakom nalogu, kako bih znao ko je, kada i šta tačno promijenio. | Technical task | Srednji | 5 | To Do | Sprint 4 | Sistemska evidencija svih promjena radi transparentnosti. | 
 |PB-015| Dodjela više servisera | Kao dispečer želim dodijeliti više servisera na jednu intervenciju za složenije kvarove. | Feature | Visok | 5 |To Do|Sprint 4|Podrška za kompleksne zadatke koji zahtijevaju timski rad.|
+PB-016 | Pregled intervencija | Kao dispečer želim vidjeti listu svih aktivnih i otvorenih intervencija kako bih imao jasan pregled šta je trenutno u toku. | Feature | Visok | 5 | To Do | Sprint 3 | Pregled svih aktivnih zadataka |
+PB-017 | Napomene na intervenciji | Kao dispečer i serviser želim ostavljati napomene na intervenciji kako bi komunikacija bila jasna i sve informacije bile na jednom mjestu. | Feature | Srednji | 3 | To Do | Sprint 4 | Osnovna komunikacija |
+PB-018 | Detalji intervencije | Kao korisnik želim otvoriti intervenciju i vidjeti sve njene informacije kako bih imao potpuni uvid u zadatak. | Feature | Srednji | 3 | To Do | Sprint 3 | Detaljan prikaz intervencije |
 
 
 ## Legenda  
