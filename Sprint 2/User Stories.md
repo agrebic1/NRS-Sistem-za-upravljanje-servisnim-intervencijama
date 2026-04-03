@@ -57,8 +57,7 @@ i trebaju uključiti edge case-ove i reset / greške kad je to potrebno
 | US-14 | Ažuriranje statusa intervencije od strane servisera | Kao serviser želim po potrebi ažurirati status intervencije na kojoj radim, kako bi sistem odražavao trenutno stanje rada na terenu. | Ovaj story je važan jer omogućava da sistem prati stvarni tok izvršenja intervencije i da ostali korisnici imaju pravovremenu i tačnu informaciju o tome u kojoj se fazi rad nalazi. Time se smanjuje potreba za dodatnim provjerama, pozivima i neformalnom koordinacijom. | Visok | Pretpostavlja se da serviser može ažurirati status samo za intervencije koje su mu dodijeljene. Otvoreno pitanje je da li serviser može postavljati sve operativne statuse ili samo one koji odgovaraju njegovom dijelu toka rada. Također, otvoreno pitanje je da li nakon završetka rada status prelazi direktno u „završeno“ ili postoji dodatna potvrda dispečera prije konačnog zatvaranja. | Zavisi od storyja za pregled dodijeljenih intervencija i pregled detalja zadatka na terenu. Povezan je sa storyjima za pregled statusa intervencija od strane dispečera, pregled statusa vlastitog zahtjeva od strane klijenta, evidenciju izvršenog rada i potvrdu zatvaranja intervencije. | 
 | US-15 | Pregled dodijeljenih intervencija | Kao serviser, želim pregledati intervencije koje su mi dodijeljene, kako bih znao koje zadatke trebam izvršiti i kojim redoslijedom ih trebam obrađivati. | Visok |
 | US-16 | Pregled detalja zadatka na terenu? | | Visok |
-| US-17 | Ažuriranje statusa intervencije od strane servisera |
-| US-18 | Evidentiranje izvršenog rada |
+| US-17 | Evidentiranje izvršenog rada |
 
 
 Legenda
