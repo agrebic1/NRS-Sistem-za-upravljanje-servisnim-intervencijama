@@ -70,5 +70,806 @@ i trebaju uključiti edge case-ove i reset / greške kad je to potrebno
 |
 Legenda
 
+Prijedlog za reformatiranje sadržaja: 
 
+# User Stories
 
+---
+
+## US-01 — Samostalna registracija korisnika usluge
+
+**Opis:**  
+Kao korisnik usluge, želim samostalno kreirati korisnički nalog, kako bih mogao prijaviti kvar i pratiti obradu svog zahtjeva.
+
+**Poslovna vrijednost:**  
+Ovaj story je važan jer omogućava korisniku usluge da samostalno pristupi sistemu i koristi osnovne funkcionalnosti namijenjene klijentu, bez potrebe za posrednim unosom od strane administratora.
+
+**Prioritet:**  
+*Visok*
+
+**Pretpostavke i otvorena pitanja:**  
+Pretpostavlja se da korisnik usluge može samostalno pristupiti registracionoj formi. Otvoreno pitanje je da li sistem korisniku automatski dodjeljuje ulogu klijenta pri registraciji.
+
+**Veze sa drugim storyjima:**  
+Povezano sa storyjem za prijavu korisnika u sistem, prijavu zahtjeva za servisnu intervenciju i pregled vlastitog zahtjeva.
+
+**Acceptance Criteria:**
+
+- **AC1: Uspješna registracija**  
+  - korisnik unese validne podatke  
+  - klikne na registraciju  
+  - sistem kreira korisnički nalog
+
+- **AC2: Nepotpuni podaci**  
+  - korisnik ne unese sve obavezne podatke  
+  - pokuša registraciju  
+  - sistem prikazuje grešku
+
+- **AC3: Neispravan format**  
+  - korisnik unese neispravan format podataka  
+  - pokuša registraciju  
+  - sistem prikazuje validacijsku grešku
+
+- **AC4: Postojeći korisnik**  
+  - korisnik već postoji u sistemu  
+  - pokuša registraciju  
+  - sistem prikazuje grešku
+
+- **AC5: Lozinka ne zadovoljava pravila**  
+  - lozinka ne ispunjava uslove  
+  - korisnik pokuša registraciju  
+  - sistem prikazuje grešku
+
+---
+
+## US-02 — Prijava korisnika u sistem
+
+**Opis:**  
+Kao registrovani korisnik, želim se prijaviti u sistem, kako bih mogao pristupiti funkcionalnostima koje su mi dostupne.
+
+**Poslovna vrijednost:**  
+Ovaj story je važan jer omogućava registrovanim korisnicima pristup sistemu i predstavlja osnovu za korištenje svih ostalih funkcionalnosti u skladu sa njihovom ulogom.
+
+**Prioritet:**  
+*Visok*
+
+**Pretpostavke i otvorena pitanja:**  
+Pretpostavlja se da korisnik već ima kreiran i aktivan korisnički nalog. Otvoreno pitanje je da li se nakon uspješne prijave korisnik preusmjerava na početni ekran prilagođen njegovoj ulozi.
+
+**Veze sa drugim storyjima:**  
+Zavisi od storyja za registraciju korisnika i povezan je sa svim storyjima koji zahtijevaju autentifikovan pristup sistemu.
+
+**Acceptance Criteria:**
+
+- **AC1: Uspješna prijava**  
+  - korisnik unese tačne podatke  
+  - prijavi se  
+  - sistem omogućava pristup
+
+- **AC2: Nepotpuni podaci**  
+  - podaci nisu uneseni  
+  - korisnik pokušava prijavu  
+  - sistem prikazuje grešku
+
+- **AC3: Neispravan format**  
+  - podaci nisu u ispravnom formatu  
+  - korisnik pokuša prijavu  
+  - sistem prikazuje grešku
+
+- **AC4: Pogrešni podaci**  
+  - podaci nisu tačni  
+  - korisnik pokuša prijavu  
+  - pristup nije dozvoljen
+
+- **AC5: Neaktivan ili nepostojeći nalog**  
+  - nalog nije aktivan ili ne postoji  
+  - korisnik pokuša prijavu  
+  - sistem prikazuje grešku
+
+---
+
+## US-03 — Odjava korisnika iz sistema
+
+**Opis:**  
+Kao prijavljeni korisnik sistema, želim se sigurno odjaviti sa svog naloga, kako bih spriječio neovlašten pristup svom korisničkom računu nakon završetka rada.
+
+**Poslovna vrijednost:**  
+Ovaj story je važan jer omogućava korisniku da na siguran način završi rad u sistemu i spriječi neovlašten pristup svom nalogu i podacima nakon završetka korištenja.
+
+**Prioritet:**  
+*Srednji*
+
+**Pretpostavke i otvorena pitanja:**  
+Pretpostavlja se da korisnik ima aktivnu sesiju u sistemu. Otvoreno pitanje je da li se nakon odjave korisnik vraća na početni ekran ili direktno na formu za prijavu.
+
+**Veze sa drugim storyjima:**  
+Povezano sa storyjem za prijavu korisnika u sistem.
+
+**Acceptance Criteria:**
+
+- **AC1: Uspješna odjava**  
+  - korisnik je prijavljen  
+  - odjavi se  
+  - sesija se prekida
+
+- **AC2: Zaštićene stranice**  
+  - korisnik se odjavio  
+  - pokuša pristupiti zaštićenoj stranici  
+  - pristup nije dozvoljen
+
+---
+
+## US-04 — Kontrola pristupa prema korisničkoj ulozi
+
+**Opis:**  
+Kao administrator, želim da sistem ograniči pristup podacima i funkcionalnostima prema korisničkoj ulozi, kako bi svaki korisnik mogao koristiti samo ono što je relevantno za njegovu odgovornost.
+
+**Poslovna vrijednost:**  
+Ovaj story je važan jer omogućava sigurnu i preglednu kontrolu pristupa sistemu, smanjuje rizik od grešaka i neovlaštenih akcija te podržava jasno razgraničenje odgovornosti među korisnicima.
+
+**Prioritet:**  
+*Visok*
+
+**Pretpostavke i otvorena pitanja:**  
+Pretpostavlja se da su osnovne korisničke uloge sistema unaprijed definisane. Otvoreno pitanje je da li će sistem koristiti fiksno definisane uloge ili se kasnije podržava proširivanje modela prava pristupa.
+
+**Veze sa drugim storyjima:**  
+Povezano sa storyjima za prijavu korisnika u sistem, administrativno kreiranje korisničkih naloga i promjenu korisničke uloge.
+
+**Acceptance Criteria:**
+
+- **AC1: Dodjela uloge**  
+  - administrator dodjeljuje ulogu  
+  - potvrdi akciju  
+  - uloga se dodjeljuje
+
+- **AC2: Ograničen pristup**  
+  - korisnik nema prava  
+  - pokuša pristup funkcionalnosti  
+  - pristup nije dozvoljen
+
+- **AC3: Izmjena uloge**  
+  - administrator mijenja ulogu  
+  - potvrdi izmjenu  
+  - uloga se ažurira
+
+---
+
+## US-05 — Prijava zahtjeva za servisnu intervenciju
+
+**Opis:**  
+Kao korisnik usluge, želim prijaviti kvar ili zahtjev za servisnu intervenciju, kako bi obrada mog zahtjeva mogla biti evidentirana i pokrenuta kroz sistem.
+
+**Poslovna vrijednost:**  
+Ovaj story je važan jer omogućava da se problem koji korisnik prijavljuje formalno evidentira u sistemu i pretvori u konkretan zahtjev koji se može dalje obrađivati, pratiti i rješavati.
+
+**Prioritet:**  
+*Visok*
+
+**Pretpostavke i otvorena pitanja:**  
+Pretpostavlja se da registrovani korisnik usluge ima pristup formi za prijavu zahtjeva. Otvoreno pitanje je koji je minimalni skup obaveznih podataka potreban za validnu prijavu.
+
+**Veze sa drugim storyjima:**  
+Povezano sa storyjima za pregled vlastitog zahtjeva, pregled otvorenih intervencija i dalju obradu servisne intervencije.
+
+**Acceptance Criteria:**
+
+- **AC1: Uspješna prijava**  
+  - korisnik unese podatke  
+  - pošalje podatke  
+  - zahtjev se kreira
+
+- **AC2: Nepotpuni podaci**  
+  - podaci nisu potpuni  
+  - korisnik pošalje zahtjev  
+  - sistem prikazuje grešku
+
+---
+
+## US-06 — Pregled vlastitog zahtjeva
+
+**Opis:**  
+Kao korisnik usluge, želim pregledati osnovne informacije i status svog zahtjeva, kako bih imao jasan uvid u ono što je prijavljeno i u fazu obrade u kojoj se zahtjev nalazi.
+
+**Poslovna vrijednost:**  
+Ovaj story je važan jer korisniku omogućava da na jednom mjestu vidi šta je prijavio i u kojoj se fazi obrade njegov zahtjev nalazi, čime se povećava preglednost, smanjuje potreba za dodatnim provjerama i povećava povjerenje u proces rješavanja problema.
+
+**Prioritet:**  
+*Visok*
+
+**Pretpostavke i otvorena pitanja:**  
+Pretpostavlja se da korisnik ima evidentiran zahtjev u sistemu. Otvoreno pitanje je koji skup informacija će biti minimalno dostupan korisniku, npr. opis problema, lokacija, datum prijave, trenutni status i eventualni planirani termin.
+
+**Veze sa drugim storyjima:**  
+Zavisi od storyja za prijavu zahtjeva za servisnu intervenciju i povezan je sa storyjem za ažuriranje statusa intervencije.
+
+**Acceptance Criteria:**
+
+- **AC1: Pregled statusa**  
+  - korisnik ima zahtjev  
+  - pregleda status  
+  - vidi tačan status
+
+- **AC2: Samo vlastiti zahtjevi**  
+  - korisnik je prijavljen  
+  - pregleda zahtjeve  
+  - vidi samo svoje
+
+---
+
+## US-07 — Pregled otvorenih intervencija
+
+**Opis:**  
+Kao dispečer, želim pregledati sve otvorene i aktivne intervencije, kako bih imao jasan uvid u zahtjeve koji čekaju obradu i u tok rada.
+
+**Poslovna vrijednost:**  
+Ovaj story je važan jer dispečeru omogućava centralizovan pregled zahtjeva koji su u obradi, olakšava organizaciju rada i pravovremeno reagovanje na zastoje, promjene prioriteta i opterećenost resursa.
+
+**Prioritet:**  
+*Visok*
+
+**Pretpostavke i otvorena pitanja:**  
+Pretpostavlja se da sistem razlikuje otvorene, aktivne i završene intervencije. Otvoreno pitanje je da li pregled uključuje samo listu intervencija ili i osnovne informacije poput prioriteta, statusa i dodijeljenog servisera.
+
+**Veze sa drugim storyjima:**  
+Zavisi od storyja za prijavu zahtjeva i povezan je sa storyjima za pregled detalja pojedinačne intervencije, određivanje prioriteta, dodjelu servisera i pregled statusa intervencija.
+
+**Acceptance Criteria:**
+
+- **AC1: Prikaz intervencija**  
+  - postoje intervencije  
+  - dispečer pregleda  
+  - vidi listu
+
+- **AC2: Ažuriranje liste**  
+  - status se promijeni  
+  - lista se osvježi  
+  - prikaz je ažuriran
+
+---
+
+## US-08 — Pregled detalja pojedinačne intervencije
+
+**Opis:**  
+Kao dispečer, želim pregledati detalje pojedinačne intervencije, kako bih imao potpune informacije o njenom trenutnom stanju, toku i zaduženjima.
+
+**Poslovna vrijednost:**  
+Ovaj story je važan jer omogućava dispečeru da na jednom mjestu dobije sve ključne informacije o konkretnoj intervenciji, što olakšava praćenje toka rada, donošenje operativnih odluka i koordinaciju daljih aktivnosti.
+
+**Prioritet:**  
+*Visok*
+
+**Pretpostavke i otvorena pitanja:**  
+Pretpostavlja se da dispečer već ima pristup listi intervencija i da može otvoriti pojedinačnu intervenciju iz pregleda. Otvoreno pitanje je koje informacije čine minimalni skup detalja u ovom prikazu.
+
+**Veze sa drugim storyjima:**  
+Zavisi od storyja za pregled otvorenih intervencija i povezan je sa storyjima za određivanje prioriteta, dodjelu izvršioca, planiranje intervencije i pregled statusa intervencija.
+
+**Acceptance Criteria:**
+
+- **AC1: Pregled detalja**  
+  - korisnik otvori intervenciju  
+  - pregleda detalje  
+  - vidi informacije
+
+- **AC2: Prava pristupa**  
+  - korisnik nema prava  
+  - pokuša otvoriti detalje  
+  - pristup nije dozvoljen
+
+---
+
+## US-09 — Dodjela intervencije odgovornom serviseru
+
+**Opis:**  
+Kao dispečer, želim dodijeliti intervenciju odgovornom serviseru, kako bi bilo jasno ko preuzima izvršenje zadatka.
+
+**Poslovna vrijednost:**  
+Ovaj story je važan jer omogućava da svaka intervencija dobije jasno određenog izvršioca, čime se uspostavlja odgovornost za njeno preuzimanje i dalje izvršenje.
+
+**Prioritet:**  
+*Visok*
+
+**Pretpostavke i otvorena pitanja:**  
+Pretpostavlja se da sistem raspolaže listom servisera kojima se intervencija može dodijeliti. Otvoreno pitanje je da li ova verzija podržava samo dodjelu jednom serviseru.
+
+**Veze sa drugim storyjima:**  
+Zavisi od storyja za pregled otvorenih intervencija i pregled detalja pojedinačne intervencije, a povezan je sa storyjima za planiranje intervencije i ažuriranje statusa intervencije.
+
+**Acceptance Criteria:**
+
+- **AC1: Uspješna dodjela**  
+  - dispečer odabere servisera  
+  - potvrdi dodjelu  
+  - intervencija se dodjeljuje
+
+- **AC2: Bez odabira servisera**  
+  - serviser nije odabran  
+  - pokuša dodjelu  
+  - sistem prikazuje grešku
+
+---
+
+## US-10 — Dodjela intervencije timu servisera
+
+**Opis:**  
+Kao dispečer, želim dodijeliti intervenciju timu servisera, kako bi se složeniji zadaci mogli izvršavati timski i organizovano.
+
+**Poslovna vrijednost:**  
+Ovaj story je važan jer omogućava da se složenije intervencije rasporede timu servisera na organizovan način, što olakšava koordinaciju rada i raspodjelu resursa.
+
+**Prioritet:**  
+*Srednji*
+
+**Pretpostavke i otvorena pitanja:**  
+Pretpostavlja se da u sistemu postoje definisani timovi servisera kojima se intervencije mogu dodijeliti. Otvoreno pitanje je da li se unutar tima dodatno određuje glavni izvršilac.
+
+**Veze sa drugim storyjima:**  
+Zavisi od storyja za pregled detalja pojedinačne intervencije i povezan je sa storyjima za pregled dodijeljenih intervencija i planiranje intervencije.
+
+**Acceptance Criteria:**
+
+- **AC1: Uspješna dodjela timu**  
+  - dispečer odabere tim  
+  - potvrdi dodjelu  
+  - tim se dodjeljuje
+
+- **AC2: Bez odabira tima**  
+  - tim nije odabran  
+  - pokuša dodjelu  
+  - sistem prikazuje grešku
+
+- **AC3: Prava pristupa**  
+  - korisnik nije ovlašten  
+  - pokuša dodjelu  
+  - akcija nije dozvoljena
+
+---
+
+## US-11 — Planiranje intervencije
+
+**Opis:**  
+Kao dispečer, želim planirati intervenciju unaprijed, kako bih mogao organizovati termin, resurse i izvršenje zadatka.
+
+**Poslovna vrijednost:**  
+Ovaj story je važan jer omogućava pravovremeno i efikasno planiranje intervencija, smanjuje rizik od kašnjenja i preklapanja zadataka te poboljšava organizaciju operativnog rada.
+
+**Prioritet:**  
+*Visok*
+
+**Pretpostavke i otvorena pitanja:**  
+Pretpostavlja se da postoje podaci o resursima, timu i raspoloživim terminima. Otvoreno pitanje je da li u planiranju učestvuju i drugi korisnici osim dispečera.
+
+**Veze sa drugim storyjima:**  
+Zavisi od storyja za dodjelu intervencije izvršiocu i povezan je sa storyjima za pregled statusa intervencija i pregled detalja pojedinačne intervencije.
+
+**Acceptance Criteria:**
+
+- **AC1: Uspješno planiranje**  
+  - unesen validan termin  
+  - korisnik potvrdi  
+  - termin se sprema
+
+- **AC2: Nepotpuni podaci**  
+  - podaci nisu uneseni  
+  - korisnik planira  
+  - sistem prikazuje grešku
+
+- **AC3: Neispravan termin**  
+  - termin nije validan  
+  - korisnik potvrdi  
+  - sistem prikazuje grešku
+
+- **AC4: Konflikt termina**  
+  - postoji drugi termin  
+  - korisnik planira  
+  - sistem upozorava
+
+---
+
+## US-12 — Određivanje prioriteta intervencije
+
+**Opis:**  
+Kao dispečer, želim odrediti prioritet intervencije, kako bi zahtjevi bili obrađeni i raspoređeni prema njihovoj hitnosti i važnosti.
+
+**Poslovna vrijednost:**  
+Ovaj story je važan jer omogućava da se intervencije ne obrađuju proizvoljno, nego u skladu sa njihovom stvarnom hitnošću i poslovnim značajem.
+
+**Prioritet:**  
+*Visok*
+
+**Pretpostavke i otvorena pitanja:**  
+Otvoreno pitanje je da li dispečer prioritet određuje ručno ili sistem daje prijedlog koji dispečer potvrđuje ili mijenja.
+
+**Veze sa drugim storyjima:**  
+Zavisi od storyja za prijavu zahtjeva i pregled detalja pojedinačne intervencije, a povezan je sa storyjima za dodjelu intervencije i planiranje intervencije.
+
+**Acceptance Criteria:**
+
+- **AC1: Postavljanje prioriteta**  
+  - dispečer odabere prioritet  
+  - potvrdi  
+  - prioritet se sprema
+
+- **AC2: Ručna izmjena**  
+  - prioritet postoji  
+  - dispečer ga promijeni  
+  - novi prioritet se sprema
+
+- **AC3: Prikaz prioriteta**  
+  - prioritet je postavljen  
+  - pregleda se intervencija  
+  - prioritet je vidljiv
+
+- **AC4: Prava pristupa**  
+  - korisnik nije ovlašten  
+  - pokuša promjenu  
+  - akcija nije dozvoljena
+
+---
+
+## US-13 — Pregled statusa intervencija od strane dispečera
+
+**Opis:**  
+Kao dispečer, želim pregledati statuse intervencija, kako bih mogao pratiti tok rada i imati jasan uvid u trenutnu fazu obrade svakog zahtjeva.
+
+**Poslovna vrijednost:**  
+Ovaj story je važan jer dispečeru daje pregled nad trenutnim stanjem procesa i omogućava da na vrijeme uoči zastoje, preopterećenost ili potrebu za dodatnom intervencijom.
+
+**Prioritet:**  
+*Visok*
+
+**Pretpostavke i otvorena pitanja:**  
+Pretpostavlja se da sistem podržava definisane statuse intervencije. Otvoreno pitanje je da li dispečer vidi samo trenutni status ili i dodatne informacije poput prioriteta, izvršioca i termina.
+
+**Veze sa drugim storyjima:**  
+Zavisi od storyja za pregled otvorenih intervencija i povezan je sa storyjima za pregled detalja pojedinačne intervencije, određivanje prioriteta, dodjelu izvršioca, planiranje i ažuriranje statusa.
+
+**Acceptance Criteria:**
+
+- **AC1: Pregled statusa**  
+  - postoje intervencije  
+  - dispečer pregleda  
+  - vidi statuse
+
+- **AC2: Ažuriranje prikaza**  
+  - status se promijeni  
+  - lista se osvježi  
+  - prikaz je ažuriran
+
+- **AC3: Pristup detaljima**  
+  - dispečer klikne intervenciju  
+  - otvori detalje  
+  - vidi dodatne informacije
+
+---
+
+## US-14 — Ažuriranje statusa intervencije od strane servisera
+
+**Opis:**  
+Kao serviser, želim po potrebi ažurirati status intervencije na kojoj radim, kako bi sistem odražavao trenutno stanje rada na terenu.
+
+**Poslovna vrijednost:**  
+Ovaj story je važan jer omogućava da sistem prati stvarni tok izvršenja intervencije i da ostali korisnici imaju pravovremenu i tačnu informaciju o tome u kojoj se fazi rad nalazi.
+
+**Prioritet:**  
+*Visok*
+
+**Pretpostavke i otvorena pitanja:**  
+Pretpostavlja se da serviser može ažurirati status samo za intervencije koje su mu dodijeljene. Otvoreno pitanje je koje operativne statuse serviser može postavljati.
+
+**Veze sa drugim storyjima:**  
+Zavisi od storyja za pregled dodijeljenih intervencija i pregled detalja zadatka na terenu. Povezan je sa storyjima za pregled statusa intervencija od strane dispečera, pregled vlastitog zahtjeva i evidentiranje izvršenog rada.
+
+**Acceptance Criteria:**  
+
+---
+
+## US-15 — Pregled dodijeljenih intervencija
+
+**Opis:**  
+Kao serviser, želim pregledati intervencije koje su mi dodijeljene, kako bih znao koje zadatke trebam izvršiti i kojim redoslijedom ih trebam obrađivati.
+
+**Poslovna vrijednost:**  
+Ovaj story je važan jer serviseru daje pregled njegovih zadataka, olakšava organizaciju rada i smanjuje rizik da neka intervencija bude zaboravljena ili obrađena van prioriteta.
+
+**Prioritet:**  
+*Visok*
+
+**Pretpostavke i otvorena pitanja:**  
+Pretpostavlja se da su intervencije već kreirane i dodijeljene od strane dispečera. Otvoreno pitanje je da li serviser vidi samo svoje zadatke ili i zadatke cijelog tima.
+
+**Veze sa drugim storyjima:**  
+Zavisi od storyja za dodjelu intervencije odgovornom serviseru ili timu i povezan je sa storyjem za pregled detalja zadatka na terenu.
+
+**Acceptance Criteria:**  
+
+---
+
+## US-16 — Pregled detalja zadatka na terenu
+
+**Opis:**  
+Kao serviser, želim pregledati detalje zadatka na terenu, kako bih imao sve potrebne informacije za njegovo pravilno i efikasno izvršavanje.
+
+**Poslovna vrijednost:**  
+Ovaj story je važan jer omogućava serviseru da na terenu ima sve ključne informacije o zadatku na jednom mjestu, čime se smanjuju greške, nedoumice i potreba za dodatnim provjerama.
+
+**Prioritet:**  
+*Visok*
+
+**Pretpostavke i otvorena pitanja:**  
+Pretpostavlja se da je intervencija već evidentirana i dodijeljena serviseru ili timu. Otvoreno pitanje je koje informacije čine minimalni obavezni skup detalja koje serviser mora imati dostupne na terenu.
+
+**Veze sa drugim storyjima:**  
+Zavisi od storyja za pregled dodijeljenih intervencija i povezan je sa storyjima za ažuriranje statusa intervencije i evidentiranje izvršenog rada.
+
+**Acceptance Criteria:**  
+
+---
+
+## US-17 — Evidentiranje izvršenog rada
+
+**Opis:**  
+Kao serviser, želim evidentirati izvršeni rad, kako bi sistem sadržavao tačan zapis o aktivnostima obavljenim tokom intervencije.
+
+**Poslovna vrijednost:**  
+Ovaj story je važan jer omogućava da se izvršene aktivnosti evidentiraju tačno i pravovremeno, čime se osigurava jasan uvid u obavljeni rad, praćenje napretka i korištenje resursa.
+
+**Prioritet:**  
+*Srednji*
+
+**Pretpostavke i otvorena pitanja:**  
+Pretpostavlja se da serviser može evidentirati aktivnosti tokom ili nakon intervencije. Otvoreno pitanje je koje informacije su obavezne prilikom evidencije.
+
+**Veze sa drugim storyjima:**  
+Zavisi od storyja za pregled detalja zadatka na terenu i povezan je sa storyjima za ažuriranje statusa intervencije i pregled evidentiranog izvršenog rada.
+
+**Acceptance Criteria:**  
+
+---
+
+## US-18 — Administrativno kreiranje internog korisničkog naloga
+
+**Opis:**  
+Kao administrator, želim kreirati korisnički nalog za internog korisnika sistema, kako bih mu omogućio pristup sistemu u skladu sa njegovom ulogom.
+
+**Poslovna vrijednost:**  
+Ovaj story je važan jer omogućava uključivanje internih korisnika u sistem i predstavlja osnovu za organizovan rad servisera, dispečera i drugih internih aktera.
+
+**Prioritet:**  
+*Visok*
+
+**Pretpostavke i otvorena pitanja:**  
+Pretpostavlja se da administrator ima pravo kreiranja internih korisničkih naloga. Otvoreno pitanje je da li se korisnička uloga dodjeljuje odmah prilikom kreiranja naloga ili u posebnom koraku nakon toga.
+
+**Veze sa drugim storyjima:**  
+Povezano sa storyjima za pregled korisničkih naloga i promjenu korisničke uloge.
+
+**Acceptance Criteria:**
+
+- **AC1: Uspješno kreiranje internog naloga**  
+  - **GIVEN** administrator unese sve obavezne i ispravne podatke  
+  - **WHEN** potvrdi kreiranje korisničkog naloga  
+  - **THEN** sistem kreira novi interni korisnički nalog.
+
+- **AC2: Nepotpuni podaci**  
+  - **GIVEN** administrator nije unio sve obavezne podatke  
+  - **WHEN** pokuša kreirati korisnički nalog  
+  - **THEN** sistem ne kreira nalog i prikazuje poruku o grešci.
+
+- **AC3: Dupliranje korisničkog naloga**  
+  - **GIVEN** da u sistemu već postoji korisnik sa istim jedinstvenim identifikatorom  
+  - **WHEN** administrator pokuša kreirati novi nalog  
+  - **THEN** sistem ne kreira nalog i prikazuje odgovarajuću poruku.
+
+- **AC4: Ograničenje pristupa**  
+  - **GIVEN** korisnik nije administrator  
+  - **WHEN** pokuša pristupiti funkcionalnosti kreiranja naloga  
+  - **THEN** sistem mu ne dozvoljava pristup.
+
+---
+
+## US-19 — Pregled postojećih korisničkih naloga
+
+**Opis:**  
+Kao administrator, želim pregledati postojeće korisničke naloge, kako bih imao uvid u korisnike sistema i mogao njima upravljati.
+
+**Poslovna vrijednost:**  
+Ovaj story je važan jer administratoru omogućava pregled svih korisnika sistema, njihovih uloga i statusa naloga, što predstavlja osnovu za organizovano upravljanje pristupom i odgovornostima u sistemu.
+
+**Prioritet:**  
+*Visok*
+
+**Pretpostavke i otvorena pitanja:**  
+Pretpostavlja se da korisnički nalozi već postoje u sistemu. Otvoreno pitanje je da li pregled treba prikazivati samo aktivne korisnike ili i deaktivirane naloge.
+
+**Veze sa drugim storyjima:**  
+Zavisi od storyja za administrativno kreiranje korisničkog naloga i povezan je sa storyjima za promjenu korisničke uloge i deaktivaciju korisničkog naloga.
+
+**Acceptance Criteria:**
+
+- **AC1: Prikaz liste korisničkih naloga**  
+  - **GIVEN** u sistemu postoje korisnički nalozi  
+  - **WHEN** administrator pristupi pregledu korisnika  
+  - **THEN** sistem prikazuje listu korisničkih naloga.
+
+- **AC2: Prikaz osnovnih podataka o korisniku**  
+  - **GIVEN** administrator pregleda listu korisničkih naloga  
+  - **WHEN** sistem prikaže korisnike  
+  - **THEN** za svakog korisnika prikazuje osnovne informacije, uključujući ime, ulogu i status naloga.
+
+- **AC3: Prikaz praznog stanja**  
+  - **GIVEN** u sistemu nema korisničkih naloga  
+  - **WHEN** administrator pristupi pregledu korisnika  
+  - **THEN** sistem prikazuje odgovarajuću poruku da nema dostupnih korisnika.
+
+- **AC4: Ograničenje pristupa**  
+  - **GIVEN** korisnik nije administrator  
+  - **WHEN** pokuša pristupiti pregledu korisničkih naloga  
+  - **THEN** sistem mu ne dozvoljava pristup.
+
+---
+
+## US-20 — Promjena korisničke uloge
+
+**Opis:**  
+Kao administrator, želim promijeniti korisničku ulogu, kako bi korisnik imao pristup funkcionalnostima koje odgovaraju njegovoj novoj odgovornosti u sistemu.
+
+**Poslovna vrijednost:**  
+Ovaj story je važan jer omogućava da se prava pristupa i odgovornosti korisnika usklade sa njihovom stvarnom ulogom u poslovnom procesu, čime se povećava sigurnost sistema i podržava jasna organizacija rada.
+
+**Prioritet:**  
+*Visok*
+
+**Pretpostavke i otvorena pitanja:**  
+Pretpostavlja se da su korisničke uloge unaprijed definisane u sistemu. Otvoreno pitanje je da li se promjena uloge primjenjuje odmah ili tek nakon naredne prijave korisnika.
+
+**Veze sa drugim storyjima:**  
+Zavisi od storyja za pregled korisničkih naloga i povezan je sa storyjem za kontrolu pristupa prema korisničkoj ulozi.
+
+**Acceptance Criteria:**
+
+- **AC1: Uspješna promjena korisničke uloge**  
+  - **GIVEN** administrator odabere postojećeg korisnika i novu ulogu  
+  - **WHEN** potvrdi promjenu  
+  - **THEN** sistem evidentira novu korisničku ulogu.
+
+- **AC2: Prikaz ažurirane uloge**  
+  - **GIVEN** korisnička uloga je uspješno promijenjena  
+  - **WHEN** administrator pregleda korisnički nalog  
+  - **THEN** sistem prikazuje novu ulogu korisnika.
+
+- **AC3: Nevažeća promjena uloge**  
+  - **GIVEN** administrator nije odabrao novu ulogu  
+  - **WHEN** pokuša potvrditi izmjenu  
+  - **THEN** sistem ne sprema promjenu i prikazuje poruku o grešci.
+
+- **AC4: Ograničenje pristupa**  
+  - **GIVEN** korisnik nije administrator  
+  - **WHEN** pokuša promijeniti korisničku ulogu  
+  - **THEN** sistem mu ne dozvoljava pristup toj funkcionalnosti.
+
+---
+
+## US-21 — Deaktivacija korisničkog naloga
+
+**Opis:**  
+Kao administrator, želim deaktivirati korisnički nalog, kako bih spriječio dalji pristup korisniku koji više ne treba koristiti sistem.
+
+**Poslovna vrijednost:**  
+Ovaj story je važan jer omogućava administratoru da onemogući pristup korisnicima koji više ne trebaju koristiti sistem, bez gubitka historijskih podataka i veza koje su vezane za njihov raniji rad.
+
+**Prioritet:**  
+*Visok*
+
+**Pretpostavke i otvorena pitanja:**  
+Pretpostavlja se da korisnički nalog već postoji u sistemu. Otvoreno pitanje je da li deaktivirani korisnik ostaje vidljiv u listi korisnika i da li sistem prikazuje njegov status kao neaktivan.
+
+**Veze sa drugim storyjima:**  
+Zavisi od storyja za pregled korisničkih naloga i povezan je sa storyjem za prijavu korisnika u sistem.
+
+**Acceptance Criteria:**
+
+- **AC1: Uspješna deaktivacija naloga**  
+  - **GIVEN** administrator odabere aktivan korisnički nalog  
+  - **WHEN** potvrdi deaktivaciju  
+  - **THEN** sistem mijenja status naloga u neaktivan.
+
+- **AC2: Onemogućen pristup deaktiviranom korisniku**  
+  - **GIVEN** korisnički nalog je deaktiviran  
+  - **WHEN** korisnik pokuša prijavu u sistem  
+  - **THEN** sistem mu ne dozvoljava pristup.
+
+- **AC3: Prikaz statusa neaktivnog naloga**  
+  - **GIVEN** korisnički nalog je deaktiviran  
+  - **WHEN** administrator pregleda korisnike  
+  - **THEN** sistem prikazuje da je nalog neaktivan.
+
+- **AC4: Ograničenje pristupa funkcionalnosti deaktivacije**  
+  - **GIVEN** korisnik nije administrator  
+  - **WHEN** pokuša deaktivirati korisnički nalog  
+  - **THEN** sistem mu ne dozvoljava pristup toj funkcionalnosti.
+
+---
+
+## US-22 — Prihvatanje dodijeljenog zadatka
+
+**Opis:**  
+Kao serviser, želim prihvatiti dodijeljeni zadatak, kako bih potvrdio da preuzimam odgovornost za njegovu realizaciju.
+
+**Poslovna vrijednost:**  
+Ovaj story je važan jer omogućava da sistem evidentira da je serviser svjesno preuzeo odgovornost za izvršenje zadatka, što olakšava koordinaciju rada i praćenje toka intervencije.
+
+**Prioritet:**  
+*Visok*
+
+**Pretpostavke i otvorena pitanja:**  
+Pretpostavlja se da je zadatak prethodno dodijeljen serviseru. Otvoreno pitanje je da li prihvatanje zadatka automatski mijenja status intervencije.
+
+**Veze sa drugim storyjima:**  
+Zavisi od storyja za dodjelu intervencije odgovornom licu i povezan je sa storyjem za ažuriranje statusa intervencije od strane servisera.
+
+**Acceptance Criteria:**  
+
+---
+
+## US-23 — Odbijanje dodijeljenog zadatka
+
+**Opis:**  
+Kao serviser, želim odbiti dodijeljeni zadatak, kako bi dispečer mogao pravovremeno reagovati i dodijeliti ga drugom izvršiocu.
+
+**Poslovna vrijednost:**  
+Ovaj story je važan jer omogućava da sistem evidentira da zadatak ne može biti preuzet, čime se izbjegava zastoj u procesu i omogućava pravovremena reakcija dispečera.
+
+**Prioritet:**  
+*Visok*
+
+**Pretpostavke i otvorena pitanja:**  
+Pretpostavlja se da je zadatak prethodno dodijeljen serviseru. Otvoreno pitanje je da li serviser mora unijeti razlog odbijanja zadatka.
+
+**Veze sa drugim storyjima:**  
+Zavisi od storyja za dodjelu intervencije odgovornom licu i povezan je sa storyjem za pregled dodijeljenih intervencija.
+
+**Acceptance Criteria:**  
+
+---
+
+## US-24 — Pregled evidentiranog izvršenog rada
+
+**Opis:**  
+Kao dispečer, želim pregledati evidentirani izvršeni rad, kako bih imao uvid u ono što je serviser uradio prije zatvaranja intervencije.
+
+**Poslovna vrijednost:**  
+Ovaj story je važan jer omogućava dispečeru da pregleda dokaz o obavljenom radu prije donošenja odluke o zatvaranju intervencije, čime se povećava kontrola procesa i pouzdanost završetka zadatka.
+
+**Prioritet:**  
+*Visok*
+
+**Pretpostavke i otvorena pitanja:**  
+Pretpostavlja se da je serviser prethodno evidentirao izvršeni rad u sistemu. Otvoreno pitanje je koji skup informacija dispečer mora minimalno vidjeti prije zatvaranja intervencije.
+
+**Veze sa drugim storyjima:**  
+Zavisi od storyja za evidentiranje izvršenog rada i povezan je sa storyjem za potvrdu i zatvaranje intervencije.
+
+**Acceptance Criteria:**  
+
+---
+
+## US-25 — Potvrda i zatvaranje intervencije
+
+**Opis:**  
+Kao dispečer, želim potvrditi i zatvoriti završenu intervenciju, kako bi proces bio formalno okončan u sistemu.
+
+**Poslovna vrijednost:**  
+Ovaj story je važan jer omogućava da se intervencija zvanično završi tek nakon pregleda izvršenog rada, čime se osigurava kontrolisan i pouzdan završetak procesa.
+
+**Prioritet:**  
+*Visok*
+
+**Pretpostavke i otvorena pitanja:**  
+Pretpostavlja se da je serviser prethodno ažurirao status i evidentirao izvršeni rad. Otvoreno pitanje je da li zatvaranje automatski mijenja status u završeno ili postoji poseban završni status zatvoreno.
+
+**Veze sa drugim storyjima:**  
+Zavisi od storyja za ažuriranje statusa intervencije od strane servisera i storyja za pregled evidentiranog izvršenog rada.
+
+**Acceptance Criteria:**  
