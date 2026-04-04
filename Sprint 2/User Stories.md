@@ -873,3 +873,131 @@ Pretpostavlja se da je serviser prethodno ažurirao status i evidentirao izvrše
 Zavisi od storyja za ažuriranje statusa intervencije od strane servisera i storyja za pregled evidentiranog izvršenog rada.
 
 **Acceptance Criteria:**  
+
+---
+
+## US-26 — Izmjena vlastitog zahtjeva
+
+**Opis:**   
+Kao korisnik usluge, želim izmijeniti svoj zahtjev dok još nije preuzet u obradu, kako bih mogao ispraviti pogrešno unesene ili nepotpune podatke.  
+
+**Poslovna vrijednost:**  
+Ovaj story je važan jer omogućava korisniku da ispravi greške u prijavi bez potrebe da pravi novi zahtjev, čime se povećava tačnost podataka i smanjuje broj pogrešno evidentiranih intervencija.  
+
+**Prioritet:**  
+*Visok*  
+
+**Pretpostavke i otvorena pitanja:**  
+Pretpostavlja se da je izmjena dozvoljena samo dok zahtjev nije dodijeljen ili dok rad na njemu nije započeo. Otvoreno pitanje je koje podatke korisnik smije mijenjati.  
+
+**Veze sa drugim storyjima:**  
+Zavisi od storyja za prijavu zahtjeva za servisnu intervenciju i povezan je sa storyjem za pregled vlastitog zahtjeva.  
+
+**Acceptance Criteria:**  
+
+---
+
+## US-27 — Otkazivanje vlastitog zahtjeva
+
+**Opis:**  
+Kao korisnik usluge, želim otkazati svoj zahtjev dok još nije u aktivnoj obradi, kako bih mogao povući greškom prijavljen ili više nepotreban zahtjev.  
+
+**Poslovna vrijednost:**  
+Ovaj story je važan jer sprečava da pogrešno prijavljeni ili više nepotrebni zahtjevi ostanu aktivni u sistemu, čime se smanjuje operativni šum i olakšava rad dispečera i servisera.  
+
+**Prioritet:**  
+*Visok*  
+
+**Pretpostavke i otvorena pitanja:**  
+Pretpostavlja se da je otkazivanje dozvoljeno samo dok zahtjev nije dodijeljen izvršiocu ili dok rad nije počeo. Otvoreno pitanje je da li sistem treba čuvati razlog otkazivanja.  
+
+**Veze sa drugim storyjima:**  
+Zavisi od storyja za prijavu zahtjeva za servisnu intervenciju i povezan je sa storyjem za pregled vlastitog zahtjeva.  
+
+**Acceptance Criteria:**  
+
+---
+
+## US-28 — Promjena izvršioca intervencije
+
+**Opis:**  
+Kao dispečer, želim promijeniti izvršioca intervencije, kako bi zadatak mogao biti dodijeljen drugom serviseru kada prvobitno dodijeljeni izvršilac ne može preuzeti ili završiti rad.  
+
+**Poslovna vrijednost:**  
+Ovaj story je važan jer omogućava da operativni tok ne "zapne" kada dodijeljeni serviser postane nedostupan ili ne može izvršiti zadatak, čime se povećava fleksibilnost i pouzdanost sistema.  
+
+**Prioritet:**  
+*Visok*  
+
+**Pretpostavke i otvorena pitanja:**  
+Pretpostavlja se da intervencija već ima dodijeljenog izvršioca. Otvoreno pitanje je da li se prilikom promjene izvršioca automatski evidentira prethodno zaduženje u historiji aktivnosti.  
+
+**Veze sa drugim storyjima:**  
+Zavisi od storyja za dodjelu intervencije odgovornom serviseru i povezan je sa storyjima za pregled otvorenih intervencija, pregled detalja pojedinačne intervencije i pregled statusa intervencija.  
+
+**Acceptance Criteria:**  
+
+---
+
+## US-29 — Vraćanje zadatka na ponovnu dodjelu  
+
+**Opis:**  
+Kao serviser, želim vratiti zadatak na ponovnu dodjelu, kako bi dispečer mogao organizovati dalje izvršenje kada zadatak nije moguće završiti u postojećim okolnostima.  
+
+**Poslovna vrijednost:**  
+Ovaj story je važan jer omogućava da se zadatak ne zaglavi kod servisera koji ga ne može završiti, nego da se vrati u operativni tok i ponovo organizuje na ispravan način.  
+
+**Prioritet:**  
+*Visok*  
+
+**Pretpostavke i otvorena pitanja:**  
+Pretpostavlja se da je serviser već preuzeo ili započeo obradu zadatka. Otvoreno pitanje je da li je unos napomene ili razloga vraćanja obavezan.  
+
+**Veze sa drugim storyjima:**  
+Zavisi od storyja za prihvatanje dodijeljenog zadatka i povezan je sa storyjima za promjenu izvršioca, pregled dodijeljenih intervencija i ažuriranje statusa intervencije od strane servisera.  
+
+**Acceptance Criteria:**  
+
+---
+
+## US-30 — Razmjena napomena na intervenciji  
+
+**Opis:**  
+Kao dispečer ili serviser, želim dodati kratku napomenu na konkretnu intervenciju, kako bi sve važne operativne informacije bile dostupne na jednom mjestu svim učesnicima u procesu.  
+
+**Poslovna vrijednost:**  
+Ovaj story je važan jer omogućava brzu i direktnu komunikaciju između ureda i terena bez potrebe za vanjskim kanalima komunikacije, osiguravajući da ključni detalji (npr. specifične upute za pristup lokaciji) ostanu trajno vezani uz zahtjev.  
+
+**Prioritet:**  
+*Srednji*  
+
+**Pretpostavke i otvorena pitanja:**  
+Pretpostavlja se da korisnik ima pravo pristupa detaljima konkretne intervencije. Otvoreno pitanje je da li su napomene vidljive klijentu (korisniku usluge) ili služe isključivo za internu komunikaciju.  
+
+**Veze sa drugim storyjima:**  
+Povezano sa storyjima za pregled detalja pojedinačne intervencije, pregled detalja zadatka na terenu i vraćanje zadatka na ponovnu dodjelu.  
+
+**Acceptance Criteria:**  
+
+---
+
+## US-30 — Pregled historije aktivnosti intervencije  
+
+**Opis:** 
+Kao dispečer, želim vidjeti listu svih prethodnih promjena i aktivnosti na zahtjevu, kako bih imao jasan uvid u hronologiju obrade od trenutka prijave do trenutnog statusa.  
+
+**Poslovna vrijednost:**  
+Ovaj story je važan jer osigurava transparentnost i omogućava praćenje toka rada (audit trail). Pomaže u rješavanju nesporazuma i pruža uvid u to ko je, kada i koju akciju poduzeo na konkretnom zahtjevu.  
+
+**Prioritet:**  
+*Srednji*  
+
+**Pretpostavke i otvorena pitanja:**  
+Pretpostavlja se da sistem automatski bilježi ključne promjene (status, dodjela, prioritet). Otvoreno pitanje je koliki nivo detalja historija treba sadržavati (npr. da li bilježi i stare vrijednosti polja prije izmjene).  
+
+**Veze sa drugim storyjima:**  
+Zavisi od svih storyja koji mijenjaju stanje intervencije (prijava, dodjela, promjena statusa, planiranje, određivanje prioriteta).  
+
+**Acceptance Criteria:**  
+
+---
