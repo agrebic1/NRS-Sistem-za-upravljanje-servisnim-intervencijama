@@ -22,8 +22,8 @@ U ovom dokumentu je prikazan ažurirani product backlog sistema za upravljanje s
 |PB-016| Pregled intervencija | Kao dispečer želim vidjeti listu svih aktivnih i otvorenih intervencija kako bih imao jasan pregled šta je trenutno u toku. | Feature | Visok | 5 | To Do | Sprint 3 | Pregled svih aktivnih zadataka |
 |PB-017| Napomene na intervenciji | Kao dispečer i serviser želim ostavljati napomene na intervenciji kako bi komunikacija bila jasna i sve informacije bile na jednom mjestu. | Feature | Srednji | 3 | To Do | Sprint 4 | Osnovna komunikacija |
 |PB-018| Detalji intervencije | Kao klijent želim otvoriti intervenciju i vidjeti sve njene informacije kako bih imao potpuni uvid u zadatak. | Feature | Srednji | 3 | To Do | Sprint 3 | Detaljan prikaz intervencije |
-|PB-019| Preuzimanje i odbijanje zadatka | Kao serviser, želim imati mogućnost da prihvatim ili odbijem dodijeljeni zadatak, kako bi dispečer znao da li je intervencija preuzeta. | Feature | Srednji| | To Do|  | Omogućava serviseru davanje povratne informacije o prihvatanju posla. |
-|PB-020| Upravljenje korisničkim računima | Kao administrator želim da kreiram, pregledam, ažuriram i brišem korisničke profile kako bih upravljao pristupom sistemu. | Feature | Visok | | To Do | | Osnovna administracija korisnika neophodna za rad ostatka sistema u početnoj verziji. | 
+|PB-019| Preuzimanje i odbijanje zadatka | Kao serviser, želim imati mogućnost da prihvatim ili odbijem dodijeljeni zadatak, kako bi dispečer znao da li je intervencija preuzeta. | Feature | Srednji| 3 | To Do|  | Omogućava serviseru davanje povratne informacije o prihvatanju posla. |
+|PB-020| Upravljenje korisničkim računima | Kao administrator želim da kreiram, pregledam, ažuriram i brišem korisničke profile kako bih upravljao pristupom sistemu. | Feature | Visok | 8 | To Do | | Osnovna administracija korisnika neophodna za rad ostatka sistema u početnoj verziji. | 
 
 
 
