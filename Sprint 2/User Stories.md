@@ -1087,7 +1087,7 @@ Povezano sa storyjima za pregled detalja pojedinačne intervencije, pregled deta
 
 ---
 
-## US-30 — Pregled historije aktivnosti intervencije  
+## US-31 — Pregled historije aktivnosti intervencije  
 
 **Opis:** 
 Kao dispečer, želim vidjeti listu svih prethodnih promjena i aktivnosti na zahtjevu, kako bih imao jasan uvid u hronologiju obrade od trenutka prijave do trenutnog statusa.  
