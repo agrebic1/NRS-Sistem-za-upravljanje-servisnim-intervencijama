@@ -241,7 +241,9 @@ Ovaj story je važan jer omogućava registrovanim korisnicima pristup sistemu i 
 *Visok*
 
 **Pretpostavke i otvorena pitanja:**  
-Pretpostavlja se da korisnik već ima kreiran i aktivan korisnički nalog. Otvoreno pitanje je da li se nakon uspješne prijave korisnik preusmjerava na početni ekran prilagođen njegovoj ulozi.
+**Pretpostavka:** Pretpostavlja se da korisnik već ima kreiran i aktivan korisnički nalog.
+**Otvorena pitanja:** Otvoreno pitanje je da li se nakon uspješne prijave korisnik preusmjerava na početni ekran prilagođen njegovoj ulozi.
+
 
 **Veze sa drugim storyjima:**  
 Zavisi od storyja za registraciju korisnika i povezan je sa svim storyjima koji zahtijevaju autentifikovan pristup sistemu.
@@ -287,7 +289,8 @@ Ovaj story je važan jer omogućava korisniku da na siguran način završi rad u
 *Srednji*
 
 **Pretpostavke i otvorena pitanja:**  
-Pretpostavlja se da korisnik ima aktivnu sesiju u sistemu. Otvoreno pitanje je da li se nakon odjave korisnik vraća na početni ekran ili direktno na formu za prijavu.
+**Pretpostavka:** Pretpostavlja se da korisnik ima aktivnu sesiju u sistemu.
+**Otvorena pitanja:** Otvoreno pitanje je da li se nakon odjave korisnik vraća na početni ekran ili direktno na formu za prijavu.
 
 **Veze sa drugim storyjima:**  
 Povezano sa storyjem za prijavu korisnika u sistem.
@@ -317,8 +320,9 @@ Ovaj story je važan jer omogućava sigurnu i preglednu kontrolu pristupa sistem
 **Prioritet:**  
 *Visok*
 
-**Pretpostavke i otvorena pitanja:**  
-Pretpostavlja se da su osnovne korisničke uloge sistema unaprijed definisane. Otvoreno pitanje je da li će sistem koristiti fiksno definisane uloge ili se kasnije podržava proširivanje modela prava pristupa.
+**Pretpostavke i otvorena pitanja:** 
+**Pretpostavka:** Pretpostavlja se da su osnovne korisničke uloge sistema unaprijed definisane.
+**Otvorena pitanja:** Otvoreno pitanje je da li će sistem koristiti fiksno definisane uloge ili se kasnije podržava proširivanje modela prava pristupa.
 
 **Veze sa drugim storyjima:**  
 Povezano sa storyjima za prijavu korisnika u sistem, administrativno kreiranje korisničkih naloga i promjenu korisničke uloge.
@@ -354,7 +358,8 @@ Ovaj story je važan jer omogućava da se problem koji korisnik prijavljuje form
 *Visok*
 
 **Pretpostavke i otvorena pitanja:**  
-Pretpostavlja se da registrovani korisnik usluge ima pristup formi za prijavu zahtjeva. Otvoreno pitanje je koji je minimalni skup obaveznih podataka potreban za validnu prijavu.
+**Pretpostavka:** Pretpostavlja se da registrovani korisnik usluge ima pristup formi za prijavu zahtjeva.
+**Otvorena pitanja:**  Otvoreno pitanje je koji je minimalni skup obaveznih podataka potreban za validnu prijavu.
 
 **Veze sa drugim storyjima:**  
 Povezano sa storyjima za pregled vlastitog zahtjeva, pregled otvorenih intervencija i dalju obradu servisne intervencije.
@@ -385,7 +390,8 @@ Ovaj story je važan jer korisniku omogućava da na jednom mjestu vidi šta je p
 *Visok*
 
 **Pretpostavke i otvorena pitanja:**  
-Pretpostavlja se da korisnik ima evidentiran zahtjev u sistemu. Otvoreno pitanje je koji skup informacija će biti minimalno dostupan korisniku, npr. opis problema, lokacija, datum prijave, trenutni status i eventualni planirani termin.
+**Pretpostavka:** Pretpostavlja se da korisnik ima evidentiran zahtjev u sistemu.
+**Otvorena pitanja:**  Otvoreno pitanje je koji skup informacija će biti minimalno dostupan korisniku, npr. opis problema, lokacija, datum prijave, trenutni status i eventualni planirani termin.
 
 **Veze sa drugim storyjima:**  
 Zavisi od storyja za prijavu zahtjeva za servisnu intervenciju i povezan je sa storyjem za ažuriranje statusa intervencije.
@@ -416,7 +422,8 @@ Ovaj story je važan jer dispečeru omogućava centralizovan pregled zahtjeva ko
 *Visok*
 
 **Pretpostavke i otvorena pitanja:**  
-Pretpostavlja se da sistem razlikuje otvorene, aktivne i završene intervencije. Otvoreno pitanje je da li pregled uključuje samo listu intervencija ili i osnovne informacije poput prioriteta, statusa i dodijeljenog servisera.
+**Pretpostavka:** Pretpostavlja se da sistem razlikuje otvorene, aktivne i završene intervencije.
+**Otvorena pitanja:**  Otvoreno pitanje je da li pregled uključuje samo listu intervencija ili i osnovne informacije poput prioriteta, statusa i dodijeljenog servisera.
 
 **Veze sa drugim storyjima:**  
 Zavisi od storyja za prijavu zahtjeva i povezan je sa storyjima za pregled detalja pojedinačne intervencije, određivanje prioriteta, dodjelu servisera i pregled statusa intervencija.
@@ -447,7 +454,8 @@ Ovaj story je važan jer omogućava dispečeru da na jednom mjestu dobije sve kl
 *Visok*
 
 **Pretpostavke i otvorena pitanja:**  
-Pretpostavlja se da dispečer već ima pristup listi intervencija i da može otvoriti pojedinačnu intervenciju iz pregleda. Otvoreno pitanje je koje informacije čine minimalni skup detalja u ovom prikazu.
+**Pretpostavka:** Pretpostavlja se da dispečer već ima pristup listi intervencija i da može otvoriti pojedinačnu intervenciju iz pregleda.
+**Otvorena pitanja:**  Otvoreno pitanje je koje informacije čine minimalni skup detalja u ovom prikazu.
 
 **Veze sa drugim storyjima:**  
 Zavisi od storyja za pregled otvorenih intervencija i povezan je sa storyjima za određivanje prioriteta, dodjelu izvršioca, planiranje intervencije i pregled statusa intervencija.
@@ -478,7 +486,8 @@ Ovaj story je važan jer omogućava da svaka intervencija dobije jasno određeno
 *Visok*
 
 **Pretpostavke i otvorena pitanja:**  
-Pretpostavlja se da sistem raspolaže listom servisera kojima se intervencija može dodijeliti. Otvoreno pitanje je da li ova verzija podržava samo dodjelu jednom serviseru.
+**Pretpostavka:** Pretpostavlja se da sistem raspolaže listom servisera kojima se intervencija može dodijeliti.
+**Otvorena pitanja:**  Otvoreno pitanje je da li ova verzija podržava samo dodjelu jednom serviseru.
 
 **Veze sa drugim storyjima:**  
 Zavisi od storyja za pregled otvorenih intervencija i pregled detalja pojedinačne intervencije, a povezan je sa storyjima za planiranje intervencije i ažuriranje statusa intervencije.
@@ -509,7 +518,8 @@ Ovaj story je važan jer omogućava da se složenije intervencije rasporede timu
 *Srednji*
 
 **Pretpostavke i otvorena pitanja:**  
-Pretpostavlja se da u sistemu postoje definisani timovi servisera kojima se intervencije mogu dodijeliti. Otvoreno pitanje je da li se unutar tima dodatno određuje glavni izvršilac.
+**Pretpostavka:** Pretpostavlja se da u sistemu postoje definisani timovi servisera kojima se intervencije mogu dodijeliti.
+**Otvorena pitanja:**  Otvoreno pitanje je da li se unutar tima dodatno određuje glavni izvršilac.
 
 **Veze sa drugim storyjima:**  
 Zavisi od storyja za pregled detalja pojedinačne intervencije i povezan je sa storyjima za pregled dodijeljenih intervencija i planiranje intervencije.
@@ -545,7 +555,8 @@ Ovaj story je važan jer omogućava pravovremeno i efikasno planiranje intervenc
 *Visok*
 
 **Pretpostavke i otvorena pitanja:**  
-Pretpostavlja se da postoje podaci o resursima, timu i raspoloživim terminima. Otvoreno pitanje je da li u planiranju učestvuju i drugi korisnici osim dispečera.
+**Pretpostavka:** Pretpostavlja se da postoje podaci o resursima, timu i raspoloživim terminima.
+**Otvorena pitanja:**  Otvoreno pitanje je da li u planiranju učestvuju i drugi korisnici osim dispečera.
 
 **Veze sa drugim storyjima:**  
 Zavisi od storyja za dodjelu intervencije izvršiocu i povezan je sa storyjima za pregled statusa intervencija i pregled detalja pojedinačne intervencije.
@@ -586,7 +597,8 @@ Ovaj story je važan jer omogućava da se intervencije ne obrađuju proizvoljno,
 *Visok*
 
 **Pretpostavke i otvorena pitanja:**  
-Otvoreno pitanje je da li dispečer prioritet određuje ručno ili sistem daje prijedlog koji dispečer potvrđuje ili mijenja.
+**Pretpostavka:**  Pretpostavlja se da su svi relevantni podaci o intervenciji (opis problema, lokacija, hitnost) već uneseni u sistem kako bi dispečer mogao odrediti prioritet.
+**Otvorena pitanja:** Otvoreno pitanje je da li dispečer prioritet određuje ručno ili sistem daje prijedlog koji dispečer potvrđuje ili mijenja.
 
 **Veze sa drugim storyjima:**  
 Zavisi od storyja za prijavu zahtjeva i pregled detalja pojedinačne intervencije, a povezan je sa storyjima za dodjelu intervencije i planiranje intervencije.
@@ -627,7 +639,8 @@ Ovaj story je važan jer dispečeru daje pregled nad trenutnim stanjem procesa i
 *Visok*
 
 **Pretpostavke i otvorena pitanja:**  
-Pretpostavlja se da sistem podržava definisane statuse intervencije. Otvoreno pitanje je da li dispečer vidi samo trenutni status ili i dodatne informacije poput prioriteta, izvršioca i termina.
+**Pretpostavka:**  Pretpostavlja se da sistem podržava definisane statuse intervencije.
+**Otvorena pitanja:** Otvoreno pitanje je da li dispečer vidi samo trenutni status ili i dodatne informacije poput prioriteta, izvršioca i termina.
 
 **Veze sa drugim storyjima:**  
 Zavisi od storyja za pregled otvorenih intervencija i povezan je sa storyjima za pregled detalja pojedinačne intervencije, određivanje prioriteta, dodjelu izvršioca, planiranje i ažuriranje statusa.
@@ -663,7 +676,8 @@ Ovaj story je važan jer omogućava da sistem prati stvarni tok izvršenja inter
 *Visok*
 
 **Pretpostavke i otvorena pitanja:**  
-Pretpostavlja se da serviser može ažurirati status samo za intervencije koje su mu dodijeljene. Otvoreno pitanje je koje operativne statuse serviser može postavljati.
+**Pretpostavka:**  Pretpostavlja se da serviser može ažurirati status samo za intervencije koje su mu dodijeljene.
+**Otvorena pitanja:** Otvoreno pitanje je koje operativne statuse serviser može postavljati.
 
 **Veze sa drugim storyjima:**  
 Zavisi od storyja za pregled dodijeljenih intervencija i pregled detalja zadatka na terenu. Povezan je sa storyjima za pregled statusa intervencija od strane dispečera, pregled vlastitog zahtjeva i evidentiranje izvršenog rada.
@@ -684,7 +698,8 @@ Ovaj story je važan jer serviseru daje pregled njegovih zadataka, olakšava org
 *Visok*
 
 **Pretpostavke i otvorena pitanja:**  
-Pretpostavlja se da su intervencije već kreirane i dodijeljene od strane dispečera. Otvoreno pitanje je da li serviser vidi samo svoje zadatke ili i zadatke cijelog tima.
+**Pretpostavka:**  Pretpostavlja se da su intervencije već kreirane i dodijeljene od strane dispečera.
+**Otvorena pitanja:** Otvoreno pitanje je da li serviser vidi samo svoje zadatke ili i zadatke cijelog tima.
 
 **Veze sa drugim storyjima:**  
 Zavisi od storyja za dodjelu intervencije odgovornom serviseru ili timu i povezan je sa storyjem za pregled detalja zadatka na terenu.
@@ -705,7 +720,8 @@ Ovaj story je važan jer omogućava serviseru da na terenu ima sve ključne info
 *Visok*
 
 **Pretpostavke i otvorena pitanja:**  
-Pretpostavlja se da je intervencija već evidentirana i dodijeljena serviseru ili timu. Otvoreno pitanje je koje informacije čine minimalni obavezni skup detalja koje serviser mora imati dostupne na terenu.
+**Pretpostavka:**  Pretpostavlja se da je intervencija već evidentirana i dodijeljena serviseru ili timu.
+**Otvorena pitanja:** Otvoreno pitanje je koje informacije čine minimalni obavezni skup detalja koje serviser mora imati dostupne na terenu.
 
 **Veze sa drugim storyjima:**  
 Zavisi od storyja za pregled dodijeljenih intervencija i povezan je sa storyjima za ažuriranje statusa intervencije i evidentiranje izvršenog rada.
@@ -726,7 +742,8 @@ Ovaj story je važan jer omogućava da se izvršene aktivnosti evidentiraju tač
 *Srednji*
 
 **Pretpostavke i otvorena pitanja:**  
-Pretpostavlja se da serviser može evidentirati aktivnosti tokom ili nakon intervencije. Otvoreno pitanje je koje informacije su obavezne prilikom evidencije.
+**Pretpostavka:**  Pretpostavlja se da serviser može evidentirati aktivnosti tokom ili nakon intervencije.
+**Otvorena pitanja:** Otvoreno pitanje je koje informacije su obavezne prilikom evidencije.
 
 **Veze sa drugim storyjima:**  
 Zavisi od storyja za pregled detalja zadatka na terenu i povezan je sa storyjima za ažuriranje statusa intervencije i pregled evidentiranog izvršenog rada.
@@ -747,7 +764,8 @@ Ovaj story je važan jer omogućava uključivanje internih korisnika u sistem i 
 *Visok*
 
 **Pretpostavke i otvorena pitanja:**  
-Pretpostavlja se da administrator ima pravo kreiranja internih korisničkih naloga. Otvoreno pitanje je da li se korisnička uloga dodjeljuje odmah prilikom kreiranja naloga ili u posebnom koraku nakon toga.
+**Pretpostavka:**  Pretpostavlja se da administrator ima pravo kreiranja internih korisničkih naloga.
+**Otvorena pitanja:** Otvoreno pitanje je da li se korisnička uloga dodjeljuje odmah prilikom kreiranja naloga ili u posebnom koraku nakon toga.
 
 **Veze sa drugim storyjima:**  
 Povezano sa storyjima za pregled korisničkih naloga i promjenu korisničke uloge.
@@ -788,7 +806,8 @@ Ovaj story je važan jer administratoru omogućava pregled svih korisnika sistem
 *Visok*
 
 **Pretpostavke i otvorena pitanja:**  
-Pretpostavlja se da korisnički nalozi već postoje u sistemu. Otvoreno pitanje je da li pregled treba prikazivati samo aktivne korisnike ili i deaktivirane naloge.
+**Pretpostavka:**  Pretpostavlja se da korisnički nalozi već postoje u sistemu.
+**Otvorena pitanja:** Otvoreno pitanje je da li pregled treba prikazivati samo aktivne korisnike ili i deaktivirane naloge.
 
 **Veze sa drugim storyjima:**  
 Zavisi od storyja za administrativno kreiranje korisničkog naloga i povezan je sa storyjima za promjenu korisničke uloge i deaktivaciju korisničkog naloga.
@@ -829,7 +848,8 @@ Ovaj story je važan jer omogućava da se prava pristupa i odgovornosti korisnik
 *Visok*
 
 **Pretpostavke i otvorena pitanja:**  
-Pretpostavlja se da su korisničke uloge unaprijed definisane u sistemu. Otvoreno pitanje je da li se promjena uloge primjenjuje odmah ili tek nakon naredne prijave korisnika.
+**Pretpostavka:**  Pretpostavlja se da su korisničke uloge unaprijed definisane u sistemu.
+**Otvorena pitanja:** Otvoreno pitanje je da li se promjena uloge primjenjuje odmah ili tek nakon naredne prijave korisnika.
 
 **Veze sa drugim storyjima:**  
 Zavisi od storyja za pregled korisničkih naloga i povezan je sa storyjem za kontrolu pristupa prema korisničkoj ulozi.
@@ -870,7 +890,8 @@ Ovaj story je važan jer omogućava administratoru da onemogući pristup korisni
 *Visok*
 
 **Pretpostavke i otvorena pitanja:**  
-Pretpostavlja se da korisnički nalog već postoji u sistemu. Otvoreno pitanje je da li deaktivirani korisnik ostaje vidljiv u listi korisnika i da li sistem prikazuje njegov status kao neaktivan.
+**Pretpostavka:**  Pretpostavlja se da korisnički nalog već postoji u sistemu.
+**Otvorena pitanja:** Otvoreno pitanje je da li deaktivirani korisnik ostaje vidljiv u listi korisnika i da li sistem prikazuje njegov status kao neaktivan.
 
 **Veze sa drugim storyjima:**  
 Zavisi od storyja za pregled korisničkih naloga i povezan je sa storyjem za prijavu korisnika u sistem.
@@ -911,7 +932,8 @@ Ovaj story je važan jer omogućava da sistem evidentira da je serviser svjesno 
 *Visok*
 
 **Pretpostavke i otvorena pitanja:**  
-Pretpostavlja se da je zadatak prethodno dodijeljen serviseru. Otvoreno pitanje je da li prihvatanje zadatka automatski mijenja status intervencije.
+**Pretpostavka:**  Pretpostavlja se da je zadatak prethodno dodijeljen serviseru.
+**Otvorena pitanja:** Otvoreno pitanje je da li prihvatanje zadatka automatski mijenja status intervencije.
 
 **Veze sa drugim storyjima:**  
 Zavisi od storyja za dodjelu intervencije odgovornom licu i povezan je sa storyjem za ažuriranje statusa intervencije od strane servisera.
@@ -932,7 +954,8 @@ Ovaj story je važan jer omogućava da sistem evidentira da zadatak ne može bit
 *Visok*
 
 **Pretpostavke i otvorena pitanja:**  
-Pretpostavlja se da je zadatak prethodno dodijeljen serviseru. Otvoreno pitanje je da li serviser mora unijeti razlog odbijanja zadatka.
+**Pretpostavka:**  Pretpostavlja se da je zadatak prethodno dodijeljen serviseru.
+**Otvorena pitanja:** Otvoreno pitanje je da li serviser mora unijeti razlog odbijanja zadatka.
 
 **Veze sa drugim storyjima:**  
 Zavisi od storyja za dodjelu intervencije odgovornom licu i povezan je sa storyjem za pregled dodijeljenih intervencija.
@@ -953,7 +976,8 @@ Ovaj story je važan jer omogućava dispečeru da pregleda dokaz o obavljenom ra
 *Visok*
 
 **Pretpostavke i otvorena pitanja:**  
-Pretpostavlja se da je serviser prethodno evidentirao izvršeni rad u sistemu. Otvoreno pitanje je koji skup informacija dispečer mora minimalno vidjeti prije zatvaranja intervencije.
+**Pretpostavka:**  Pretpostavlja se da je serviser prethodno evidentirao izvršeni rad u sistemu.
+**Otvorena pitanja:** Otvoreno pitanje je koji skup informacija dispečer mora minimalno vidjeti prije zatvaranja intervencije.
 
 **Veze sa drugim storyjima:**  
 Zavisi od storyja za evidentiranje izvršenog rada i povezan je sa storyjem za potvrdu i zatvaranje intervencije.
@@ -974,7 +998,9 @@ Ovaj story je važan jer omogućava da se intervencija zvanično završi tek nak
 *Visok*
 
 **Pretpostavke i otvorena pitanja:**  
-Pretpostavlja se da je serviser prethodno ažurirao status i evidentirao izvršeni rad. Otvoreno pitanje je da li zatvaranje automatski mijenja status u završeno ili postoji poseban završni status zatvoreno.
+**Pretpostavka:**  Pretpostavlja se da je serviser prethodno ažurirao status i evidentirao izvršeni rad.
+**Otvorena pitanja:** Otvoreno pitanje je da li zatvaranje automatski mijenja status u završeno ili postoji poseban završni status zatvoreno.
+
 
 **Veze sa drugim storyjima:**  
 Zavisi od storyja za ažuriranje statusa intervencije od strane servisera i storyja za pregled evidentiranog izvršenog rada.
@@ -995,7 +1021,8 @@ Ovaj story je važan jer omogućava korisniku da ispravi greške u prijavi bez p
 *Visok*  
 
 **Pretpostavke i otvorena pitanja:**  
-Pretpostavlja se da je izmjena dozvoljena samo dok zahtjev nije dodijeljen ili dok rad na njemu nije započeo. Otvoreno pitanje je koje podatke korisnik smije mijenjati.  
+**Pretpostavka:**  Pretpostavlja se da je izmjena dozvoljena samo dok zahtjev nije dodijeljen ili dok rad na njemu nije započeo.
+**Otvorena pitanja:** Otvoreno pitanje je koje podatke korisnik smije mijenjati.
 
 **Veze sa drugim storyjima:**  
 Zavisi od storyja za prijavu zahtjeva za servisnu intervenciju i povezan je sa storyjem za pregled vlastitog zahtjeva.  
@@ -1016,7 +1043,8 @@ Ovaj story je važan jer sprečava da pogrešno prijavljeni ili više nepotrebni
 *Visok*  
 
 **Pretpostavke i otvorena pitanja:**  
-Pretpostavlja se da je otkazivanje dozvoljeno samo dok zahtjev nije dodijeljen izvršiocu ili dok rad nije počeo. Otvoreno pitanje je da li sistem treba čuvati razlog otkazivanja.  
+**Pretpostavka:**  Pretpostavlja se da je otkazivanje dozvoljeno samo dok zahtjev nije dodijeljen izvršiocu ili dok rad nije počeo.
+**Otvorena pitanja:** Otvoreno pitanje je da li sistem treba čuvati razlog otkazivanja.
 
 **Veze sa drugim storyjima:**  
 Zavisi od storyja za prijavu zahtjeva za servisnu intervenciju i povezan je sa storyjem za pregled vlastitog zahtjeva.  
@@ -1037,7 +1065,8 @@ Ovaj story je važan jer omogućava da operativni tok ne "zapne" kada dodijeljen
 *Visok*  
 
 **Pretpostavke i otvorena pitanja:**  
-Pretpostavlja se da intervencija već ima dodijeljenog izvršioca. Otvoreno pitanje je da li se prilikom promjene izvršioca automatski evidentira prethodno zaduženje u historiji aktivnosti.  
+**Pretpostavka:**  Pretpostavlja se da intervencija već ima dodijeljenog izvršioca.
+**Otvorena pitanja:** Otvoreno pitanje je da li se prilikom promjene izvršioca automatski evidentira prethodno zaduženje u historiji aktivnosti.
 
 **Veze sa drugim storyjima:**  
 Zavisi od storyja za dodjelu intervencije odgovornom serviseru i povezan je sa storyjima za pregled otvorenih intervencija, pregled detalja pojedinačne intervencije i pregled statusa intervencija.  
@@ -1058,7 +1087,8 @@ Ovaj story je važan jer omogućava da se zadatak ne zaglavi kod servisera koji 
 *Visok*  
 
 **Pretpostavke i otvorena pitanja:**  
-Pretpostavlja se da je serviser već preuzeo ili započeo obradu zadatka. Otvoreno pitanje je da li je unos napomene ili razloga vraćanja obavezan.  
+**Pretpostavka:**  Pretpostavlja se da je serviser već preuzeo ili započeo obradu zadatka.
+**Otvorena pitanja:** Otvoreno pitanje je da li je unos napomene ili razloga vraćanja obavezan.
 
 **Veze sa drugim storyjima:**  
 Zavisi od storyja za prihvatanje dodijeljenog zadatka i povezan je sa storyjima za promjenu izvršioca, pregled dodijeljenih intervencija i ažuriranje statusa intervencije od strane servisera.  
@@ -1079,7 +1109,8 @@ Ovaj story je važan jer omogućava brzu i direktnu komunikaciju između ureda i
 *Srednji*  
 
 **Pretpostavke i otvorena pitanja:**  
-Pretpostavlja se da korisnik ima pravo pristupa detaljima konkretne intervencije. Otvoreno pitanje je da li su napomene vidljive klijentu (korisniku usluge) ili služe isključivo za internu komunikaciju.  
+**Pretpostavka:**  Pretpostavlja se da korisnik ima pravo pristupa detaljima konkretne intervencije.
+**Otvorena pitanja:** Otvoreno pitanje je da li su napomene vidljive klijentu (korisniku usluge) ili služe isključivo za internu komunikaciju.
 
 **Veze sa drugim storyjima:**  
 Povezano sa storyjima za pregled detalja pojedinačne intervencije, pregled detalja zadatka na terenu i vraćanje zadatka na ponovnu dodjelu.  
@@ -1100,7 +1131,8 @@ Ovaj story je važan jer osigurava transparentnost i omogućava praćenje toka r
 *Srednji*  
 
 **Pretpostavke i otvorena pitanja:**  
-Pretpostavlja se da sistem automatski bilježi ključne promjene (status, dodjela, prioritet). Otvoreno pitanje je koliki nivo detalja historija treba sadržavati (npr. da li bilježi i stare vrijednosti polja prije izmjene).  
+**Pretpostavka:**  Pretpostavlja se da sistem automatski bilježi ključne promjene (status, dodjela, prioritet).
+**Otvorena pitanja:** Otvoreno pitanje je koliki nivo detalja historija treba sadržavati (npr. da li bilježi i stare vrijednosti polja prije izmjene).
 
 **Veze sa drugim storyjima:**  
 Zavisi od svih storyja koji mijenjaju stanje intervencije (prijava, dodjela, promjena statusa, planiranje, određivanje prioriteta).  
