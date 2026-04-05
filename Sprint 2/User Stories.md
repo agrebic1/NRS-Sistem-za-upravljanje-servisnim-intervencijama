@@ -194,7 +194,8 @@ Ovaj story je važan jer omogućava korisniku usluge da samostalno pristupi sist
 *Visok*
 
 **Pretpostavke i otvorena pitanja:**  
-Pretpostavlja se da korisnik usluge može samostalno pristupiti registracionoj formi. Otvoreno pitanje je da li sistem korisniku automatski dodjeljuje ulogu klijenta pri registraciji.
+**Pretpostavka:** Pretpostavlja se da korisnik usluge može samostalno pristupiti registracionoj formi.  
+**Otvorena pitanja:** Da li sistem korisniku automatski dodjeljuje ulogu klijenta pri registraciji?
 
 **Veze sa drugim storyjima:**  
 Povezano sa storyjem za prijavu korisnika u sistem, prijavu zahtjeva za servisnu intervenciju i pregled vlastitog zahtjeva.
