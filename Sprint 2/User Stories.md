@@ -202,29 +202,29 @@ Povezano sa storyjem za prijavu korisnika u sistem, prijavu zahtjeva za servisnu
 **Acceptance Criteria:**
 
 - **AC1: Uspješna registracija**  
-  - korisnik unese validne podatke  
-  - klikne na registraciju  
-  - sistem kreira korisnički nalog
+  - GIVEN korisnik unese validne podatke  
+  - WHEN klikne na registraciju  
+  - THEN sistem kreira korisnički nalog
 
 - **AC2: Nepotpuni podaci**  
-  - korisnik ne unese sve obavezne podatke  
-  - pokuša registraciju  
-  - sistem prikazuje grešku
+  - GIVEN korisnik ne unese sve obavezne podatke  
+  - WHEN pokuša registraciju  
+  - THEN sistem prikazuje grešku
 
 - **AC3: Neispravan format**  
-  - korisnik unese neispravan format podataka  
-  - pokuša registraciju  
-  - sistem prikazuje validacijsku grešku
+  - GIVEN korisnik unese neispravan format podataka  
+  - WHEN pokuša registraciju  
+  - THEN sistem prikazuje validacijsku grešku
 
 - **AC4: Postojeći korisnik**  
-  - korisnik već postoji u sistemu  
-  - pokuša registraciju  
-  - sistem prikazuje grešku
+  - GIVENkorisnik već postoji u sistemu  
+  - WHEN pokuša registraciju  
+  - THEN sistem prikazuje grešku
 
 - **AC5: Lozinka ne zadovoljava pravila**  
-  - lozinka ne ispunjava uslove  
-  - korisnik pokuša registraciju  
-  - sistem prikazuje grešku
+  - GIVEN lozinka ne ispunjava uslove  
+  - WHEN korisnik pokuša registraciju  
+  - THEN sistem prikazuje grešku
 
 ---
 
@@ -248,29 +248,29 @@ Zavisi od storyja za registraciju korisnika i povezan je sa svim storyjima koji 
 **Acceptance Criteria:**
 
 - **AC1: Uspješna prijava**  
-  - korisnik unese tačne podatke  
-  - prijavi se  
-  - sistem omogućava pristup
+  - GIVEN korisnik unese tačne podatke  
+  - WHEN prijavi se  
+  - THEN sistem omogućava pristup
 
 - **AC2: Nepotpuni podaci**  
-  - podaci nisu uneseni  
-  - korisnik pokušava prijavu  
-  - sistem prikazuje grešku
+  - GIVEN podaci nisu uneseni  
+  - WHEN korisnik pokušava prijavu  
+  - THEN sistem prikazuje grešku
 
 - **AC3: Neispravan format**  
-  - podaci nisu u ispravnom formatu  
-  - korisnik pokuša prijavu  
-  - sistem prikazuje grešku
+  - GIVEN podaci nisu u ispravnom formatu  
+  - WHEN korisnik pokuša prijavu  
+  - THEN sistem prikazuje grešku
 
 - **AC4: Pogrešni podaci**  
-  - podaci nisu tačni  
-  - korisnik pokuša prijavu  
-  - pristup nije dozvoljen
+  - GIVEN podaci nisu tačni  
+  - WHEN korisnik pokuša prijavu  
+  - THEN pristup nije dozvoljen
 
 - **AC5: Neaktivan ili nepostojeći nalog**  
-  - nalog nije aktivan ili ne postoji  
-  - korisnik pokuša prijavu  
-  - sistem prikazuje grešku
+  - GIVEN nalog nije aktivan ili ne postoji  
+  - WHEN korisnik pokuša prijavu  
+  - THEN sistem prikazuje grešku
 
 ---
 
@@ -294,14 +294,14 @@ Povezano sa storyjem za prijavu korisnika u sistem.
 **Acceptance Criteria:**
 
 - **AC1: Uspješna odjava**  
-  - korisnik je prijavljen  
-  - odjavi se  
-  - sesija se prekida
+  - GIVEN korisnik je prijavljen  
+  - WHEN odjavi se  
+  - THEN sesija se prekida
 
 - **AC2: Zaštićene stranice**  
-  - korisnik se odjavio  
-  - pokuša pristupiti zaštićenoj stranici  
-  - pristup nije dozvoljen
+  - GIVEN korisnik se odjavio  
+  - WHEN pokuša pristupiti zaštićenoj stranici  
+  - THEN pristup nije dozvoljen
 
 ---
 
@@ -325,19 +325,19 @@ Povezano sa storyjima za prijavu korisnika u sistem, administrativno kreiranje k
 **Acceptance Criteria:**
 
 - **AC1: Dodjela uloge**  
-  - administrator dodjeljuje ulogu  
-  - potvrdi akciju  
-  - uloga se dodjeljuje
+  - GIVEN administrator dodjeljuje ulogu  
+  - WHEN potvrdi akciju  
+  - THEN uloga se dodjeljuje
 
 - **AC2: Ograničen pristup**  
-  - korisnik nema prava  
-  - pokuša pristup funkcionalnosti  
-  - pristup nije dozvoljen
+  - GIVEN korisnik nema prava  
+  - WHEN pokuša pristup funkcionalnosti  
+  - THEN pristup nije dozvoljen
 
 - **AC3: Izmjena uloge**  
-  - administrator mijenja ulogu  
-  - potvrdi izmjenu  
-  - uloga se ažurira
+  - GIVEN administrator mijenja ulogu  
+  - WHEN potvrdi izmjenu  
+  - THEN uloga se ažurira
 
 ---
 
@@ -361,14 +361,14 @@ Povezano sa storyjima za pregled vlastitog zahtjeva, pregled otvorenih intervenc
 **Acceptance Criteria:**
 
 - **AC1: Uspješna prijava**  
-  - korisnik unese podatke  
-  - pošalje podatke  
-  - zahtjev se kreira
+  - GIVEN korisnik unese podatke  
+  - WHEN pošalje podatke  
+  - THEN zahtjev se kreira
 
 - **AC2: Nepotpuni podaci**  
-  - podaci nisu potpuni  
-  - korisnik pošalje zahtjev  
-  - sistem prikazuje grešku
+  - GIVEN podaci nisu potpuni  
+  - WHEN korisnik pošalje zahtjev  
+  - THEN sistem prikazuje grešku
 
 ---
 
@@ -392,14 +392,14 @@ Zavisi od storyja za prijavu zahtjeva za servisnu intervenciju i povezan je sa s
 **Acceptance Criteria:**
 
 - **AC1: Pregled statusa**  
-  - korisnik ima zahtjev  
-  - pregleda status  
-  - vidi tačan status
+  - GIVEN korisnik ima zahtjev  
+  - WHEN pregleda status  
+  - THEN vidi tačan status
 
 - **AC2: Samo vlastiti zahtjevi**  
-  - korisnik je prijavljen  
-  - pregleda zahtjeve  
-  - vidi samo svoje
+  - GIVEN korisnik je prijavljen  
+  - WHEN pregleda zahtjeve  
+  - THEN vidi samo svoje
 
 ---
 
@@ -423,14 +423,14 @@ Zavisi od storyja za prijavu zahtjeva i povezan je sa storyjima za pregled detal
 **Acceptance Criteria:**
 
 - **AC1: Prikaz intervencija**  
-  - postoje intervencije  
-  - dispečer pregleda  
-  - vidi listu
+  - GIVEN postoje intervencije  
+  - WHEN dispečer pregleda  
+  - THEN vidi listu
 
 - **AC2: Ažuriranje liste**  
-  - status se promijeni  
-  - lista se osvježi  
-  - prikaz je ažuriran
+  - GIVEN status se promijeni  
+  - WHEN lista se osvježi  
+  - THEN prikaz je ažuriran
 
 ---
 
@@ -454,14 +454,14 @@ Zavisi od storyja za pregled otvorenih intervencija i povezan je sa storyjima za
 **Acceptance Criteria:**
 
 - **AC1: Pregled detalja**  
-  - korisnik otvori intervenciju  
-  - pregleda detalje  
-  - vidi informacije
+  - GIVEN korisnik otvori intervenciju  
+  - WHEN pregleda detalje  
+  - THEN vidi informacije
 
 - **AC2: Prava pristupa**  
-  - korisnik nema prava  
-  - pokuša otvoriti detalje  
-  - pristup nije dozvoljen
+  - GIVEN korisnik nema prava  
+  - WHEN pokuša otvoriti detalje  
+  - THEN pristup nije dozvoljen
 
 ---
 
@@ -485,14 +485,14 @@ Zavisi od storyja za pregled otvorenih intervencija i pregled detalja pojedinač
 **Acceptance Criteria:**
 
 - **AC1: Uspješna dodjela**  
-  - dispečer odabere servisera  
-  - potvrdi dodjelu  
-  - intervencija se dodjeljuje
+  - GIVEN dispečer odabere servisera  
+  - WHEN potvrdi dodjelu  
+  - THEN intervencija se dodjeljuje
 
 - **AC2: Bez odabira servisera**  
-  - serviser nije odabran  
-  - pokuša dodjelu  
-  - sistem prikazuje grešku
+  - GIVEN serviser nije odabran  
+  - WHEN pokuša dodjelu  
+  - THEN sistem prikazuje grešku
 
 ---
 
@@ -516,19 +516,19 @@ Zavisi od storyja za pregled detalja pojedinačne intervencije i povezan je sa s
 **Acceptance Criteria:**
 
 - **AC1: Uspješna dodjela timu**  
-  - dispečer odabere tim  
-  - potvrdi dodjelu  
-  - tim se dodjeljuje
+  - GIVEN dispečer odabere tim  
+  - WHEN potvrdi dodjelu  
+  - THEN tim se dodjeljuje
 
 - **AC2: Bez odabira tima**  
-  - tim nije odabran  
-  - pokuša dodjelu  
-  - sistem prikazuje grešku
+  - GIVEN tim nije odabran  
+  - WHEN pokuša dodjelu  
+  - THEN sistem prikazuje grešku
 
 - **AC3: Prava pristupa**  
-  - korisnik nije ovlašten  
-  - pokuša dodjelu  
-  - akcija nije dozvoljena
+  - GIVEN korisnik nije ovlašten  
+  - WHEN pokuša dodjelu  
+  - THEN akcija nije dozvoljena
 
 ---
 
@@ -552,24 +552,24 @@ Zavisi od storyja za dodjelu intervencije izvršiocu i povezan je sa storyjima z
 **Acceptance Criteria:**
 
 - **AC1: Uspješno planiranje**  
-  - unesen validan termin  
-  - korisnik potvrdi  
-  - termin se sprema
+  - GIVEN unesen validan termin  
+  - WHEN korisnik potvrdi  
+  - THEN termin se sprema
 
 - **AC2: Nepotpuni podaci**  
-  - podaci nisu uneseni  
-  - korisnik planira  
-  - sistem prikazuje grešku
+  - GIVEN podaci nisu uneseni  
+  - WHEN korisnik planira  
+  - THEN sistem prikazuje grešku
 
 - **AC3: Neispravan termin**  
-  - termin nije validan  
-  - korisnik potvrdi  
-  - sistem prikazuje grešku
+  - GIVEN termin nije validan  
+  - WHEN korisnik potvrdi  
+  - THEN sistem prikazuje grešku
 
 - **AC4: Konflikt termina**  
-  - postoji drugi termin  
-  - korisnik planira  
-  - sistem upozorava
+  - GIVEN postoji drugi termin  
+  - WHEN korisnik planira  
+  - THEN sistem upozorava
 
 ---
 
@@ -593,24 +593,24 @@ Zavisi od storyja za prijavu zahtjeva i pregled detalja pojedinačne intervencij
 **Acceptance Criteria:**
 
 - **AC1: Postavljanje prioriteta**  
-  - dispečer odabere prioritet  
-  - potvrdi  
-  - prioritet se sprema
+  - GIVEN dispečer odabere prioritet  
+  - WHEN potvrdi  
+  - THEN prioritet se sprema
 
 - **AC2: Ručna izmjena**  
-  - prioritet postoji  
-  - dispečer ga promijeni  
-  - novi prioritet se sprema
+  - GIVEN prioritet postoji  
+  - WHEN dispečer ga promijeni  
+  - THEN novi prioritet se sprema
 
 - **AC3: Prikaz prioriteta**  
-  - prioritet je postavljen  
-  - pregleda se intervencija  
-  - prioritet je vidljiv
+  - GIVEN prioritet je postavljen  
+  - WHEN pregleda se intervencija  
+  - THEN prioritet je vidljiv
 
 - **AC4: Prava pristupa**  
-  - korisnik nije ovlašten  
-  - pokuša promjenu  
-  - akcija nije dozvoljena
+  - GIVEN korisnik nije ovlašten  
+  - WHEN pokuša promjenu  
+  - THEN akcija nije dozvoljena
 
 ---
 
@@ -634,19 +634,19 @@ Zavisi od storyja za pregled otvorenih intervencija i povezan je sa storyjima za
 **Acceptance Criteria:**
 
 - **AC1: Pregled statusa**  
-  - postoje intervencije  
-  - dispečer pregleda  
-  - vidi statuse
+  - GIVEN postoje intervencije  
+  - WHEN dispečer pregleda  
+  - THEN vidi statuse
 
 - **AC2: Ažuriranje prikaza**  
-  - status se promijeni  
-  - lista se osvježi  
-  - prikaz je ažuriran
+  - GIVEN status se promijeni  
+  - WHEN lista se osvježi  
+  - THEN prikaz je ažuriran
 
 - **AC3: Pristup detaljima**  
-  - dispečer klikne intervenciju  
-  - otvori detalje  
-  - vidi dodatne informacije
+  - GIVEN dispečer klikne intervenciju  
+  - WHEN otvori detalje  
+  - THEN vidi dodatne informacije
 
 ---
 
