@@ -1107,3 +1107,83 @@ Zavisi od svih storyja koji mijenjaju stanje intervencije (prijava, dodjela, pro
 **Acceptance Criteria:**  
 
 ---
+
+# Raspodjela zadtaka po sprintovima i sprint ciljevi:
+
+Sprint broj: 6
+
+Sprint cilj: Postaviti tehničku osnovu sistema i osposobiti korisnički pristup aplikaciji.
+
+Ključne stavke koje tim želi završiti:
+- postavljanje projekta i Supabase okruženja
+- definisanje korisnika, uloga i osnovnih permisija
+- registraciona forma za korisnika usluge
+- login forma i osnovna prijava korisnika
+- osnova forme za prijavu zahtjeva
+- definisanje modela zahtjeva i radnog naloga
+
+Redoslijed i zavisnosti:
+- postavljanje projekta i povezivanje sa Supabase
+- definisanje korisnika, uloga i permisija
+- izrada registracije i prijave korisnika
+- izrada forme za prijavu zahtjeva
+- definisanje modela zahtjeva i radnog naloga
+
+Zavisnosti:
+Bez tehničke osnove, korisnika i autentifikacije nije moguće uvezati korisnički tok u narednom sprintu.
+
+
+Sprint broj: 7
+Sprint cilj: Omogućiti korisniku da se prijavi, pošalje zahtjev i vidi da je zahtjev evidentiran u sistemu.
+
+Ključne stavke koje tim želi završiti:
+- povezivanje registracije i prijave sa bazom
+- spremanje zahtjeva u bazu
+- dodjeljivanje početnog statusa zahtjevu
+- pregled vlastitog zahtjeva za korisnika
+- prikaz zahtjeva u dispečerovoj listi zahtjeva koji čekaju obradu
+  
+Redoslijed i zavisnosti:
+- završiti povezivanje registracije i prijave sa bazom
+- povezati formu zahtjeva sa bazom
+- dodati početni status zahtjevu
+- omogućiti korisniku pregled vlastitog zahtjeva
+- omogućiti dispečeru pregled zahtjeva koji čekaju obradu
+  
+Zavisnosti:
+Sprint 7 zavisi od tehničke osnove, korisničkih uloga, prijave korisnika i pripremljene forme zahtjeva iz Sprinta 6.
+
+
+Sprint broj: 8 
+
+Sprint cilj:
+
+Ključne stavke koje tim želi završiti:
+
+Rizici i zavisnosti:
+
+
+Sprint broj: 9 
+
+Sprint cilj:
+
+Ključne stavke koje tim želi završiti:
+
+Rizici i zavisnosti:
+
+Sprint broj: 10
+
+Sprint cilj: 
+
+Ključne stavke koje tim želi završiti:
+
+Rizici i zavisnosti:
+
+
+Sprint broj: 11
+
+Sprint cilj:
+
+Ključne stavke koje tim želi završiti:
+
+Rizici i zavisnosti:
