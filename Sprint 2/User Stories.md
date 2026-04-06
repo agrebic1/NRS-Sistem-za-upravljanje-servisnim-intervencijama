@@ -168,19 +168,19 @@ Sažeti pregled user story-a u okviru MVP-a:
 ## US-01 — Samostalna registracija korisnika usluge
 
 **Opis:**  
-Kao korisnik usluge, želim samostalno kreirati korisnički nalog, kako bih mogao prijaviti kvar i pratiti obradu svog zahtjeva.
+Kao korisnik usluge, želim samostalno kreirati korisnički nalog, kako bih mogao pristupiti sistemu, prijaviti kvar i pratiti obradu svog zahtjeva.
 
 **Poslovna vrijednost:**  
-Ovaj story je važan jer omogućava korisniku usluge da samostalno pristupi sistemu i koristi osnovne funkcionalnosti namijenjene klijentu, bez potrebe za posrednim unosom od strane administratora.
+Ovaj story je važan jer omogućava korisniku usluge samostalan ulazak u sistem i predstavlja osnovu za korištenje svih funkcionalnosti namijenjenih klijentu, bez potrebe za posredpvanjem administratora.
 
 **Prioritet:**  
 *Visok*
 
 **Pretpostavke i otvorena pitanja:**  
 
-**Pretpostavka:** Pretpostavlja se da korisnik usluge može samostalno pristupiti registracionoj formi.  
+**Pretpostavka:** Korisnik usluge može samostalno pristupiti registracionoj formi putem javno dostupnog dijela sistema.  
 
-**Otvorena pitanja:** Da li sistem korisniku automatski dodjeljuje ulogu klijenta pri registraciji?
+**Otvorena pitanja:** Da li sistem pri registraciji automatski dodjeljuje korisniku ulogu klijenta ili je potrebna dodatna potvrda od strane sistema ili administratora?
 
 **Veze sa drugim storyjima:**  
 Povezano sa storyjem za prijavu korisnika u sistem, prijavu zahtjeva za servisnu intervenciju i pregled vlastitog zahtjeva.
@@ -188,79 +188,89 @@ Povezano sa storyjem za prijavu korisnika u sistem, prijavu zahtjeva za servisnu
 **Acceptance Criteria:**
 
 - **AC1: Uspješna registracija**  
-  - **GIVEN** korisnik unese validne podatke  
-  - **WHEN** klikne na registraciju  
-  - **THEN** sistem kreira korisnički nalog
+  - **GIVEN** korisnik unese sve obavezne podatke u ispravnom formatu
+  - **WHEN** korisnik potvrdi registraciju  
+  - **THEN** sistem kreira korisnički nalog i evidentira korisnika u sistemu
 
 - **AC2: Nepotpuni podaci**  
-  - **GIVEN** korisnik ne unese sve obavezne podatke  
-  - **WHEN** pokuša registraciju  
-  - **THEN** sistem prikazuje grešku
+  - **GIVEN** korisnik nije unio sve obavezne podatke  
+  - **WHEN** korisnik pokuša potvrditi registraciju  
+  - **THEN** sistem ne kreira korisnički nalog i prikazuje poruku o grešci
 
 - **AC3: Neispravan format**  
-  - **GIVEN** korisnik unese neispravan format podataka  
-  - **WHEN** pokuša registraciju  
-  - **THEN** sistem prikazuje validacijsku grešku
+  - **GIVEN** korisnik unese podatke u neispravnom formatu   
+  - **WHEN** korisnik pokuša potvrditi registraciju  
+  - **THEN** sistem ne kreira korisnički nalog i prikazuje validacijsku poruku o grešci
 
 - **AC4: Postojeći korisnik**  
-  - **GIVEN** korisnik već postoji u sistemu  
-  - **WHEN** pokuša registraciju  
-  - **THEN** sistem prikazuje grešku
+  - **GIVEN** korisnik sa istim jedinstvenim identifikatorima već postoji u sistemu  
+  - **WHEN** korisnik pokuša izvršiti registraciju  
+  - **THEN** sistem ne kreira  novi kroisnički nalog i prikazuje poruku o grešci
 
 - **AC5: Lozinka ne zadovoljava pravila**  
-  - **GIVEN** lozinka ne ispunjava uslove  
-  - **WHEN** korisnik pokuša registraciju  
-  - **THEN** sistem prikazuje grešku
+  - **GIVEN** unesena lozinka ne ispunjava definisana pravila sistema
+  - **WHEN** korisnik pokuša potvrditi registraciju  
+  - **THEN** sistem ne kreira korisnički nalog i prikazuje poruku o grešci
+
+- **AC6: Dodjela osnovne korisničke uloge**  
+  - **GIVEN** registracija uspješno završena
+  - **WHEN** sistem kreira novi korisnički nalog
+  - **THEN** korisniku se dodjeljuje osnovna uloga predviđena za korisnika usluge ili senalog označava na dalju obradu, u skladu sa definisanim pravilima sistema
 
 ---
 
 ## US-02 — Prijava korisnika u sistem
 
 **Opis:**  
-Kao registrovani korisnik, želim se prijaviti u sistem, kako bih mogao pristupiti funkcionalnostima koje su mi dostupne.
+Kao registrovani korisnik, želim se prijaviti u sistem, kako bih mogao pristupiti funkcionalnostima i podacima koji su mi dostupni u skladu sa mojom korisničkom ulogom.
 
 **Poslovna vrijednost:**  
-Ovaj story je važan jer omogućava registrovanim korisnicima pristup sistemu i predstavlja osnovu za korištenje svih ostalih funkcionalnosti u skladu sa njihovom ulogom.
+Ovaj story je važan jer omogućava registrovanim korisnicima pristup sistemu i predstavlja osnovu za korištenje svih ostalih funkcionalnosti, uključujući prijavu zahtjeva, pregled vlastitih podataka i rad u skladu sa dodijeljenom ulogom.
 
 **Prioritet:**  
 *Visok*
 
 **Pretpostavke i otvorena pitanja:**  
 
-**Pretpostavka:** Pretpostavlja se da korisnik već ima kreiran i aktivan korisnički nalog.
+**Pretpostavka:** Pretpostavlja se da korisnik već ima kreiran i aktivan korisnički nalog u sistemu.
 
-**Otvorena pitanja:** Otvoreno pitanje je da li se nakon uspješne prijave korisnik preusmjerava na početni ekran prilagođen njegovoj ulozi.
+**Otvorena pitanja:** Da li se korisnik nakon uspješne prijave automatski preusmjerava na početni ekran prilagođen njegovoj ulozi?
 
 
 **Veze sa drugim storyjima:**  
-Zavisi od storyja za registraciju korisnika i povezan je sa svim storyjima koji zahtijevaju autentifikovan pristup sistemu.
+Zavisi od storyja za samostalnu registraciju korisnika i povezan je sa svim storyjima koji zahtijevaju autentifikovan pristup sistemu.
 
 **Acceptance Criteria:**
 
 - **AC1: Uspješna prijava**  
-  - **GIVEN** korisnik unese tačne podatke  
-  - **WHEN** prijavi se  
-  - **THEN** sistem omogućava pristup
+  - **GIVEN** korisnik unese tačne podatke za prijavu
+  - **WHEN** korisnik potvrdi prijavu  
+  - **THEN** sistem omogućava pristup korisničkom nalogu i prijavljuje korisnika u sistem
 
 - **AC2: Nepotpuni podaci**  
-  - **GIVEN** podaci nisu uneseni  
-  - **WHEN** korisnik pokušava prijavu  
-  - **THEN** sistem prikazuje grešku
+  - **GIVEN** korisnik nije unio sve obavezne podatke za prijavu
+  - **WHEN** korisnik pokuša potvrditi prijavu  
+  - **THEN** sistem ne dozvoljava prijavu i prikazuje poruku o grešci
 
-- **AC3: Neispravan format**  
-  - **GIVEN** podaci nisu u ispravnom formatu  
-  - **WHEN** korisnik pokuša prijavu  
-  - **THEN** sistem prikazuje grešku
+- **AC3: Neispravan format podataka**  
+  - **GIVEN** korisnik unese podatke u neispravnom formatu
+  - **WHEN** korisnik pokuša potvrditi prijavu  
+  - **THEN** sistem ne dozvoljava prijavu i prikazuje validacijsku poruku o grešci
 
-- **AC4: Pogrešni podaci**  
-  - **GIVEN** podaci nisu tačni  
-  - **WHEN** korisnik pokuša prijavu  
-  - **THEN** pristup nije dozvoljen
+- **AC4: Pogrešni podaci za prijavu**  
+  - **GIVEN** korisnik unese netačne podatke za prijavu   
+  - **WHEN** pokuša potvrditi prijavu  
+  - **THEN** sistem ne dozvoljava prijavu i prikazuje odgovarajuću poruku o grešci
 
-- **AC5: Neaktivan ili nepostojeći nalog**  
-  - **GIVEN** nalog nije aktivan ili ne postoji  
-  - **WHEN** korisnik pokuša prijavu  
-  - **THEN** sistem prikazuje grešku
+- **AC5: Neaktivan ili nepostojeći korisnički nalog**  
+  - **GIVEN** korisnički nalog ne postoji ili je označen kao neaktivan
+  - **WHEN** korisnik pokuša izvršiti prijavu  
+  - **THEN** sistem ne dozvoljava pristup i prikazuje odgovarajuću poruku o grešci
+ 
+- **AC6: Prikaz funckionalnosti prema korisničkoj ulozi**  
+  - **GIVEN** korisnik je uspješno prijavljen u sistem
+  - **WHEN** sistem učita korisnički interfejs 
+  - **THEN** korisniku se prikazuju samo funkcionalnosti i podaci koji odgovaraju njegovoj korisničkoj ulozi
 
 ---
 
