@@ -277,44 +277,49 @@ Zavisi od storyja za samostalnu registraciju korisnika i povezan je sa svim stor
 ## US-03 — Odjava korisnika iz sistema
 
 **Opis:**  
-Kao prijavljeni korisnik sistema, želim se sigurno odjaviti sa svog naloga, kako bih spriječio neovlašten pristup svom korisničkom računu nakon završetka rada.
+Kao prijavljeni korisnik sistema, želim se sigurno odjaviti sa svog naloga, kako bih spriječio neovlašten pristup svom korisničkom računu i podacima nakon završetka rada.
 
 **Poslovna vrijednost:**  
-Ovaj story je važan jer omogućava korisniku da na siguran način završi rad u sistemu i spriječi neovlašten pristup svom nalogu i podacima nakon završetka korištenja.
+Ovaj story je važan jer omogućava korisniku siguran završetak rada u sistemu, smanjuje rizik od neovlaštenog pristupa i doprinosi zaštiti korisničkih podataka, posebno kada se sistem koristi na dijeljenim ili javnim uređajima.
 
 **Prioritet:**  
 *Srednji*
 
 **Pretpostavke i otvorena pitanja:**  
 
-**Pretpostavka:** Pretpostavlja se da korisnik ima aktivnu sesiju u sistemu.
+**Pretpostavka:** Pretpostavlja se da korisnik ima aktivnu sesiju u sistemu i trenutno je prijavljen.
 
-**Otvorena pitanja:** Otvoreno pitanje je da li se nakon odjave korisnik vraća na početni ekran ili direktno na formu za prijavu.
+**Otvorena pitanja:** Da li se kroisnik nakon odjave vraća na početni ekran sistema ili direktno na ekran za prijavu?
 
 **Veze sa drugim storyjima:**  
-Povezano sa storyjem za prijavu korisnika u sistem.
+Povezano sa storyjem za prijavu korisnika u sistem i sa svim stoyjima koji zahtijevaju aktivnu korisničku sesiju.
 
 **Acceptance Criteria:**
 
 - **AC1: Uspješna odjava**  
-  - **GIVEN** korisnik je prijavljen  
-  - **WHEN** odjavi se  
-  - **THEN** sesija se prekida
+  - **GIVEN** korisnik je prijavljen u sistem
+  - **WHEN** korisnik odabere opciju za odjavu
+  - **THEN** sistema prekida aktivnu sesiju i odjavljuje korisnika 
 
-- **AC2: Zaštićene stranice**  
-  - **GIVEN** korisnik se odjavio  
-  - **WHEN** pokuša pristupiti zaštićenoj stranici  
-  - **THEN** pristup nije dozvoljen
+- **AC2: Onemogućen pristup zaštićenim funkcionalnostima nakon odjave**  
+  - **GIVEN** korisnik se uspješno odjavio iz sistema  
+  - **WHEN** korisnik pokuša pristupiti zaštićenoj stranici ili funkcionalnosti  
+  - **THEN** sistem ne dozvoljava pristup i preusmjerava korisnika na ekran za prijavu ili početni ekran.
+
+- **AC3: Završetak rada bez gubitka prethodno sačuvanih podataka**
+ - **GIVEN** korisnik se odjavljuje iz sistema  
+ - **WHEN** odjava bude izvršena 
+ - **THEN** sistem završava korisnički rad bez uticaja na prethodno sačuvane podatke i ranije izvršene akcije
 
 ---
 
 ## US-04 — Kontrola pristupa prema korisničkoj ulozi
 
 **Opis:**  
-Kao administrator, želim da sistem ograniči pristup podacima i funkcionalnostima prema korisničkoj ulozi, kako bi svaki korisnik mogao koristiti samo ono što je relevantno za njegovu odgovornost.
+Kao administrator, želim da sistem ograniči pristup podacima i funkcionalnostima prema korisničkoj ulozi, kako bi svaki korisnik mogao koristiti samo one opcije koje odgovaraju njegovim odgovornostima u sistemu.
 
 **Poslovna vrijednost:**  
-Ovaj story je važan jer omogućava sigurnu i preglednu kontrolu pristupa sistemu, smanjuje rizik od grešaka i neovlaštenih akcija te podržava jasno razgraničenje odgovornosti među korisnicima.
+Ovaj story je važan jer omogućava sigurno i pregledno korištenje sistema, smanjuje rizik od neovlaštenih akcija i osigurava da svaki korisnik radi samo u okviru svojih nadležnosti.
 
 **Prioritet:**  
 *Visok*
@@ -323,34 +328,39 @@ Ovaj story je važan jer omogućava sigurnu i preglednu kontrolu pristupa sistem
 
 **Pretpostavka:** Pretpostavlja se da su osnovne korisničke uloge sistema unaprijed definisane.
 
-**Otvorena pitanja:** Otvoreno pitanje je da li će sistem koristiti fiksno definisane uloge ili se kasnije podržava proširivanje modela prava pristupa.
+**Otvorena pitanja:** Da li će sistem u ovoj fazi koristiti isključivo fiksno definisane uloge ili se kasnije planira proširivanje modela prava pristupa?
 
 **Veze sa drugim storyjima:**  
 Povezano sa storyjima za prijavu korisnika u sistem, administrativno kreiranje korisničkih naloga i promjenu korisničke uloge.
 
 **Acceptance Criteria:**
 
-- **AC1: Dodjela uloge**  
-  - **GIVEN** administrator dodjeljuje ulogu  
-  - **WHEN** potvrdi akciju  
-  - **THEN** uloga se dodjeljuje
+- **AC1:  Prikaz funkcionalnosti prema korisničkoj ulozi**  
+  - **GIVEN** korisnik uspješno prijavljen u sistem   
+  - **WHEN** pristupi aplikaciji   
+  - **THEN** sistem mu prikazuje samo funkcionalnosti i podatke koji odgovaraju njegovoj korisničkoj ulozi
 
-- **AC2: Ograničen pristup**  
-  - **GIVEN** korisnik nema prava  
-  - **WHEN** pokuša pristup funkcionalnosti  
-  - **THEN** pristup nije dozvoljen
+- **AC2: Ograničen pristup nedozvoljenim funkcionalnostima  **  
+  - **GIVEN** korisnik nema ovlaštenje za određenu funkcionalnost   
+  - **WHEN** pokuša pristupiti toj funkcionalnosti  
+  - **THEN** sistem ne dozvoljava pristup i ne prikazuje nedozvoljeni sadržaj
+ 
+- **AC3: Ograničen pristup podacima drugih korisnika ili uloga**   
+  - **GIVEN** korisnik pokuša pristupiti podacima koji nisu u okviru njegove nadležnosti  
+  - **WHEN** otvori zaštićeni prikaz ili zapis  
+  - **THEN** sistem ne dozvoljava pristup tim podacima
 
-- **AC3: Izmjena uloge**  
-  - **GIVEN** administrator mijenja ulogu  
-  - **WHEN** potvrdi izmjenu  
-  - **THEN** uloga se ažurira
+- **AC4: Promjena pristupa nakon promjene korisničke uloge**  
+  - **GIVEN** korisniku je promijenjena uloga u sistemu  
+  - **WHEN** korisnik ponovo pristupi funkcionalnostima sistema  
+  - **THEN** sistem mu omogućava pristup u skladu sa novom korisničkom ulogom
 
 ---
 
 ## US-05 — Prijava zahtjeva za servisnu intervenciju
 
 **Opis:**  
-Kao korisnik usluge, želim prijaviti kvar ili zahtjev za servisnu intervenciju, kako bi obrada mog zahtjeva mogla biti evidentirana i pokrenuta kroz sistem.
+Kao korisnik usluge, želim prijaviti kvar ili zahtjev za servisnu intervenciju, kako bi moj problem mogao biti evidentiran u sistemu i mogao biti dalje obrađen.
 
 **Poslovna vrijednost:**  
 Ovaj story je važan jer omogućava da se problem koji korisnik prijavljuje formalno evidentira u sistemu i pretvori u konkretan zahtjev koji se može dalje obrađivati, pratiti i rješavati.
@@ -360,31 +370,46 @@ Ovaj story je važan jer omogućava da se problem koji korisnik prijavljuje form
 
 **Pretpostavke i otvorena pitanja:**  
 
-**Pretpostavka:** Pretpostavlja se da registrovani korisnik usluge ima pristup formi za prijavu zahtjeva.
+**Pretpostavka:** Pretpostavlja se da registrovani i prijavljeni korisnik usluge ima pristup formi za prijavu zahtjeva.
 
-**Otvorena pitanja:**  Otvoreno pitanje je koji je minimalni skup obaveznih podataka potreban za validnu prijavu.
+**Otvorena pitanja:**  Koji je minimalni skup obaveznih podataka potreban da bi zahtjev bio validno prijavljen?
 
 **Veze sa drugim storyjima:**  
 Povezano sa storyjima za pregled vlastitog zahtjeva, pregled otvorenih intervencija i dalju obradu servisne intervencije.
 
 **Acceptance Criteria:**
 
-- **AC1: Uspješna prijava**  
-  - **GIVEN** korisnik unese podatke  
-  - **WHEN** pošalje podatke  
-  - **THEN** zahtjev se kreira
+- **AC1: Uspješna prijava zahtjeva**  
+  - **GIVEN** korisnik unese sve obavezne podatke za prijavu zahtjeva  
+  - **WHEN** potvrdi slanje zahtjeva  
+  - **THEN** sistem kreira novi zahtjev za servisnu intervenciju i evidentira ga u sistemu
 
 - **AC2: Nepotpuni podaci**  
-  - **GIVEN** podaci nisu potpuni  
-  - **WHEN** korisnik pošalje zahtjev  
-  - **THEN** sistem prikazuje grešku
+  - **GIVEN** korisnik nije unio sve obavezne podatke   
+  - **WHEN** pokuša poslati zahtjev  
+  - **THEN** sistem ne kreira zahtjev i prikazuje poruku o grešci
+ 
+- **AC3: Uspješno evidentiranje zahtjeva** 
+  - **GIVEN** zahtjev je uspješno poslan  
+  - **WHEN** sistem obradi unesene podatke  
+  - **THEN** zahtjev se sprema u bazu i postaje dostupan za dalju obradu
+
+- **AC4: Dodjeljivanje početnog statusa zahtjevu**  
+  - **GIVEN** zahtjev je uspješno evidentiran u sistemu  
+  - **WHEN** sistem kreira novi zahtjev  
+  - **THEN** zahtjevu se automatski dodjeljuje početni status
+
+- **AC5: Veza zahtjeva sa korisnikom koji ga je prijavio**  
+  - **GIVEN** prijavljeni korisnik je uspješno poslao zahtjev  
+  - **WHEN** zahtjev bude kreiran  
+  - **THEN** sistem zahtjev povezuje sa korisničkim nalogom koji ga je podnio
 
 ---
 
 ## US-06 — Pregled vlastitog zahtjeva
 
 **Opis:**  
-Kao korisnik usluge, želim pregledati osnovne informacije i status svog zahtjeva, kako bih imao jasan uvid u ono što je prijavljeno i u fazu obrade u kojoj se zahtjev nalazi.
+Kao korisnik usluge, želim pregledati osnovne informacije i status svog zahtjeva, kako bih imao jasan uvid u ono što sam prijavio i u fazu obrade u kojoj se moj zahtjev nalazi.
 
 **Poslovna vrijednost:**  
 Ovaj story je važan jer korisniku omogućava da na jednom mjestu vidi šta je prijavio i u kojoj se fazi obrade njegov zahtjev nalazi, čime se povećava preglednost, smanjuje potreba za dodatnim provjerama i povećava povjerenje u proces rješavanja problema.
@@ -394,24 +419,39 @@ Ovaj story je važan jer korisniku omogućava da na jednom mjestu vidi šta je p
 
 **Pretpostavke i otvorena pitanja:**  
 
-**Pretpostavka:** Pretpostavlja se da korisnik ima evidentiran zahtjev u sistemu.
+**Pretpostavka:** Pretpostavlja se da korisnik ima evidentiran najmanje jedan zahtjev u sistemu i prijavljen je na svoj korisnički nalog.
 
-**Otvorena pitanja:**  Otvoreno pitanje je koji skup informacija će biti minimalno dostupan korisniku, npr. opis problema, lokacija, datum prijave, trenutni status i eventualni planirani termin.
+**Otvorena pitanja:** Koji minimalni skup informacija treba biti dostupan korisniku u pregledu zahtjeva, npr. opis problema, lokacija, datum prijave, trenutni status i eventualni planirani termin?
 
 **Veze sa drugim storyjima:**  
-Zavisi od storyja za prijavu zahtjeva za servisnu intervenciju i povezan je sa storyjem za ažuriranje statusa intervencije.
+Zavisi od storyja za prijavu zahtjeva za servisnu intervenciju i povezan je sa storyjem za ažuriranje statusa intervencije i pregled statusa intervencije.
 
 **Acceptance Criteria:**
 
-- **AC1: Pregled statusa**  
-  - **GIVEN** korisnik ima zahtjev  
-  - **WHEN** pregleda status  
-  - **THEN** vidi tačan status
+- **AC1: Prikaz vlastitog zahtjeva**  
+- **GIVEN** da korisnik ima evidentiran zahtjev u sistemu  
+- **WHEN** pristupi pregledu svojih zahtjeva  
+- **THEN** sistem prikazuje njegov zahtjev sa osnovnim informacijama.
 
-- **AC2: Samo vlastiti zahtjevi**  
-  - **GIVEN** korisnik je prijavljen  
-  - **WHEN** pregleda zahtjeve  
-  - **THEN** vidi samo svoje
+- **AC2: Prikaz trenutnog statusa zahtjeva**  
+- **GIVEN** da korisnik pregledava svoj zahtjev  
+- **WHEN** otvori detalje zahtjeva ili listu zahtjeva  
+- **THEN** sistem prikazuje tačan trenutni status zahtjeva.
+
+- **AC3: Prikaz samo vlastitih zahtjeva**  
+- **GIVEN** da je korisnik prijavljen u sistem  
+- **WHEN** pristupi pregledu zahtjeva  
+- **THEN** sistem prikazuje samo zahtjeve koje je taj korisnik prijavio.
+
+- **AC4: Prikaz praznog stanja**  
+- **GIVEN** da korisnik nema evidentiran nijedan zahtjev u sistemu  
+- **WHEN** pristupi pregledu svojih zahtjeva  
+- **THEN** sistem prikazuje odgovarajuću poruku da nema prijavljenih zahtjeva.
+
+- **AC5: Ažuriran prikaz nakon promjene statusa**  
+- **GIVEN** da je status korisnikovog zahtjeva promijenjen u sistemu  
+- **WHEN** korisnik ponovo pregleda svoj zahtjev  
+- **THEN** sistem prikazuje ažurirani status zahtjeva.
 
 ---
 
