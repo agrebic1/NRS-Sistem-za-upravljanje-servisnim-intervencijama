@@ -429,27 +429,27 @@ Zavisi od storyja za prijavu zahtjeva za servisnu intervenciju i povezan je sa s
 **Acceptance Criteria:**
 
 - **AC1: Prikaz vlastitog zahtjeva**  
-  - **GIVEN** da korisnik ima evidentiran zahtjev u sistemu  
+  - **GIVEN** korisnik ima evidentiran zahtjev u sistemu  
   - **WHEN** pristupi pregledu svojih zahtjeva  
   - **THEN** sistem prikazuje njegov zahtjev sa osnovnim informacijama
 
 - **AC2: Prikaz trenutnog statusa zahtjeva**  
-  - **GIVEN** da korisnik pregledava svoj zahtjev  
+  - **GIVEN** korisnik pregleda svoj zahtjev  
   - **WHEN** otvori detalje zahtjeva ili listu zahtjeva  
   - **THEN** sistem prikazuje tačan trenutni status zahtjeva.
 
 - **AC3: Prikaz samo vlastitih zahtjeva**  
-  - **GIVEN** da je korisnik prijavljen u sistem  
+  - **GIVEN** korisnik je prijavljen u sistem  
   - **WHEN** pristupi pregledu zahtjeva  
   - **THEN** sistem prikazuje samo zahtjeve koje je taj korisnik prijavio
 
 - **AC4: Prikaz praznog stanja**  
-  - **GIVEN** da korisnik nema evidentiran nijedan zahtjev u sistemu  
+  - **GIVEN** korisnik nema evidentiran nijedan zahtjev u sistemu  
   - **WHEN** pristupi pregledu svojih zahtjeva  
   - **THEN** sistem prikazuje odgovarajuću poruku da nema prijavljenih zahtjeva
 
 - **AC5: Ažuriran prikaz nakon promjene statusa**  
-  - **GIVEN** da je status korisnikovog zahtjeva promijenjen u sistemu  
+  - **GIVEN** status korisnikovog zahtjeva je promijenjen u sistemu  
   - **WHEN** korisnik ponovo pregleda svoj zahtjev  
   - **THEN** sistem prikazuje ažurirani status zahtjeva
 
@@ -478,27 +478,27 @@ Zavisi od storyja za prijavu zahtjeva za servisnu intervenciju i povezan je sa s
 **Acceptance Criteria:**
 
 - **AC1: Prikaz liste otvorenih i aktivnih intervencija**  
-    - **GIVEN** da u sistemu postoje otvorene ili aktivne intervencije  
+    - **GIVEN** u sistemu postoje otvorene ili aktivne intervencije  
     - **WHEN** dispečer pristupi pregledu intervencija  
     - **THEN** sistem prikazuje listu svih relevantnih intervencija za dalju obradu
 
 - **AC2: Prikaz osnovnih informacija o intervenciji**  
-    - **GIVEN** da dispečer pregleda listu otvorenih intervencija  
+    - **GIVEN** dispečer pregleda listu otvorenih intervencija  
     - **WHEN** sistem prikaže listu  
     - **THEN** za svaku intervenciju prikazuje osnovne podatke potrebne za pregled i razlikovanje zapisa
 
 - **AC3: Isključenje završenih ili neaktivnih intervencija iz osnovnog pregleda**  
-    - **GIVEN** da u sistemu postoje završene ili zatvorene intervencije  
+    - **GIVEN** u sistemu postoje završene ili zatvorene intervencije  
     - **WHEN** dispečer pristupi osnovnom pregledu otvorenih intervencija  
     - **THEN** sistem ne prikazuje intervencije koje više nisu predmet aktivne obrade
 
 - **AC4: Ažuriranje pregleda nakon promjene stanja intervencije**  
-    - **GIVEN** da se stanje neke intervencije promijeni u sistemu  
+    - **GIVEN** stanje neke intervencije se promijeni u sistemu  
     - **WHEN** dispečer osvježi pregled ili ponovo pristupi listi intervencija  
     - **THEN** sistem prikazuje ažurirano stanje liste.
 
 - **AC5: Ograničenje pristupa pregledu intervencija**  
-    - **GIVEN** da korisnik nema ulogu dispečera ili drugo odgovarajuće ovlaštenje  
+    - **GIVEN** korisnik nema ulogu dispečera ili drugo odgovarajuće ovlaštenje  
     - **WHEN** pokuša pristupiti pregledu otvorenih intervencija  
     - **THEN** sistem mu ne dozvoljava pristup toj funkcionalnosti.
 ---
@@ -524,27 +524,27 @@ Zavisi od storyja za pregled otvorenih intervencija i povezan je sa storyjima za
 **Acceptance Criteria:**
 
 - **AC1: Otvaranje detalja intervencije**  
-    - **GIVEN** da dispečer pregledava listu otvorenih intervencija  
+    - **GIVEN** dispečer pregleda listu otvorenih intervencija  
     - **WHEN** odabere jednu konkretnu intervenciju  
     - **THEN** sistem otvara detaljan prikaz te intervencije
 
 - **AC2: Prikaz ključnih informacija o intervenciji**  
-    - **GIVEN** da je dispečer otvorio detalje intervencije  
+    - **GIVEN** dispečer je otvorio detalje intervencije  
     - **WHEN** sistem prikaže zapis  
     - **THEN** prikazuju se sve osnovne informacije potrebne za dalju obradu zahtjeva
 
 - **AC3: Prikaz trenutnog statusa intervencije**  
-    - **GIVEN** da dispečer pregledava detalje intervencije  
+    - **GIVEN** dispečer pregleda detalje intervencije  
     - **WHEN** otvori detaljan prikaz  
     - **THEN** sistem prikazuje trenutni status intervencije
 
 - **AC4: Prikaz povezanih operativnih podataka**  
-    - **GIVEN** da intervencija ima dodatne podatke relevantne za obradu  
+    - **GIVEN** intervencija ima dodatne podatke relevantne za obradu  
     - **WHEN** dispečer pregleda detalje  
     - **THEN** sistem prikazuje podatke potrebne za odlučivanje o prioritetu, planiranju i dodjeli
 
 - **AC5: Ograničenje pristupa detaljima intervencije**  
-    - **GIVEN** da korisnik nema odgovarajuće ovlaštenje  
+    - **GIVEN** korisnik nema odgovarajuće ovlaštenje  
     - **WHEN** pokuša otvoriti detalje intervencije  
     - **THEN** sistem mu ne dozvoljava pristup toj funkcionalnosti
 
@@ -571,27 +571,27 @@ Zavisi od storyja za pregled otvorenih intervencija i pregled detalja pojedinač
 **Acceptance Criteria:**
 
 - **AC1: Uspješna dodjela intervencije serviseru**  
-    - **GIVEN** da dispečer pregleda intervenciju spremnu za dodjelu  
+    - **GIVEN** dispečer pregleda intervenciju spremnu za dodjelu  
     - **WHEN** odabere odgovornog servisera i potvrdi akciju  
     - **THEN** sistem dodjeljuje intervenciju odabranom serviseru
 
 - **AC2: Evidentiranje dodjele u sistemu**  
-    - **GIVEN** da je dispečer uspješno izvršio dodjelu  
+    - **GIVEN** dispečer je uspješno izvršio dodjelu  
     - **WHEN** sistem obradi akciju  
     - **THEN** intervencija se evidentira kao dodijeljena i povezuje sa odabranim serviserom
 
 - **AC3: Nedozvoljena dodjela bez odabira servisera**  
-    - **GIVEN** da dispečer nije odabrao servisera  
+    - **GIVEN** dispečer nije odabrao servisera  
     - **WHEN** pokuša potvrditi dodjelu  
     - **THEN** sistem ne izvršava dodjelu i prikazuje poruku o grešci
 
 - **AC4: Prikaz dodijeljene intervencije serviseru**  
-    - **GIVEN** da je intervencija uspješno dodijeljena  
+    - **GIVEN** intervencija je uspješno dodijeljena  
     - **WHEN** serviser pristupi svom pregledu zadataka  
     - **THEN** sistem prikazuje dodijeljenu intervenciju u njegovoj listi zadataka
 
 - **AC5: Ograničenje pristupa funkcionalnosti dodjele**  
-    - **GIVEN** da korisnik nema odgovarajuće ovlaštenje za dodjelu  
+    - **GIVEN** korisnik nema odgovarajuće ovlaštenje za dodjelu  
     - **WHEN** pokuša dodijeliti intervenciju serviseru  
     - **THEN** sistem mu ne dozvoljava pristup toj funkcionalnosti
 
@@ -618,27 +618,27 @@ Zavisi od storyja za pregled detalja pojedinačne intervencije i povezan je sa s
 **Acceptance Criteria:**
 
 - **AC1: Uspješna dodjela intervencije timu servisera**  
-    - **GIVEN** da dispečer pregleda intervenciju koja zahtijeva timski rad  
+    - **GIVEN** dispečer pregleda intervenciju koja zahtijeva timski rad  
     - **WHEN** odabere tim servisera i potvrdi dodjelu  
     - **THEN** sistem dodjeljuje intervenciju odabranom timu
 
 - **AC2: Evidentiranje svih članova tima na intervenciji**  
-    - **GIVEN** da je timska dodjela uspješno izvršena  
+    - **GIVEN** timska dodjela je uspješno izvršena  
     - **WHEN** sistem obradi akciju  
     - **THEN** intervencija se povezuje sa svim odabranim članovima tima
 
 - **AC3: Nedozvoljena dodjela bez odabira tima ili članova tima**  
-    - **GIVEN** da dispečer nije odabrao tim ili članove tima  
+    - **GIVEN** dispečer nije odabrao tim ili članove tima  
     - **WHEN** pokuša potvrditi dodjelu  
     - **THEN** sistem ne izvršava dodjelu i prikazuje poruku o grešci
 
 - **AC4: Prikaz timski dodijeljene intervencije relevantnim serviserima**  
-    - **GIVEN** da je intervencija uspješno dodijeljena timu  
+    - **GIVEN** intervencija je uspješno dodijeljena timu  
     - **WHEN** članovi tima pristupe svom pregledu zadataka  
     - **THEN** sistem prikazuje intervenciju svim relevantnim izvršiocima
 
 - **AC5: Ograničenje pristupa funkcionalnosti timske dodjele**  
-    - **GIVEN** da korisnik nema odgovarajuće ovlaštenje za timsku dodjelu  
+    - **GIVEN** korisnik nema odgovarajuće ovlaštenje za timsku dodjelu  
     - **WHEN** pokuša dodijeliti intervenciju timu servisera  
     - **THEN** sistem mu ne dozvoljava pristup toj funkcionalnosti
 
@@ -1088,25 +1088,25 @@ Zavisi od storyja za pregled korisničkih naloga i povezan je sa storyjem za pri
 
 **Acceptance Criteria:**
 
-- **AC1: Uspješna deaktivacija naloga**  
-  - **GIVEN** administrator odabere aktivan korisnički nalog  
-  - **WHEN** potvrdi deaktivaciju  
-  - **THEN** sistem mijenja status naloga u neaktivan.
+- **AC1: Uspješna promjena statusa**  
+  - **GIVEN** administrator pregleda listu aktivnih korisnika  
+  - **WHEN** odabere opciju "Deaktiviraj" za specifičnog korisnika i potvrdi akciju  
+  - **THEN** sistem mijenja status tog naloga u "Neaktivan" i bilježi vrijeme deaktivacije
 
-- **AC2: Onemogućen pristup deaktiviranom korisniku**  
-  - **GIVEN** korisnički nalog je deaktiviran  
-  - **WHEN** korisnik pokuša prijavu u sistem  
-  - **THEN** sistem mu ne dozvoljava pristup.
+- **AC2: Trenutni prekid sesije i zabrana pristupa**  
+  - **GIVEN** korisnički nalog je upravo deaktiviran  
+  - **WHEN** korisnik pokuša pristupiti bilo kojoj funkciji sistema ili se pokuša ponovo prijaviti 
+  - **THEN** sistem mu uskraćuje pristup i ispisuje poruku: "Vaš nalog je deaktiviran. Kontaktirajte administratora."
 
-- **AC3: Prikaz statusa neaktivnog naloga**  
-  - **GIVEN** korisnički nalog je deaktiviran  
-  - **WHEN** administrator pregleda korisnike  
-  - **THEN** sistem prikazuje da je nalog neaktivan.
+- **AC3: Vidljivost u listi korisnika**  
+  - **GIVEN** administrator pretražuje korisnike  
+  - **WHEN** pregleda listu svih korisnika  
+  - **THEN** neaktivni korisnici moraju biti jasno vizuelno označeni (npr. siva boja ili labela "Neaktivan") kako bi se razlikovali od aktivnih
 
-- **AC4: Ograničenje pristupa funkcionalnosti deaktivacije**  
-  - **GIVEN** korisnik nije administrator  
-  - **WHEN** pokuša deaktivirati korisnički nalog  
-  - **THEN** sistem mu ne dozvoljava pristup toj funkcionalnosti.
+- **AC4: Očuvanje integriteta podataka**  
+  - **GIVEN** nalog je deaktiviran  
+  - **WHEN** administrator pregleda izvještaje o ranijim intervencijama koje je taj korisnik radio 
+  - **THEN** svi podaci, napomene i historija povezani sa tim nalogom moraju ostati netaknuti i vidljivi
 
 ---
 
@@ -1131,6 +1131,25 @@ Ovaj story je važan jer omogućava da sistem evidentira da je serviser svjesno 
 Zavisi od storyja za dodjelu intervencije odgovornom licu i povezan je sa storyjem za ažuriranje statusa intervencije od strane servisera.
 
 **Acceptance Criteria:**  
+- **AC1: Uspješna promjena statusa zadatka**  
+  - **GIVEN** serviser pregleda listu svojih zadataka i odabere zadatak koji je u statusu "Dodijeljeno"  
+  - **WHEN** potvrdi akciju "Prihvati zadatak"  
+  - **THEN** sistem mijenja status intervencije u "Prihvaćeno" (ili "U radu") i bilježi tačno vrijeme prihvatanja
+
+- **AC2: Vidljivost dispečeru**  
+  - **GIVEN** serviser je prihvatio zadatak  
+  - **WHEN** dispečer pregleda globalnu listu intervencija  
+  - **THEN** sistem prikazuje ažuriran status i informaciju koji serviser je preuzeo zadatak
+
+- **AC3: Ograničenje akcije (Autorizacija)**  
+  - **GIVEN** zadatak nije dodijeljen prijavljenom serviseru  
+  - **WHEN** taj korisnik pokuša pristupiti opciji prihvatanja tog zadatka  
+  - **THEN** sistem mu ne prikazuje opciju "Prihvati" ili mu onemogućava akciju uz odgovarajuću poruku
+
+- **AC4: Validacija prethodnog stanja**  
+  - **GIVEN** zadatak je već u statusu "Zatvoreno" ili "Otkazano"  
+  - **WHEN** serviser pokuša izvršiti akciju prihvatanja  
+  - **THEN** sistem onemogućava akciju jer zadatak više nije u aktivnoj fazi za dodjelu
 
 ---
 
@@ -1155,6 +1174,25 @@ Ovaj story je važan jer omogućava da sistem evidentira da zadatak ne može bit
 Zavisi od storyja za dodjelu intervencije odgovornom licu i povezan je sa storyjem za pregled dodijeljenih intervencija.
 
 **Acceptance Criteria:**  
+- **AC1: Obavezno navođenje razloga odbijanja**  
+  - **GIVEN** serviser odabere opciju "Odbij zadatak"  
+  - **WHEN** pokuša potvrditi akciju  
+  - **THEN** sistem zahtijeva obavezan unos razloga (npr. putem padajućeg menija ili tekstualnog polja) i ne dozvoljava završetak akcije bez tog unosa
+
+- **AC2: Promjena statusa i oslobađanje servisera**  
+  - **GIVEN** serviser je unio razlog i potvrdio odbijanje  
+  - **WHEN** sistem obradi zahtjev  
+  - **THEN** status zadatka se vraća u "Neraspoređeno" (ili "Odbijeno - čeka dodjelu"), a zadatak se uklanja iz liste aktivnih zaduženja tog servisera
+
+- **AC3: Obavještavanje dispečera**  
+  - **GIVEN** zadatak je odbijen  
+  - **WHEN** se status promijeni  
+  - **THEN** sistem šalje automatsku notifikaciju dispečeru s informacijom o odbijanju i navedenim razlogom
+
+- **AC4: Zabrana odbijanja započetog rada**  
+  - **GIVEN** serviser je već promijenio status u "U toku"  
+  - **WHEN** pokuša pristupiti opciji "Odbij"  
+  - **THEN** sistem mu onemogućava tu opciju i upućuje ga na ponovnu dodjelu
 
 ---
 
@@ -1179,6 +1217,25 @@ Ovaj story je važan jer omogućava dispečeru da pregleda dokaz o obavljenom ra
 Zavisi od storyja za evidentiranje izvršenog rada i povezan je sa storyjem za potvrdu i zatvaranje intervencije.
 
 **Acceptance Criteria:**  
+- **AC1: Prikaz obaveznih detalja izvršenog rada**  
+  - **GIVEN** serviser je evidentirao rad  
+  - **WHEN** dispečer otvori detalje te intervencije  
+  - **THEN** sistem prikazuje minimalno: opis obavljenog posla, datum i vrijeme završetka, utrošeno vrijeme (u satima/minutama) i listu zamijenjenih dijelova (ako ih ima)
+
+- **AC2: Statusna uslovljenost pregleda**  
+  - **GIVEN** intervencija još uvijek ima status "U toku"  
+  - **WHEN** dispečer pokuša pristupiti sekciji izvještaja o radu  
+  - **THEN** sistem prikazuje informaciju da rad još uvijek nije evidentiran od strane servisera
+
+- **AC3: Zabrana modifikacije podataka (Read-only)**  
+  - **GIVEN** dispečer pregleda evidentirani rad  
+  - **WHEN** se nalazi na ekranu za pregled izvještaja  
+  - **THEN** sistem onemogućava dispečeru bilo kakvu izmjenu unesenog teksta ili podataka servisera, osiguravajući integritet izvještaja
+
+- **AC4: Vidljivost priloga**  
+  - **GIVEN** serviser je uz izvještaj priložio fotografije kvara/popravke  
+  - **WHEN** dispečer pregleda izvještaj  
+  - **THEN** sistem omogućava pregled i preuzimanje svih priloženih datoteka/fotografija
 
 ---
 
@@ -1204,6 +1261,25 @@ Ovaj story je važan jer omogućava da se intervencija zvanično završi tek nak
 Zavisi od storyja za ažuriranje statusa intervencije od strane servisera i storyja za pregled evidentiranog izvršenog rada.
 
 **Acceptance Criteria:**  
+- **AC1: Promjena statusa u finalno stanje**  
+  - **GIVEN** dispečer je pregledao rad i odabrao opciju "Potvrdi i zatvori"  
+  - **WHEN** sistem obradi komandu  
+  - **THEN** status intervencije se automatski mijenja iz "Čeka potvrdu" u "Zatvoreno" (Closed)
+
+- **AC2: Onemogućavanje daljih izmjena**  
+  - **GIVEN** intervencija je u statusu "Zatvoreno"  
+  - **WHEN** bilo koji korisnik pokuša izmijeniti podatke, dodati napomenu ili promijeniti status  
+  - **THEN** sistem onemogućava sve akcije uređivanja i prikazuje obavijest da je intervencija arhivirana i zaključana
+
+- **AC3: Automatsko bilježenje vremena zatvaranja**  
+  - **GIVEN** proces zatvaranja je uspješan  
+  - **WHEN** sistem zapiše promjenu u bazu podataka  
+  - **THEN** sistem automatski generiše i sprema vremenski pečat (datum i vrijeme) u polje "Datum zatvaranja"
+
+- **AC4: Arhiviranje i vidljivost**  
+  - **GIVEN** intervencija je zatvorena  
+  - **WHEN** korisnik pretražuje listu aktivnih intervencija  
+  - **THEN** sistem uklanja tu intervenciju sa liste aktivnih zadataka i premješta je u sekciju "Arhiva" ili "Završene intervencije"
 
 ---
 
@@ -1228,6 +1304,25 @@ Ovaj story je važan jer omogućava korisniku da ispravi greške u prijavi bez p
 Zavisi od storyja za prijavu zahtjeva za servisnu intervenciju i povezan je sa storyjem za pregled vlastitog zahtjeva.  
 
 **Acceptance Criteria:**  
+- **AC1: Definicija dozvoljenih polja za izmjenu**  
+  - **GIVEN** korisnik otvori formu za izmjenu zahtjeva  
+  - **WHEN** sistem učita podatke  
+  - **THEN** sistem dozvoljava izmjenu isključivo sljedećih polja: opis kvara, kontakt telefon, dodatne napomene i adresa lokacije (ukoliko intervencija nije započeta)
+
+- **AC2: Onemogućavanje izmjene ključnih sistemskih polja**  
+  - **GIVEN** korisnik je u modu za izmjenu  
+  - **WHEN** pregleda formu  
+  - **THEN** sistem onemogućava izmjenu polja kao što su: ID zahtjeva, datum i vrijeme prvobitne prijave i trenutni status zahtjeva
+
+- **AC3: Zabrana izmjene nakon dodjele**  
+  - **GIVEN** dispečer je već dodijelio zahtjev serviseru (status "Dodijeljeno" ili "U toku")  
+  - **WHEN** korisnik pokuša pristupiti opciji "Izmijeni"  
+  - **THEN** sistem sakriva dugme za izmjenu ili prikazuje poruku da izmjena više nije moguća jer je zahtjev u procesu obrade
+
+- **AC4: Validacija izmijenjenih podataka**  
+  - **GIVEN** korisnik je unio nove podatke i kliknuo "Sačuvaj"  
+  - **WHEN** sistem primi podatke  
+  - **THEN** sistem vrši istu validaciju kao i kod prve prijave (npr. provjera obaveznih polja) i ažurira zapis u bazi podataka uz bilježenje vremena izmjene
 
 ---
 
@@ -1252,6 +1347,25 @@ Ovaj story je važan jer sprečava da pogrešno prijavljeni ili više nepotrebni
 Zavisi od storyja za prijavu zahtjeva za servisnu intervenciju i povezan je sa storyjem za pregled vlastitog zahtjeva.  
 
 **Acceptance Criteria:**  
+- **AC1: Obavezan unos razloga otkazivanja**  
+  - **GIVEN** korisnik odabere opciju "Otkaži zahtjev"  
+  - **WHEN** sistem otvori potvrdni dijalog  
+  - **THEN** sistem zahtijeva od korisnika da odabere ili upiše razlog otkazivanja (npr. "Greška u prijavi", "Kvar otklonjen samostalno") i ne dozvoljava nastavak bez unosa
+
+- **AC2: Promjena statusa u finalno stanje**  
+  - **GIVEN** korisnik je potvrdio otkazivanje i naveo razlog  
+  - **WHEN** sistem obradi akciju  
+  - **THEN** status zahtjeva se mijenja u "Otkazano" i zahtjev se uklanja sa liste aktivnih zadataka dispečera
+
+- **AC3: Zabrana otkazivanja nakon početka obrade**  
+  - **GIVEN** zahtjev je već u statusu "Dodijeljeno" ili "U toku"  
+  - **WHEN** korisnik pokuša pristupiti opciji otkazivanja  
+  - **THEN** sistem onemogućava akciju i prikazuje poruku da je zahtjev već preuzet od strane servisera te da otkazivanje više nije moguće putem aplikacije
+
+- **AC4: Bilježenje vremena otkazivanja**  
+  - **GIVEN** akcija otkazivanja je uspješna  
+  - **WHEN** sistem ažurira bazu podataka  
+  - **THEN** sistem automatski bilježi tačan datum i vrijeme otkazivanja uz navedeni razlog 
 
 ---
 
@@ -1276,7 +1390,26 @@ Ovaj story je važan jer omogućava da operativni tok ne "zapne" kada dodijeljen
 Zavisi od storyja za dodjelu intervencije odgovornom serviseru i povezan je sa storyjima za pregled otvorenih intervencija, pregled detalja pojedinačne intervencije i pregled statusa intervencija.  
 
 **Acceptance Criteria:**  
+- **AC1: Odabir i validacija novog izvršioca**  
+  - **GIVEN** dispečer pokrene akciju promjene izvršioca  
+  - **WHEN** sistem prikaže listu dostupnih servisera i dispečer odabere novog izvršioca (Serviser B)  
+  - **THEN** sistem ažurira polje trenutnog izvršioca na novog servisera i šalje mu notifikaciju o novom zaduženju
 
+- **AC2: Automatsko evidentiranje prethodnog zaduženja (Audit Log)**  
+  - **GIVEN** izvršilac je uspješno promijenjen  
+  - **WHEN** sistem zapiše promjenu u bazu podataka  
+  - **THEN** sistem automatski kreira zapis u historiji aktivnosti koji sadrži ime prethodnog izvršioca, ime novog izvršioca, razlog promjene i vremenski pečat
+
+- **AC3: Oslobađanje prethodnog izvršioca**  
+  - **GIVEN** intervencija je preraspodijeljena  
+  - **WHEN** sistem ažurira liste zaduženja  
+  - **THEN** sistem automatski uklanja tu intervenciju sa liste aktivnih zadataka prethodno dodijeljenog servisera (Serviser A) i šalje mu obavijest o povlačenju zadatka
+
+- **AC4: Zabrana promjene na zatvorenim intervencijama**  
+  - **GIVEN** intervencija je već u statusu "Zatvoreno" ili "Otkazano"  
+  - **WHEN** dispečer pokuša pristupiti opciji promjene izvršioca  
+  - **THEN** sistem onemogućava tu opciju i prikazuje poruku da se izvršilac ne može mijenjati na arhiviranim zahtjevima
+    
 ---
 
 ## US-29 — Vraćanje zadatka na ponovnu dodjelu  
@@ -1300,7 +1433,26 @@ Ovaj story je važan jer omogućava da se zadatak ne zaglavi kod servisera koji 
 Zavisi od storyja za prihvatanje dodijeljenog zadatka i povezan je sa storyjima za promjenu izvršioca, pregled dodijeljenih intervencija i ažuriranje statusa intervencije od strane servisera.  
 
 **Acceptance Criteria:**  
+- **AC1: Obavezan unos razloga vraćanja**  
+  - **GIVEN** serviser odabere opciju "Vrati na ponovnu dodjelu"  
+  - **WHEN** pokuša potvrditi akciju  
+  - **THEN** sistem zahtijeva obavezan unos detaljnog obrazloženja (tekstualni unos) i ne dozvoljava završetak akcije bez tog unosa
 
+- **AC2: Automatska promjena statusa i oslobađanje servisera**  
+  - **GIVEN** serviser je potvrdio vraćanje zadatka s obrazloženjem  
+  - **WHEN** sistem obradi zahtjev  
+  - **THEN** status zadatka se mijenja u "Čeka ponovnu dodjelu", a zadatak se uklanja iz liste aktivnih zaduženja tog servisera
+
+- **AC3: Prioritetna notifikacija dispečeru**  
+  - **GIVEN** zadatak je vraćen na ponovnu dodjelu  
+  - **WHEN** se status promijeni u bazi podataka  
+  - **THEN** sistem šalje hitnu notifikaciju dispečeru koja sadrži ID zadatka i uneseno obrazloženje servisera radi hitne reakcije
+
+- **AC4: Onemogućavanje vraćanja završenog zadatka**  
+  - **GIVEN** intervencija je već u statusu "Zatvoreno" ili "Izvršeno - čeka potvrdu"  
+  - **WHEN** korisnik pokuša pristupiti opciji vraćanja  
+  - **THEN** sistem sakriva opciju vraćanja ili onemogućava akciju jer zadatak više nije u fazi aktivne obrade na terenu
+    
 ---
 
 ## US-30 — Razmjena napomena na intervenciji  
@@ -1324,7 +1476,26 @@ Ovaj story je važan jer omogućava brzu i direktnu komunikaciju između ureda i
 Povezano sa storyjima za pregled detalja pojedinačne intervencije, pregled detalja zadatka na terenu i vraćanje zadatka na ponovnu dodjelu.  
 
 **Acceptance Criteria:**  
+- **AC1: Dodavanje i pohrana napomene**  
+  - **GIVEN** dispečer ili serviser otvori sekciju za napomene na intervenciji  
+  - **WHEN** unese tekst i potvrdi spasavanje  
+  - **THEN** sistem pohranjuje napomenu uz automatsko bilježenje imena autora, njegove uloge (npr. Serviser) i tačnog vremena unosa (timestamp)
 
+- **AC2: Hronološki pregled komunikacije**  
+  - **GIVEN** na intervenciji postoji više napomena  
+  - **WHEN** bilo koji ovlašteni interni korisnik pregleda historiju napomena  
+  - **THEN** sistem prikazuje sve napomene poredane hronološki od najnovije ka najstarijoj radi lakšeg praćenja toka informacija
+
+- **AC3: Interna povjerljivost (Zabrana prikaza klijentu)**  
+  - **GIVEN** klijent (korisnik usluge) je prijavljen na sistem i pregleda svoj zahtjev  
+  - **WHEN** sistem učitava podatke o zahtjevu  
+  - **THEN** sistem klijentu ne prikazuje sekciju sa internim napomenama dispečera i servisera, osiguravajući da operativna komunikacija ostane isključivo interna
+
+- **AC4: Ograničenje dužine i formata**  
+  - **GIVEN** korisnik unosi napomenu  
+  - **WHEN** pokuša spasiti tekst  
+  - **THEN** sistem dozvoljava unos samo u tekstualnom formatu i ograničava dužinu na razuman broj karaktera (npr. 500) kako bi se zadržala preglednost
+    
 ---
 
 ## US-31 — Pregled historije aktivnosti intervencije  
@@ -1348,6 +1519,25 @@ Ovaj story je važan jer osigurava transparentnost i omogućava praćenje toka r
 Zavisi od svih storyja koji mijenjaju stanje intervencije (prijava, dodjela, promjena statusa, planiranje, određivanje prioriteta).  
 
 **Acceptance Criteria:**  
+- **AC1: Automatsko generisanje zapisa**  
+  - **GIVEN** bilo koji ovlašteni korisnik je izvršio promjenu na intervenciji (npr. promjena statusa ili dodjela servisera)  
+  - **WHEN** sistem uspješno spasi promjenu u bazu podataka  
+  - **THEN** sistem automatski kreira novi zapis u historiji aktivnosti bez potrebe za ručnim unosom od strane korisnika
+
+- **AC2: Sadržaj i detalji zapisa**  
+  - **GIVEN** dispečer otvori sekciju "Historija aktivnosti"  
+  - **WHEN** pregleda listu promjena  
+  - **THEN** svaki pojedinačni zapis mora sadržavati: datum i tačno vrijeme promjene, ime i ulogu korisnika koji je izvršio akciju, naziv promijenjenog polja, staru vrijednost i novu vrijednost
+
+- **AC3: Hronološki prikaz događaja**  
+  - **GIVEN** intervencija ima više zabilježenih aktivnosti  
+  - **WHEN** učita se stranica sa historijom  
+  - **THEN** sistem prikazuje listu hronološki, pri čemu su najnovije promjene na samom vrhu liste radi bržeg uvida u trenutno stanje
+
+- **AC4: Onemogućavanje brisanja historije**  
+  - **GIVEN** zapisi u historiji su jednom kreirani  
+  - **WHEN** bilo koji korisnik pokuša obrisati ili izmijeniti zapis u historiji  
+  - **THEN** sistem onemogućava takve akcije i garantuje integritet audit trail-a kao trajnog dokaza o radu
 
 ---
 
