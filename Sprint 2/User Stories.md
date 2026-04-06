@@ -1202,11 +1202,11 @@ Ovaj plan je organizovan tako da se razvoj sistema odvija **postepeno, smisleno 
 
 ### **Ključne stavke koje tim želi završiti**
 - postavljanje projekta i Supabase okruženja  
-- definisanje korisnika, uloga i osnovnih permisija  
-- registraciona forma za korisnika usluge  
-- login forma i osnovna prijava korisnika  
-- osnova forme za prijavu zahtjeva  
-- definisanje modela zahtjeva i radnog naloga  
+- definisanje korisnika, uloga i osnovnih permisija (**US-04**)  
+- registraciona forma za korisnika usluge (**US-01**)  
+- login forma i osnovna prijava korisnika (**US-02**) 
+- osnova forme za prijavu zahtjeva  (**US-05** - UI dio)
+- definisanje modela zahtjeva i radnog naloga  (Podloga za **US-05** i **US-07**)
 
 ### **Rizici i zavisnosti**
 - Sprint 6 predstavlja **tehnički temelj cijelog sistema** i od njegovog uspješnog završetka zavise svi naredni sprintovi.  
@@ -1227,11 +1227,11 @@ Ovaj plan je organizovan tako da se razvoj sistema odvija **postepeno, smisleno 
 **Omogućiti korisniku da se prijavi, pošalje zahtjev i vidi da je zahtjev evidentiran u sistemu.**
 
 ### **Ključne stavke koje tim želi završiti**
-- povezivanje registracije i prijave sa bazom  
-- spremanje zahtjeva u bazu  
-- dodjeljivanje početnog statusa zahtjevu  
-- pregled vlastitog zahtjeva za korisnika  
-- prikaz zahtjeva u dispečerovoj listi zahtjeva koji čekaju obradu  
+- povezivanje registracije i prijave sa bazom (Finalizacija **US-01** i **US-02**) 
+- spremanje zahtjeva u bazu (Backend dio - **US-05**) 
+- dodjeljivanje početnog statusa zahtjevu  (Dio logike kreiranja zahtjeva - **US-05**)
+- pregled vlastitog zahtjeva za korisnika  (**US-06**)
+- prikaz zahtjeva u dispečerovoj listi zahtjeva koji čekaju obradu (**US-07**)
 
 ### **Rizici i zavisnosti**
 - Sprint 7 direktno zavisi od **tehničke osnove, korisničkih uloga, prijave korisnika i pripremljene forme zahtjeva** iz Sprinta 6.  
@@ -1252,12 +1252,12 @@ Ovaj plan je organizovan tako da se razvoj sistema odvija **postepeno, smisleno 
 **Omogućiti dispečeru da pregleda i obradi zahtjev te odredi njegov prioritet.**
 
 ### **Ključne stavke koje tim želi završiti**
-- pregled otvorenih zahtjeva / intervencija  
-- pregled detalja pojedinačne intervencije  
-- pregled statusa intervencija od strane dispečera  
-- određivanje prioriteta intervencije  
-- izmjena vlastitog zahtjeva  
-- otkazivanje vlastitog zahtjeva  
+- pregled otvorenih zahtjeva / intervencija (**US-07**) 
+- pregled detalja pojedinačne intervencije (**US-08**) 
+- pregled statusa intervencija od strane dispečera (**US-13**) 
+- određivanje prioriteta intervencije (**US-12**) 
+- izmjena vlastitog zahtjeva (**US-26**) 
+- otkazivanje vlastitog zahtjeva (**US-27**) 
 
 ### **Rizici i zavisnosti**
 - Sprint 8 zavisi od toga da su zahtjevi iz Sprinta 7 već **ispravno evidentirani u bazi** i prikazani korisniku i dispečeru.  
@@ -1278,15 +1278,15 @@ Ovaj plan je organizovan tako da se razvoj sistema odvija **postepeno, smisleno 
 **Omogućiti dodjelu zadatka serviseru i serviserski prijem zadatka.**
 
 ### **Ključne stavke koje tim želi završiti**
-- dodjela intervencije odgovornom serviseru  
-- dodjela intervencije timu servisera  
-- planiranje intervencije  
-- pregled dodijeljenih intervencija za servisera  
-- pregled detalja zadatka na terenu  
-- prihvatanje dodijeljenog zadatka  
-- odbijanje dodijeljenog zadatka  
-- promjena izvršioca intervencije  
-- vraćanje zadatka na ponovnu dodjelu  
+- dodjela intervencije odgovornom serviseru (**US-09**) 
+- dodjela intervencije timu servisera (**US-10**)  
+- planiranje intervencije (**US-11**) 
+- pregled dodijeljenih intervencija za servisera (**US-15**) 
+- pregled detalja zadatka na terenu (**US-16**)  
+- prihvatanje dodijeljenog zadatka (**US-22**) 
+- odbijanje dodijeljenog zadatka (**US-23**) 
+- promjena izvršioca intervencije (**US-28**)  
+- vraćanje zadatka na ponovnu dodjelu (**US-29**) 
 
 ### **Rizici i zavisnosti**
 - Sprint 9 zavisi od toga da dispečer u Sprintu 8 već može **pregledati, razumjeti i pripremiti zahtjev za izvršenje**.  
@@ -1307,15 +1307,15 @@ Ovaj plan je organizovan tako da se razvoj sistema odvija **postepeno, smisleno 
 **Omogućiti izvršenje intervencije, evidenciju rada i zatvaranje kompletnog toka.**
 
 ### **Ključne stavke koje tim želi završiti**
-- ažuriranje statusa intervencije od strane servisera  
-- evidentiranje izvršenog rada  
-- pregled evidentiranog izvršenog rada  
-- potvrda i zatvaranje intervencije  
-- razmjena napomena na intervenciji  
-- pregled historije aktivnosti intervencije  
-- pregled postojećih korisničkih naloga  
-- promjena korisničke uloge  
-- deaktivacija korisničkog naloga  
+- ažuriranje statusa intervencije od strane servisera (**US-14**) 
+- evidentiranje izvršenog rada (**US-17**)  
+- pregled evidentiranog izvršenog rada (**US-24**) 
+- potvrda i zatvaranje intervencije (**US-25**)  
+- razmjena napomena na intervenciji (**US-30**)  
+- pregled historije aktivnosti intervencije (**US-31**)  
+- pregled postojećih korisničkih naloga (**US-19**)  
+- promjena korisničke uloge (**US-20**)  
+- deaktivacija korisničkog naloga (**US-21**)  
 
 ### **Rizici i zavisnosti**
 - Sprint 10 zavisi od toga da su tok dodjele i serviserski prijem zadatka iz Sprinta 9 već **funkcionalni i stabilni**.  
