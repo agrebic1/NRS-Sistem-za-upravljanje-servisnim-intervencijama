@@ -307,9 +307,9 @@ Povezano sa storyjem za prijavu korisnika u sistem i sa svim stoyjima koji zahti
   - **THEN** sistem ne dozvoljava pristup i preusmjerava korisnika na ekran za prijavu ili početni ekran.
 
 - **AC3: Završetak rada bez gubitka prethodno sačuvanih podataka**
- - **GIVEN** korisnik se odjavljuje iz sistema  
- - **WHEN** odjava bude izvršena 
- - **THEN** sistem završava korisnički rad bez uticaja na prethodno sačuvane podatke i ranije izvršene akcije
+    - **GIVEN** korisnik se odjavljuje iz sistema  
+    - **WHEN** odjava bude izvršena 
+    - **THEN** sistem završava korisnički rad bez uticaja na prethodno sačuvane podatke i ranije izvršene akcije
 
 ---
 
@@ -340,7 +340,7 @@ Povezano sa storyjima za prijavu korisnika u sistem, administrativno kreiranje k
   - **WHEN** pristupi aplikaciji   
   - **THEN** sistem mu prikazuje samo funkcionalnosti i podatke koji odgovaraju njegovoj korisničkoj ulozi
 
-- **AC2: Ograničen pristup nedozvoljenim funkcionalnostima  **  
+- **AC2: Ograničen pristup nedozvoljenim funkcionalnostima**  
   - **GIVEN** korisnik nema ovlaštenje za određenu funkcionalnost   
   - **WHEN** pokuša pristupiti toj funkcionalnosti  
   - **THEN** sistem ne dozvoljava pristup i ne prikazuje nedozvoljeni sadržaj
@@ -431,7 +431,7 @@ Zavisi od storyja za prijavu zahtjeva za servisnu intervenciju i povezan je sa s
 - **AC1: Prikaz vlastitog zahtjeva**  
   - **GIVEN** da korisnik ima evidentiran zahtjev u sistemu  
   - **WHEN** pristupi pregledu svojih zahtjeva  
-  - **THEN** sistem prikazuje njegov zahtjev sa osnovnim informacijama.
+  - **THEN** sistem prikazuje njegov zahtjev sa osnovnim informacijama
 
 - **AC2: Prikaz trenutnog statusa zahtjeva**  
   - **GIVEN** da korisnik pregledava svoj zahtjev  
@@ -441,17 +441,17 @@ Zavisi od storyja za prijavu zahtjeva za servisnu intervenciju i povezan je sa s
 - **AC3: Prikaz samo vlastitih zahtjeva**  
   - **GIVEN** da je korisnik prijavljen u sistem  
   - **WHEN** pristupi pregledu zahtjeva  
-  - **THEN** sistem prikazuje samo zahtjeve koje je taj korisnik prijavio.
+  - **THEN** sistem prikazuje samo zahtjeve koje je taj korisnik prijavio
 
 - **AC4: Prikaz praznog stanja**  
   - **GIVEN** da korisnik nema evidentiran nijedan zahtjev u sistemu  
   - **WHEN** pristupi pregledu svojih zahtjeva  
-  - **THEN** sistem prikazuje odgovarajuću poruku da nema prijavljenih zahtjeva.
+  - **THEN** sistem prikazuje odgovarajuću poruku da nema prijavljenih zahtjeva
 
 - **AC5: Ažuriran prikaz nakon promjene statusa**  
   - **GIVEN** da je status korisnikovog zahtjeva promijenjen u sistemu  
   - **WHEN** korisnik ponovo pregleda svoj zahtjev  
-  - **THEN** sistem prikazuje ažurirani status zahtjeva.
+  - **THEN** sistem prikazuje ažurirani status zahtjeva
 
 ---
 
@@ -477,122 +477,170 @@ Zavisi od storyja za prijavu zahtjeva za servisnu intervenciju i povezan je sa s
 
 **Acceptance Criteria:**
 
-- **AC1: Prikaz intervencija**  
-  - **GIVEN** postoje intervencije  
-  - **WHEN** dispečer pregleda  
-  - **THEN** vidi listu
+- **AC1: Prikaz liste otvorenih i aktivnih intervencija**  
+    - **GIVEN** da u sistemu postoje otvorene ili aktivne intervencije  
+    - **WHEN** dispečer pristupi pregledu intervencija  
+    - **THEN** sistem prikazuje listu svih relevantnih intervencija za dalju obradu
 
-- **AC2: Ažuriranje liste**  
-  - **GIVEN** status se promijeni  
-  - **WHEN** lista se osvježi  
-  - **THEN** prikaz je ažuriran
+- **AC2: Prikaz osnovnih informacija o intervenciji**  
+    - **GIVEN** da dispečer pregleda listu otvorenih intervencija  
+    - **WHEN** sistem prikaže listu  
+    - **THEN** za svaku intervenciju prikazuje osnovne podatke potrebne za pregled i razlikovanje zapisa
 
+- **AC3: Isključenje završenih ili neaktivnih intervencija iz osnovnog pregleda**  
+    - **GIVEN** da u sistemu postoje završene ili zatvorene intervencije  
+    - **WHEN** dispečer pristupi osnovnom pregledu otvorenih intervencija  
+    - **THEN** sistem ne prikazuje intervencije koje više nisu predmet aktivne obrade
+
+- **AC4: Ažuriranje pregleda nakon promjene stanja intervencije**  
+    - **GIVEN** da se stanje neke intervencije promijeni u sistemu  
+    - **WHEN** dispečer osvježi pregled ili ponovo pristupi listi intervencija  
+    - **THEN** sistem prikazuje ažurirano stanje liste.
+
+- **AC5: Ograničenje pristupa pregledu intervencija**  
+    - **GIVEN** da korisnik nema ulogu dispečera ili drugo odgovarajuće ovlaštenje  
+    - **WHEN** pokuša pristupiti pregledu otvorenih intervencija  
+    - **THEN** sistem mu ne dozvoljava pristup toj funkcionalnosti.
 ---
 
 ## US-08 — Pregled detalja pojedinačne intervencije
 
 **Opis:**  
-Kao dispečer, želim pregledati detalje pojedinačne intervencije, kako bih imao potpune informacije o njenom trenutnom stanju, toku i zaduženjima.
+Kao dispečer, želim pregledati detalje pojedinačne intervencije, kako bih imao potpune informacije potrebne za donošenje operativnih odluka i dalju obradu zahtjeva.
 
 **Poslovna vrijednost:**  
-Ovaj story je važan jer omogućava dispečeru da na jednom mjestu dobije sve ključne informacije o konkretnoj intervenciji, što olakšava praćenje toka rada, donošenje operativnih odluka i koordinaciju daljih aktivnosti.
+Ovaj story je važan jer omogućava dispečeru da na jednom mjestu vidi sve ključne informacije o konkretnoj intervenciji, što olakšava procjenu situacije, određivanje prioriteta, planiranje i dodjelu izvršioca.
 
 **Prioritet:**  
-*Visok*
+**Visok**
 
 **Pretpostavke i otvorena pitanja:**  
-
-**Pretpostavka:** Pretpostavlja se da dispečer već ima pristup listi intervencija i da može otvoriti pojedinačnu intervenciju iz pregleda.
-
-**Otvorena pitanja:**  Otvoreno pitanje je koje informacije čine minimalni skup detalja u ovom prikazu.
+**Pretpostavka:** Dispečer već ima pristup listi otvorenih intervencija i može otvoriti pojedinačni zapis iz tog pregleda.  
+**Otvoreno pitanje:** Koji minimalni skup informacija mora biti prikazan u detaljima intervencije kako bi dispečer mogao dalje obrađivati zahtjev?
 
 **Veze sa drugim storyjima:**  
 Zavisi od storyja za pregled otvorenih intervencija i povezan je sa storyjima za određivanje prioriteta, dodjelu izvršioca, planiranje intervencije i pregled statusa intervencija.
 
 **Acceptance Criteria:**
 
-- **AC1: Pregled detalja**  
-  - **GIVEN** korisnik otvori intervenciju  
-  - **WHEN** pregleda detalje  
-  - **THEN** vidi informacije
+- **AC1: Otvaranje detalja intervencije**  
+    - **GIVEN** da dispečer pregledava listu otvorenih intervencija  
+    - **WHEN** odabere jednu konkretnu intervenciju  
+    - **THEN** sistem otvara detaljan prikaz te intervencije
 
-- **AC2: Prava pristupa**  
-  - **GIVEN** korisnik nema prava  
-  - **WHEN** pokuša otvoriti detalje  
-  - **THEN** pristup nije dozvoljen
+- **AC2: Prikaz ključnih informacija o intervenciji**  
+    - **GIVEN** da je dispečer otvorio detalje intervencije  
+    - **WHEN** sistem prikaže zapis  
+    - **THEN** prikazuju se sve osnovne informacije potrebne za dalju obradu zahtjeva
+
+- **AC3: Prikaz trenutnog statusa intervencije**  
+    - **GIVEN** da dispečer pregledava detalje intervencije  
+    - **WHEN** otvori detaljan prikaz  
+    - **THEN** sistem prikazuje trenutni status intervencije
+
+- **AC4: Prikaz povezanih operativnih podataka**  
+    - **GIVEN** da intervencija ima dodatne podatke relevantne za obradu  
+    - **WHEN** dispečer pregleda detalje  
+    - **THEN** sistem prikazuje podatke potrebne za odlučivanje o prioritetu, planiranju i dodjeli
+
+- **AC5: Ograničenje pristupa detaljima intervencije**  
+    - **GIVEN** da korisnik nema odgovarajuće ovlaštenje  
+    - **WHEN** pokuša otvoriti detalje intervencije  
+    - **THEN** sistem mu ne dozvoljava pristup toj funkcionalnosti
 
 ---
 
 ## US-09 — Dodjela intervencije odgovornom serviseru
 
 **Opis:**  
-Kao dispečer, želim dodijeliti intervenciju odgovornom serviseru, kako bi bilo jasno ko preuzima izvršenje zadatka.
+Kao dispečer, želim dodijeliti intervenciju odgovornom serviseru, kako bi bilo jasno ko preuzima izvršenje konkretnog zadatka.
 
 **Poslovna vrijednost:**  
-Ovaj story je važan jer omogućava da svaka intervencija dobije jasno određenog izvršioca, čime se uspostavlja odgovornost za njeno preuzimanje i dalje izvršenje.
+Ovaj story je važan jer omogućava da svaka intervencija dobije jasno određenog izvršioca, čime se uspostavlja odgovornost za preuzimanje i izvršenje zadatka te omogućava nesmetan prelaz iz dispečerske obrade u terenski rad.
 
 **Prioritet:**  
-*Visok*
+**Visok**
 
 **Pretpostavke i otvorena pitanja:**  
-
-**Pretpostavka:** Pretpostavlja se da sistem raspolaže listom servisera kojima se intervencija može dodijeliti.
-
-**Otvorena pitanja:**  Otvoreno pitanje je da li ova verzija podržava samo dodjelu jednom serviseru.
+**Pretpostavka:** Sistem raspolaže listom servisera kojima se intervencija može dodijeliti, a dispečer ima pravo izvršiti dodjelu.  
+**Otvoreno pitanje:** Da li sistem u ovoj fazi samo prikazuje dostupne servisere ili i predlaže najpogodnijeg izvršioca na osnovu unaprijed definisanih pravila?
 
 **Veze sa drugim storyjima:**  
-Zavisi od storyja za pregled otvorenih intervencija i pregled detalja pojedinačne intervencije, a povezan je sa storyjima za planiranje intervencije i ažuriranje statusa intervencije.
+Zavisi od storyja za pregled otvorenih intervencija i pregled detalja pojedinačne intervencije, a povezan je sa storyjima za planiranje intervencije, pregled dodijeljenih intervencija i prihvatanje dodijeljenog zadatka.
 
 **Acceptance Criteria:**
 
-- **AC1: Uspješna dodjela**  
-  - **GIVEN** dispečer odabere servisera  
-  - **WHEN** potvrdi dodjelu  
-  - **THEN** intervencija se dodjeljuje
+- **AC1: Uspješna dodjela intervencije serviseru**  
+    - **GIVEN** da dispečer pregleda intervenciju spremnu za dodjelu  
+    - **WHEN** odabere odgovornog servisera i potvrdi akciju  
+    - **THEN** sistem dodjeljuje intervenciju odabranom serviseru
 
-- **AC2: Bez odabira servisera**  
-  - **GIVEN** serviser nije odabran  
-  - **WHEN** pokuša dodjelu  
-  - **THEN** sistem prikazuje grešku
+- **AC2: Evidentiranje dodjele u sistemu**  
+    - **GIVEN** da je dispečer uspješno izvršio dodjelu  
+    - **WHEN** sistem obradi akciju  
+    - **THEN** intervencija se evidentira kao dodijeljena i povezuje sa odabranim serviserom
+
+- **AC3: Nedozvoljena dodjela bez odabira servisera**  
+    - **GIVEN** da dispečer nije odabrao servisera  
+    - **WHEN** pokuša potvrditi dodjelu  
+    - **THEN** sistem ne izvršava dodjelu i prikazuje poruku o grešci
+
+- **AC4: Prikaz dodijeljene intervencije serviseru**  
+    - **GIVEN** da je intervencija uspješno dodijeljena  
+    - **WHEN** serviser pristupi svom pregledu zadataka  
+    - **THEN** sistem prikazuje dodijeljenu intervenciju u njegovoj listi zadataka
+
+- **AC5: Ograničenje pristupa funkcionalnosti dodjele**  
+    - **GIVEN** da korisnik nema odgovarajuće ovlaštenje za dodjelu  
+    - **WHEN** pokuša dodijeliti intervenciju serviseru  
+    - **THEN** sistem mu ne dozvoljava pristup toj funkcionalnosti
 
 ---
 
 ## US-10 — Dodjela intervencije timu servisera
 
 **Opis:**  
-Kao dispečer, želim dodijeliti intervenciju timu servisera, kako bi se složeniji zadaci mogli izvršavati timski i organizovano.
+Kao dispečer, želim dodijeliti intervenciju timu servisera, kako bi se složeniji zadaci mogli organizovano izvršavati od strane više izvršilaca.
 
 **Poslovna vrijednost:**  
-Ovaj story je važan jer omogućava da se složenije intervencije rasporede timu servisera na organizovan način, što olakšava koordinaciju rada i raspodjelu resursa.
+Ovaj story je važan jer omogućava da se zahtjevnije ili obimnije intervencije rasporede na više servisera, čime se poboljšava organizacija rada i omogućava efikasnije izvršenje zadataka koji prevazilaze kapacitet jednog izvršioca.
 
 **Prioritet:**  
-*Srednji*
+**Srednji**
 
 **Pretpostavke i otvorena pitanja:**  
-
-**Pretpostavka:** Pretpostavlja se da u sistemu postoje definisani timovi servisera kojima se intervencije mogu dodijeliti.
-
-**Otvorena pitanja:**  Otvoreno pitanje je da li se unutar tima dodatno određuje glavni izvršilac.
+**Pretpostavka:** U sistemu postoje definisani timovi servisera ili mogućnost odabira više izvršilaca za jednu intervenciju.  
+**Otvoreno pitanje:** Da li se prilikom timske dodjele mora odrediti i glavni odgovorni izvršilac ili je dovoljno evidentirati samo listu članova tima?
 
 **Veze sa drugim storyjima:**  
-Zavisi od storyja za pregled detalja pojedinačne intervencije i povezan je sa storyjima za pregled dodijeljenih intervencija i planiranje intervencije.
+Zavisi od storyja za pregled detalja pojedinačne intervencije i povezan je sa storyjima za pregled dodijeljenih intervencija, planiranje intervencije i promjenu izvršioca intervencije.
 
 **Acceptance Criteria:**
 
-- **AC1: Uspješna dodjela timu**  
-  - **GIVEN** dispečer odabere tim  
-  - **WHEN** potvrdi dodjelu  
-  - **THEN** tim se dodjeljuje
+- **AC1: Uspješna dodjela intervencije timu servisera**  
+    - **GIVEN** da dispečer pregleda intervenciju koja zahtijeva timski rad  
+    - **WHEN** odabere tim servisera i potvrdi dodjelu  
+    - **THEN** sistem dodjeljuje intervenciju odabranom timu
 
-- **AC2: Bez odabira tima**  
-  - **GIVEN** tim nije odabran  
-  - **WHEN** pokuša dodjelu  
-  - **THEN** sistem prikazuje grešku
+- **AC2: Evidentiranje svih članova tima na intervenciji**  
+    - **GIVEN** da je timska dodjela uspješno izvršena  
+    - **WHEN** sistem obradi akciju  
+    - **THEN** intervencija se povezuje sa svim odabranim članovima tima
 
-- **AC3: Prava pristupa**  
-  - **GIVEN** korisnik nije ovlašten  
-  - **WHEN** pokuša dodjelu  
-  - **THEN** akcija nije dozvoljena
+- **AC3: Nedozvoljena dodjela bez odabira tima ili članova tima**  
+    - **GIVEN** da dispečer nije odabrao tim ili članove tima  
+    - **WHEN** pokuša potvrditi dodjelu  
+    - **THEN** sistem ne izvršava dodjelu i prikazuje poruku o grešci
+
+- **AC4: Prikaz timski dodijeljene intervencije relevantnim serviserima**  
+    - **GIVEN** da je intervencija uspješno dodijeljena timu  
+    - **WHEN** članovi tima pristupe svom pregledu zadataka  
+    - **THEN** sistem prikazuje intervenciju svim relevantnim izvršiocima
+
+- **AC5: Ograničenje pristupa funkcionalnosti timske dodjele**  
+    - **GIVEN** da korisnik nema odgovarajuće ovlaštenje za timsku dodjelu  
+    - **WHEN** pokuša dodijeliti intervenciju timu servisera  
+    - **THEN** sistem mu ne dozvoljava pristup toj funkcionalnosti
 
 ---
 
