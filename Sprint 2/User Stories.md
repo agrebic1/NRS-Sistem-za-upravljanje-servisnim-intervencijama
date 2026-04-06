@@ -429,51 +429,51 @@ Zavisi od storyja za prijavu zahtjeva za servisnu intervenciju i povezan je sa s
 **Acceptance Criteria:**
 
 - **AC1: Prikaz vlastitog zahtjeva**  
-- **GIVEN** da korisnik ima evidentiran zahtjev u sistemu  
-- **WHEN** pristupi pregledu svojih zahtjeva  
-- **THEN** sistem prikazuje njegov zahtjev sa osnovnim informacijama.
+  - **GIVEN** da korisnik ima evidentiran zahtjev u sistemu  
+  - **WHEN** pristupi pregledu svojih zahtjeva  
+  - **THEN** sistem prikazuje njegov zahtjev sa osnovnim informacijama.
 
 - **AC2: Prikaz trenutnog statusa zahtjeva**  
-- **GIVEN** da korisnik pregledava svoj zahtjev  
-- **WHEN** otvori detalje zahtjeva ili listu zahtjeva  
-- **THEN** sistem prikazuje tačan trenutni status zahtjeva.
+  - **GIVEN** da korisnik pregledava svoj zahtjev  
+  - **WHEN** otvori detalje zahtjeva ili listu zahtjeva  
+  - **THEN** sistem prikazuje tačan trenutni status zahtjeva.
 
 - **AC3: Prikaz samo vlastitih zahtjeva**  
-- **GIVEN** da je korisnik prijavljen u sistem  
-- **WHEN** pristupi pregledu zahtjeva  
-- **THEN** sistem prikazuje samo zahtjeve koje je taj korisnik prijavio.
+  - **GIVEN** da je korisnik prijavljen u sistem  
+  - **WHEN** pristupi pregledu zahtjeva  
+  - **THEN** sistem prikazuje samo zahtjeve koje je taj korisnik prijavio.
 
 - **AC4: Prikaz praznog stanja**  
-- **GIVEN** da korisnik nema evidentiran nijedan zahtjev u sistemu  
-- **WHEN** pristupi pregledu svojih zahtjeva  
-- **THEN** sistem prikazuje odgovarajuću poruku da nema prijavljenih zahtjeva.
+  - **GIVEN** da korisnik nema evidentiran nijedan zahtjev u sistemu  
+  - **WHEN** pristupi pregledu svojih zahtjeva  
+  - **THEN** sistem prikazuje odgovarajuću poruku da nema prijavljenih zahtjeva.
 
 - **AC5: Ažuriran prikaz nakon promjene statusa**  
-- **GIVEN** da je status korisnikovog zahtjeva promijenjen u sistemu  
-- **WHEN** korisnik ponovo pregleda svoj zahtjev  
-- **THEN** sistem prikazuje ažurirani status zahtjeva.
+  - **GIVEN** da je status korisnikovog zahtjeva promijenjen u sistemu  
+  - **WHEN** korisnik ponovo pregleda svoj zahtjev  
+  - **THEN** sistem prikazuje ažurirani status zahtjeva.
 
 ---
 
 ## US-07 — Pregled otvorenih intervencija
 
 **Opis:**  
-Kao dispečer, želim pregledati sve otvorene i aktivne intervencije, kako bih imao jasan uvid u zahtjeve koji čekaju obradu i u tok rada.
+Kao dispečer, želim pregledati sve otvorene i aktivne intervencije, kako bih imao jasan uvid u zahtjeve koji čekaju obradu i u tok rada sistema.
 
 **Poslovna vrijednost:**  
-Ovaj story je važan jer dispečeru omogućava centralizovan pregled zahtjeva koji su u obradi, olakšava organizaciju rada i pravovremeno reagovanje na zastoje, promjene prioriteta i opterećenost resursa.
+Ovaj story je važan jer dispečeru omogućava centralizovan pregled svih intervencija koje su u toku obrade, olakšava organizaciju rada i pomaže u pravovremenom reagovanju na zastoje, promjene prioriteta i raspoloživost resursa.
 
 **Prioritet:**  
 *Visok*
 
 **Pretpostavke i otvorena pitanja:**  
 
-**Pretpostavka:** Pretpostavlja se da sistem razlikuje otvorene, aktivne i završene intervencije.
+**Pretpostavka:** Pretpostavlja se da sistem razlikuje otvorene, aktivne i završene intervencije i dispečer ima pravo pristupa njihovom pregledu.
 
-**Otvorena pitanja:**  Otvoreno pitanje je da li pregled uključuje samo listu intervencija ili i osnovne informacije poput prioriteta, statusa i dodijeljenog servisera.
+**Otvorena pitanja:**  Da li pregled intervencija u ovoj fazi uključuje samo listu osnovnih zapisa ili i dodatne podatke kao što su prioritet, status, planirani termin i dodijeljeni izvršilac?
 
 **Veze sa drugim storyjima:**  
-Zavisi od storyja za prijavu zahtjeva i povezan je sa storyjima za pregled detalja pojedinačne intervencije, određivanje prioriteta, dodjelu servisera i pregled statusa intervencija.
+Zavisi od storyja za prijavu zahtjeva za servisnu intervenciju i povezan je sa storyjima za pregled detalja pojedinačne intervencije, određivanje prioriteta, dodjelu izvršioca i pregled statusa intervencija.
 
 **Acceptance Criteria:**
 
