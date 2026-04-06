@@ -695,6 +695,26 @@ Zavisi od storyja za pregled dodijeljenih intervencija i pregled detalja zadatka
 
 **Acceptance Criteria:**  
 
+- **AC1: Promjena statua**  
+  - **GIVEN** serviser ima intervenciju
+  - **WHEN** promijeni status 
+  - **THEN** status se ažurira
+
+- **AC2: Samo dodijeljene intervencije**  
+  - **GIVEN** intervencija nije dodijeljena  
+  - **WHEN** serviser pokuša promjenu  
+  - **THEN** akcija nije dozvoljena
+
+- **AC3: Validacija statusa**  
+  - **GIVEN** status nije validan  
+  - **WHEN** serviser pokuša unos  
+  - **THEN** sistem prikazuje grešku
+
+- **AC4: Završena intervencija**  
+  - **GIVEN** intervencija je završena  
+  - **WHEN** serviser pokuša izmjenu  
+  - **THEN** akcija nije dozvoljena
+
 ---
 
 ## US-15 — Pregled dodijeljenih intervencija
@@ -718,6 +738,20 @@ Ovaj story je važan jer serviseru daje pregled njegovih zadataka, olakšava org
 Zavisi od storyja za dodjelu intervencije odgovornom serviseru ili timu i povezan je sa storyjem za pregled detalja zadatka na terenu.
 
 **Acceptance Criteria:**  
+- **AC1: Pregled liste**  
+  - **GIVEN** kserviser je prijavljen  
+  - **WHEN** pregleda  
+  - **THEN** vidi svoje intervencije 
+
+- **AC2: Nepotpuni podaci**  
+  - **GIVEN** nema intervencija  
+  - **WHEN** pregleda  
+  - **THEN** vidi praznu listu
+
+- **AC3: Neispravan format**  
+  - **GIVEN** ppostoje intervencije  
+  - **WHEN** se prikažu  
+  - **THEN** vidi osnovne podatke
 
 ---
 
@@ -742,6 +776,20 @@ Ovaj story je važan jer omogućava serviseru da na terenu ima sve ključne info
 Zavisi od storyja za pregled dodijeljenih intervencija i povezan je sa storyjima za ažuriranje statusa intervencije i evidentiranje izvršenog rada.
 
 **Acceptance Criteria:**  
+- **AC1: Pregled detalja**  
+  - **GIVEN** serviser otvori zadatak  
+  - **WHEN** pregleda  
+  - **THEN** vidi opis, lokaciju i prioritet
+
+- **AC2: Dodatne napomene**  
+  - **GIVEN** postoje napomene  
+  - **WHEN** pregleda  
+  - **THEN** vidi napomene
+
+- **AC3: Prava pristupa**  
+  - **GIVEN** korisnik nema prava  
+  - **WHEN** pokuša pristup  
+  - **THEN** akcija nije dozvoljena
 
 ---
 
@@ -766,6 +814,25 @@ Ovaj story je važan jer omogućava da se izvršene aktivnosti evidentiraju tač
 Zavisi od storyja za pregled detalja zadatka na terenu i povezan je sa storyjima za ažuriranje statusa intervencije i pregled evidentiranog izvršenog rada.
 
 **Acceptance Criteria:**  
+- **AC1: Evidentiranje rada**  
+  - **GIVEN** serviser unese podatke  
+  - **WHEN** potvrdi  
+  - **THEN** podaci se spremaju 
+
+- **AC2: Validacija unosa**  
+  - **GIVEN** ppodaci nisu validni  
+  - **WHEN** pokuša unos  
+  - **THEN** sistem prikazuje grešku
+
+- **AC3: Prikaz podataka**  
+  - **GIVEN** podaci su uneseni  
+  - **WHEN** se pregleda intervencija  
+  - **THEN** podaci su vidljivi
+
+- **AC4: Pogrešni podaci**  
+  - **GIVEN** korisnik nije ovlašten   
+  - **WHEN** pokuša unos  
+  - **THEN** akcija nije dozvoljena
 
 ---
 
