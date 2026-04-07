@@ -1798,4 +1798,28 @@ Ovaj plan je organizovan tako da se razvoj sistema odvija **postepeno, smisleno 
 
 ---
 
+## **Sprint 11**
 
+### **Sprint broj:**  
+**11**  
+
+### **Sprint cilj:**  
+Stabilizovati sistem, otkloniti greške i pripremiti ga za završnu demonstraciju i predaju.  
+
+### **Ključne stavke koje tim želi završiti:**
+- Ispravke uočenih grešaka  
+- Dorade postojećih funkcionalnosti  
+- Smanjenje tehničkog duga  
+- Završno integraciono testiranje  
+- Završno regresijsko testiranje  
+- Ručno testiranje ključnih scenarija  
+- Dorada korisničkog interfejsa gdje je potrebno  
+- Završna priprema dokumentacije  
+- Završna priprema sistema za demonstraciju i predaju  
+
+### **Rizici i zavisnosti:**
+- Sprint 11 zavisi od toga da su sve glavne funkcionalnosti završene najkasnije do kraja Sprinta 10.  
+- U ovom sprintu ne bi trebalo uvoditi velike nove funkcionalnosti, jer bi to povećalo rizik od novih grešaka i destabilizacije sistema.  
+- Najveći fokus treba biti na stabilnosti sistema, usklađenosti postojećih modula i uklanjanju problema uočenih tokom ranijeg razvoja i testiranja.  
+- Tehnički dug treba rješavati samo u mjeri koja ne ugrožava završetak projekta i spremnost sistema za demonstraciju.  
+- Završno testiranje mora obuhvatiti kompletan *happy path* i najvažnije alternativne scenarije, kako bi sistem bio pouzdan za predaju i prezentaciju.  
