@@ -1,25 +1,5 @@
 # User  Stories i Acceptance Criteria
 
-Upute za Acceptance Criteria:
-
-Acceptance Criteria su kriteriji prihvatljivosti koji definišu kada je user story završen. Oni služe da se jasno zna:
-
-šta mora biti ispunjeno
-kako se ponašanje sistema provjerava
-kada se story može smatrati gotovim.
-
-
-Format za acceptance criteria: Given–When–Then
-
-Šta znači:
-Given = početni uslovi / kontekst
-When = radnja korisnika ili događaj
-Then = očekivani rezultat
-
-acceptance criteria moraju biti konkretni
-moraju pokrivati happy path
-i trebaju uključiti edge case-ove i reset / greške kad je to potrebno
-
 ## Hijerarhija zahtjeva
 ```
 THEME (Tema)
@@ -1681,3 +1661,141 @@ Ovaj plan je organizovan tako da se razvoj sistema odvija **postepeno, smisleno 
 - Završetkom Sprinta 10 treba biti pokriven **kompletan happy path i svi glavni alternativni putevi**, tako da Sprint 11 ostane rezervisan samo za ispravke, testiranje, tehnički dug i završnu pripremu.  
 
 ---
+
+
+## **Sprint 6**
+
+### **Sprint broj**
+**6**
+
+### **Sprint cilj**
+**Postaviti tehničku osnovu sistema i osposobiti korisnički pristup aplikaciji.**
+
+### **Ključne stavke koje tim želi završiti**
+- postavljanje projekta i Supabase okruženja  
+- definisanje korisnika, uloga i osnovnih permisija (**US-04**)  
+- registraciona forma za korisnika usluge (**US-01**)  
+- login forma i osnovna prijava korisnika (**US-02**) 
+- osnova forme za prijavu zahtjeva  (**US-05** - UI dio)
+- definisanje modela zahtjeva i radnog naloga  (Podloga za **US-05** i **US-07**)
+
+### **Rizici i zavisnosti**
+- Sprint 6 predstavlja **tehnički temelj cijelog sistema** i od njegovog uspješnog završetka zavise svi naredni sprintovi.  
+- Ako povezivanje sa **Supabase** platformom ne bude stabilno postavljeno na početku, kasnije funkcionalnosti vezane za autentifikaciju, spremanje podataka i prikaz zahtjeva mogu biti usporene ili potpuno blokirane.  
+- Definisanje korisnika, uloga i permisija mora biti dovoljno jasno i jednostavno, jer od toga zavisi **kontrola pristupa** u svim kasnijim modulima.  
+- Registracija i prijava korisnika moraju ostati u **osnovnoj i stabilnoj verziji**, bez širenja na dodatne funkcionalnosti koje nisu neophodne u ovoj fazi.  
+- Forma za prijavu zahtjeva u ovom sprintu treba biti pripremljena kao **osnova za kasnije uvezivanje**, ali se ne treba opterećivati potpunim završetkom korisničkog toka.  
+- Bez tehničke osnove, korisnika i autentifikacije nije moguće uvezati korisnički tok u narednom sprintu.  
+
+---
+
+## **Sprint 7**
+
+### **Sprint broj**
+**7**
+
+### **Sprint cilj**
+**Omogućiti korisniku da se prijavi, pošalje zahtjev i vidi da je zahtjev evidentiran u sistemu.**
+
+### **Ključne stavke koje tim želi završiti**
+- povezivanje registracije i prijave sa bazom (Finalizacija **US-01** i **US-02**) 
+- spremanje zahtjeva u bazu (Backend dio - **US-05**) 
+- dodjeljivanje početnog statusa zahtjevu  (Dio logike kreiranja zahtjeva - **US-05**)
+- pregled vlastitog zahtjeva za korisnika  (**US-06**)
+- prikaz zahtjeva u dispečerovoj listi zahtjeva koji čekaju obradu (**US-07**)
+
+### **Rizici i zavisnosti**
+- Sprint 7 direktno zavisi od **tehničke osnove, korisničkih uloga, prijave korisnika i pripremljene forme zahtjeva** iz Sprinta 6.  
+- Ako autentifikacija i povezivanje korisničkog naloga sa bazom nisu ispravno postavljeni, korisnik neće moći pouzdano slati i pregledati vlastite zahtjeve.  
+- Spremanje zahtjeva u bazu i dodjeljivanje početnog statusa moraju biti **konzistentni**, jer od tih podataka kasnije zavise dispečerski pregled, prioriteti i dodjela izvršiocu.  
+- Prikaz zahtjeva korisniku i dispečeru mora biti zasnovan na **istom izvoru podataka**, kako bi se izbjegla nedosljednost između korisničkog i internog pogleda na sistem.  
+- U ovoj fazi ne treba previše širiti logiku statusa, već je zadržati na **osnovnom nivou** potrebnom za evidentiranje i pregled zahtjeva.  
+- Ovaj sprint zatvara **prvi stvarni korisnički tok** i priprema sistem za dispečersku obradu u Sprintu 8.  
+
+---
+
+## **Sprint 8**
+
+### **Sprint broj**
+**8**
+
+### **Sprint cilj**
+**Omogućiti dispečeru da pregleda i obradi zahtjev te odredi njegov prioritet.**
+
+### **Ključne stavke koje tim želi završiti**
+- pregled otvorenih zahtjeva / intervencija (**US-07**) 
+- pregled detalja pojedinačne intervencije (**US-08**) 
+- pregled statusa intervencija od strane dispečera (**US-13**) 
+- određivanje prioriteta intervencije (**US-12**) 
+- izmjena vlastitog zahtjeva (**US-26**) 
+- otkazivanje vlastitog zahtjeva (**US-27**) 
+
+### **Rizici i zavisnosti**
+- Sprint 8 zavisi od toga da su zahtjevi iz Sprinta 7 već **ispravno evidentirani u bazi** i prikazani korisniku i dispečeru.  
+- Pregled otvorenih zahtjeva i detalja intervencije predstavlja osnovu za svu dalju dispečersku obradu, pa njihov prikaz mora biti **jasan, stabilan i usklađen sa stanjem u bazi**.  
+- Određivanje prioriteta može postati rizično ako se pokuša napraviti previše složeno, pa ga treba zadržati na **jednostavnom i pouzdanom modelu**, uz mogućnost kasnijeg proširenja.  
+- Izmjena i otkazivanje zahtjeva moraju biti **vremenski i statusno ograničeni**, kako korisnik ne bi mogao mijenjati ili povlačiti zahtjev nakon što je već prešao u internu obradu ili dodjelu.  
+- Ovaj sprint treba zatvoriti **korisničke alternativne tokove** prije nego što zahtjev pređe u fazu dodjele serviseru.  
+- Završetkom ovog sprinta sistem mora biti spreman da dispečer iz zahtjeva pređe na **operativnu dodjelu zadatka** u narednom sprintu.  
+
+---
+
+## **Sprint 9**
+
+### **Sprint broj**
+**9**
+
+### **Sprint cilj**
+**Omogućiti dodjelu zadatka serviseru i serviserski prijem zadatka.**
+
+### **Ključne stavke koje tim želi završiti**
+- dodjela intervencije odgovornom serviseru (**US-09**) 
+- dodjela intervencije timu servisera (**US-10**)  
+- planiranje intervencije (**US-11**) 
+- pregled dodijeljenih intervencija za servisera (**US-15**) 
+- pregled detalja zadatka na terenu (**US-16**)  
+- prihvatanje dodijeljenog zadatka (**US-22**) 
+- odbijanje dodijeljenog zadatka (**US-23**) 
+- promjena izvršioca intervencije (**US-28**)  
+- vraćanje zadatka na ponovnu dodjelu (**US-29**) 
+
+### **Rizici i zavisnosti**
+- Sprint 9 zavisi od toga da dispečer u Sprintu 8 već može **pregledati, razumjeti i pripremiti zahtjev za izvršenje**.  
+- Dodjela serviseru predstavlja ključni prelaz iz dispečerskog dijela sistema u serviserski tok rada, pa mora biti **jednostavna, pregledna i pouzdana**.  
+- Dodjela timu servisera i planiranje intervencije mogu lako preopteretiti sprint ako se pokušaju implementirati previše detaljno, pa ih treba ograničiti na **minimalnu funkcionalnu verziju**.  
+- Prihvatanje, odbijanje i vraćanje zadatka moraju biti dio jednog **jednostavnog i logičnog toka**, kako bi serviser mogao jasno reagovati na dodijeljeni zadatak bez nepotrebne složenosti.  
+- Promjena izvršioca zavisi od već funkcionalne osnovne dodjele i mora se oslanjati na **jednostavan model ponovne dodjele**, bez komplikovanih dodatnih pravila.  
+- Ovaj sprint treba zatvoriti fazu prijema zadatka i sve glavne alternativne tokove vezane za samu dodjelu, kako bi Sprint 10 mogao biti fokusiran isključivo na **izvršenje rada i završetak intervencije**.  
+
+---
+
+## **Sprint 10**
+
+### **Sprint broj**
+**10**
+
+### **Sprint cilj**
+**Omogućiti izvršenje intervencije, evidenciju rada i zatvaranje kompletnog toka.**
+
+### **Ključne stavke koje tim želi završiti**
+- ažuriranje statusa intervencije od strane servisera (**US-14**) 
+- evidentiranje izvršenog rada (**US-17**)  
+- pregled evidentiranog izvršenog rada (**US-24**) 
+- potvrda i zatvaranje intervencije (**US-25**)  
+- razmjena napomena na intervenciji (**US-30**)  
+- pregled historije aktivnosti intervencije (**US-31**)  
+- pregled postojećih korisničkih naloga (**US-19**)  
+- promjena korisničke uloge (**US-20**)  
+- deaktivacija korisničkog naloga (**US-21**)  
+
+### **Rizici i zavisnosti**
+- Sprint 10 zavisi od toga da su tok dodjele i serviserski prijem zadatka iz Sprinta 9 već **funkcionalni i stabilni**.  
+- Ažuriranje statusa mora ostati **jasno definisano i ograničeno na jednostavan operativni tok**, kako bi sistem pouzdano pratio prelaz iz rada na terenu u završetak intervencije.  
+- Evidentiranje izvršenog rada i zatvaranje intervencije čine završni dio glavnog procesa, pa njihova povezanost mora biti **posebno pažljivo implementirana i testirana**.  
+- Napomene i historija aktivnosti treba da budu **podrška glavnom toku**, a ne da usporavaju njegov završetak, pa ih treba realizovati u jednostavnoj i preglednoj formi.  
+- Administratorske funkcionalnosti pregleda korisnika, promjene uloge i deaktivacije naloga treba implementirati u **osnovnoj verziji**, bez nepotrebnog proširivanja logike.  
+- Završetkom Sprinta 10 treba biti pokriven **kompletan happy path i svi glavni alternativni putevi**, tako da Sprint 11 ostane rezervisan samo za ispravke, testiranje, tehnički dug i završnu pripremu.  
+
+---
+
+
