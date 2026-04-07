@@ -619,16 +619,16 @@ Zavisi od storyja za pregled detalja pojedinačne intervencije i povezan je sa s
 
 - **AC1: Uspješna dodjela intervencije timu servisera**  
     - **GIVEN** dispečer pregleda intervenciju koja zahtijeva timski rad  
-    - **WHEN** odabere tim servisera i potvrdi dodjelu  
-    - **THEN** sistem dodjeljuje intervenciju odabranom timu
+    - **WHEN** odabere minimalno dva servisera sa liste aktivnih korisnika i potvrdi dodjelu
+    - **THEN** sistem mijenja status intervencije i prikazuje punu listu odabranih članova tima na detaljima intervencije
 
 - **AC2: Evidentiranje svih članova tima na intervenciji**  
     - **GIVEN** timska dodjela je uspješno izvršena  
-    - **WHEN** sistem obradi akciju  
+    - **WHEN** sistem obradi akciju i spremi promjene u bazu podataka
     - **THEN** intervencija se povezuje sa svim odabranim članovima tima
 
 - **AC3: Nedozvoljena dodjela bez odabira tima ili članova tima**  
-    - **GIVEN** dispečer nije odabrao tim ili članove tima  
+    - **GIVEN** dispečer je u modu za timsku dodjelu, ali je odabrao samo jednog servisera ili nije odabrao nijednog  
     - **WHEN** pokuša potvrditi dodjelu  
     - **THEN** sistem ne izvršava dodjelu i prikazuje poruku o grešci
 
@@ -666,25 +666,25 @@ Zavisi od storyja za dodjelu intervencije izvršiocu i povezan je sa storyjima z
 
 **Acceptance Criteria:**
 
-- **AC1: Uspješno planiranje**  
-  - **GIVEN** unesen validan termin  
-  - **WHEN** korisnik potvrdi  
-  - **THEN** termin se sprema
+- **AC1: Uspješno postavljanje termina intervencije**  
+  - **GIVEN** dispečer je otvorio detalje intervencije i odabrao opciju za unos termina
+  - **WHEN** unese validan datum i vrijeme u budućnosti te korisnik potvrdi akciju 
+  - **THEN** sistem sprema planirani termin, prikazuje ga u detaljima intervencije i kreira zapis u historiji aktivnosti
 
 - **AC2: Nepotpuni podaci**  
-  - **GIVEN** podaci nisu uneseni  
-  - **WHEN** korisnik planira  
-  - **THEN** sistem prikazuje grešku
+  - **GIVEN** dispečer je u formi za planiranje, ali nije unio ni datum ni vrijeme  
+  - **WHEN** pokuša potvrditi akciju 
+  - **THEN** sistem ne sprema promjene i prikazuje validacijsku poruku pored praznih polja
 
 - **AC3: Neispravan termin**  
-  - **GIVEN** termin nije validan  
-  - **WHEN** korisnik potvrdi  
-  - **THEN** sistem prikazuje grešku
+  - **GIVEN** dispečer je unio datum i/ili vrijeme koji su u prošlosti (stariji od trenutnog sistemskog vremena) 
+  - **WHEN** pokuša potvrditi planiranje 
+  - **THEN** sistem ne sprema termin i prikazuje grešku
 
 - **AC4: Konflikt termina**  
-  - **GIVEN** postoji drugi termin  
-  - **WHEN** korisnik planira  
-  - **THEN** sistem upozorava
+  - **GIVEN** dispečer unese termin koji se preklapa sa već postojećim planiranim terminom za istog servisera ili tim
+  - **WHEN** pokuša potvrditi planiranje   
+  - **THEN** sistem prikazuje upozorenje i nudi mogućnost da dispečer potvrdi ili izmijeni termin
 
 ---
 
@@ -711,24 +711,24 @@ Zavisi od storyja za prijavu zahtjeva i pregled detalja pojedinačne intervencij
 **Acceptance Criteria:**
 
 - **AC1: Postavljanje prioriteta**  
-  - **GIVEN** dispečer odabere prioritet  
-  - **WHEN** potvrdi  
-  - **THEN** prioritet se sprema
+  - **GIVEN** dispečer je otvorio detalje intervencije koja nema dodijeljen prioritet 
+  - **WHEN** odabere jednu od ponuđenih razina prioriteta i potvrdi odabir
+  - **THEN** sistem sprema odabrani prioritet, prikazuje ga na detaljima intervencije i kreira zapis u historiji aktivnosti sa postavljenom vrijednošću
 
-- **AC2: Ručna izmjena**  
-  - **GIVEN** prioritet postoji  
-  - **WHEN** dispečer ga promijeni  
-  - **THEN** novi prioritet se sprema
+- **AC2: Izmjena postojećeg prioriteta**  
+  - **GIVEN** intervencija već ima dodijeljen prioritet
+  - **WHEN** dispečer odabere novu razinu prioriteta i potvrdi izmjenu
+  - **THEN** sistem ažurira prioritet na novu vrijednost
 
 - **AC3: Prikaz prioriteta**  
-  - **GIVEN** prioritet je postavljen  
-  - **WHEN** pregleda se intervencija  
-  - **THEN** prioritet je vidljiv
+  - **GIVEN** intervenciji je uspješno dodijeljen ili promijenjen prioritet 
+  - **WHEN** dispečer pregleda listu otvorenih intervencija ili detalje te intervencije
+  - **THEN** sistem prikazuje aktuelni prioritet jasno vidljivo uz ostale osnovne podatke o intervenciji
 
 - **AC4: Prava pristupa**  
-  - **GIVEN** korisnik nije ovlašten  
-  - **WHEN** pokuša promjenu  
-  - **THEN** akcija nije dozvoljena
+  - **GIVEN** korisnik sa ulogom servisera ili korisnika usluge je prijavljen u sistem
+  - **WHEN** pokuša pristupiti opciji postavljanja ili izmjene prioriteta
+  - **THEN** sistem mu ne prikazuje tu opciju ili prikazuje grešku
 
 ---
 
@@ -755,9 +755,9 @@ Zavisi od storyja za pregled otvorenih intervencija i povezan je sa storyjima za
 **Acceptance Criteria:**
 
 - **AC1: Pregled statusa**  
-  - **GIVEN** postoje intervencije  
-  - **WHEN** dispečer pregleda  
-  - **THEN** vidi statuse
+  - **GIVEN** u sistemu postoje aktivne intervencije u različitim fazama obrade
+  - **WHEN** dispečer pristupi pregledu intervencija
+  - **THEN** sistem prikazuje statuse
 
 - **AC2: Ažuriranje prikaza**  
   - **GIVEN** status se promijeni  
@@ -765,9 +765,9 @@ Zavisi od storyja za pregled otvorenih intervencija i povezan je sa storyjima za
   - **THEN** prikaz je ažuriran
 
 - **AC3: Pristup detaljima**  
-  - **GIVEN** dispečer klikne intervenciju  
-  - **WHEN** otvori detalje  
-  - **THEN** vidi dodatne informacije
+  - **GIVEN** dispečer pregleda listu intervencija sa statusima  
+  - **WHEN** klikne na konkretnu intervenciju
+  - **THEN** sistem otvara prikaz detalja te intervencije sa svim podacima relevantnim za daljnju obradu
 
 ---
 
@@ -793,10 +793,10 @@ Zavisi od storyja za pregled dodijeljenih intervencija i pregled detalja zadatka
 
 **Acceptance Criteria:**  
 
-- **AC1: Promjena statua**  
-  - **GIVEN** serviser ima intervenciju
+- **AC1: Promjena statusa**  
+  - **GIVEN** serviser je prihvatio zadatak
   - **WHEN** promijeni status 
-  - **THEN** status se ažurira
+  - **THEN** sistem status ažurira
 
 - **AC2: Samo dodijeljene intervencije**  
   - **GIVEN** intervencija nije dodijeljena  
@@ -837,19 +837,19 @@ Zavisi od storyja za dodjelu intervencije odgovornom serviseru ili timu i poveza
 
 **Acceptance Criteria:**  
 - **AC1: Pregled liste**  
-  - **GIVEN** kserviser je prijavljen  
-  - **WHEN** pregleda  
-  - **THEN** vidi svoje intervencije 
+  - **GIVEN** dispečer je serviseru dodijelio jednu ili više intervencija 
+  - **WHEN** serviser pristupi svom pregledu zadataka 
+  - **THEN** sistem prikazuje listu svih aktivnih intervencija dodijeljenih tom serviseru, sa minimalnim podacima za svaki zapis 
 
 - **AC2: Nepotpuni podaci**  
-  - **GIVEN** nema intervencija  
-  - **WHEN** pregleda  
-  - **THEN** vidi praznu listu
+  - **GIVEN** serviseru nije dodijeljena nijedna aktivna intervencija
+  - **WHEN** serviser pristupi pregledu zadataka
+  - **THEN** sistem prikazuje odgovarajuću poruku umjesto praznog ekrana ili greške
 
-- **AC3: Neispravan format**  
-  - **GIVEN** ppostoje intervencije  
-  - **WHEN** se prikažu  
-  - **THEN** vidi osnovne podatke
+- **AC3: Prikaz samo vlastitih zadataka**  
+  - **GIVEN** u sistemu postoje intervencije dodijeljene različitim serviserima
+  - **WHEN** serviser A pristupi svom pregledu zadataka 
+  - **THEN** sistem prikazuje isključivo intervencije dodijeljene serviseru A i ne otkriva intervencije koje su dodijeljene drugim serviserima
 
 ---
 
@@ -875,19 +875,19 @@ Zavisi od storyja za pregled dodijeljenih intervencija i povezan je sa storyjima
 
 **Acceptance Criteria:**  
 - **AC1: Pregled detalja**  
-  - **GIVEN** serviser otvori zadatak  
-  - **WHEN** pregleda  
-  - **THEN** vidi opis, lokaciju i prioritet
+  - **GIVEN** serviser je odabrao konkretnu intervenciju iz svoje liste zadataka
+  - **WHEN** sistem otvori detaljni prikaz tog zadatka 
+  - **THEN** sistem prikazuje minimalno sljedeće informacije: ID intervencije, kompletan opis kvara/problema, adresu lokacije izvršenja, ime podnosioca zahtjeva i kontakt telefon, prioritet, trenutni status, planirani termin (ako je postavljen) i ime odgovornog dispečera
 
-- **AC2: Dodatne napomene**  
-  - **GIVEN** postoje napomene  
-  - **WHEN** pregleda  
-  - **THEN** vidi napomene
+- **AC2: Prikaz internih napomena dispečera**  
+  - **GIVEN** dispečer je prethodno dodao jednu ili više internih napomena na intervenciju  
+  - **WHEN** serviser otvori detalje tog zadatka na terenu
+  - **THEN** sistem prikazuje sekciju sa svim napomenama poredanim hronološki, sa imenom autora i vremenskim pečatom uz svaku napomenu
 
 - **AC3: Prava pristupa**  
-  - **GIVEN** korisnik nema prava  
-  - **WHEN** pokuša pristup  
-  - **THEN** akcija nije dozvoljena
+  - **GIVEN** serviser A pokušava direktno pristupiti URL-u detalja intervencije dodijeljene serviseru B
+  - **WHEN** sistem obradi zahtjev
+  - **THEN** sistem onemogućava pristup i prikazuje grešku bez otkrivanja bilo kakvih podataka o toj intervenciji
 
 ---
 
@@ -913,24 +913,24 @@ Zavisi od storyja za pregled detalja zadatka na terenu i povezan je sa storyjima
 
 **Acceptance Criteria:**  
 - **AC1: Evidentiranje rada**  
-  - **GIVEN** serviser unese podatke  
-  - **WHEN** potvrdi  
-  - **THEN** podaci se spremaju 
+  - **GIVEN** serviser je otvorio aktivnu intervenciju koja mu je dodijeljena i odabrao opciju unosa
+  - **WHEN** unese obavezne podatke te potvrdi unos
+  - **THEN** sistem pohranjuje evidenciju rada uz automatsko bilježenje datuma i vremena unosa te imena servisera, a na detaljima intervencije postaje vidljiva sekcija sa evidentiranim radom
 
 - **AC2: Validacija unosa**  
-  - **GIVEN** ppodaci nisu validni  
-  - **WHEN** pokuša unos  
-  - **THEN** sistem prikazuje grešku
+  - **GIVEN** serviser je u formi za evidenciju rada, ali nije popunio jedno ili više obaveznih polja 
+  - **WHEN** pokuša potvrditi unos
+  - **THEN** sistem ne sprema evidenciju i pored svakog nepopunjenog obaveznog polja prikazuje validacijsku poruku
 
 - **AC3: Prikaz podataka**  
-  - **GIVEN** podaci su uneseni  
-  - **WHEN** se pregleda intervencija  
-  - **THEN** podaci su vidljivi
+  - **GIVEN** serviser je uspješno evidentirao izvršeni rad
+  - **WHEN** dispečer otvori detalje te intervencije
+  - **THEN** sistem prikazuje evidentiranu evidenciju rada sa svim unesenim podacima 
 
-- **AC4: Pogrešni podaci**  
-  - **GIVEN** korisnik nije ovlašten   
-  - **WHEN** pokuša unos  
-  - **THEN** akcija nije dozvoljena
+- **AC4: Zabrana evidentiranja rada na tuđim ili zatvorenim intervencijama**  
+  - **GIVEN** serviser pokušava evidentirati rad na intervenciji koja mu nije dodijeljena ili je zatvorena 
+  - **WHEN** pokuša pristupiti formi za evidenciju 
+  - **THEN** sistem ne prikazuje opciju za evidenciju rada ili onemogućava pristup uz poruku upozorenja
 
 ---
 
