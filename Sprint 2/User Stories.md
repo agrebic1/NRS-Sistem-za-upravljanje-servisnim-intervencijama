@@ -1,4 +1,4 @@
-# User  Stories i Acceptance Criteria
+# Sprint backlog
 
 ## Hijerarhija zahtjeva
 ```
@@ -103,7 +103,7 @@ THEME (Tema)
             └── Story: US-31 Pregled historije aktivnosti intervencije
 ```
 
-# User Stories
+# User Stories i Acceptance Criteria
 
 Sažeti pregled user story-a u okviru MVP-a: 
 
@@ -140,8 +140,6 @@ Sažeti pregled user story-a u okviru MVP-a:
 | US-29 | Vraćanje zadatka na ponovnu dodjelu | Kao serviser, želim vratiti zadatak na ponovnu dodjelu, kako bi dispečer mogao organizovati dalje izvršenje kada zadatak nije moguće završiti u postojećim okolnostima. | - vraćanje u operativni tok<br>- sprječavanje zastoja<br>- nova organizacija rada | Visok |
 | US-30 | Razmjena napomena na intervenciji | Kao dispečer ili serviser, želim dodati kratku napomenu na konkretnu intervenciju, kako bi sve važne operativne informacije bile dostupne na jednom mjestu svim učesnicima u procesu. | - interna komunikacija<br>- važne informacije na jednom mjestu<br>- manje oslanjanja na vanjske kanale | Srednji |
 | US-31 | Pregled historije aktivnosti intervencije | Kao dispečer, želim vidjeti listu svih prethodnih promjena i aktivnosti na zahtjevu, kako bih imao jasan uvid u hronologiju obrade od trenutka prijave do trenutnog statusa. | - transparentnost procesa<br>- praćenje toka rada<br>- audit trag | Srednji | 
-
-
 
 ---
 
