@@ -20,8 +20,6 @@ U ovom dokumentu je prikazan ažurirani product backlog sistema za upravljanje s
 |PBI-014|Historija aktivnosti intervencije|Kao dispečer i serviser želim imati uvid u hronološki pregled svih promjena na intervenciji kako bih znao ko je, kada i koju akciju poduzeo (promjena statusa, dodjela, napomene).|Feature|Srednji|5|To Do|Sprint 10|Ključna stavka za praćenje toka rada od prijave do zatvaranja.|
 |PBI-015|Napomene na intervenciji|Kao dispečer i serviser želim ostavljati napomene na intervenciji kako bi komunikacija bila jasna i sve informacije bile na jednom mjestu.|Feature|Srednji|3|To Do|Sprint 10|Osnovna komunikacija.|
 |PBI-016|Pregled operativnog statusa|Kao dispečer želim vidjeti brojčani pregled intervencija po ključnim fazama (otvorene, u toku, završene) na početnom ekranu, kako bih odmah uočio obim posla.|Feature|Srednji|3|To Do|Sprint 10|Vizuelni prikaz ključnih metrika za dispečera.|
-|PBI-017|Historija intervencija|Kao korisnik želim vidjeti historiju intervencija kako bih imao pregled prethodnih kvarova.|Feature|Srednji|5|To Do|Sprint 10|Arhiva svih aktivnosti po korisniku radi lakšeg uvida.|
-
 
 
 ## Legenda  
