@@ -31,98 +31,98 @@ Definisati precizan plan rada kroz dekompoziciju zadataka uz pomoć INVEST model
 THEME (Tema)
 └── Sistem za upravljanje servisnim intervencijama
     │
-    ├── EPIC: Pristup sistemu za korisnike usluge
+    ├── EPIC: Pristup sistemu
     │   │
-    │   └── FEATURE: Autentifikacija korisnika usluge
+    │   └── FEATURE: Pristup sistemu
     │       │
     │       ├── Story: US-01 Samostalna registracija korisnika usluge (PBI-002)
     │       ├── Story: US-02 Prijava korisnika u sistem (PBI-002)
     │       └── Story: US-03 Odjava korisnika iz sistema (PBI-002)
     │
-    ├── EPIC: Upravljanje internim korisnicima, ulogama i pravima pristupa
+    ├── EPIC: Upravljanje korisnicima, ulogama i pravima pristupa (RBAC)
     │   │
-    │   ├── FEATURE: Kontrola pristupa i prava prema korisničkoj ulozi
+    │   ├── FEATURE: Kontrola pristupa (RBAC)
     │   │   │
     │   │   └── Story: US-04 Kontrola pristupa prema korisničkoj ulozi (PBI-001)
     │   │
-    │   └── FEATURE: Upravljanje internim korisničkim nalozima
+    │   └── FEATURE: Upravljanje korisničkim nalozima
     │       │
     │       ├── Story: US-18 Administrativno kreiranje internog korisničkog naloga (PBI-001)
     │       ├── Story: US-19 Pregled postojećih korisničkih naloga (PBI-001)
     │       ├── Story: US-20 Promjena korisničke uloge (PBI-001)
     │       └── Story: US-21 Deaktivacija korisničkog naloga (PBI-001)
     │
-    ├── EPIC: Upravljanje zahtjevima korisnika usluge
+    ├── EPIC: Upravljanje zahtjevima za servisne intervencije
     │   │
-    │   ├── FEATURE: Kreiranje i pregled zahtjeva
+    │   ├── FEATURE: Prijava kvara i pregled intervencije
     │   │   │
     │   │   ├── Story: US-05 Prijava zahtjeva za servisnu intervenciju (PBI-003)
     │   │   └── Story: US-06 Pregled vlastitog zahtjeva (PBI-004)
     │   │
-    │   └── FEATURE: Izmjena i otkazivanje zahtjeva
+    │   └── FEATURE: Izmjena i otkazivanje prijave kvara
     │       │
     │       ├── Story: US-26 Izmjena vlastitog zahtjeva (PBI-003)
     │       └── Story: US-27 Otkazivanje vlastitog zahtjeva (PBI-003)
     │
-    ├── EPIC: Dispečerski pregled i obrada intervencija
+    ├── EPIC: Pregled i upravljanje intervencijama od strane dispečera
     │   │
-    │   ├── FEATURE: Pregled i analiza intervencija
+    │   ├── FEATURE: Pregled intervencija i operativnog statusa
     │   │   │
     │   │   ├── Story: US-07 Pregled otvorenih intervencija (PBI-005 i PBI-016)
     │   │   ├── Story: US-08 Pregled detalja pojedinačne intervencije (PBI-004)
     │   │   └── Story: US-13 Pregled statusa intervencija od strane dispečera (PBI-005)
     │   │
-    │   └── FEATURE: Određivanje prioriteta intervencije
+    │   └── FEATURE: Dodjela prioriteta intervenciji
     │       │
     │       └── Story: US-12 Određivanje prioriteta intervencije (PBI-006)
     │
-    ├── EPIC: Dodjela i organizacija izvršenja intervencije
+    ├── EPIC: Planiranje i dodjela intervencija
     │   │
-    │   ├── FEATURE: Osnovna dodjela izvršioca
+    │   ├── FEATURE: Dodjela intervencije serviseru
     │   │   │
     │   │   ├── Story: US-09 Dodjela intervencije odgovornom serviseru (PBI-008)
     │   │   └── Story: US-10 Dodjela intervencije timu servisera (PBI-009)
     │   │
-    │   ├── FEATURE: Planiranje intervencije
+    │   ├── FEATURE: Planiranje izlazaka na teren
     │   │   │
     │   │   └── Story: US-11 Planiranje intervencije (PBI-007)
     │   │
-    │   └── FEATURE: Alternativni tokovi dodjele
+    │   └── FEATURE: Upravljanje dodjelom i preraspodjelom intervencija
     │       │
     │       ├── Story: US-28 Promjena izvršioca intervencije (PBI-008)
     │       └── Story: US-29 Vraćanje zadatka na ponovnu dodjelu (PBI-010)
     │
-    ├── EPIC: Rad servisera na dodijeljenim zadacima
+    ├── EPIC: Izvršenje intervencija od strane servisera
     │   │
-    │   ├── FEATURE: Pregled i preuzimanje zadataka
+    │   ├── FEATURE: Preuzimanje i pregled dodijeljenih zadataka
     │   │   │
     │   │   ├── Story: US-15 Pregled dodijeljenih intervencija (PBI-010)
     │   │   ├── Story: US-16 Pregled detalja zadatka na terenu (PBI-004)
     │   │   ├── Story: US-22 Prihvatanje dodijeljenog zadatka (PBI-010)
     │   │   └── Story: US-23 Odbijanje dodijeljenog zadatka (PBI-010)
     │   │
-    │   └── FEATURE: Ažuriranje toka rada na terenu
+    │   └── FEATURE: Ažuriranje statusa i evidencija rada
     │       │
     │       ├── Story: US-14 Ažuriranje statusa intervencije od strane servisera (PBI-011)
     │       └── Story: US-17 Evidentiranje izvršenog rada (PBI-012)
     │
-    ├── EPIC: Završetak i kontrola izvršenja intervencije
+    ├── EPIC: Zatvaranje i kontrola intervencije
     │   │
-    │   ├── FEATURE: Pregled izvršenog rada
+    │   ├── FEATURE: Pregled evidentiranog rada
     │   │   │
     │   │   └── Story: US-24 Pregled evidentiranog izvršenog rada (PBI-013)
     │   │
-    │   └── FEATURE: Formalni završetak intervencije
+    │   └── FEATURE: Potvrda zatvaranja intervencije
     │       │
     │       └── Story: US-25 Potvrda i zatvaranje intervencije (PBI-013)
     │
-    └── EPIC: Komunikacija i praćenje aktivnosti na intervenciji
+    └── EPIC: Komunikacija i historija aktivnosti intervencije
         │
-        ├── FEATURE: Operativna komunikacija
+        ├── FEATURE: Napomene na intervenciji
         │   │
         │   └── Story: US-30 Razmjena napomena na intervenciji (PBI-015)
         │
-        └── FEATURE: Historija aktivnosti
+        └── FEATURE: Historija aktivnosti intervencije
             │
             └── Story: US-31 Pregled historije aktivnosti intervencije (PBI-014)
 ```
