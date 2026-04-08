@@ -4,7 +4,7 @@ U ovom dokumentu je prikazan ažurirani product backlog sistema za upravljanje s
 
 | ID | NAZIV STAVKE | KRATAK OPIS | TIP STAVKE | PRIORITET | PROCJENA SLOŽENOSTI ILI NAPORA | STATUS | VEZA SA SPRINTOM ILI RELEASE PLANOM | NAPOMENA |
 |:---|:--------------|:-------------|:------------|:-----------|:--------------------------------|:--------|:-------------------------------------|:----------|
-|PB-001|Kontrola pristupa (RBAC)|Kao administrator želim definisati korisničke uloge sa pripadajućim privilegijama (pristup, akcije i slično), kako bih osigurao da korisnici imaju pristup samo relevantnim podacima i funkcionalnostima sistema, u skladu sa svojom ulogom.|Technical Task|Visok|5|To Do|Sprint 6|Tehnička osnova za sigurnost i razgraničenje ovlaštenja.|
+|PB-001|Upravljanje korisnicima, ulogama i pravima pristupa (RBAC)|Kao administrator želim da kreiram, pregledam, ažuriram i deaktiviram korisničke račune, te da im dodijelim specifične uloge (dispečer, serviser, klijent), kako bih kontrolisao ko može pristupiti određenim podacima i funkcionalnostima u sistemu.|Feature/<br>Tehcnical Task|Visok|13|To Do|Sprint 6 i <br>Sprint 10|Tehnička osnova za sigurnost i razgraničenje ovlaštenja.|
 |PB-002|Registracija korisnika|Kao novi korisnik želim napraviti korisnički račun kako bih mogao koristiti sistem.|Feature|Visok|5|To Do|Sprint 6|Osnova za korištenje ostalih funkcija.|
 |PB-003|Prijava korisnika|Kao registrovani korisnik želim se prijaviti u sistem kako bih pristupio svojim informacijama i funkcionalnostima.|Feature|Visok|3|To Do|Sprint 6|Standardni ulaz u sistem.|
 |PB-004|Odjava korisnika (Logout)|Kao korisnik sistema želim se sigurno odjaviti sa svog računa kako bih spriječio neovlašteni pristup mojim podacima nakon završetka rada.|Feature|Visok|2|To Do|Sprint 7|Standardna sigurnosna funkcija koja uništava aktivnu sesiju korisnika.|
@@ -21,9 +21,8 @@ U ovom dokumentu je prikazan ažurirani product backlog sistema za upravljanje s
 |PB-015|Potvrda zatvaranja intervencije|Kao dispečer želim potvrditi završetak intervencije kako bih bio siguran da je problem riješen.|Feature|Srednji|3|To Do|Sprint 10|Finalna validacija od strane dispečera prije arhiviranja.|
 |PB-016|Historija aktivnosti intervencije|Kao dispečer i serviser želim imati uvid u hronološki pregled svih promjena na intervenciji kako bih znao ko je, kada i koju akciju poduzeo (promjena statusa, dodjela, napomene).|Feature|Srednji|5|To Do|Sprint 10|Ključna stavka za praćenje toka rada od prijave do zatvaranja.|
 |PB-017|Napomene na intervenciji|Kao dispečer i serviser želim ostavljati napomene na intervenciji kako bi komunikacija bila jasna i sve informacije bile na jednom mjestu.|Feature|Srednji|3|To Do|Sprint 10|Osnovna komunikacija.|
-|PB-018|Upravljenje korisničkim računima|Kao administrator želim da kreiram, pregledam, ažuriram i brišem korisničke profile kako bih upravljao pristupom sistemu.|Feature|Visok|8|To Do|Sprint 10|Osnovna administracija korisnika neophodna za rad ostatka sistema.|
-|PB-019|Pregled operativnog statusa|Kao dispečer želim vidjeti brojčani pregled intervencija po ključnim fazama (otvorene, u toku, završene) na početnom ekranu, kako bih odmah uočio obim posla.|Feature|Srednji|3|To Do|Sprint 10|Vizuelni prikaz ključnih metrika za dispečera.|
-|PB-020|Historija intervencija|Kao korisnik želim vidjeti historiju intervencija kako bih imao pregled prethodnih kvarova.|Feature|Srednji|5|To Do|Sprint 10|Arhiva svih aktivnosti po korisniku radi lakšeg uvida.|
+|PB-018|Pregled operativnog statusa|Kao dispečer želim vidjeti brojčani pregled intervencija po ključnim fazama (otvorene, u toku, završene) na početnom ekranu, kako bih odmah uočio obim posla.|Feature|Srednji|3|To Do|Sprint 10|Vizuelni prikaz ključnih metrika za dispečera.|
+|PB-019|Historija intervencija|Kao korisnik želim vidjeti historiju intervencija kako bih imao pregled prethodnih kvarova.|Feature|Srednji|5|To Do|Sprint 10|Arhiva svih aktivnosti po korisniku radi lakšeg uvida.|
 
 
 
