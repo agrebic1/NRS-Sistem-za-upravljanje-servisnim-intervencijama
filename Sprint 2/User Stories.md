@@ -3,7 +3,7 @@
 ## Hijerarhija zahtjeva
 ```
 THEME (Tema)
-└── "Sistem za upravljanje servisnim intervencijama"
+└── Sistem za upravljanje servisnim intervencijama
     │
     ├── EPIC: Pristup sistemu za korisnike usluge
     │   │
@@ -13,9 +13,9 @@ THEME (Tema)
     │       ├── Story: US-02 Prijava korisnika u sistem
     │       └── Story: US-03 Odjava korisnika iz sistema
     │
-    ├── EPIC: Upravljanje internim korisnicima i pravima pristupa
+    ├── EPIC: Upravljanje internim korisnicima, ulogama i pravima pristupa
     │   │
-    │   ├── FEATURE: Kontrola pristupa prema ulozi
+    │   ├── FEATURE: Kontrola pristupa i prava prema korisničkoj ulozi
     │   │   │
     │   │   └── Story: US-04 Kontrola pristupa prema korisničkoj ulozi
     │   │
@@ -33,34 +33,38 @@ THEME (Tema)
     │   │   ├── Story: US-05 Prijava zahtjeva za servisnu intervenciju
     │   │   └── Story: US-06 Pregled vlastitog zahtjeva
     │   │
-    │   └── FEATURE: Izmjena korisničkog zahtjeva
+    │   └── FEATURE: Izmjena i otkazivanje zahtjeva
     │       │
     │       ├── Story: US-26 Izmjena vlastitog zahtjeva
     │       └── Story: US-27 Otkazivanje vlastitog zahtjeva
     │
-    ├── EPIC: Operativni pregled i obrada intervencija od strane dispečera
+    ├── EPIC: Dispečerski pregled i obrada intervencija
     │   │
-    │   ├── FEATURE: Pregled operativnih intervencija
+    │   ├── FEATURE: Pregled i analiza intervencija
     │   │   │
     │   │   ├── Story: US-07 Pregled otvorenih intervencija
     │   │   ├── Story: US-08 Pregled detalja pojedinačne intervencije
     │   │   └── Story: US-13 Pregled statusa intervencija od strane dispečera
     │   │
-    │   └── FEATURE: Određivanje prioriteta
+    │   └── FEATURE: Određivanje prioriteta intervencije
     │       │
     │       └── Story: US-12 Određivanje prioriteta intervencije
     │
     ├── EPIC: Dodjela i organizacija izvršenja intervencije
     │   │
-    │   ├── FEATURE: Dodjela izvršioca
+    │   ├── FEATURE: Osnovna dodjela izvršioca
     │   │   │
     │   │   ├── Story: US-09 Dodjela intervencije odgovornom serviseru
-    │   │   ├── Story: US-10 Dodjela intervencije timu servisera
-    │   │   └── Story: US-28 Promjena izvršioca intervencije
+    │   │   └── Story: US-10 Dodjela intervencije timu servisera
     │   │
-    │   └── FEATURE: Planiranje intervencije
+    │   ├── FEATURE: Planiranje intervencije
+    │   │   │
+    │   │   └── Story: US-11 Planiranje intervencije
+    │   │
+    │   └── FEATURE: Alternativni tokovi dodjele
     │       │
-    │       └── Story: US-11 Planiranje intervencije
+    │       ├── Story: US-28 Promjena izvršioca intervencije
+    │       └── Story: US-29 Vraćanje zadatka na ponovnu dodjelu
     │
     ├── EPIC: Rad servisera na dodijeljenim zadacima
     │   │
@@ -71,21 +75,15 @@ THEME (Tema)
     │   │   ├── Story: US-22 Prihvatanje dodijeljenog zadatka
     │   │   └── Story: US-23 Odbijanje dodijeljenog zadatka
     │   │
-    │   └── FEATURE: Vraćanje zadatka u operativni tok
+    │   └── FEATURE: Ažuriranje toka rada na terenu
     │       │
-    │       └── Story: US-29 Vraćanje zadatka na ponovnu dodjelu
+    │       ├── Story: US-14 Ažuriranje statusa intervencije od strane servisera
+    │       └── Story: US-17 Evidentiranje izvršenog rada
     │
-    ├── EPIC: Upravljanje statusom intervencije
+    ├── EPIC: Završetak i kontrola izvršenja intervencije
     │   │
-    │   └── FEATURE: Praćenje i ažuriranje statusa
-    │       │
-    │       └── Story: US-14 Ažuriranje statusa intervencije od strane servisera
-    │
-    ├── EPIC: Evidencija izvršenog rada i zatvaranje intervencije
-    │   │
-    │   ├── FEATURE: Evidencija i pregled rada
+    │   ├── FEATURE: Pregled izvršenog rada
     │   │   │
-    │   │   ├── Story: US-17 Evidentiranje izvršenog rada
     │   │   └── Story: US-24 Pregled evidentiranog izvršenog rada
     │   │
     │   └── FEATURE: Formalni završetak intervencije
