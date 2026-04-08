@@ -138,7 +138,7 @@ Sažeti pregled user story-a u okviru MVP-a:
 | US-03 | Odjava korisnika iz sistema | Kao prijavljeni korisnik sistema, želim se sigurno odjaviti sa svog naloga, kako bih spriječio neovlašten pristup svom korisničkom računu nakon završetka rada. | - sigurnost naloga<br>- zaštita podataka<br>- zatvaranje sesije | Srednji |
 | US-04 | Kontrola pristupa prema korisničkoj ulozi | Kao administrator, želim da sistem ograniči pristup podacima i funkcionalnostima prema korisničkoj ulozi, kako bi svaki korisnik mogao koristiti samo ono što je relevantno za njegovu odgovornost. | - sigurnost sistema<br>- kontrola pristupa<br>- jasne odgovornosti | Visok |
 | US-05 | Prijava zahtjeva za servisnu intervenciju | Kao korisnik usluge, želim prijaviti kvar ili zahtjev za servisnu intervenciju, kako bi obrada mog zahtjeva mogla biti evidentirana i pokrenuta kroz sistem. | - evidentiranje problema<br>- početak procesa<br>- osnova za obradu | Visok |
-| US-06 | Pregled vlastitog zahtjeva | Kao korisnik usluge, želim pregledati osnovne informacije i status svog zahtjeva, kako bih imao jasan uvid u ono što je prijavljeno i u fazu obrade u kojoj se zahtjev nalazi. | - preglednost zahtjeva<br>- transparentnost procesa<br>- veće povjerenje korisnika | Visok |
+| US-06 | Pregled vlastitog zahtjeva | Kao korisnik usluge, želim pregledati osnovne informacije i status svog zahtjeva, kako bih imao jasan uvid u ono što je prijavljeno i u fazu obrade u kojoj se zahtjev nalazi. | - preglednost zahtjeva<br>- transparentnost procesa<br>- veće povjerenje korisnika | Srednji |
 | US-07 | Pregled otvorenih intervencija | Kao dispečer, želim pregledati sve otvorene i aktivne intervencije, kako bih imao jasan uvid u zahtjeve koji čekaju obradu i u tok rada. | - centralizovan pregled<br>- bolja organizacija rada<br>- pravovremeno reagovanje | Visok |
 | US-08 | Pregled detalja pojedinačne intervencije | Kao dispečer, želim pregledati detalje pojedinačne intervencije, kako bih imao potpune informacije o njenom trenutnom stanju, toku i zaduženjima. | - potpune informacije<br>- lakše odluke<br>- bolja koordinacija | Visok |
 | US-09 | Dodjela intervencije odgovornom serviseru | Kao dispečer, želim dodijeliti intervenciju odgovornom serviseru, kako bi bilo jasno ko preuzima izvršenje zadatka. | - jasna odgovornost<br>- nastavak procesa<br>- lakše praćenje izvršenja | Visok |
@@ -151,17 +151,17 @@ Sažeti pregled user story-a u okviru MVP-a:
 | US-16 | Pregled detalja zadatka na terenu | Kao serviser, želim pregledati detalje zadatka na terenu, kako bih imao sve potrebne informacije za njegovo pravilno i efikasno izvršavanje. | - manje grešaka<br>- bolja priprema<br>- efikasnije izvršenje | Visok |
 | US-17 | Evidentiranje izvršenog rada | Kao serviser, želim evidentirati izvršeni rad, kako bi sistem sadržavao tačan zapis o aktivnostima obavljenim tokom intervencije. | - evidencija rada<br>- transparentnost procesa<br>- pregled izvršenja | Srednji |
 | US-18 | Administrativno kreiranje internog korisničkog naloga | Kao administrator, želim kreirati korisnički nalog za internog korisnika sistema, kako bih mu omogućio pristup sistemu u skladu sa njegovom ulogom. | - uključivanje internih korisnika<br>- dodjela odgovornosti<br>- omogućavanje pristupa | Visok |
-| US-19 | Pregled postojećih korisničkih naloga | Kao administrator, želim pregledati postojeće korisničke naloge, kako bih imao uvid u korisnike sistema i mogao njima upravljati. | - pregled korisnika<br>- uvid u uloge<br>- osnova za upravljanje nalozima | Visok |
-| US-20 | Promjena korisničke uloge | Kao administrator, želim promijeniti korisničku ulogu, kako bi korisnik imao pristup funkcionalnostima koje odgovaraju njegovoj novoj odgovornosti u sistemu. | - usklađivanje pristupa<br>- sigurnost sistema<br>- organizacija rada | Visok |
-| US-21 | Deaktivacija korisničkog naloga | Kao administrator, želim deaktivirati korisnički nalog, kako bih spriječio dalji pristup korisniku koji više ne treba koristiti sistem. | - onemogućavanje pristupa<br>- sigurnost sistema<br>- očuvanje evidencije | Visok |
+| US-19 | Pregled postojećih korisničkih naloga | Kao administrator, želim pregledati postojeće korisničke naloge, kako bih imao uvid u korisnike sistema i mogao njima upravljati. | - pregled korisnika<br>- uvid u uloge<br>- osnova za upravljanje nalozima | Srednji |
+| US-20 | Promjena korisničke uloge | Kao administrator, želim promijeniti korisničku ulogu, kako bi korisnik imao pristup funkcionalnostima koje odgovaraju njegovoj novoj odgovornosti u sistemu. | - usklađivanje pristupa<br>- sigurnost sistema<br>- organizacija rada | Srednji |
+| US-21 | Deaktivacija korisničkog naloga | Kao administrator, želim deaktivirati korisnički nalog, kako bih spriječio dalji pristup korisniku koji više ne treba koristiti sistem. | - onemogućavanje pristupa<br>- sigurnost sistema<br>- očuvanje evidencije | Srednji |
 | US-22 | Prihvatanje dodijeljenog zadatka | Kao serviser, želim prihvatiti dodijeljeni zadatak, kako bih potvrdio da preuzimam odgovornost za njegovu realizaciju. | - potvrda preuzimanja<br>- jasna odgovornost<br>- nastavak toka rada | Visok |
-| US-23 | Odbijanje dodijeljenog zadatka | Kao serviser, želim odbiti dodijeljeni zadatak, kako bi dispečer mogao pravovremeno reagovati i dodijeliti ga drugom izvršiocu. | - izbjegavanje zastoja<br>- pravovremena reakcija<br>- nova dodjela | Visok |
+| US-23 | Odbijanje dodijeljenog zadatka | Kao serviser, želim odbiti dodijeljeni zadatak, kako bi dispečer mogao pravovremeno reagovati i dodijeliti ga drugom izvršiocu. | - izbjegavanje zastoja<br>- pravovremena reakcija<br>- nova dodjela | Srednji |
 | US-24 | Pregled evidentiranog izvršenog rada | Kao dispečer, želim pregledati evidentirani izvršeni rad, kako bih imao uvid u ono što je serviser uradio prije zatvaranja intervencije. | - kontrola izvršenja<br>- provjera rada<br>- osnova za zatvaranje | Visok |
 | US-25 | Potvrda i zatvaranje intervencije | Kao dispečer, želim potvrditi i zatvoriti završenu intervenciju, kako bi proces bio formalno okončan u sistemu. | - formalni završetak procesa<br>- kontrolisan kraj intervencije<br>- uredna evidencija | Visok |
 | US-26 | Izmjena vlastitog zahtjeva | Kao korisnik usluge, želim izmijeniti svoj zahtjev dok još nije preuzet u obradu, kako bih mogao ispraviti pogrešno unesene ili nepotpune podatke. | - ispravka grešaka<br>- tačniji podaci<br>- manje pogrešnih intervencija | Visok |
 | US-27 | Otkazivanje vlastitog zahtjeva | Kao korisnik usluge, želim otkazati svoj zahtjev dok još nije u aktivnoj obradi, kako bih mogao povući greškom prijavljen ili više nepotreban zahtjev. | - manje operativnog šuma<br>- čišći backlog zahtjeva<br>- manje nepotrebnog rada | Visok |
-| US-28 | Promjena izvršioca intervencije | Kao dispečer, želim promijeniti izvršioca intervencije, kako bi zadatak mogao biti dodijeljen drugom serviseru kada prvobitno dodijeljeni izvršilac ne može preuzeti ili završiti rad. | - fleksibilnost rada<br>- kontinuitet procesa<br>- manji rizik od zastoja | Visok |
-| US-29 | Vraćanje zadatka na ponovnu dodjelu | Kao serviser, želim vratiti zadatak na ponovnu dodjelu, kako bi dispečer mogao organizovati dalje izvršenje kada zadatak nije moguće završiti u postojećim okolnostima. | - vraćanje u operativni tok<br>- sprječavanje zastoja<br>- nova organizacija rada | Visok |
+| US-28 | Promjena izvršioca intervencije | Kao dispečer, želim promijeniti izvršioca intervencije, kako bi zadatak mogao biti dodijeljen drugom serviseru kada prvobitno dodijeljeni izvršilac ne može preuzeti ili završiti rad. | - fleksibilnost rada<br>- kontinuitet procesa<br>- manji rizik od zastoja | Srednji |
+| US-29 | Vraćanje zadatka na ponovnu dodjelu | Kao serviser, želim vratiti zadatak na ponovnu dodjelu, kako bi dispečer mogao organizovati dalje izvršenje kada zadatak nije moguće završiti u postojećim okolnostima. | - vraćanje u operativni tok<br>- sprječavanje zastoja<br>- nova organizacija rada | Srednji |
 | US-30 | Razmjena napomena na intervenciji | Kao dispečer ili serviser, želim dodati kratku napomenu na konkretnu intervenciju, kako bi sve važne operativne informacije bile dostupne na jednom mjestu svim učesnicima u procesu. | - interna komunikacija<br>- važne informacije na jednom mjestu<br>- manje oslanjanja na vanjske kanale | Srednji |
 | US-31 | Pregled historije aktivnosti intervencije | Kao dispečer, želim vidjeti listu svih prethodnih promjena i aktivnosti na zahtjevu, kako bih imao jasan uvid u hronologiju obrade od trenutka prijave do trenutnog statusa. | - transparentnost procesa<br>- praćenje toka rada<br>- audit trag | Srednji | 
 
@@ -417,7 +417,7 @@ Kao korisnik usluge, želim pregledati osnovne informacije i status svog zahtjev
 Ovaj story je važan jer korisniku omogućava da na jednom mjestu vidi šta je prijavio i u kojoj se fazi obrade njegov zahtjev nalazi, čime se povećava preglednost, smanjuje potreba za dodatnim provjerama i povećava povjerenje u proces rješavanja problema.
 
 **Prioritet:**  
-*Visok*
+*Srednji*
 
 **Pretpostavke i otvorena pitanja:**  
 
@@ -999,7 +999,7 @@ Kao administrator, želim pregledati postojeće korisničke naloge, kako bih ima
 Ovaj story je važan jer administratoru omogućava pregled svih korisnika sistema, njihovih uloga i statusa naloga, što predstavlja osnovu za organizovano upravljanje pristupom i odgovornostima u sistemu.
 
 **Prioritet:**  
-*Visok*
+*Srednji*
 
 **Pretpostavke i otvorena pitanja:**  
 
@@ -1043,7 +1043,7 @@ Kao administrator, želim promijeniti korisničku ulogu, kako bi korisnik imao p
 Ovaj story je važan jer omogućava da se prava pristupa i odgovornosti korisnika usklade sa njihovom stvarnom ulogom u poslovnom procesu, čime se povećava sigurnost sistema i podržava jasna organizacija rada.
 
 **Prioritet:**  
-*Visok*
+*Srednji*
 
 **Pretpostavke i otvorena pitanja:**  
 
@@ -1087,7 +1087,7 @@ Kao administrator, želim deaktivirati korisnički nalog, kako bih spriječio da
 Ovaj story je važan jer omogućava administratoru da onemogući pristup korisnicima koji više ne trebaju koristiti sistem, bez gubitka historijskih podataka i veza koje su vezane za njihov raniji rad.
 
 **Prioritet:**  
-*Visok*
+*Srednji*
 
 **Pretpostavke i otvorena pitanja:** 
 
@@ -1174,7 +1174,7 @@ Kao serviser, želim odbiti dodijeljeni zadatak, kako bi dispečer mogao pravovr
 Ovaj story je važan jer omogućava da sistem evidentira da zadatak ne može biti preuzet, čime se izbjegava zastoj u procesu i omogućava pravovremena reakcija dispečera.
 
 **Prioritet:**  
-*Visok*
+*Srednji*
 
 **Pretpostavke i otvorena pitanja:**  
 
@@ -1304,7 +1304,7 @@ Kao korisnik usluge, želim izmijeniti svoj zahtjev dok još nije preuzet u obra
 Ovaj story je važan jer omogućava korisniku da ispravi greške u prijavi bez potrebe da pravi novi zahtjev, čime se povećava tačnost podataka i smanjuje broj pogrešno evidentiranih intervencija.  
 
 **Prioritet:**  
-*Visok*  
+*Srednji*  
 
 **Pretpostavke i otvorena pitanja:**  
 
@@ -1347,7 +1347,7 @@ Kao korisnik usluge, želim otkazati svoj zahtjev dok još nije u aktivnoj obrad
 Ovaj story je važan jer sprečava da pogrešno prijavljeni ili više nepotrebni zahtjevi ostanu aktivni u sistemu, čime se smanjuje operativni šum i olakšava rad dispečera i servisera.  
 
 **Prioritet:**  
-*Visok*  
+*Srednji*  
 
 **Pretpostavke i otvorena pitanja:**  
 
@@ -1390,7 +1390,7 @@ Kao dispečer, želim promijeniti izvršioca intervencije, kako bi zadatak mogao
 Ovaj story je važan jer omogućava da operativni tok ne "zapne" kada dodijeljeni serviser postane nedostupan ili ne može izvršiti zadatak, čime se povećava fleksibilnost i pouzdanost sistema.  
 
 **Prioritet:**  
-*Visok*  
+*Srednji*  
 
 **Pretpostavke i otvorena pitanja:**  
 
@@ -1433,7 +1433,7 @@ Kao serviser, želim vratiti zadatak na ponovnu dodjelu, kako bi dispečer mogao
 Ovaj story je važan jer omogućava da se zadatak ne zaglavi kod servisera koji ga ne može završiti, nego da se vrati u operativni tok i ponovo organizuje na ispravan način.  
 
 **Prioritet:**  
-*Visok*  
+*Srednji*  
 
 **Pretpostavke i otvorena pitanja:**  
 
