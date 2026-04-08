@@ -1,5 +1,31 @@
 # Sprint backlog
 
+## Sprint 2
+
+### **Sprint broj: 2**
+
+### **Sprint cilj:**
+Uspostaviti tehničku i logičku mapu puta projekta. Cilj je da svaki član tima tačno zna šta gradi, pod kojim uslovima se zadatak smatra završenim i koja su sistemska ograničenja (NFR) kojih se moramo pridržavati.
+
+### **Ključne stavke koje tim želi završiti:**
+  - **Granularni Backlog:** Razbijanje velikih funkcija na male, savladive zadatke (User Stories) koje jedan student može završiti za 1-2 dana.
+
+  - **Provjerljivi kriteriji (AC):** Lista jasnih koraka za svaki story koji služe kao "čeklista" prije predaje rada asistentu.
+
+  - **Prioritizacija (MoSCoW):** Jasno razdvajanje onoga što mora sadržavati prva vrzija (MVP) od onoga što bi bilo lijepo imati ako ostane vremena.
+
+  - **Tehnički okvir (NFR):** Definisanje osnovnih pravila (npr. "aplikacija se mora učitavati ispod 2s" ili "lozinke ne smiju biti u plain textu").
+
+### **Rizici i zavisnosti:**
+
+  - **Rizik loše procjene:** Da story-ji budu preveliki (tzv. "Epici"), što će dovesti do kašnjenja u narednom sprintu.
+
+  - **Tehnička nepoznanica:** NFR zahtjevi mogu zahtijevati tehnologije koje tim još nije u potpunosti savladao.
+
+  - **Zavisnost:** Potreba za usklađivanjem članova tima oko zajedničke baze podataka ili API strukture prije početka koda.
+
+---
+
 ## Hijerarhija zahtjeva
 ```
 THEME (Tema)
