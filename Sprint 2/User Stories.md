@@ -5,24 +5,24 @@
 ### **Sprint broj: 2**
 
 ### **Sprint cilj:**
-Uspostaviti tehničku i logičku mapu puta projekta. Cilj je da svaki član tima tačno zna šta gradi, pod kojim uslovima se zadatak smatra završenim i koja su sistemska ograničenja (NFR) kojih se moramo pridržavati.
+Definisati precizan plan rada kroz dekompoziciju zadataka uz pomoć INVEST modela i postavljanje tehničkih standarda (AC,NFR), kako bismo osigurali nesmetan početak razvoja.
 
 ### **Ključne stavke koje tim želi završiti:**
-  - **Granularni Backlog:** Razbijanje velikih funkcija na male, savladive zadatke (User Stories) koje jedan student može završiti za 1-2 dana.
+  - **Granularni Backlog:** Razbijanje složenih funkcionalnosti na manje, logički zaokružene korisničke priče(user stories). Svaki zadatak mora biti dimenzioniran tako da je njegova implementacija predvidiva i ostvariva u kratkom vremenskom roku.
 
-  - **Provjerljivi kriteriji (AC):** Lista jasnih koraka za svaki story koji služe kao "čeklista" prije predaje rada asistentu.
+  - **Provjerljivi kriteriji (AC):** Uspostavljanje jasnih uslova za svaki user story. Ovi kriteriji služe kao objektivna checklista koja garantuje da je zadatak urađen u skladu sa očekivanjima prije same integracije u sistem.
 
-  - **Prioritizacija (MoSCoW):** Jasno razdvajanje onoga što mora sadržavati prva vrzija (MVP) od onoga što bi bilo lijepo imati ako ostane vremena.
+  - **Prioritizacija (MoSCoW):** Identifikacija  ključnih funkcionalnosti za MVP. Fokusiramo resurse na kritične procese, dok sekundarna poboljšanja ostavljamo za kasnije faze razvoja.
 
-  - **Tehnički okvir (NFR):** Definisanje osnovnih pravila (npr. "aplikacija se mora učitavati ispod 2s" ili "lozinke ne smiju biti u plain textu").
+  - **Tehnički okvir (NFR):** Definisanje nefunkcionalnih zahtjeva koji osiguravaju stabilnost i sigurnost (npr. optimizovano vrijeme odziva, sigurnosni protokoli za čuvanje podataka i validacija korisničkih sesija).
 
 ### **Rizici i zavisnosti:**
 
-  - **Rizik loše procjene:** Da story-ji budu preveliki (tzv. "Epici"), što će dovesti do kašnjenja u narednom sprintu.
+  - **Rizik neadekvatne dekompozicije story-a:** Ukoliko zadaci ostanu preširoki (Epici), postoji realna opasnost od zastoja. Zastoji se sprečavaju primjenom INVEST modela, koji nam garantuje da je svaki story dovoljno precizan i nezavisan za nesmetan rad.
 
-  - **Tehnička nepoznanica:** NFR zahtjevi mogu zahtijevati tehnologije koje tim još nije u potpunosti savladao.
+  - **Tehnička barijera:** Postavljeni sigurnosni i performansni standardi mogu zahtijevati tehnologije koje tim tek treba u potpunosti usvojiti. Planiramo ranu fazu istraživanja kako bismo premostili ove prepreke prije početka kodiranja.
 
-  - **Zavisnost:** Potreba za usklađivanjem članova tima oko zajedničke baze podataka ili API strukture prije početka koda.
+  - **Arhitekturalna usklađenost:** Uspjeh razvoja zavisi od ranog definisanja šeme baze podataka i API ugovora. Sinhronizacija tima oko ovih temelja je prioritet broj jedan kako bi se omogućio paralelan rad na različitim modulima.
 
 ---
 
@@ -661,7 +661,7 @@ Ovaj story je važan jer omogućava pravovremeno i efikasno planiranje intervenc
 
 **Pretpostavka:** Pretpostavlja se da postoje podaci o resursima, timu i raspoloživim terminima.
 
-**Otvorena pitanja:**  Otvoreno pitanje je da li u planiranju učestvuju i drugi korisnici osim dispečera.
+**Otvorena pitanja:**  Da li u planiranju učestvuju i drugi korisnici osim dispečera? Da li dispečer treba imati mogućnost prisilnog zakazivanja uprkos konfliktu u hitnim slučajevima?
 
 **Veze sa drugim storyjima:**  
 Zavisi od storyja za dodjelu intervencije izvršiocu i povezan je sa storyjima za pregled statusa intervencija i pregled detalja pojedinačne intervencije.
@@ -683,10 +683,20 @@ Zavisi od storyja za dodjelu intervencije izvršiocu i povezan je sa storyjima z
   - **WHEN** pokuša potvrditi planiranje 
   - **THEN** sistem ne sprema termin i prikazuje grešku
 
-- **AC4: Konflikt termina**  
-  - **GIVEN** dispečer unese termin koji se preklapa sa već postojećim planiranim terminom za istog servisera ili tim
+- **AC4: Zabrana preklapanja termina**  
+  - **GIVEN** dispečer unese termin(datum i vrijeme) koji se preklapa sa već postojećim planiranim terminom za odabranog servisera ili tim
   - **WHEN** pokuša potvrditi planiranje   
-  - **THEN** sistem prikazuje upozorenje i nudi mogućnost da dispečer potvrdi ili izmijeni termin
+  - **THEN** sistem ne dozvoljava spremanje promjena, prikazuje jasno upozorenje o konfliktu i markira polja koja uzrokuju problem, zahtijevajući od dispečera unos drugog termina
+ 
+- **AC5: Provjera dostupnosti u realnom vremenu**  
+  - **GIVEN** dispečer izabere termin za intervenciju
+  - **WHEN** otvori kalendar ili listu termina
+  - **THEN** sistem vizuelno označava termina u kojima je odabrani serviser/tim već zauzet, kako bi se spriječio pokušaj unosa konfliktnog termina
+
+- **AC6: Definisanje trajanja intervencije**  
+  - **GIVEN** dispečer unese termin početka intervencije
+  - **WHEN** potvrdi planiranje zahtjeva
+  - **THEN** sistem prihvata ručno uneseno očekivano vrijeme trajanja ili u slučaju praznog polja, automatski dodjeljuje podrazumijevanu(default) vrijednost od 60 minuta kako bi rezervisao vremenski blok u kalendaru izvršioca
 
 ---
 
@@ -705,7 +715,7 @@ Ovaj story je važan jer omogućava da se intervencije ne obrađuju proizvoljno,
 
 **Pretpostavka:**  Pretpostavlja se da su svi relevantni podaci o intervenciji (opis problema, lokacija, hitnost) već uneseni u sistem kako bi dispečer mogao odrediti prioritet.
 
-**Otvorena pitanja:** Otvoreno pitanje je da li dispečer prioritet određuje ručno ili sistem daje prijedlog koji dispečer potvrđuje ili mijenja.
+**Otvorena pitanja:** Da li dispečer prioritet određuje ručno ili sistem daje prijedlog koji dispečer može potvrditi ili izmijeniti po potrebi?
 
 **Veze sa drugim storyjima:**  
 Zavisi od storyja za prijavu zahtjeva i pregled detalja pojedinačne intervencije, a povezan je sa storyjima za dodjelu intervencije i planiranje intervencije.
@@ -749,7 +759,7 @@ Ovaj story je važan jer dispečeru daje pregled nad trenutnim stanjem procesa i
 
 **Pretpostavka:**  Pretpostavlja se da sistem podržava definisane statuse intervencije.
 
-**Otvorena pitanja:** Otvoreno pitanje je da li dispečer vidi samo trenutni status ili i dodatne informacije poput prioriteta, izvršioca i termina.
+**Otvorena pitanja:** Da li dispečer vidi samo trenutni status ili i dodatne informacije poput prioriteta, izvršioca i termina?
 
 **Veze sa drugim storyjima:**  
 Zavisi od storyja za pregled otvorenih intervencija i povezan je sa storyjima za pregled detalja pojedinačne intervencije, određivanje prioriteta, dodjelu izvršioca, planiranje i ažuriranje statusa.
@@ -788,7 +798,7 @@ Ovaj story je važan jer omogućava da sistem prati stvarni tok izvršenja inter
 
 **Pretpostavka:**  Pretpostavlja se da serviser može ažurirati status samo za intervencije koje su mu dodijeljene.
 
-**Otvorena pitanja:** Otvoreno pitanje je koje operativne statuse serviser može postavljati.
+**Otvorena pitanja:** Koje operativne statuse serviser može postavljati?
 
 **Veze sa drugim storyjima:**  
 Zavisi od storyja za pregled dodijeljenih intervencija i pregled detalja zadatka na terenu. Povezan je sa storyjima za pregled statusa intervencija od strane dispečera, pregled vlastitog zahtjeva i evidentiranje izvršenog rada.
@@ -832,7 +842,7 @@ Ovaj story je važan jer serviseru daje pregled njegovih zadataka, olakšava org
 
 **Pretpostavka:**  Pretpostavlja se da su intervencije već kreirane i dodijeljene od strane dispečera.
 
-**Otvorena pitanja:** Otvoreno pitanje je da li serviser vidi samo svoje zadatke ili i zadatke cijelog tima.
+**Otvorena pitanja:** Da li serviser vidi samo svoje zadatke ili i zadatke cijelog tima?
 
 **Veze sa drugim storyjima:**  
 Zavisi od storyja za dodjelu intervencije odgovornom serviseru ili timu i povezan je sa storyjem za pregled detalja zadatka na terenu.
@@ -870,7 +880,7 @@ Ovaj story je važan jer omogućava serviseru da na terenu ima sve ključne info
 
 **Pretpostavka:**  Pretpostavlja se da je intervencija već evidentirana i dodijeljena serviseru ili timu.
 
-**Otvorena pitanja:** Otvoreno pitanje je koje informacije čine minimalni obavezni skup detalja koje serviser mora imati dostupne na terenu.
+**Otvorena pitanja:** Koje informacije čine minimalni obavezni skup detalja koje serviser mora imati dostupne na terenu?
 
 **Veze sa drugim storyjima:**  
 Zavisi od storyja za pregled dodijeljenih intervencija i povezan je sa storyjima za ažuriranje statusa intervencije i evidentiranje izvršenog rada.
@@ -908,7 +918,7 @@ Ovaj story je važan jer omogućava da se izvršene aktivnosti evidentiraju tač
 
 **Pretpostavka:**  Pretpostavlja se da serviser može evidentirati aktivnosti tokom ili nakon intervencije.
 
-**Otvorena pitanja:** Otvoreno pitanje je koje informacije su obavezne prilikom evidencije.
+**Otvorena pitanja:** Koje informacije su obavezne prilikom evidencije?
 
 **Veze sa drugim storyjima:**  
 Zavisi od storyja za pregled detalja zadatka na terenu i povezan je sa storyjima za ažuriranje statusa intervencije i pregled evidentiranog izvršenog rada.
@@ -951,7 +961,7 @@ Ovaj story je važan jer omogućava uključivanje internih korisnika u sistem i 
 
 **Pretpostavka:**  Pretpostavlja se da administrator ima pravo kreiranja internih korisničkih naloga.
 
-**Otvorena pitanja:** Otvoreno pitanje je da li se korisnička uloga dodjeljuje odmah prilikom kreiranja naloga ili u posebnom koraku nakon toga.
+**Otvorena pitanja:** Da li se korisnička uloga dodjeljuje odmah prilikom kreiranja naloga ili u posebnom koraku nakon toga?
 
 **Veze sa drugim storyjima:**  
 Povezano sa storyjima za pregled korisničkih naloga i promjenu korisničke uloge.
@@ -995,7 +1005,7 @@ Ovaj story je važan jer administratoru omogućava pregled svih korisnika sistem
 
 **Pretpostavka:**  Pretpostavlja se da korisnički nalozi već postoje u sistemu.
 
-**Otvorena pitanja:** Otvoreno pitanje je da li pregled treba prikazivati samo aktivne korisnike ili i deaktivirane naloge.
+**Otvorena pitanja:** Da li pregled treba prikazivati samo aktivne korisnike ili i deaktivirane naloge?
 
 **Veze sa drugim storyjima:**  
 Zavisi od storyja za administrativno kreiranje korisničkog naloga i povezan je sa storyjima za promjenu korisničke uloge i deaktivaciju korisničkog naloga.
@@ -1039,7 +1049,7 @@ Ovaj story je važan jer omogućava da se prava pristupa i odgovornosti korisnik
 
 **Pretpostavka:**  Pretpostavlja se da su korisničke uloge unaprijed definisane u sistemu.
 
-**Otvorena pitanja:** Otvoreno pitanje je da li se promjena uloge primjenjuje odmah ili tek nakon naredne prijave korisnika.
+**Otvorena pitanja:** Da li se promjena uloge primjenjuje odmah ili tek nakon naredne prijave korisnika?
 
 **Veze sa drugim storyjima:**  
 Zavisi od storyja za pregled korisničkih naloga i povezan je sa storyjem za kontrolu pristupa prema korisničkoj ulozi.
@@ -1083,7 +1093,7 @@ Ovaj story je važan jer omogućava administratoru da onemogući pristup korisni
 
 **Pretpostavka:**  Pretpostavlja se da korisnički nalog već postoji u sistemu.
 
-**Otvorena pitanja:** Otvoreno pitanje je da li deaktivirani korisnik ostaje vidljiv u listi korisnika i da li sistem prikazuje njegov status kao neaktivan.
+**Otvorena pitanja:** Da li deaktivirani korisnik ostaje vidljiv u listi korisnika i da li sistem prikazuje njegov status kao neaktivan?
 
 **Veze sa drugim storyjima:**  
 Zavisi od storyja za pregled korisničkih naloga i povezan je sa storyjem za prijavu korisnika u sistem.
@@ -1127,7 +1137,7 @@ Ovaj story je važan jer omogućava da sistem evidentira da je serviser svjesno 
 
 **Pretpostavka:**  Pretpostavlja se da je zadatak prethodno dodijeljen serviseru.
 
-**Otvorena pitanja:** Otvoreno pitanje je da li prihvatanje zadatka automatski mijenja status intervencije.
+**Otvorena pitanja:** Da li prihvatanje zadatka automatski mijenja status intervencije?
 
 **Veze sa drugim storyjima:**  
 Zavisi od storyja za dodjelu intervencije odgovornom licu i povezan je sa storyjem za ažuriranje statusa intervencije od strane servisera.
@@ -1170,7 +1180,7 @@ Ovaj story je važan jer omogućava da sistem evidentira da zadatak ne može bit
 
 **Pretpostavka:**  Pretpostavlja se da je zadatak prethodno dodijeljen serviseru.
 
-**Otvorena pitanja:** Otvoreno pitanje je da li serviser mora unijeti razlog odbijanja zadatka.
+**Otvorena pitanja:** Da li serviser mora unijeti razlog odbijanja zadatka?
 
 **Veze sa drugim storyjima:**  
 Zavisi od storyja za dodjelu intervencije odgovornom licu i povezan je sa storyjem za pregled dodijeljenih intervencija.
@@ -1213,7 +1223,7 @@ Ovaj story je važan jer omogućava dispečeru da pregleda dokaz o obavljenom ra
 
 **Pretpostavka:**  Pretpostavlja se da je serviser prethodno evidentirao izvršeni rad u sistemu.
 
-**Otvorena pitanja:** Otvoreno pitanje je koji skup informacija dispečer mora minimalno vidjeti prije zatvaranja intervencije.
+**Otvorena pitanja:** Koji skup informacija dispečer mora minimalno vidjeti prije zatvaranja intervencije?
 
 **Veze sa drugim storyjima:**  
 Zavisi od storyja za evidentiranje izvršenog rada i povezan je sa storyjem za potvrdu i zatvaranje intervencije.
@@ -1256,7 +1266,7 @@ Ovaj story je važan jer omogućava da se intervencija zvanično završi tek nak
 
 **Pretpostavka:**  Pretpostavlja se da je serviser prethodno ažurirao status i evidentirao izvršeni rad.
 
-**Otvorena pitanja:** Otvoreno pitanje je da li zatvaranje automatski mijenja status u završeno ili postoji poseban završni status zatvoreno.
+**Otvorena pitanja:** Da li zatvaranje automatski mijenja status u završeno ili postoji poseban završni status zatvoreno?
 
 
 **Veze sa drugim storyjima:**  
@@ -1300,7 +1310,7 @@ Ovaj story je važan jer omogućava korisniku da ispravi greške u prijavi bez p
 
 **Pretpostavka:**  Pretpostavlja se da je izmjena dozvoljena samo dok zahtjev nije dodijeljen ili dok rad na njemu nije započeo.
 
-**Otvorena pitanja:** Otvoreno pitanje je koje podatke korisnik smije mijenjati.
+**Otvorena pitanja:** Koje podatke korisnik smije mijenjati?
 
 **Veze sa drugim storyjima:**  
 Zavisi od storyja za prijavu zahtjeva za servisnu intervenciju i povezan je sa storyjem za pregled vlastitog zahtjeva.  
@@ -1343,7 +1353,7 @@ Ovaj story je važan jer sprečava da pogrešno prijavljeni ili više nepotrebni
 
 **Pretpostavka:**  Pretpostavlja se da je otkazivanje dozvoljeno samo dok zahtjev nije dodijeljen izvršiocu ili dok rad nije počeo.
 
-**Otvorena pitanja:** Otvoreno pitanje je da li sistem treba čuvati razlog otkazivanja.
+**Otvorena pitanja:** Da li sistem treba čuvati razlog otkazivanja?
 
 **Veze sa drugim storyjima:**  
 Zavisi od storyja za prijavu zahtjeva za servisnu intervenciju i povezan je sa storyjem za pregled vlastitog zahtjeva.  
@@ -1386,7 +1396,7 @@ Ovaj story je važan jer omogućava da operativni tok ne "zapne" kada dodijeljen
 
 **Pretpostavka:**  Pretpostavlja se da intervencija već ima dodijeljenog izvršioca.
 
-**Otvorena pitanja:** Otvoreno pitanje je da li se prilikom promjene izvršioca automatski evidentira prethodno zaduženje u historiji aktivnosti.
+**Otvorena pitanja:** Da li se prilikom promjene izvršioca automatski evidentira prethodno zaduženje u historiji aktivnosti?
 
 **Veze sa drugim storyjima:**  
 Zavisi od storyja za dodjelu intervencije odgovornom serviseru i povezan je sa storyjima za pregled otvorenih intervencija, pregled detalja pojedinačne intervencije i pregled statusa intervencija.  
@@ -1429,7 +1439,7 @@ Ovaj story je važan jer omogućava da se zadatak ne zaglavi kod servisera koji 
 
 **Pretpostavka:**  Pretpostavlja se da je serviser već preuzeo ili započeo obradu zadatka.
 
-**Otvorena pitanja:** Otvoreno pitanje je da li je unos napomene ili razloga vraćanja obavezan.
+**Otvorena pitanja:** Da li je unos napomene ili razloga vraćanja obavezan?
 
 **Veze sa drugim storyjima:**  
 Zavisi od storyja za prihvatanje dodijeljenog zadatka i povezan je sa storyjima za promjenu izvršioca, pregled dodijeljenih intervencija i ažuriranje statusa intervencije od strane servisera.  
@@ -1472,7 +1482,7 @@ Ovaj story je važan jer omogućava brzu i direktnu komunikaciju između ureda i
 
 **Pretpostavka:**  Pretpostavlja se da korisnik ima pravo pristupa detaljima konkretne intervencije.
 
-**Otvorena pitanja:** Otvoreno pitanje je da li su napomene vidljive klijentu (korisniku usluge) ili služe isključivo za internu komunikaciju.
+**Otvorena pitanja:** Da li su napomene vidljive korisniku usluge ili služe isključivo za internu komunikaciju?
 
 **Veze sa drugim storyjima:**  
 Povezano sa storyjima za pregled detalja pojedinačne intervencije, pregled detalja zadatka na terenu i vraćanje zadatka na ponovnu dodjelu.  
@@ -1515,7 +1525,7 @@ Ovaj story je važan jer osigurava transparentnost i omogućava praćenje toka r
 
 **Pretpostavka:**  Pretpostavlja se da sistem automatski bilježi ključne promjene (status, dodjela, prioritet).
 
-**Otvorena pitanja:** Otvoreno pitanje je koliki nivo detalja historija treba sadržavati (npr. da li bilježi i stare vrijednosti polja prije izmjene).
+**Otvorena pitanja:** Koliki nivo detalja historija treba sadržavati (npr. da li bilježi i stare vrijednosti polja prije izmjene)?
 
 **Veze sa drugim storyjima:**  
 Zavisi od svih storyja koji mijenjaju stanje intervencije (prijava, dodjela, promjena statusa, planiranje, određivanje prioriteta).  
