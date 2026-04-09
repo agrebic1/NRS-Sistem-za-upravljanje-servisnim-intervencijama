@@ -25,6 +25,9 @@ U ovom dokumentu je prikazan ažurirani product backlog sistema za upravljanje s
 | PBI-019 | Potvrda i zatvaranje intervencije                             | Formalno okončanje procesa intervencije                                    | Feature | Srednji   | 3                   | To Do  | Sprint 10        | Završni korak                |
 | PBI-020 | Napomene na intervenciji                                      | Centralizovana komunikacija unutar intervencije                            | Feature | Srednji   | 3                   | To Do  | Sprint 10        | Interna komunikacija         |
 | PBI-021 | Historija aktivnosti intervencije                             | Potpuni trag (audit trail) svih promjena na intervenciji                   | Feature | Srednji   | 5                   | To Do  | Sprint 10        | Audit trail                  |
+| PBI-022 | Kreiranje početne sheme baze podataka        | Definisati osnovne entitete (korisnik, zahtjev, intervencija) i njihove relacije u bazi. | Technical Task | Visok   | 5 | To Do | Sprint 6 | Osnova sistema, bez ovoga nije moguće implementirati ostale funkcionalnosti. |
+| PBI-023 | Postavljanje autentifikacije korisnika       | Omogućiti prijavu korisnika i osnovnu kontrolu pristupa sistemu.                         | Technical Task | Visok   | 5 | To Do | Sprint 6 | Potrebno za zaštitu pristupa i rad sa korisničkim podacima.                  |
+| PBI-024 | Istražiti model korisničkih uloga i pristupa | Analizirati i definisati uloge korisnika i pravila pristupa funkcionalnostima sistema.   | Research       | Srednji | 2 | To Do | Sprint 6 | Rezultat će se koristiti za implementaciju autorizacije i RLS pravila.       |
 
 
 ## Legenda  
