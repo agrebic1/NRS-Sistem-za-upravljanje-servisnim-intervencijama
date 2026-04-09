@@ -31,100 +31,116 @@ Definisati precizan plan rada kroz dekompoziciju zadataka uz pomoć INVEST model
 THEME (Tema)
 └── Sistem za upravljanje servisnim intervencijama
     │
-    ├── EPIC: Pristup sistemu
+    ├── EPIC: Autentifikacija i pristup sistemu
     │   │
-    │   └── FEATURE: Pristup sistemu
+    │   └── FEATURE: Registracija, prijava i odjava korisnika (PBI-001)
     │       │
-    │       ├── Story: US-01 Samostalna registracija korisnika usluge (PBI-002)
-    │       ├── Story: US-02 Prijava korisnika u sistem (PBI-002)
-    │       └── Story: US-03 Odjava korisnika iz sistema (PBI-002)
+    │       ├── Story: US-01 Samostalna registracija korisnika usluge
+    │       ├── Story: US-02 Prijava korisnika u sistem
+    │       └── Story: US-03 Odjava korisnika iz sistema
     │
-    ├── EPIC: Upravljanje korisnicima, ulogama i pravima pristupa (RBAC)
+    ├── EPIC: Upravljanje korisnicima i pravima pristupa
     │   │
-    │   ├── FEATURE: Kontrola pristupa (RBAC)
+    │   ├── FEATURE: Kontrola pristupa prema korisničkoj ulozi (RBAC) (PBI-002)
     │   │   │
-    │   │   └── Story: US-04 Kontrola pristupa prema korisničkoj ulozi (PBI-001)
+    │   │   └── Story: US-04 Kontrola pristupa prema korisničkoj ulozi
     │   │
-    │   └── FEATURE: Upravljanje korisničkim nalozima
+    │   └── FEATURE: Upravljanje korisničkim nalozima (PBI-003)
     │       │
-    │       ├── Story: US-18 Administrativno kreiranje internog korisničkog naloga (PBI-001)
-    │       ├── Story: US-19 Pregled postojećih korisničkih naloga (PBI-001)
-    │       ├── Story: US-20 Promjena korisničke uloge (PBI-001)
-    │       └── Story: US-21 Deaktivacija korisničkog naloga (PBI-001)
+    │       ├── Story: US-18 Administrativno kreiranje internog korisničkog naloga
+    │       ├── Story: US-19 Pregled postojećih korisničkih naloga
+    │       ├── Story: US-20 Promjena korisničke uloge
+    │       └── Story: US-21 Deaktivacija korisničkog naloga
     │
     ├── EPIC: Upravljanje zahtjevima za servisne intervencije
     │   │
-    │   ├── FEATURE: Prijava kvara i pregled intervencije
+    │   ├── FEATURE: Kreiranje zahtjeva za servisnu intervenciju (PBI-004)
     │   │   │
-    │   │   ├── Story: US-05 Prijava zahtjeva za servisnu intervenciju (PBI-003)
-    │   │   └── Story: US-06 Pregled vlastitog zahtjeva (PBI-004)
+    │   │   └── Story: US-05 Prijava zahtjeva za servisnu intervenciju
     │   │
-    │   └── FEATURE: Izmjena i otkazivanje prijave kvara
+    │   ├── FEATURE: Pregled detalja vlastitog zahtjeva (PBI-005)
+    │   │   │
+    │   │   └── Story: US-06 Pregled vlastitog zahtjeva
+    │   │
+    │   └── FEATURE: Izmjena i otkazivanje vlastitog zahtjeva (PBI-006)
     │       │
-    │       ├── Story: US-26 Izmjena vlastitog zahtjeva (PBI-003)
-    │       └── Story: US-27 Otkazivanje vlastitog zahtjeva (PBI-003)
+    │       ├── Story: US-26 Izmjena vlastitog zahtjeva
+    │       └── Story: US-27 Otkazivanje vlastitog zahtjeva
     │
-    ├── EPIC: Pregled i upravljanje intervencijama od strane dispečera
+    ├── EPIC: Operativni pregled intervencija od strane dispečera
     │   │
-    │   ├── FEATURE: Pregled intervencija i operativnog statusa
+    │   ├── FEATURE: Pregled liste aktivnih i otvorenih intervencija (PBI-007)
     │   │   │
-    │   │   ├── Story: US-07 Pregled otvorenih intervencija (PBI-005 i PBI-016)
-    │   │   ├── Story: US-08 Pregled detalja pojedinačne intervencije (PBI-004)
-    │   │   └── Story: US-13 Pregled statusa intervencija od strane dispečera (PBI-005)
+    │   │   ├── Story: US-07 Pregled otvorenih intervencija
+    │   │   └── Story: US-13 Pregled statusa intervencija od strane dispečera
     │   │
-    │   └── FEATURE: Dodjela prioriteta intervenciji
+    │   ├── FEATURE: Pregled detalja pojedinačne intervencije za dispečera (PBI-008)
+    │   │   │
+    │   │   └── Story: US-08 Pregled detalja pojedinačne intervencije
+    │   │
+    │   ├── FEATURE: Pregled operativnog statusa na kontrolnoj tabli (PBI-009)
+    │   │   │
+    │   │   └── Story: US-31 Pregled sažetog operativnog statusa intervencija
+    │   │
+    │   └── FEATURE: Određivanje prioriteta intervencije (PBI-010)
     │       │
-    │       └── Story: US-12 Određivanje prioriteta intervencije (PBI-006)
+    │       └── Story: US-12 Određivanje prioriteta intervencije
     │
     ├── EPIC: Planiranje i dodjela intervencija
     │   │
-    │   ├── FEATURE: Dodjela intervencije serviseru
+    │   ├── FEATURE: Planiranje izlazaka na teren (PBI-011)
     │   │   │
-    │   │   ├── Story: US-09 Dodjela intervencije odgovornom serviseru (PBI-008)
-    │   │   └── Story: US-10 Dodjela intervencije timu servisera (PBI-009)
+    │   │   └── Story: US-11 Planiranje intervencije
     │   │
-    │   ├── FEATURE: Planiranje izlazaka na teren
+    │   ├── FEATURE: Dodjela intervencije izvršiocu ili timu (PBI-012)
     │   │   │
-    │   │   └── Story: US-11 Planiranje intervencije (PBI-007)
+    │   │   ├── Story: US-09 Dodjela intervencije odgovornom serviseru
+    │   │   └── Story: US-10 Dodjela intervencije timu servisera
     │   │
-    │   └── FEATURE: Upravljanje dodjelom i preraspodjelom intervencija
+    │   └── FEATURE: Preraspodjela i ponovna dodjela intervencije (PBI-013)
     │       │
-    │       ├── Story: US-28 Promjena izvršioca intervencije (PBI-008)
-    │       └── Story: US-29 Vraćanje zadatka na ponovnu dodjelu (PBI-010)
+    │       ├── Story: US-28 Promjena izvršioca intervencije
+    │       └── Story: US-29 Vraćanje zadatka na ponovnu dodjelu
     │
     ├── EPIC: Izvršenje intervencija od strane servisera
     │   │
-    │   ├── FEATURE: Preuzimanje i pregled dodijeljenih zadataka
+    │   ├── FEATURE: Pregled dodijeljenih zadataka (PBI-014)
     │   │   │
-    │   │   ├── Story: US-15 Pregled dodijeljenih intervencija (PBI-010)
-    │   │   ├── Story: US-16 Pregled detalja zadatka na terenu (PBI-004)
-    │   │   ├── Story: US-22 Prihvatanje dodijeljenog zadatka (PBI-010)
-    │   │   └── Story: US-23 Odbijanje dodijeljenog zadatka (PBI-010)
+    │   │   ├── Story: US-15 Pregled dodijeljenih intervencija
+    │   │   └── Story: US-16 Pregled detalja zadatka na terenu
     │   │
-    │   └── FEATURE: Ažuriranje statusa i evidencija rada
+    │   ├── FEATURE: Prihvatanje ili odbijanje dodijeljenog zadatka (PBI-015)
+    │   │   │
+    │   │   ├── Story: US-22 Prihvatanje dodijeljenog zadatka
+    │   │   └── Story: US-23 Odbijanje dodijeljenog zadatka
+    │   │
+    │   ├── FEATURE: Ažuriranje statusa intervencije od strane servisera (PBI-016)
+    │   │   │
+    │   │   └── Story: US-14 Ažuriranje statusa intervencije od strane servisera
+    │   │
+    │   └── FEATURE: Evidentiranje izvršenog rada (PBI-017)
     │       │
-    │       ├── Story: US-14 Ažuriranje statusa intervencije od strane servisera (PBI-011)
-    │       └── Story: US-17 Evidentiranje izvršenog rada (PBI-012)
+    │       └── Story: US-17 Evidentiranje izvršenog rada
     │
     ├── EPIC: Zatvaranje i kontrola intervencije
     │   │
-    │   ├── FEATURE: Pregled evidentiranog rada
+    │   ├── FEATURE: Pregled evidentiranog izvršenog rada (PBI-018)
     │   │   │
-    │   │   └── Story: US-24 Pregled evidentiranog izvršenog rada (PBI-013)
+    │   │   └── Story: US-24 Pregled evidentiranog izvršenog rada
     │   │
-    │   └── FEATURE: Potvrda zatvaranja intervencije
+    │   └── FEATURE: Potvrda i zatvaranje intervencije (PBI-019)
     │       │
-    │       └── Story: US-25 Potvrda i zatvaranje intervencije (PBI-013)
+    │       └── Story: US-25 Potvrda i zatvaranje intervencije
     │
-    └── EPIC: Komunikacija i historija aktivnosti intervencije
+    └── EPIC: Komunikacija i historija aktivnosti
         │
-        ├── FEATURE: Napomene na intervenciji
+        ├── FEATURE: Napomene na intervenciji (PBI-020)
         │   │
-        │   └── Story: US-30 Razmjena napomena na intervenciji (PBI-015)
+        │   └── Story: US-30 Razmjena napomena na intervenciji
         │
-        └── FEATURE: Historija aktivnosti intervencije
+        └── FEATURE: Historija aktivnosti intervencije (PBI-021)
             │
-            └── Story: US-31 Pregled historije aktivnosti intervencije (PBI-014)
+            └── Story: US-32 Pregled historije aktivnosti intervencije
 ```
 
 # User Stories i Acceptance Criteria
@@ -164,6 +180,42 @@ Sažeti pregled user story-a u okviru MVP-a:
 | US-29 | Vraćanje zadatka na ponovnu dodjelu | Kao serviser, želim vratiti zadatak na ponovnu dodjelu, kako bi dispečer mogao organizovati dalje izvršenje kada zadatak nije moguće završiti u postojećim okolnostima. | - vraćanje u operativni tok<br>- sprječavanje zastoja<br>- nova organizacija rada | Srednji |
 | US-30 | Razmjena napomena na intervenciji | Kao dispečer ili serviser, želim dodati kratku napomenu na konkretnu intervenciju, kako bi sve važne operativne informacije bile dostupne na jednom mjestu svim učesnicima u procesu. | - interna komunikacija<br>- važne informacije na jednom mjestu<br>- manje oslanjanja na vanjske kanale | Srednji |
 | US-31 | Pregled historije aktivnosti intervencije | Kao dispečer, želim vidjeti listu svih prethodnih promjena i aktivnosti na zahtjevu, kako bih imao jasan uvid u hronologiju obrade od trenutka prijave do trenutnog statusa. | - transparentnost procesa<br>- praćenje toka rada<br>- audit trag | Srednji | 
+
+U sljedećoj tabeli je prikazana povezanost konkretnog User Story-a sa itemima iz Product Backloga:
+| User Story | Naziv user storyja                                    | Feature / PBI                                                       | Epic                                                    |
+| ---------- | ----------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------- |
+| US-01      | Samostalna registracija korisnika usluge              | **PBI-001 – Registracija, prijava i odjava korisnika**              | **Autentifikacija i pristup sistemu**                   |
+| US-02      | Prijava korisnika u sistem                            | **PBI-001 – Registracija, prijava i odjava korisnika**              | **Autentifikacija i pristup sistemu**                   |
+| US-03      | Odjava korisnika iz sistema                           | **PBI-001 – Registracija, prijava i odjava korisnika**              | **Autentifikacija i pristup sistemu**                   |
+| US-04      | Kontrola pristupa prema korisničkoj ulozi             | **PBI-002 – Kontrola pristupa prema korisničkoj ulozi (RBAC)**      | **Upravljanje korisnicima i pravima pristupa**          |
+| US-05      | Prijava zahtjeva za servisnu intervenciju             | **PBI-004 – Kreiranje zahtjeva za servisnu intervenciju**           | **Upravljanje zahtjevima za servisne intervencije**     |
+| US-06      | Pregled vlastitog zahtjeva                            | **PBI-005 – Pregled detalja vlastitog zahtjeva**                    | **Upravljanje zahtjevima za servisne intervencije**     |
+| US-07      | Pregled otvorenih intervencija                        | **PBI-007 – Pregled liste aktivnih i otvorenih intervencija**       | **Operativni pregled intervencija od strane dispečera** |
+| US-08      | Pregled detalja pojedinačne intervencije              | **PBI-008 – Pregled detalja pojedinačne intervencije za dispečera** | **Operativni pregled intervencija od strane dispečera** |
+| US-09      | Dodjela intervencije odgovornom serviseru             | **PBI-012 – Dodjela intervencije izvršiocu ili timu**               | **Planiranje i dodjela intervencija**                   |
+| US-10      | Dodjela intervencije timu servisera                   | **PBI-012 – Dodjela intervencije izvršiocu ili timu**               | **Planiranje i dodjela intervencija**                   |
+| US-11      | Planiranje intervencije                               | **PBI-011 – Planiranje izlazaka na teren**                          | **Planiranje i dodjela intervencija**                   |
+| US-12      | Određivanje prioriteta intervencije                   | **PBI-010 – Određivanje prioriteta intervencije**                   | **Operativni pregled intervencija od strane dispečera** |
+| US-13      | Pregled statusa intervencija od strane dispečera      | **PBI-007 – Pregled liste aktivnih i otvorenih intervencija**       | **Operativni pregled intervencija od strane dispečera** |
+| US-14      | Ažuriranje statusa intervencije od strane servisera   | **PBI-016 – Ažuriranje statusa intervencije od strane servisera**   | **Izvršenje intervencija od strane servisera**          |
+| US-15      | Pregled dodijeljenih intervencija                     | **PBI-014 – Pregled dodijeljenih zadataka**                         | **Izvršenje intervencija od strane servisera**          |
+| US-16      | Pregled detalja zadatka na terenu                     | **PBI-014 – Pregled dodijeljenih zadataka**                         | **Izvršenje intervencija od strane servisera**          |
+| US-17      | Evidentiranje izvršenog rada                          | **PBI-017 – Evidentiranje izvršenog rada**                          | **Izvršenje intervencija od strane servisera**          |
+| US-18      | Administrativno kreiranje internog korisničkog naloga | **PBI-003 – Upravljanje korisničkim nalozima**                      | **Upravljanje korisnicima i pravima pristupa**          |
+| US-19      | Pregled postojećih korisničkih naloga                 | **PBI-003 – Upravljanje korisničkim nalozima**                      | **Upravljanje korisnicima i pravima pristupa**          |
+| US-20      | Promjena korisničke uloge                             | **PBI-003 – Upravljanje korisničkim nalozima**                      | **Upravljanje korisnicima i pravima pristupa**          |
+| US-21      | Deaktivacija korisničkog naloga                       | **PBI-003 – Upravljanje korisničkim nalozima**                      | **Upravljanje korisnicima i pravima pristupa**          |
+| US-22      | Prihvatanje dodijeljenog zadatka                      | **PBI-015 – Prihvatanje ili odbijanje dodijeljenog zadatka**        | **Izvršenje intervencija od strane servisera**          |
+| US-23      | Odbijanje dodijeljenog zadatka                        | **PBI-015 – Prihvatanje ili odbijanje dodijeljenog zadatka**        | **Izvršenje intervencija od strane servisera**          |
+| US-24      | Pregled evidentiranog izvršenog rada                  | **PBI-018 – Pregled evidentiranog izvršenog rada**                  | **Zatvaranje i kontrola intervencije**                  |
+| US-25      | Potvrda i zatvaranje intervencije                     | **PBI-019 – Potvrda i zatvaranje intervencije**                     | **Zatvaranje i kontrola intervencije**                  |
+| US-26      | Izmjena vlastitog zahtjeva                            | **PBI-006 – Izmjena i otkazivanje vlastitog zahtjeva**              | **Upravljanje zahtjevima za servisne intervencije**     |
+| US-27      | Otkazivanje vlastitog zahtjeva                        | **PBI-006 – Izmjena i otkazivanje vlastitog zahtjeva**              | **Upravljanje zahtjevima za servisne intervencije**     |
+| US-28      | Promjena izvršioca intervencije                       | **PBI-013 – Preraspodjela i ponovna dodjela intervencije**          | **Planiranje i dodjela intervencija**                   |
+| US-29      | Vraćanje zadatka na ponovnu dodjelu                   | **PBI-013 – Preraspodjela i ponovna dodjela intervencije**          | **Planiranje i dodjela intervencija**                   |
+| US-30      | Razmjena napomena na intervenciji                     | **PBI-020 – Napomene na intervenciji**                              | **Komunikacija i historija aktivnosti**                 |
+| US-31      | Pregled sažetog operativnog statusa intervencija      | **PBI-009 – Pregled operativnog statusa na kontrolnoj tabli**       | **Operativni pregled intervencija od strane dispečera** |
+| US-32      | Pregled historije aktivnosti intervencije             | **PBI-021 – Historija aktivnosti intervencije**                     | **Komunikacija i historija aktivnosti**                 |
 
 ---
 
@@ -1661,142 +1713,6 @@ Ovaj plan je organizovan tako da se razvoj sistema odvija **postepeno, smisleno 
 - Dodjela timu servisera i planiranje intervencije mogu lako preopteretiti sprint ako se pokušaju implementirati previše detaljno, pa ih treba ograničiti na **minimalnu funkcionalnu verziju**.  
 - Prihvatanje, odbijanje i vraćanje zadatka moraju biti dio jednog **jednostavnog i logičnog toka**, kako bi serviser mogao jasno reagovati na dodijeljeni zadatak bez nepotrebne složenosti.  
 - Promjena izvršioca zavisi od već funkcionalne osnovne dodjele i mora se oslanjati na **jednostavan model reasignacije**, bez komplikovanih dodatnih pravila.  
-- Ovaj sprint treba zatvoriti fazu prijema zadatka i sve glavne alternativne tokove vezane za samu dodjelu, kako bi Sprint 10 mogao biti fokusiran isključivo na **izvršenje rada i završetak intervencije**.  
-
----
-
-## **Sprint 10**
-
-### **Sprint broj**
-**10**
-
-### **Sprint cilj**
-**Omogućiti izvršenje intervencije, evidenciju rada i zatvaranje kompletnog toka.**
-
-### **Ključne stavke koje tim želi završiti**
-- ažuriranje statusa intervencije od strane servisera (**US-14**) 
-- evidentiranje izvršenog rada (**US-17**)  
-- pregled evidentiranog izvršenog rada (**US-24**) 
-- potvrda i zatvaranje intervencije (**US-25**)  
-- razmjena napomena na intervenciji (**US-30**)  
-- pregled historije aktivnosti intervencije (**US-31**)  
-- pregled postojećih korisničkih naloga (**US-19**)  
-- promjena korisničke uloge (**US-20**)  
-- deaktivacija korisničkog naloga (**US-21**)  
-
-### **Rizici i zavisnosti**
-- Sprint 10 zavisi od toga da su tok dodjele i serviserski prijem zadatka iz Sprinta 9 već **funkcionalni i stabilni**.  
-- Ažuriranje statusa mora ostati **jasno definisano i ograničeno na jednostavan operativni tok**, kako bi sistem pouzdano pratio prelaz iz rada na terenu u završetak intervencije.  
-- Evidentiranje izvršenog rada i zatvaranje intervencije čine završni dio glavnog procesa, pa njihova povezanost mora biti **posebno pažljivo implementirana i testirana**.  
-- Napomene i historija aktivnosti treba da budu **podrška glavnom toku**, a ne da usporavaju njegov završetak, pa ih treba realizovati u jednostavnoj i preglednoj formi.  
-- Administratorske funkcionalnosti pregleda korisnika, promjene uloge i deaktivacije naloga treba implementirati u **osnovnoj verziji**, bez nepotrebnog proširivanja logike.  
-- Završetkom Sprinta 10 treba biti pokriven **kompletan happy path i svi glavni alternativni putevi**, tako da Sprint 11 ostane rezervisan samo za ispravke, testiranje, tehnički dug i završnu pripremu.  
-
----
-
-
-## **Sprint 6**
-
-### **Sprint broj**
-**6**
-
-### **Sprint cilj**
-**Postaviti tehničku osnovu sistema i osposobiti korisnički pristup aplikaciji.**
-
-### **Ključne stavke koje tim želi završiti**
-- postavljanje projekta i Supabase okruženja  
-- definisanje korisnika, uloga i osnovnih permisija (**US-04**)  
-- registraciona forma za korisnika usluge (**US-01**)  
-- login forma i osnovna prijava korisnika (**US-02**) 
-- osnova forme za prijavu zahtjeva  (**US-05** - UI dio)
-- definisanje modela zahtjeva i radnog naloga  (Podloga za **US-05** i **US-07**)
-
-### **Rizici i zavisnosti**
-- Sprint 6 predstavlja **tehnički temelj cijelog sistema** i od njegovog uspješnog završetka zavise svi naredni sprintovi.  
-- Ako povezivanje sa **Supabase** platformom ne bude stabilno postavljeno na početku, kasnije funkcionalnosti vezane za autentifikaciju, spremanje podataka i prikaz zahtjeva mogu biti usporene ili potpuno blokirane.  
-- Definisanje korisnika, uloga i permisija mora biti dovoljno jasno i jednostavno, jer od toga zavisi **kontrola pristupa** u svim kasnijim modulima.  
-- Registracija i prijava korisnika moraju ostati u **osnovnoj i stabilnoj verziji**, bez širenja na dodatne funkcionalnosti koje nisu neophodne u ovoj fazi.  
-- Forma za prijavu zahtjeva u ovom sprintu treba biti pripremljena kao **osnova za kasnije uvezivanje**, ali se ne treba opterećivati potpunim završetkom korisničkog toka.  
-- Bez tehničke osnove, korisnika i autentifikacije nije moguće uvezati korisnički tok u narednom sprintu.  
-
----
-
-## **Sprint 7**
-
-### **Sprint broj**
-**7**
-
-### **Sprint cilj**
-**Omogućiti korisniku da se prijavi, pošalje zahtjev i vidi da je zahtjev evidentiran u sistemu.**
-
-### **Ključne stavke koje tim želi završiti**
-- povezivanje registracije i prijave sa bazom (Finalizacija **US-01** i **US-02**) 
-- spremanje zahtjeva u bazu (Backend dio - **US-05**) 
-- dodjeljivanje početnog statusa zahtjevu  (Dio logike kreiranja zahtjeva - **US-05**)
-- pregled vlastitog zahtjeva za korisnika  (**US-06**)
-- prikaz zahtjeva u dispečerovoj listi zahtjeva koji čekaju obradu (**US-07**)
-
-### **Rizici i zavisnosti**
-- Sprint 7 direktno zavisi od **tehničke osnove, korisničkih uloga, prijave korisnika i pripremljene forme zahtjeva** iz Sprinta 6.  
-- Ako autentifikacija i povezivanje korisničkog naloga sa bazom nisu ispravno postavljeni, korisnik neće moći pouzdano slati i pregledati vlastite zahtjeve.  
-- Spremanje zahtjeva u bazu i dodjeljivanje početnog statusa moraju biti **konzistentni**, jer od tih podataka kasnije zavise dispečerski pregled, prioriteti i dodjela izvršiocu.  
-- Prikaz zahtjeva korisniku i dispečeru mora biti zasnovan na **istom izvoru podataka**, kako bi se izbjegla nedosljednost između korisničkog i internog pogleda na sistem.  
-- U ovoj fazi ne treba previše širiti logiku statusa, već je zadržati na **osnovnom nivou** potrebnom za evidentiranje i pregled zahtjeva.  
-- Ovaj sprint zatvara **prvi stvarni korisnički tok** i priprema sistem za dispečersku obradu u Sprintu 8.  
-
----
-
-## **Sprint 8**
-
-### **Sprint broj**
-**8**
-
-### **Sprint cilj**
-**Omogućiti dispečeru da pregleda i obradi zahtjev te odredi njegov prioritet.**
-
-### **Ključne stavke koje tim želi završiti**
-- pregled otvorenih zahtjeva / intervencija (**US-07**) 
-- pregled detalja pojedinačne intervencije (**US-08**) 
-- pregled statusa intervencija od strane dispečera (**US-13**) 
-- određivanje prioriteta intervencije (**US-12**) 
-- izmjena vlastitog zahtjeva (**US-26**) 
-- otkazivanje vlastitog zahtjeva (**US-27**) 
-
-### **Rizici i zavisnosti**
-- Sprint 8 zavisi od toga da su zahtjevi iz Sprinta 7 već **ispravno evidentirani u bazi** i prikazani korisniku i dispečeru.  
-- Pregled otvorenih zahtjeva i detalja intervencije predstavlja osnovu za svu dalju dispečersku obradu, pa njihov prikaz mora biti **jasan, stabilan i usklađen sa stanjem u bazi**.  
-- Određivanje prioriteta može postati rizično ako se pokuša napraviti previše složeno, pa ga treba zadržati na **jednostavnom i pouzdanom modelu**, uz mogućnost kasnijeg proširenja.  
-- Izmjena i otkazivanje zahtjeva moraju biti **vremenski i statusno ograničeni**, kako korisnik ne bi mogao mijenjati ili povlačiti zahtjev nakon što je već prešao u internu obradu ili dodjelu.  
-- Ovaj sprint treba zatvoriti **korisničke alternativne tokove** prije nego što zahtjev pređe u fazu dodjele serviseru.  
-- Završetkom ovog sprinta sistem mora biti spreman da dispečer iz zahtjeva pređe na **operativnu dodjelu zadatka** u narednom sprintu.  
-
----
-
-## **Sprint 9**
-
-### **Sprint broj**
-**9**
-
-### **Sprint cilj**
-**Omogućiti dodjelu zadatka serviseru i serviserski prijem zadatka.**
-
-### **Ključne stavke koje tim želi završiti**
-- dodjela intervencije odgovornom serviseru (**US-09**) 
-- dodjela intervencije timu servisera (**US-10**)  
-- planiranje intervencije (**US-11**) 
-- pregled dodijeljenih intervencija za servisera (**US-15**) 
-- pregled detalja zadatka na terenu (**US-16**)  
-- prihvatanje dodijeljenog zadatka (**US-22**) 
-- odbijanje dodijeljenog zadatka (**US-23**) 
-- promjena izvršioca intervencije (**US-28**)  
-- vraćanje zadatka na ponovnu dodjelu (**US-29**) 
-
-### **Rizici i zavisnosti**
-- Sprint 9 zavisi od toga da dispečer u Sprintu 8 već može **pregledati, razumjeti i pripremiti zahtjev za izvršenje**.  
-- Dodjela serviseru predstavlja ključni prelaz iz dispečerskog dijela sistema u serviserski tok rada, pa mora biti **jednostavna, pregledna i pouzdana**.  
-- Dodjela timu servisera i planiranje intervencije mogu lako preopteretiti sprint ako se pokušaju implementirati previše detaljno, pa ih treba ograničiti na **minimalnu funkcionalnu verziju**.  
-- Prihvatanje, odbijanje i vraćanje zadatka moraju biti dio jednog **jednostavnog i logičnog toka**, kako bi serviser mogao jasno reagovati na dodijeljeni zadatak bez nepotrebne složenosti.  
-- Promjena izvršioca zavisi od već funkcionalne osnovne dodjele i mora se oslanjati na **jednostavan model ponovne dodjele**, bez komplikovanih dodatnih pravila.  
 - Ovaj sprint treba zatvoriti fazu prijema zadatka i sve glavne alternativne tokove vezane za samu dodjelu, kako bi Sprint 10 mogao biti fokusiran isključivo na **izvršenje rada i završetak intervencije**.  
 
 ---
