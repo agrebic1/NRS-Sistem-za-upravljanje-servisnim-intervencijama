@@ -179,7 +179,8 @@ Sažeti pregled user story-a u okviru MVP-a:
 | US-28 | Promjena izvršioca intervencije | Kao dispečer, želim promijeniti izvršioca intervencije, kako bi zadatak mogao biti dodijeljen drugom serviseru kada prvobitno dodijeljeni izvršilac ne može preuzeti ili završiti rad. | - fleksibilnost rada<br>- kontinuitet procesa<br>- manji rizik od zastoja | Srednji |
 | US-29 | Vraćanje zadatka na ponovnu dodjelu | Kao serviser, želim vratiti zadatak na ponovnu dodjelu, kako bi dispečer mogao organizovati dalje izvršenje kada zadatak nije moguće završiti u postojećim okolnostima. | - vraćanje u operativni tok<br>- sprječavanje zastoja<br>- nova organizacija rada | Srednji |
 | US-30 | Razmjena napomena na intervenciji | Kao dispečer ili serviser, želim dodati kratku napomenu na konkretnu intervenciju, kako bi sve važne operativne informacije bile dostupne na jednom mjestu svim učesnicima u procesu. | - interna komunikacija<br>- važne informacije na jednom mjestu<br>- manje oslanjanja na vanjske kanale | Srednji |
-| US-31 | Pregled historije aktivnosti intervencije | Kao dispečer, želim vidjeti listu svih prethodnih promjena i aktivnosti na zahtjevu, kako bih imao jasan uvid u hronologiju obrade od trenutka prijave do trenutnog statusa. | - transparentnost procesa<br>- praćenje toka rada<br>- audit trag | Srednji | 
+| US-31 | Pregled sažetog operativnog statusa intervencija | Kao dispečer, želim na početnom ekranu vidjeti sažet operativni status intervencija, kako bih odmah imao pregled trenutnog obima posla i stanja intervencija po ključnim fazama obrade. | - brz pregled stanja sistema<br>- lakše uočavanje zastoja<br>- efikasnije operativno odlučivanje | Srednji |
+| US-32 | Pregled historije aktivnosti intervencije | Kao dispečer, želim vidjeti listu svih prethodnih promjena i aktivnosti na zahtjevu, kako bih imao jasan uvid u hronologiju obrade od trenutka prijave do trenutnog statusa. | - transparentnost procesa<br>- praćenje toka rada<br>- audit trag | Srednji | 
 
 U sljedećoj tabeli je prikazana povezanost konkretnog User Story-a sa itemima iz Product Backloga:
 | User Story | Naziv user storyja                                    | Feature / PBI                                                       | Epic                                                    |
@@ -1562,7 +1563,56 @@ Povezano sa storyjima za pregled detalja pojedinačne intervencije, pregled deta
     
 ---
 
-## US-31 — Pregled historije aktivnosti intervencije  
+## US-31 — Pregled sažetog operativnog statusa intervencija
+
+**Opis:**  
+Kao dispečer, želim na početnom ekranu vidjeti sažet operativni status intervencija, kako bih odmah imao pregled trenutnog obima posla i stanja intervencija po ključnim fazama obrade.
+
+**Poslovna vrijednost:**  
+Ovaj story je važan jer dispečeru omogućava brz i jasan uvid u trenutno stanje sistema bez potrebe da otvara pojedinačne intervencije ili detaljne liste. Na taj način se ubrzava donošenje operativnih odluka, lakše se uočavaju zastoji i omogućava efikasnije upravljanje radom.
+
+**Prioritet:**  
+Srednji
+
+**Pretpostavke i otvorena pitanja:**
+
+**Pretpostavka:** Pretpostavlja se da sistem već evidentira statuse intervencija i razlikuje osnovne faze obrade, kao što su otvoreno, dodijeljeno, u toku, čeka potvrdu i zatvoreno.
+
+**Otvorena pitanja:** Koji skup pokazatelja treba biti prikazan na operativnoj kontrolnoj tabli u ovoj fazi, samo broj intervencija po statusima ili i dodatne informacije poput broja visokoprioritetnih intervencija, intervencija bez dodijeljenog izvršioca i planiranih izlazaka na teren?
+
+**Veze sa drugim storyjima:**  
+Zavisi od storyja za pregled otvorenih intervencija, pregled statusa intervencija od strane dispečera i ažuriranje statusa intervencije od strane servisera. Povezan je sa storyjima za pregled detalja pojedinačne intervencije, određivanje prioriteta i planiranje intervencije.
+
+**Acceptance Criteria:**
+
+- **AC1: Prikaz sažetih operativnih pokazatelja**  
+  - **GIVEN** u sistemu postoje evidentirane intervencije u različitim fazama obrade  
+  - **WHEN** dispečer pristupi početnom ekranu ili operativnoj kontrolnoj tabli  
+  - **THEN** sistem prikazuje sažet brojčani pregled intervencija po unaprijed definisanim statusima
+
+- **AC2: Ažuriran prikaz operativnog statusa**  
+  - **GIVEN** status jedne ili više intervencija je promijenjen u sistemu  
+  - **WHEN** dispečer osvježi početni ekran ili ponovo pristupi operativnoj kontrolnoj tabli  
+  - **THEN** sistem prikazuje ažurirane brojčane pokazatelje koji odgovaraju stvarnom stanju u sistemu
+
+- **AC3: Prikaz samo relevantnih operativnih podataka**  
+  - **GIVEN** dispečer pregleda operativnu kontrolnu tablu  
+  - **WHEN** sistem učita sažeti prikaz  
+  - **THEN** prikazuju se samo podaci relevantni za operativno praćenje rada, bez nepotrebnih detalja o pojedinačnim intervencijama
+
+- **AC4: Ograničenje pristupa operativnom dashboardu**  
+  - **GIVEN** korisnik nema ulogu dispečera ili drugo odgovarajuće ovlaštenje  
+  - **WHEN** pokuša pristupiti operativnom dashboardu  
+  - **THEN** sistem mu ne dozvoljava pristup toj funkcionalnosti
+
+- **AC5: Mogućnost prelaska na detaljniji pregled**  
+  - **GIVEN** dispečer pregleda sažeti operativni status intervencija  
+  - **WHEN** odabere jedan od prikazanih pokazatelja ili statusa  
+  - **THEN** sistem omogućava prelazak na odgovarajući detaljniji pregled liste intervencija koje pripadaju toj kategoriji
+
+---
+
+## US-32 — Pregled historije aktivnosti intervencije  
 
 **Opis:** 
 Kao dispečer, želim vidjeti listu svih prethodnih promjena i aktivnosti na zahtjevu, kako bih imao jasan uvid u hronologiju obrade od trenutka prijave do trenutnog statusa.  
@@ -1673,7 +1723,8 @@ Ovaj plan je organizovan tako da se razvoj sistema odvija **postepeno, smisleno 
 ### **Ključne stavke koje tim želi završiti**
 - pregled otvorenih zahtjeva / intervencija (**US-07**) 
 - pregled detalja pojedinačne intervencije (**US-08**) 
-- pregled statusa intervencija od strane dispečera (**US-13**) 
+- pregled statusa intervencija od strane dispečera (**US-13**)
+- pregled sažetog operativnog statusa intervencija na kontrolnoj tabli (US-31)
 - određivanje prioriteta intervencije (**US-12**) 
 - izmjena vlastitog zahtjeva (**US-26**) 
 - otkazivanje vlastitog zahtjeva (**US-27**) 
@@ -1731,7 +1782,7 @@ Ovaj plan je organizovan tako da se razvoj sistema odvija **postepeno, smisleno 
 - pregled evidentiranog izvršenog rada (**US-24**) 
 - potvrda i zatvaranje intervencije (**US-25**)  
 - razmjena napomena na intervenciji (**US-30**)  
-- pregled historije aktivnosti intervencije (**US-31**)  
+- pregled historije aktivnosti intervencije (**US-32**)  
 - pregled postojećih korisničkih naloga (**US-19**)  
 - promjena korisničke uloge (**US-20**)  
 - deaktivacija korisničkog naloga (**US-21**)  
