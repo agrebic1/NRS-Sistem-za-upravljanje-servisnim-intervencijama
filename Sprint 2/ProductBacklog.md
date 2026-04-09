@@ -18,7 +18,7 @@ U ovom dokumentu je prikazan ažurirani product backlog sistema za upravljanje s
 |PBI-012|Evidencija rada servisera|Kao serviser želim unijeti potrebne podatke, kako bih dokumentovao početak i završetak posla.|Feature|Srednji|5|To Do|Sprint 10|Mogućnost unosa podataka kao što su utrošeno vrijeme, materijali, ishod i opis rješenja.|
 |PBI-013|Potvrda zatvaranja intervencije|Kao dispečer želim potvrditi završetak intervencije kako bih bio siguran da je problem riješen.|Feature|Srednji|3|To Do|Sprint 10|Finalna validacija od strane dispečera prije arhiviranja.|
 |PBI-014|Historija aktivnosti intervencije|Kao dispečer ili serviser želim imati uvid u hronološki pregled svih promjena na intervenciji kako bih znao ko je, kada i koju akciju poduzeo (promjena statusa, dodjela, napomene).|Feature|Srednji|5|To Do|Sprint 10|Ključna stavka za praćenje toka rada od prijave do zatvaranja.|
-|PBI-015|Napomene na intervenciji|Kao dispečer i serviser želim ostavljati napomene na intervenciji kako bi komunikacija bila jasna i sve informacije bile na jednom mjestu.|Feature|Srednji|3|To Do|Sprint 10|Osnovna komunikacija.|
+|PBI-015|Napomene na intervenciji|Kao dispečer ili serviser želim ostavljati napomene na intervenciji kako bi komunikacija bila jasna i sve informacije bile na jednom mjestu.|Feature|Srednji|3|To Do|Sprint 10|Osnovna komunikacija.|
 |PBI-016|Pregled operativnog statusa|Kao dispečer želim vidjeti brojčani pregled intervencija po ključnim fazama (otvorene, u toku, završene) na početnom ekranu, kako bih odmah uočio obim posla.|Feature|Srednji|3|To Do|Sprint 10|Vizuelni prikaz ključnih metrika za dispečera.|
 
 
