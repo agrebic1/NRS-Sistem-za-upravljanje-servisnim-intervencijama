@@ -238,8 +238,7 @@ Ovaj story je važan jer omogućava korisniku usluge samostalan ulazak u sistem 
 **Otvorena pitanja:** Da li sistem pri registraciji automatski dodjeljuje korisniku ulogu klijenta ili je potrebna dodatna potvrda od strane sistema ili administratora?
 
 **Veze sa drugim storyjima:**  
-Povezano sa storyjem za prijavu korisnika u sistem, prijavu zahtjeva za servisnu intervenciju i pregled vlastitog zahtjeva.
-
+Povezano sa storyjem za prijavu korisnika u sistem (US-02) , prijavu zahtjeva za servisnu intervenciju (US-05) i pregled vlastitog zahtjeva (US-06).
 **Acceptance Criteria:**
 
 - **AC1: Uspješna registracija**  
@@ -293,7 +292,7 @@ Ovaj story je važan jer omogućava registrovanim korisnicima pristup sistemu i 
 
 
 **Veze sa drugim storyjima:**  
-Zavisi od storyja za samostalnu registraciju korisnika i povezan je sa svim storyjima koji zahtijevaju autentifikovan pristup sistemu.
+Zavisi od storyja za samostalnu registraciju korisnika (US-01) i povezan je sa svim storyjima koji zahtijevaju autentifikovan pristup sistemu (US-02, US-03). 
 
 **Acceptance Criteria:**
 
@@ -347,7 +346,7 @@ Ovaj story je važan jer omogućava korisniku siguran završetak rada u sistemu,
 **Otvorena pitanja:** Da li se kroisnik nakon odjave vraća na početni ekran sistema ili direktno na ekran za prijavu?
 
 **Veze sa drugim storyjima:**  
-Povezano sa storyjem za prijavu korisnika u sistem i sa svim stoyjima koji zahtijevaju aktivnu korisničku sesiju.
+Povezano sa storyjem za prijavu korisnika u sistem (US-02)  i sa svim stoyjima koji zahtijevaju aktivnu korisničku sesiju (US-01, US-02, US-03, US-04).
 
 **Acceptance Criteria:**
 
@@ -386,7 +385,7 @@ Ovaj story je važan jer omogućava sigurno i pregledno korištenje sistema, sma
 **Otvorena pitanja:** Da li će sistem u ovoj fazi koristiti isključivo fiksno definisane uloge ili se kasnije planira proširivanje modela prava pristupa?
 
 **Veze sa drugim storyjima:**  
-Povezano sa storyjima za prijavu korisnika u sistem, administrativno kreiranje korisničkih naloga i promjenu korisničke uloge.
+Povezano sa storyjima za prijavu korisnika u sistem (US-02), administrativno kreiranje korisničkih naloga (US-18) i promjenu korisničke uloge (US-20).
 
 **Acceptance Criteria:**
 
@@ -430,7 +429,7 @@ Ovaj story je važan jer omogućava da se problem koji korisnik prijavljuje form
 **Otvorena pitanja:**  Koji je minimalni skup obaveznih podataka potreban da bi zahtjev bio validno prijavljen?
 
 **Veze sa drugim storyjima:**  
-Povezano sa storyjima za pregled vlastitog zahtjeva, pregled otvorenih intervencija i dalju obradu servisne intervencije.
+Povezano sa storyjima za pregled vlastitog zahtjeva (US-06), pregled otvorenih intervencija (US-07) i dalju obradu servisne intervencije (US-09, US-10, US-11).
 
 **Acceptance Criteria:**
 
@@ -479,7 +478,7 @@ Ovaj story je važan jer korisniku omogućava da na jednom mjestu vidi šta je p
 **Otvorena pitanja:** Koji minimalni skup informacija treba biti dostupan korisniku u pregledu zahtjeva, npr. opis problema, lokacija, datum prijave, trenutni status i eventualni planirani termin?
 
 **Veze sa drugim storyjima:**  
-Zavisi od storyja za prijavu zahtjeva za servisnu intervenciju i povezan je sa storyjem za ažuriranje statusa intervencije i pregled statusa intervencije.
+Zavisi od storyja za prijavu zahtjeva za servisnu intervenciju (US-05) i povezan je sa storyjem za ažuriranje statusa intervencije (US-14) i pregled statusa intervencija od strane dispečera (US-13).
 
 **Acceptance Criteria:**
 
@@ -528,7 +527,7 @@ Ovaj story je važan jer dispečeru omogućava centralizovan pregled svih interv
 **Otvorena pitanja:**  Da li pregled intervencija u ovoj fazi uključuje samo listu osnovnih zapisa ili i dodatne podatke kao što su prioritet, status, planirani termin i dodijeljeni izvršilac?
 
 **Veze sa drugim storyjima:**  
-Zavisi od storyja za prijavu zahtjeva za servisnu intervenciju i povezan je sa storyjima za pregled detalja pojedinačne intervencije, određivanje prioriteta, dodjelu izvršioca i pregled statusa intervencija.
+Zavisi od storyja za prijavu zahtjeva za servisnu intervenciju (US-05) i povezan je sa storyjima za pregled detalja pojedinačne intervencije (US-08), određivanje prioriteta intervencije (US-12), dodjelu izvršioca intervencije (US-09) i pregled statusa intervencija od strane dispečera (US-13).
 
 **Acceptance Criteria:**
 
@@ -574,7 +573,7 @@ Ovaj story je važan jer omogućava dispečeru da na jednom mjestu vidi sve klju
 **Otvoreno pitanje:** Koji minimalni skup informacija mora biti prikazan u detaljima intervencije kako bi dispečer mogao dalje obrađivati zahtjev?
 
 **Veze sa drugim storyjima:**  
-Zavisi od storyja za pregled otvorenih intervencija i povezan je sa storyjima za određivanje prioriteta, dodjelu izvršioca, planiranje intervencije i pregled statusa intervencija.
+Zavisi od storyja za pregled otvorenih intervencija (US-07) i povezan je sa storyjima za određivanje prioriteta intervencije (US-12), dodjelu izvršioca intervencije (US-09), planiranje intervencije (US-11) i pregled statusa intervencija od strane dispečera (US-13).
 
 **Acceptance Criteria:**
 
@@ -621,7 +620,7 @@ Ovaj story je važan jer omogućava da svaka intervencija dobije jasno određeno
 **Otvoreno pitanje:** Da li sistem u ovoj fazi samo prikazuje dostupne servisere ili i predlaže najpogodnijeg izvršioca na osnovu unaprijed definisanih pravila?
 
 **Veze sa drugim storyjima:**  
-Zavisi od storyja za pregled otvorenih intervencija i pregled detalja pojedinačne intervencije, a povezan je sa storyjima za planiranje intervencije, pregled dodijeljenih intervencija i prihvatanje dodijeljenog zadatka.
+„Zavisi od storyja za pregled otvorenih intervencija (US-07) i pregled detalja pojedinačne intervencije (US-08), a povezan je sa storyjima za planiranje intervencije (US-11), pregled dodijeljenih intervencija (US-15) i prihvatanje dodijeljenog zadatka (US-22).
 
 **Acceptance Criteria:**
 
@@ -668,7 +667,7 @@ Ovaj story je važan jer omogućava da se zahtjevnije ili obimnije intervencije 
 **Otvoreno pitanje:** Da li se prilikom timske dodjele mora odrediti i glavni odgovorni izvršilac ili je dovoljno evidentirati samo listu članova tima?
 
 **Veze sa drugim storyjima:**  
-Zavisi od storyja za pregled detalja pojedinačne intervencije i povezan je sa storyjima za pregled dodijeljenih intervencija, planiranje intervencije i promjenu izvršioca intervencije.
+Zavisi od storyja za pregled detalja pojedinačne intervencije (US-08) i povezan je sa storyjima za pregled dodijeljenih intervencija (US-15), planiranje intervencije (US-11) i promjenu izvršioca intervencije (US-28).
 
 **Acceptance Criteria:**
 
@@ -717,7 +716,7 @@ Ovaj story je važan jer omogućava pravovremeno i efikasno planiranje intervenc
 **Otvorena pitanja:**  Da li u planiranju učestvuju i drugi korisnici osim dispečera? Da li dispečer treba imati mogućnost prisilnog zakazivanja uprkos konfliktu u hitnim slučajevima?
 
 **Veze sa drugim storyjima:**  
-Zavisi od storyja za dodjelu intervencije izvršiocu i povezan je sa storyjima za pregled statusa intervencija i pregled detalja pojedinačne intervencije.
+Zavisi od storyja za dodjelu intervencije izvršiocu (US-09) i povezan je sa storyjima za pregled statusa intervencija od strane dispečera (US-13) i pregled detalja pojedinačne intervencije (US-08).
 
 **Acceptance Criteria:**
 
@@ -771,7 +770,7 @@ Ovaj story je važan jer omogućava da se intervencije ne obrađuju proizvoljno,
 **Otvorena pitanja:** Da li dispečer prioritet određuje ručno ili sistem daje prijedlog koji dispečer može potvrditi ili izmijeniti po potrebi?
 
 **Veze sa drugim storyjima:**  
-Zavisi od storyja za prijavu zahtjeva i pregled detalja pojedinačne intervencije, a povezan je sa storyjima za dodjelu intervencije i planiranje intervencije.
+Zavisi od storyja za prijavu zahtjeva za servisnu intervenciju (US-05) i pregled detalja pojedinačne intervencije (US-08), a povezan je sa storyjima za dodjelu intervencije izvršiocu (US-09) i planiranje intervencije (US-11).
 
 **Acceptance Criteria:**
 
@@ -815,7 +814,7 @@ Ovaj story je važan jer dispečeru daje pregled nad trenutnim stanjem procesa i
 **Otvorena pitanja:** Da li dispečer vidi samo trenutni status ili i dodatne informacije poput prioriteta, izvršioca i termina?
 
 **Veze sa drugim storyjima:**  
-Zavisi od storyja za pregled otvorenih intervencija i povezan je sa storyjima za pregled detalja pojedinačne intervencije, određivanje prioriteta, dodjelu izvršioca, planiranje i ažuriranje statusa.
+Zavisi od storyja za pregled otvorenih intervencija (US-07) i povezan je sa storyjima za pregled detalja pojedinačne intervencije (US-08), određivanje prioriteta intervencije (US-12), dodjelu izvršioca intervencije (US-09), planiranje intervencije (US-11) i ažuriranje statusa intervencije od strane servisera (US-14).
 
 **Acceptance Criteria:**
 
@@ -842,7 +841,7 @@ Zavisi od storyja za pregled otvorenih intervencija i povezan je sa storyjima za
 Kao serviser, želim po potrebi ažurirati status intervencije na kojoj radim, kako bi sistem odražavao trenutno stanje rada na terenu.
 
 **Poslovna vrijednost:**  
-Ovaj story je važan jer omogućava da sistem prati stvarni tok izvršenja intervencije i da ostali korisnici imaju pravovremenu i tačnu informaciju o tome u kojoj se fazi rad nalazi.
+Ovaj story je važan jer omogućava da sistem prati stvarni tok izvršenja intervencije i da ostali korisnici imaju pravovremenu i tačnu informaciju o tome u kojoj se fazi rad nalazi (US-17).
 
 **Prioritet:**  
 *Visok*
@@ -898,7 +897,7 @@ Ovaj story je važan jer serviseru daje pregled njegovih zadataka, olakšava org
 **Otvorena pitanja:** Da li serviser vidi samo svoje zadatke ili i zadatke cijelog tima?
 
 **Veze sa drugim storyjima:**  
-Zavisi od storyja za dodjelu intervencije odgovornom serviseru ili timu i povezan je sa storyjem za pregled detalja zadatka na terenu.
+Zavisi od storyja za dodjelu intervencije odgovornom serviseru ili timu (US-09 / US-10) i povezan je sa storyjem za pregled detalja zadatka na terenu (US-16).
 
 **Acceptance Criteria:**  
 - **AC1: Pregled liste**  
@@ -936,7 +935,7 @@ Ovaj story je važan jer omogućava serviseru da na terenu ima sve ključne info
 **Otvorena pitanja:** Koje informacije čine minimalni obavezni skup detalja koje serviser mora imati dostupne na terenu?
 
 **Veze sa drugim storyjima:**  
-Zavisi od storyja za pregled dodijeljenih intervencija i povezan je sa storyjima za ažuriranje statusa intervencije i evidentiranje izvršenog rada.
+„Zavisi od storyja za pregled dodijeljenih intervencija (US-15) i povezan je sa storyjima za ažuriranje statusa intervencije od strane servisera (US-14) i evidentiranje izvršenog rada (US-17).
 
 **Acceptance Criteria:**  
 - **AC1: Pregled detalja**  
@@ -974,7 +973,7 @@ Ovaj story je važan jer omogućava da se izvršene aktivnosti evidentiraju tač
 **Otvorena pitanja:** Koje informacije su obavezne prilikom evidencije?
 
 **Veze sa drugim storyjima:**  
-Zavisi od storyja za pregled detalja zadatka na terenu i povezan je sa storyjima za ažuriranje statusa intervencije i pregled evidentiranog izvršenog rada.
+Zavisi od storyja za pregled detalja zadatka na terenu (US-16) i povezan je sa storyjima za ažuriranje statusa intervencije od strane servisera (US-14) i pregled evidentiranog izvršenog rada (US-24).
 
 **Acceptance Criteria:**  
 - **AC1: Evidentiranje rada**  
@@ -1017,8 +1016,7 @@ Ovaj story je važan jer omogućava uključivanje internih korisnika u sistem i 
 **Otvorena pitanja:** Da li se korisnička uloga dodjeljuje odmah prilikom kreiranja naloga ili u posebnom koraku nakon toga?
 
 **Veze sa drugim storyjima:**  
-Povezano sa storyjima za pregled korisničkih naloga i promjenu korisničke uloge.
-
+Povezano sa storyjima za pregled korisničkih naloga (US-19) i promjenu korisničke uloge (US-20).
 **Acceptance Criteria:**
 
 - **AC1: Uspješno kreiranje internog naloga**  
@@ -1061,7 +1059,7 @@ Ovaj story je važan jer administratoru omogućava pregled svih korisnika sistem
 **Otvorena pitanja:** Da li pregled treba prikazivati samo aktivne korisnike ili i deaktivirane naloge?
 
 **Veze sa drugim storyjima:**  
-Zavisi od storyja za administrativno kreiranje korisničkog naloga i povezan je sa storyjima za promjenu korisničke uloge i deaktivaciju korisničkog naloga.
+Zavisi od storyja za administrativno kreiranje korisničkog naloga (US-18) i povezan je sa storyjima za promjenu korisničke uloge (US-20) i deaktivaciju korisničkog naloga (US-21).
 
 **Acceptance Criteria:**
 
@@ -1105,7 +1103,7 @@ Ovaj story je važan jer omogućava da se prava pristupa i odgovornosti korisnik
 **Otvorena pitanja:** Da li se promjena uloge primjenjuje odmah ili tek nakon naredne prijave korisnika?
 
 **Veze sa drugim storyjima:**  
-Zavisi od storyja za pregled korisničkih naloga i povezan je sa storyjem za kontrolu pristupa prema korisničkoj ulozi.
+Zavisi od storyja za pregled korisničkih naloga (US-19) i povezan je sa storyjem za kontrolu pristupa prema korisničkoj ulozi (US-04).
 
 **Acceptance Criteria:**
 
@@ -1149,7 +1147,7 @@ Ovaj story je važan jer omogućava administratoru da onemogući pristup korisni
 **Otvorena pitanja:** Da li deaktivirani korisnik ostaje vidljiv u listi korisnika i da li sistem prikazuje njegov status kao neaktivan?
 
 **Veze sa drugim storyjima:**  
-Zavisi od storyja za pregled korisničkih naloga i povezan je sa storyjem za prijavu korisnika u sistem.
+Zavisi od storyja za pregled korisničkih naloga (US-19) i povezan je sa storyjem za prijavu korisnika u sistem (US-02).
 
 **Acceptance Criteria:**
 
@@ -1193,7 +1191,7 @@ Ovaj story je važan jer omogućava da sistem evidentira da je serviser svjesno 
 **Otvorena pitanja:** Da li prihvatanje zadatka automatski mijenja status intervencije?
 
 **Veze sa drugim storyjima:**  
-Zavisi od storyja za dodjelu intervencije odgovornom licu i povezan je sa storyjem za ažuriranje statusa intervencije od strane servisera.
+Zavisi od storyja za dodjelu intervencije odgovornom licu (US-09) i povezan je sa storyjem za ažuriranje statusa intervencije od strane servisera (US-14).
 
 **Acceptance Criteria:**  
 - **AC1: Uspješna promjena statusa zadatka**  
@@ -1236,7 +1234,7 @@ Ovaj story je važan jer omogućava da sistem evidentira da zadatak ne može bit
 **Otvorena pitanja:** Da li serviser mora unijeti razlog odbijanja zadatka?
 
 **Veze sa drugim storyjima:**  
-Zavisi od storyja za dodjelu intervencije odgovornom licu i povezan je sa storyjem za pregled dodijeljenih intervencija.
+Zavisi od storyja za dodjelu intervencije odgovornom licu (US-09) i povezan je sa storyjem za pregled dodijeljenih intervencija (US-15).
 
 **Acceptance Criteria:**  
 - **AC1: Obavezno navođenje razloga odbijanja**  
@@ -1279,7 +1277,7 @@ Ovaj story je važan jer omogućava dispečeru da pregleda dokaz o obavljenom ra
 **Otvorena pitanja:** Koji skup informacija dispečer mora minimalno vidjeti prije zatvaranja intervencije?
 
 **Veze sa drugim storyjima:**  
-Zavisi od storyja za evidentiranje izvršenog rada i povezan je sa storyjem za potvrdu i zatvaranje intervencije.
+Zavisi od storyja za evidentiranje izvršenog rada (US-17) i povezan je sa storyjem za potvrdu i zatvaranje intervencije (US-25).
 
 **Acceptance Criteria:**  
 - **AC1: Prikaz obaveznih detalja izvršenog rada**  
@@ -1323,7 +1321,7 @@ Ovaj story je važan jer omogućava da se intervencija zvanično završi tek nak
 
 
 **Veze sa drugim storyjima:**  
-Zavisi od storyja za ažuriranje statusa intervencije od strane servisera i storyja za pregled evidentiranog izvršenog rada.
+Zavisi od storyja za ažuriranje statusa intervencije od strane servisera (US-14) i storyja za pregled evidentiranog izvršenog rada (US-24).
 
 **Acceptance Criteria:**  
 - **AC1: Promjena statusa u finalno stanje**  
@@ -1366,7 +1364,7 @@ Ovaj story je važan jer omogućava korisniku da ispravi greške u prijavi bez p
 **Otvorena pitanja:** Koje podatke korisnik smije mijenjati?
 
 **Veze sa drugim storyjima:**  
-Zavisi od storyja za prijavu zahtjeva za servisnu intervenciju i povezan je sa storyjem za pregled vlastitog zahtjeva.  
+Zavisi od storyja za prijavu zahtjeva za servisnu intervenciju (US-05) i povezan je sa storyjem za pregled vlastitog zahtjeva (US-06).  
 
 **Acceptance Criteria:**  
 - **AC1: Definicija dozvoljenih polja za izmjenu**  
@@ -1409,7 +1407,7 @@ Ovaj story je važan jer sprečava da pogrešno prijavljeni ili više nepotrebni
 **Otvorena pitanja:** Da li sistem treba čuvati razlog otkazivanja?
 
 **Veze sa drugim storyjima:**  
-Zavisi od storyja za prijavu zahtjeva za servisnu intervenciju i povezan je sa storyjem za pregled vlastitog zahtjeva.  
+„Zavisi od storyja za prijavu zahtjeva za servisnu intervenciju (US-05) i povezan je sa storyjem za pregled vlastitog zahtjeva (US-06).  
 
 **Acceptance Criteria:**  
 - **AC1: Obavezan unos razloga otkazivanja**  
@@ -1452,7 +1450,7 @@ Ovaj story je važan jer omogućava da operativni tok ne "zapne" kada dodijeljen
 **Otvorena pitanja:** Da li se prilikom promjene izvršioca automatski evidentira prethodno zaduženje u historiji aktivnosti?
 
 **Veze sa drugim storyjima:**  
-Zavisi od storyja za dodjelu intervencije odgovornom serviseru i povezan je sa storyjima za pregled otvorenih intervencija, pregled detalja pojedinačne intervencije i pregled statusa intervencija.  
+Zavisi od storyja za dodjelu intervencije odgovornom serviseru (US-09) i povezan je sa storyjima za pregled otvorenih intervencija (US-07), pregled detalja pojedinačne intervencije (US-08) i pregled statusa intervencija od strane dispečera (US-13). 
 
 **Acceptance Criteria:**  
 - **AC1: Odabir i validacija novog izvršioca**  
@@ -1495,7 +1493,7 @@ Ovaj story je važan jer omogućava da se zadatak ne zaglavi kod servisera koji 
 **Otvorena pitanja:** Da li je unos napomene ili razloga vraćanja obavezan?
 
 **Veze sa drugim storyjima:**  
-Zavisi od storyja za prihvatanje dodijeljenog zadatka i povezan je sa storyjima za promjenu izvršioca, pregled dodijeljenih intervencija i ažuriranje statusa intervencije od strane servisera.  
+Zavisi od storyja za prihvatanje dodijeljenog zadatka (US-22) i povezan je sa storyjima za promjenu izvršioca intervencije (US-28), pregled dodijeljenih intervencija (US-15) i ažuriranje statusa intervencije od strane servisera (US-14).  
 
 **Acceptance Criteria:**  
 - **AC1: Obavezan unos razloga vraćanja**  
@@ -1538,7 +1536,7 @@ Ovaj story je važan jer omogućava brzu i direktnu komunikaciju između ureda i
 **Otvorena pitanja:** Da li su napomene vidljive korisniku usluge ili služe isključivo za internu komunikaciju?
 
 **Veze sa drugim storyjima:**  
-Povezano sa storyjima za pregled detalja pojedinačne intervencije, pregled detalja zadatka na terenu i vraćanje zadatka na ponovnu dodjelu.  
+Povezano sa storyjima za pregled detalja pojedinačne intervencije (US-08), pregled detalja zadatka na terenu (US-16) i vraćanje zadatka na ponovnu dodjelu (US-29). 
 
 **Acceptance Criteria:**  
 - **AC1: Dodavanje i pohrana napomene**  
@@ -1581,7 +1579,7 @@ Srednji
 **Otvorena pitanja:** Koji skup pokazatelja treba biti prikazan na operativnoj kontrolnoj tabli u ovoj fazi, samo broj intervencija po statusima ili i dodatne informacije poput broja visokoprioritetnih intervencija, intervencija bez dodijeljenog izvršioca i planiranih izlazaka na teren?
 
 **Veze sa drugim storyjima:**  
-Zavisi od storyja za pregled otvorenih intervencija, pregled statusa intervencija od strane dispečera i ažuriranje statusa intervencije od strane servisera. Povezan je sa storyjima za pregled detalja pojedinačne intervencije, određivanje prioriteta i planiranje intervencije.
+„Zavisi od storyja za pregled otvorenih intervencija (US-07), pregled statusa intervencija od strane dispečera (US-13) i ažuriranje statusa intervencije od strane servisera (US-14). Povezan je sa storyjima za pregled detalja pojedinačne intervencije (US-08), određivanje prioriteta intervencije (US-12) i planiranje intervencije (US-11).
 
 **Acceptance Criteria:**
 
@@ -1630,7 +1628,7 @@ Ovaj story je važan jer osigurava transparentnost i omogućava praćenje toka r
 **Otvorena pitanja:** Koliki nivo detalja historija treba sadržavati (npr. da li bilježi i stare vrijednosti polja prije izmjene)?
 
 **Veze sa drugim storyjima:**  
-Zavisi od svih storyja koji mijenjaju stanje intervencije (prijava, dodjela, promjena statusa, planiranje, određivanje prioriteta).  
+Zavisi od svih storyja koji mijenjaju stanje intervencije: prijava zahtjeva za servisnu intervenciju (US-05), dodjela intervencije odgovornom serviseru ili timu (US-09 / US-10), promjena statusa intervencije od strane servisera (US-14), planiranje intervencije (US-11) i određivanje prioriteta intervencije (US-12). 
 
 **Acceptance Criteria:**  
 - **AC1: Automatsko generisanje zapisa**  
