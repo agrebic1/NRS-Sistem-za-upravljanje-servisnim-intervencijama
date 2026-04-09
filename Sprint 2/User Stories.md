@@ -1018,6 +1018,7 @@ Ovaj story je važan jer omogućava uključivanje internih korisnika u sistem i 
 
 **Veze sa drugim storyjima:**  
 Povezano sa storyjima za pregled korisničkih naloga (US-19) i promjenu korisničke uloge (US-20).
+
 **Acceptance Criteria:**
 
 - **AC1: Uspješno kreiranje internog naloga**  
