@@ -239,6 +239,7 @@ Ovaj story je važan jer omogućava korisniku usluge samostalan ulazak u sistem 
 
 **Veze sa drugim storyjima:**  
 Povezano sa storyjem za prijavu korisnika u sistem (US-02) , prijavu zahtjeva za servisnu intervenciju (US-05) i pregled vlastitog zahtjeva (US-06).
+
 **Acceptance Criteria:**
 
 - **AC1: Uspješna registracija**  
