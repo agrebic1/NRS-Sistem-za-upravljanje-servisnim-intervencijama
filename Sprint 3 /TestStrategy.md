@@ -15,3 +15,7 @@ Veza sa acceptance kriterijima
 Način evidentiranja rezultata testiranja
 
 Glavni rizici kvaliteta
+- Pogrešna prava pristupa po ulozi
+- Nekonzistentan prikaz podataka između uloga
+- Neispravan tok statusa intervencije
+- Greške pri dodjeli i ponovnoj dodjeli zadataka
