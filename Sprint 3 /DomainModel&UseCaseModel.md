@@ -98,7 +98,7 @@ Intervencija se smatra završenom tek nakon unosa atributa *ishod_rada* u entite
 
 
         
-##**Use Case Model – US-01**  
+## **Use Case Model – US-01**  
 
 
 
@@ -167,7 +167,7 @@ Korisnik može pristupiti sistemu
 
         
 
-##**Use Case Model – US-02**  
+## **Use Case Model – US-02**  
 
 
 Aktor:  
@@ -238,7 +238,7 @@ Korisnik ima pristup funkcionalnostima prema svojoj ulozi
 
 
 
-##**Use Case Model – US-03**  
+## **Use Case Model – US-03**  
 
 
 Aktor:  
@@ -302,7 +302,7 @@ Onemogućen je dalji pristup bez ponovne prijave
 
 
 
-##**Use Case Model – US-04**
+## **Use Case Model – US-04**
 
 Aktor:  
 
