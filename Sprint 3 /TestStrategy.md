@@ -1,4 +1,4 @@
-# Test Strategy
+# Test strategy 
 
 ## Cilj testiranja
 
@@ -274,14 +274,106 @@ Veza sa acceptance kriterijima
 | User story ID | Acceptance Criteria ID | Test Case ID | Nivo testiranja | Status |
 |---------------|------------------------|--------------|-----------------|--------|
 
-Način evidentiranja rezultata testiranja
+## Veza sa acceptance kriterijima
 
-| ID testa | Funkcionalnost | Opis testa | Ulazni podaci | Dobijeni rezultat | Očekivani rezultat | Status | ID bug-a | Opis greške | Prioritet greške | Dodatna napomena |
-|----------|----------------|------------|---------------|-------------------|--------------------|--------|----------|-------------|------------------|------------------|
-| TC-01 | Registracija | Uspješna registracija korisnika |
+Testiranje u okviru ovog projekta direktno se oslanja na acceptance kriterije definisane uz user storyje. Acceptance kriteriji predstavljaju konkretne uslove koje funkcionalnost mora ispuniti da bi se smatrala prihvatljivo implementiranom, te zbog toga služe kao osnova za planiranje i provođenje testiranja.
 
+Veza između testiranja i acceptance kriterija važna je jer osigurava jasnu povezanost između zahtjeva, implementacije i provjere kvaliteta. Na taj način testiranje nije zasnovano samo na opštoj procjeni da li funkcionalnost „radi“, nego na jasno definisanim uslovima koji opisuju očekivano ponašanje sistema u različitim situacijama.
 
-Glavni rizici kvaliteta
+U okviru ovog projekta acceptance kriteriji se koriste za:
+- definisanje testnih scenarija
+- određivanje očekivanih rezultata testiranja
+- provjeru da li je user story u potpunosti ispunjen
+- povezivanje funkcionalnosti sa odgovarajućim nivoima testiranja
+
+Pojedini acceptance kriteriji mogu se provjeravati na više nivoa testiranja, u zavisnosti od njihove prirode. Na primjer, kriteriji koji se odnose na validaciju unosa mogu biti predmet unit i UI testiranja, dok kriteriji koji opisuju tok rada između više korisničkih uloga češće pripadaju integracionom, sistemskom i prihvatnom testiranju.
+
+### Tabelarni pregled veze sa acceptance kriterijima
+
+| ID storyja | Acceptance kriterij | Nivo testiranja | Način provjere | Očekivani rezultat |
+|------------|---------------------|-----------------|----------------|--------------------|
+| **US-01** | Korisnik unese validne podatke i registracija bude uspješna | Unit, integraciono, sistemsko, UI | test validacije, provjera kreiranja naloga i prikaza forme | korisnički nalog je uspješno kreiran |
+
+## Način evidentiranja rezultata testiranja
+
+Rezultati testiranja u okviru ovog projekta evidentiraju se na sistematičan, pregledan i dosljedan način kako bi tim u svakom trenutku imao jasan uvid u to šta je testirano, kakav je bio ishod testiranja, koje su greške uočene i da li su one naknadno otklonjene. Evidentiranje rezultata testiranja važno je ne samo radi praćenja kvaliteta sistema, nego i radi kontrole napretka kroz sprintove, lakšeg uočavanja ponavljajućih problema i provjere da li su ranije identifikovani nedostaci zaista ispravljeni.
+
+U okviru ovog projekta rezultati testiranja evidentiraju se za svaku važniju funkcionalnost i testni scenario. Za svaki izvršeni test bilježe se osnovni podaci o tome šta je testirano, kada je testiranje provedeno, ko je izvršio testiranje, koji je bio očekivani rezultat i kakav je bio stvarni ishod. Na taj način omogućava se jasan pregled nad uspješnim i neuspješnim testovima, kao i nad funkcionalnostima koje zahtijevaju dodatne dorade.
+
+Prilikom evidentiranja rezultata testiranja posebno se bilježi:
+- identifikator testa
+- funkcionalnost ili modul koji se testira
+- kratak opis testnog scenarija
+- sprint ili faza u kojoj je test izvršen
+- datum testiranja
+- osoba koja je izvršila testiranje
+- očekivani rezultat
+- stvarni rezultat
+- status testa
+- dodatna napomena
+
+Status testa može biti evidentiran na jednostavan i jasan način, kroz sljedeće oznake:
+| Oznaka | Značenje |
+|--------|----------|
+| **Prošao** | funkcionalnost radi u skladu sa očekivanim rezultatom |
+| **Nije prošao** | uočen je problem ili odstupanje od očekivanog rezultata |
+| **Djelimično prošao** | dio funkcionalnosti radi ispravno, ali postoje određena ograničenja ili nedostaci |
+| **Nije testirano** | test još nije izvršen |
+
+Kada rezultat testiranja ukaže na problem, pored osnovnog rezultata testiranja evidentira se i uočena greška. Time se osigurava da rezultati testiranja ne ostanu samo na nivou konstatacije da nešto „ne radi“, nego da služe kao osnova za dalje otklanjanje problema i unapređenje sistema. Evidencija grešaka omogućava jasnu vezu između testnog scenarija, uočene nepravilnosti i procesa njene ispravke.
+
+Za svaku uočenu grešku bilježe se:
+- identifikator greške
+- povezani identifikator testa
+- funkcionalnost ili modul u kojem je greška uočena
+- kratak opis greške
+- prioritet greške
+- status greške
+- sprint ili faza u kojoj je greška uočena
+- dodatna napomena o planiranoj doradi ili ispravci
+
+Prioritet greške može se evidentirati kroz jednostavne kategorije:
+| Kategorija | Opis |
+|------------|------|
+| **Nizak** | greška ne blokira osnovni tok rada i ima manji uticaj na korištenje sistema |
+| **Srednji** | greška otežava korištenje funkcionalnosti, ali ne blokira cijeli proces |
+| **Visok** | greška značajno narušava rad sistema ili blokira važan dio procesa |
+| **Kritičan** | greška onemogućava izvršavanje ključnog toka rada ili ozbiljno ugrožava ispravnost sistema |
+
+Status greške može se evidentirati kroz sljedeće oznake:
+| Oznaka | Značenje |
+|--------|----------|
+| **Otvorena** | greška je evidentirana i čeka obradu |
+| **U obradi** | radi se na otklanjanju greške |
+| **Ispravljena** | greška je otklonjena i spremna za ponovnu provjeru |
+| **Zatvorena** | greška je potvrđeno otklonjena i više nije prisutna |
+
+Rezultati testiranja i evidentirane greške prate se kontinuirano tokom razvoja, a posebno na kraju svakog sprinta, kada se provjerava inkrement funkcionalnosti razvijen u toj iteraciji. Pored testiranja novih funkcionalnosti, evidentiraju se i rezultati regresijskog testiranja ključnih ranije implementiranih dijelova sistema, kako bi se potvrdilo da nove izmjene nisu narušile postojeće funkcionalnosti aplikacije.
+
+Za potrebe ovog projekta rezultati testiranja i uočene greške mogu se evidentirati u jednostavnim tabelama, dokumentu ili drugom internom alatu koji tim koristi za praćenje rada. Najvažnije je da način evidentiranja bude dosljedan, pregledan i dovoljno jasan da omogući:
+- praćenje statusa testiranja
+- pregled uočenih grešaka
+- povezivanje testova i grešaka sa konkretnim funkcionalnostima i sprintovima
+- provjeru da li su ranije uočeni problemi ispravljeni
+- lakšu pripremu za završno testiranje i demonstraciju sistema
+
+### Tabelarni pregled rezultata testiranja
+
+| ID testa | Funkcionalnost / modul | Opis testa | Sprint / faza | Datum testiranja | Izvršilac testiranja | Očekivani rezultat | Stvarni rezultat | Status testa | Napomena |
+|----------|------------------------|------------|---------------|------------------|----------------------|--------------------|------------------|--------------|----------|
+| TC-01 | Registracija korisnika | Provjera uspješne registracije sa validnim podacima | Sprint 6 |  |  | Korisnički nalog je uspješno kreiran |  |  |  |
+
+### Tabelarni pregled uočenih grešaka
+
+| ID greške | Povezani ID testa | Funkcionalnost / modul | Opis greške | Prioritet greške | Status greške | Sprint / faza | Napomena |
+|---|---|---|---|---|---|---|---|
+| B-01 | TC-01 | | | | | | |
+
+Na ovaj način tim dobija jasan i povezan pregled nad provedenim testovima, njihovim rezultatima, uočenim greškama i statusom njihovog rješavanja. Takav pristup omogućava efikasnije upravljanje kvalitetom sistema i pruža bolju osnovu za završno testiranje, dorade i pripremu sistema za demonstraciju i predaju.
+
+## Glavni rizici kvaliteta
+
+Neki primjeri rizika kvaliteta: 
 - Pogrešna prava pristupa po ulozi
 - Nekonzistentan prikaz podataka između uloga
 - Neispravan tok statusa intervencije
@@ -289,11 +381,6 @@ Glavni rizici kvaliteta
 
 Tabela rizika: 
 
-| ID | Rizik kvaliteta| Opis rizika | Moguće posljedice | Način kontrole kroz testiranje |
-|----|----------------|-------------|-------------------|--------------------------------|
+| ID | Rizik kvaliteta-| Opis rizika | Moguće posljedice | Način kontrole kroz testiranje |
+|----|-----------------|-------------|-------------------|--------------------------------|
 | QR-01 | Pogrešna prava pristupa | Korisnik vidi podatke koje ne bi smio vidjeti ili ima funkcionalnosti koje ne bi smio imati | Sigurnosni i funkcionalni problem | Testiranje po ulogama | 
-| QR-02 | 
-
-Legenda:
-
-Nivo rizika: Vjerovatnoća x Uticaj
