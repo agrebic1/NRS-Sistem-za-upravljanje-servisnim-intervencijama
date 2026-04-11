@@ -94,7 +94,8 @@ Intervencija se smatra završenom tek nakon unosa atributa *ishod_rada* u entite
 
 
 
-Use Case Model – US-01  
+**Use Case Model – US-01**  
+
 
 
 
@@ -158,45 +159,74 @@ Korisnik može pristupiti sistemu
 
 
 
-Use Case Model – US-02
+**Use Case Model – US-02**  
 
-Aktor:
+
+Aktor:  
+
 Korisnik usluge
 
-Naziv use case-a:
+Naziv use case-a:  
+
 Prijava korisnika u sistem
 
-Kratak opis:
+Kratak opis:  
+
 Ovaj use case opisuje proces u kojem registrovani korisnik unosi svoje kredencijale kako bi se prijavio u sistem i pristupio dostupnim funkcionalnostima.
 
-Preduslovi:
-Korisnik ima kreiran korisnički nalog
-Korisnik ima pristup login formi
-Sistem je dostupan i funkcionalan
-Glavni tok:
-Korisnik otvara formu za prijavu
-Korisnik unosi email i lozinku
-Korisnik potvrđuje prijavu
-Sistem validira unesene podatke
-Sistem provjerava kredencijale korisnika
-Sistem kreira korisničku sesiju
-Sistem preusmjerava korisnika na početnu stranicu (dashboard)
-Alternativni tokovi:
+Preduslovi:  
 
-A1: Neispravni kredencijali
-4a. Sistem utvrdi da email ili lozinka nisu tačni
-5a. Sistem ne dozvoljava prijavu
-6a. Sistem prikazuje poruku o grešci
+Korisnik ima kreiran korisnički nalog  
 
-A2: Prazna polja
-2a. Korisnik nije unio email ili lozinku
-3a. Sistem detektuje nedostatak podataka
-4a. Sistem prikazuje poruku da su polja obavezna
+Korisnik ima pristup login formi  
 
-Ishod:
-Korisnik je uspješno prijavljen u sistem
-Kreirana je aktivna sesija
-Korisnik ima pristup funkcionalnostima prema svojoj ulozi
+Sistem je dostupan i funkcionalan  
+
+Glavni tok:  
+
+Korisnik otvara formu za prijavu  
+
+Korisnik unosi email i lozinku  
+
+Korisnik potvrđuje prijavu  
+
+Sistem validira unesene podatke  
+
+Sistem provjerava kredencijale korisnika  
+
+Sistem kreira korisničku sesiju  
+
+Sistem preusmjerava korisnika na početnu stranicu (dashboard)  
+
+Alternativni tokovi:  
+
+
+A1: Neispravni kredencijali  
+
+4a. Sistem utvrdi da email ili lozinka nisu tačni  
+
+5a. Sistem ne dozvoljava prijavu  
+
+6a. Sistem prikazuje poruku o grešci  
+
+
+A2: Prazna polja  
+
+2a. Korisnik nije unio email ili lozinku  
+
+3a. Sistem detektuje nedostatak podataka  
+
+4a. Sistem prikazuje poruku da su polja obavezna  
+
+
+Ishod:  
+
+Korisnik je uspješno prijavljen u sistem  
+
+Kreirana je aktivna sesija  
+
+Korisnik ima pristup funkcionalnostima prema svojoj ulozi  
+
 
 
 
