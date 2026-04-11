@@ -4,7 +4,26 @@ Tabela rizika:
 
 | ID | Opis rizika | Uzrok | Vjerovatnoća | Uticaj | Prioritet rizika | Plan mitigacije | Odgovorna osoba ili uloga | Status |
 |----|-------------|-------|--------------|--------|------------------|-----------------|---------------------------|--------|
-| R-01 | | | | | | | | |
+| R-01 | Problemi sa autentifikacijom i RBAC logikom: | | | | | | | |
+| R-02 | Kašnjenje integracije između modula: |
+| R-03 | Preširok obim sprinta: |
+| R-04 | Nedovoljno testiranja po sprintu: |
+| R-05 | Prekompleksna logika prioriteta i dodjela: |
+| R-06 | Nejasno modeliranje statusa i toka intervencija: |
+| R-07 | Neravnomjeran doprinos članova tima: |
+| R-08 | Problemi sa kvalitetom podataka unesenih od strane korisnika: |
+| R-09 | Pogrešno razumijevanje zahtjeva ili uputa asistenata: |
+| R-10 | Loša raspodjela zadataka u timu: |
+| R-11 | Kašnjenje integracije paralelno razvijanih dijelova: |
+| R-12 | Kasne promjene odluka o modelu sistema: |
+| R-13 | Nedovoljno razrađeni alternativni scenariji: |
+| R-14 | Prevelika zavisnost između sprintova: |
+| R-15 | Površno tetsiranje samo happy path-a: |
+| R-16 | Ostavljanje previše posla za završne sprintove: |
+| R-17 | Tehnički dug koji se gomila kroz sprintove: |
+
+
+
 
 ## Legenda za tabelu
 
