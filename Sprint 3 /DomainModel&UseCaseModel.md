@@ -94,6 +94,10 @@ Intervencija se smatra završenom tek nakon unosa atributa *ishod_rada* u entite
 
 
 
+
+
+
+        
 **Use Case Model – US-01**  
 
 
@@ -158,6 +162,10 @@ Korisnik može pristupiti sistemu
 
 
 
+
+
+
+        
 
 **Use Case Model – US-02**  
 
