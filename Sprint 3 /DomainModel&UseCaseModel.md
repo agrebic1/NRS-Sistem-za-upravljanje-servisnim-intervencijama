@@ -86,14 +86,18 @@ Važno poslovno pravilo odnosi se i na validaciju procesa dodjele intervencija. 
 Geografski aspekt poslovanja dodatno je formalizovan pravilom prema kojem svaki **Zahtjev** i pripadajuća **Intervencija** moraju biti povezani sa entitetom **Lokacija**. Ova povezanost omogućava efikasnije planiranje i raspodjelu resursa na terenu, kao i optimizaciju vremena reakcije.
 
 Proces intervencije smatra se završenim tek kada su ispunjeni svi uslovi za njegovo zatvaranje. To podrazumijeva da je u entitetu **Evidencija rada** unesen atribut *ishod_rada*, te da je status intervencije postavljen na odgovarajuće završno stanje. Ovim pravilom se osigurava da nijedna intervencija ne može biti formalno zatvorena bez potpune evidencije izvršenih aktivnosti.
-Intervencija se smatra završenom tek nakon unosa atributa *ishod_rada* u entitetu **Evidencija rada** i postavljanja finalnog statusa.
+Intervencija se smatra završenom tek nakon unosa atributa *ishod_rada* u entitetu **Evidencija rada** i postavljanja finalnog statusa.  
+
+
+    
 
 
 
 
-Use Case Model – US-01
+Use Case Model – US-01  
 
-Aktor:
+
+Aktor: 
 Korisnik usluge
 
 Naziv use case-a:
