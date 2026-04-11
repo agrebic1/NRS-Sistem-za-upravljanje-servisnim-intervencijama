@@ -98,7 +98,7 @@ Intervencija se smatra završenom tek nakon unosa atributa *ishod_rada* u entite
 
 
         
-**Use Case Model – US-01**  
+##**Use Case Model – US-01**  
 
 
 
@@ -167,7 +167,7 @@ Korisnik može pristupiti sistemu
 
         
 
-**Use Case Model – US-02**  
+##**Use Case Model – US-02**  
 
 
 Aktor:  
@@ -238,85 +238,143 @@ Korisnik ima pristup funkcionalnostima prema svojoj ulozi
 
 
 
-Use Case Model – US-03
+##**Use Case Model – US-03**  
 
-Aktor:
+
+Aktor:  
+
 Korisnik sistema
 
-Naziv use case-a:
+Naziv use case-a:  
+
 Odjava korisnika iz sistema
 
-Kratak opis:
+Kratak opis:  
+
 Ovaj use case opisuje proces u kojem prijavljeni korisnik završava svoju sesiju u sistemu kako bi spriječio neovlašten pristup svom korisničkom nalogu.
 
-Preduslovi:
-Korisnik je prijavljen u sistem
-Postoji aktivna korisnička sesija
-Sistem je dostupan i funkcionalan
-Glavni tok:
-Korisnik klikne na opciju za odjavu (logout)
-Sistem prima zahtjev za odjavu
-Sistem invalidira korisničku sesiju
-Sistem briše sesijske podatke
-Sistem preusmjerava korisnika na login stranicu
-Sistem prikazuje poruku o uspješnoj odjavi
-Alternativni tokovi:
+Preduslovi:  
 
-A1: Istek sesije (automatska odjava)
-1a. Korisnik je neaktivan određeni vremenski period
-2a. Sistem automatski prekida sesiju
-3a. Sistem preusmjerava korisnika na login stranicu
-4a. Sistem prikazuje poruku da je sesija istekla
+Korisnik je prijavljen u sistem 
 
-Ishod:
-Korisnik je uspješno odjavljen iz sistema
-Sesija je zatvorena
-Onemogućen je dalji pristup bez ponovne prijave
+Postoji aktivna korisnička sesija  
+
+Sistem je dostupan i funkcionalan  
+
+Glavni tok:  
+
+Korisnik klikne na opciju za odjavu (logout)  
+
+Sistem prima zahtjev za odjavu  
+
+Sistem invalidira korisničku sesiju  
+
+Sistem briše sesijske podatke  
+
+Sistem preusmjerava korisnika na login stranicu  
+
+Sistem prikazuje poruku o uspješnoj odjavi  
+
+Alternativni tokovi:  
+
+
+A1: Istek sesije (automatska odjava)  
+
+1a. Korisnik je neaktivan određeni vremenski period  
+
+2a. Sistem automatski prekida sesiju  
+
+3a. Sistem preusmjerava korisnika na login stranicu  
+
+4a. Sistem prikazuje poruku da je sesija istekla  
+
+
+Ishod:  
+
+Korisnik je uspješno odjavljen iz sistema  
+
+Sesija je zatvorena  
+
+Onemogućen je dalji pristup bez ponovne prijave  
+
+
+    
 
 
 
-Use Case Model – US-04
+##**Use Case Model – US-04**
 
-Aktor:
+Aktor:  
+
 Administrator
 
-Naziv use case-a:
+Naziv use case-a:  
+
 Kontrola pristupa prema korisničkoj ulozi
 
-Kratak opis:
+Kratak opis:  
+
 Ovaj use case opisuje proces u kojem administrator upravlja pristupom funkcionalnostima sistema dodjeljivanjem odgovarajućih uloga korisnicima, čime se osigurava da svaki korisnik ima pristup samo relevantnim podacima i akcijama.
 
-Preduslovi:
-Administrator je prijavljen u sistem
-Postoje definisane korisničke uloge
-Korisnici su registrovani u sistemu
-Sistem je dostupan i funkcionalan
-Glavni tok:
-Administrator pristupa modulu za upravljanje korisnicima
-Administrator bira korisnika iz liste
-Administrator pregleda trenutnu korisničku ulogu
-Administrator mijenja ili dodjeljuje novu ulogu korisniku
-Sistem validira odabranu ulogu
-Sistem ažurira prava pristupa korisnika
-Sistem sprema promjene
-Sistem prikazuje potvrdu o uspješnoj izmjeni
-Alternativni tokovi:
+Preduslovi:  
 
-A1: Nevažeća uloga
-4a. Administrator odabere nepostojeću ili nevažeću ulogu
-5a. Sistem detektuje grešku
-6a. Sistem ne dozvoljava izmjenu
-7a. Sistem prikazuje poruku o grešci
+Administrator je prijavljen u sistem  
 
-A2: Nedozvoljen pristup
-1a. Korisnik koji nije administrator pokušava pristupiti modulu
-2a. Sistem odbija pristup
-3a. Sistem prikazuje poruku o nedozvoljenom pristupu
+Postoje definisane korisničke uloge  
 
-Ishod:
-Korisniku je dodijeljena odgovarajuća uloga
-Pristup funkcionalnostima sistema je ograničen prema ulozi
-Sistem osigurava sigurnost i kontrolu pristupa
+Korisnici su registrovani u sistemu  
+
+Sistem je dostupan i funkcionalan  
+
+Glavni tok:  
+
+Administrator pristupa modulu za upravljanje korisnicima  
+
+Administrator bira korisnika iz liste  
+
+Administrator pregleda trenutnu korisničku ulogu  
+
+Administrator mijenja ili dodjeljuje novu ulogu korisniku  
+
+Sistem validira odabranu ulogu  
+
+Sistem ažurira prava pristupa korisnika  
+
+Sistem sprema promjene  
+
+Sistem prikazuje potvrdu o uspješnoj izmjeni  
+
+Alternativni tokovi:  
+
+
+A1: Nevažeća uloga  
+
+4a. Administrator odabere nepostojeću ili nevažeću ulogu  
+
+5a. Sistem detektuje grešku  
+
+6a. Sistem ne dozvoljava izmjenu  
+
+7a. Sistem prikazuje poruku o grešci  
+
+
+A2: Nedozvoljen pristup  
+
+1a. Korisnik koji nije administrator pokušava pristupiti modulu  
+
+2a. Sistem odbija pristup  
+
+3a. Sistem prikazuje poruku o nedozvoljenom pristupu  
+
+
+Ishod:  
+
+Korisniku je dodijeljena odgovarajuća uloga  
+
+Pristup funkcionalnostima sistema je ograničen prema ulozi  
+
+Sistem osigurava sigurnost i kontrolu pristupa  
+
 
 
 
