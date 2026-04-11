@@ -378,381 +378,647 @@ Sistem osigurava sigurnost i kontrolu pristupa
 
 
 
-Use Case Model – US-05
+## **Use Case Model – US-05**
 
-Aktor:
+Aktor:  
+
 Korisnik usluge
 
-Naziv use case-a:
+Naziv use case-a:  
+
 Prijava zahtjeva za servisnu intervenciju
 
-Kratak opis:
+Kratak opis:  
+
 Ovaj use case opisuje proces u kojem korisnik usluge prijavljuje kvar ili zahtjev za servisnu intervenciju. Sistem evidentira unesene podatke, validira ih i kreira novi zahtjev koji postaje dostupan za dalju obradu.
 
-Preduslovi:
-Korisnik je registrovan u sistemu
-Korisnik je prijavljen u sistem
-Korisnik ima pristup formi za prijavu zahtjeva
-Sistem je dostupan i funkcionalan
-Glavni tok:
-Korisnik otvara formu za prijavu zahtjeva
-Korisnik unosi podatke o kvaru (opis, lokacija, vrijeme itd.)
-Korisnik potvrđuje slanje zahtjeva
-Sistem validira unesene podatke
-Sistem kreira novi zahtjev u bazi podataka
-Sistem automatski dodjeljuje početni status zahtjevu
-Sistem povezuje zahtjev sa korisnikom
-Sistem prikazuje potvrdu o uspješnoj prijavi
-Alternativni tokovi:
+Preduslovi:  
 
-A1: Nepotpuni podaci
-2a. Korisnik ne unese sve obavezne podatke
-4a. Sistem detektuje nedostatak podataka
-5a. Sistem ne kreira zahtjev
-6a. Sistem prikazuje poruku o grešci i traži dopunu
+Korisnik je registrovan u sistemu  
 
-A2: Nevažeći podaci
-2a. Korisnik unese pogrešan format (npr. nevalidna lokacija)
-4a. Sistem detektuje grešku
-5a. Sistem odbija unos
+Korisnik je prijavljen u sistem  
+
+Korisnik ima pristup formi za prijavu zahtjeva  
+
+Sistem je dostupan i funkcionalan  
+
+Glavni tok:  
+
+Korisnik otvara formu za prijavu zahtjeva  
+
+Korisnik unosi podatke o kvaru (opis, lokacija, vrijeme itd.)  
+
+Korisnik potvrđuje slanje zahtjeva  
+
+Sistem validira unesene podatke  
+
+Sistem kreira novi zahtjev u bazi podataka  
+
+Sistem automatski dodjeljuje početni status zahtjevu  
+
+Sistem povezuje zahtjev sa korisnikom  
+
+Sistem prikazuje potvrdu o uspješnoj prijavi  
+
+Alternativni tokovi:  
+
+
+A1: Nepotpuni podaci  
+
+2a. Korisnik ne unese sve obavezne podatke  
+
+4a. Sistem detektuje nedostatak podataka  
+
+5a. Sistem ne kreira zahtjev  
+
+6a. Sistem prikazuje poruku o grešci i traži dopunu  
+
+
+A2: Nevažeći podaci  
+
+2a. Korisnik unese pogrešan format (npr. nevalidna lokacija)  
+
+4a. Sistem detektuje grešku  
+
+
+5a. Sistem odbija unos  
+
 6a. Sistem prikazuje poruku o grešci
 
-A3: Greška sistema
-5a. Dođe do greške pri kreiranju zahtjeva
-6a. Sistem ne sprema zahtjev
-7a. Sistem obavještava korisnika da pokuša ponovo
+A3: Greška sistema  
 
-Ishod:
-Novi zahtjev za servisnu intervenciju je kreiran
-Zahtjev je povezan sa korisnikom
-Zahtjev ima početni status (npr. "Kreiran")
-Zahtjev je spreman za dalju obradu od strane dispečera
+5a. Dođe do greške pri kreiranju zahtjeva  
+
+6a. Sistem ne sprema zahtjev  
+
+7a. Sistem obavještava korisnika da pokuša ponovo  
 
 
+Ishod:  
 
-Use Case Model – US-06
+Novi zahtjev za servisnu intervenciju je kreiran  
 
-Aktor:
+Zahtjev je povezan sa korisnikom  
+
+Zahtjev ima početni status (npr. "Kreiran")  
+
+Zahtjev je spreman za dalju obradu od strane dispečera  
+
+
+
+
+## **Use Case Model – US-06**
+
+Aktor:  
+
 Korisnik usluge
 
-Naziv use case-a:
+Naziv use case-a:  
+
 Pregled vlastitog zahtjeva
 
-Kratak opis:
+Kratak opis:  
+
 Ovaj use case opisuje proces u kojem korisnik pregledava svoje prethodno prijavljene zahtjeve, uključujući osnovne informacije i trenutni status obrade.
 
-Preduslovi:
-Korisnik je registrovan u sistemu
-Korisnik je prijavljen u sistem
-Korisnik ima kreiran barem jedan zahtjev
-Sistem je dostupan
-Glavni tok:
-Korisnik otvara listu svojih zahtjeva
-Sistem prikazuje listu svih korisnikovih zahtjeva
-Korisnik bira jedan zahtjev za pregled
-Sistem prikazuje detalje zahtjeva (opis, status, datum, itd.)
-Korisnik pregledava informacije
-Alternativni tokovi:
+Preduslovi:  
 
-A1: Nema zahtjeva
-1a. Korisnik nema nijedan zahtjev
-2a. Sistem prikazuje poruku da nema dostupnih zahtjeva
+Korisnik je registrovan u sistemu  
 
-A2: Greška pri učitavanju
-2a. Sistem ne može učitati zahtjeve
-3a. Sistem prikazuje poruku o grešci
+Korisnik je prijavljen u sistem  
 
-A3: Neovlašten pristup
-3a. Korisnik pokuša pristupiti zahtjevu koji nije njegov
-4a. Sistem blokira pristup
-5a. Sistem prikazuje poruku o zabrani pristupa
+Korisnik ima kreiran barem jedan zahtjev  
 
-Ishod:
-Korisnik vidi listu svojih zahtjeva
-Korisnik može pregledati detalje pojedinačnog zahtjeva
-Prikazan je tačan status i informacije o zahtjevu
+Sistem je dostupan  
+
+Glavni tok:  
+
+Korisnik otvara listu svojih zahtjeva  
+
+Sistem prikazuje listu svih korisnikovih zahtjeva  
+
+Korisnik bira jedan zahtjev za pregled  
+
+Sistem prikazuje detalje zahtjeva (opis, status, datum, itd.)  
+
+Korisnik pregledava informacije  
+
+Alternativni tokovi:  
 
 
+A1: Nema zahtjeva  
 
-Use Case Model – US-07
+1a. Korisnik nema nijedan zahtjev  
 
-Aktor:
+2a. Sistem prikazuje poruku da nema dostupnih zahtjeva  
+
+
+A2: Greška pri učitavanju  
+
+2a. Sistem ne može učitati zahtjeve  
+
+3a. Sistem prikazuje poruku o grešci  
+
+
+A3: Neovlašten pristup  
+
+3a. Korisnik pokuša pristupiti zahtjevu koji nije njegov  
+
+4a. Sistem blokira pristup  
+
+5a. Sistem prikazuje poruku o zabrani pristupa  
+
+
+Ishod:  
+
+Korisnik vidi listu svojih zahtjeva  
+
+Korisnik može pregledati detalje pojedinačnog zahtjeva  
+
+Prikazan je tačan status i informacije o zahtjevu  
+
+
+
+
+## **Use Case Model – US-07**
+
+Aktor:  
+
 Dispečer
 
-Naziv use case-a:
+Naziv use case-a:  
+
 Pregled otvorenih intervencija
 
-Kratak opis:
+Kratak opis:  
+
 Ovaj use case opisuje proces u kojem dispečer pregledava sve otvorene i aktivne intervencije kako bi imao jasan uvid u zahtjeve koji čekaju obradu ili su trenutno u toku.
 
-Preduslovi:
-Dispečer je registrovan u sistemu
-Dispečer je prijavljen u sistem
-U sistemu postoje otvorene ili aktivne intervencije
-Sistem je dostupan
-Glavni tok:
-Dispečer otvara pregled intervencija (dashboard ili lista)
-Sistem prikazuje listu svih otvorenih i aktivnih intervencija
-Sistem prikazuje ključne informacije (status, prioritet, lokacija, dodijeljeni serviser itd.)
-Dispečer pregledava listu i identifikuje relevantne intervencije
-Dispečer može odabrati intervenciju za detaljniji pregled
-Alternativni tokovi:
+Preduslovi:  
 
-A1: Nema otvorenih intervencija
-2a. Sistem ne pronalazi nijednu otvorenu intervenciju
-3a. Sistem prikazuje poruku da nema aktivnih zahtjeva
+Dispečer je registrovan u sistemu  
 
-A2: Greška pri učitavanju
-2a. Sistem ne može učitati intervencije
-3a. Sistem prikazuje poruku o grešci
+Dispečer je prijavljen u sistem  
 
-A3: Neovlašten pristup
-1a. Korisnik bez uloge dispečera pokuša pristupiti
-2a. Sistem blokira pristup
-3a. Sistem prikazuje poruku o zabrani pristupa
+U sistemu postoje otvorene ili aktivne intervencije  
 
-Ishod:
-Dispečer ima pregled svih aktivnih intervencija
-Intervencije su jasno prikazane sa ključnim informacijama
-Omogućen je dalji rad (dodjela, pregled detalja, promjene)
+Sistem je dostupan  
+
+Glavni tok:  
+
+Dispečer otvara pregled intervencija (dashboard ili lista)  
+
+Sistem prikazuje listu svih otvorenih i aktivnih intervencija  
+
+Sistem prikazuje ključne informacije (status, prioritet, lokacija, dodijeljeni serviser itd.)  
+
+Dispečer pregledava listu i identifikuje relevantne intervencije  
+
+Dispečer može odabrati intervenciju za detaljniji pregled  
+
+Alternativni tokovi:  
 
 
+A1: Nema otvorenih intervencija  
 
-Use Case Model – US-08
 
-Aktor:
+2a. Sistem ne pronalazi nijednu otvorenu intervenciju  
+
+3a. Sistem prikazuje poruku da nema aktivnih zahtjeva  
+
+
+A2: Greška pri učitavanju  
+
+2a. Sistem ne može učitati intervencije  
+
+3a. Sistem prikazuje poruku o grešci  
+
+
+A3: Neovlašten pristup  
+
+1a. Korisnik bez uloge dispečera pokuša pristupiti  
+
+2a. Sistem blokira pristup  
+
+3a. Sistem prikazuje poruku o zabrani pristupa  
+
+
+Ishod:  
+
+Dispečer ima pregled svih aktivnih intervencija  
+
+Intervencije su jasno prikazane sa ključnim informacijama  
+
+Omogućen je dalji rad (dodjela, pregled detalja, promjene)  
+
+
+
+
+## **Use Case Model – US-08**
+
+Aktor:  
+
 Dispečer
 
-Naziv use case-a:
+Naziv use case-a:  
+
 Pregled detalja pojedinačne intervencije
 
-Kratak opis:
+Kratak opis:  
+
 Ovaj use case opisuje proces u kojem dispečer pregledava detaljne informacije o jednoj intervenciji kako bi imao potpuni uvid u njen status, tok i zaduženja.
 
-Preduslovi:
-Dispečer je prijavljen u sistem
-Postoji barem jedna intervencija u sistemu
-Dispečer ima pristup listi intervencija
-Sistem je dostupan
-Glavni tok:
-Dispečer otvara listu intervencija
-Dispečer odabire jednu intervenciju
-Sistem prikazuje detalje intervencije
-Sistem prikazuje informacije (opis, status, prioritet, lokacija, dodijeljeni serviser, historija aktivnosti itd.)
-Dispečer pregledava podatke
-Alternativni tokovi:
+Preduslovi:  
 
-A1: Intervencija ne postoji
-2a. Odabrana intervencija više ne postoji
-3a. Sistem prikazuje poruku o grešci
+Dispečer je prijavljen u sistem  
 
-A2: Greška pri učitavanju detalja
-3a. Sistem ne može učitati detalje
-4a. Sistem prikazuje poruku o grešci
+Postoji barem jedna intervencija u sistemu  
 
-A3: Neovlašten pristup
-2a. Korisnik bez prava pristupa pokuša otvoriti intervenciju
-3a. Sistem blokira pristup
-4a. Sistem prikazuje poruku o zabrani
+Dispečer ima pristup listi intervencija  
 
-Ishod:
-Dispečer ima detaljan uvid u intervenciju
-Prikazani su svi relevantni podaci
-Omogućeno donošenje odluka (dodjela, promjena prioriteta itd.)
+Sistem je dostupan  
 
 
+Glavni tok:  
 
-Use Case Model – US-09
+Dispečer otvara listu intervencija  
 
-Aktor:
+Dispečer odabire jednu intervenciju  
+
+Sistem prikazuje detalje intervencije  
+
+Sistem prikazuje informacije (opis, status, prioritet, lokacija, dodijeljeni serviser, historija aktivnosti itd.)  
+
+Dispečer pregledava podatke  
+
+Alternativni tokovi:  
+
+
+A1: Intervencija ne postoji  
+
+2a. Odabrana intervencija više ne postoji  
+
+3a. Sistem prikazuje poruku o grešci  
+
+
+A2: Greška pri učitavanju detalja  
+
+3a. Sistem ne može učitati detalje  
+
+4a. Sistem prikazuje poruku o grešci  
+
+
+A3: Neovlašten pristup  
+
+2a. Korisnik bez prava pristupa pokuša otvoriti intervenciju  
+
+3a. Sistem blokira pristup  
+
+4a. Sistem prikazuje poruku o zabrani  
+
+
+Ishod:  
+
+Dispečer ima detaljan uvid u intervenciju  
+
+Prikazani su svi relevantni podaci  
+
+Omogućeno donošenje odluka (dodjela, promjena prioriteta itd.)  
+
+
+
+
+## **Use Case Model – US-09**
+
+Aktor:  
+
 Dispečer
 
-Naziv use case-a:
+Naziv use case-a:  
+
 Dodjela intervencije odgovornom serviseru
 
-Kratak opis:
+Kratak opis:  
+
 Ovaj use case opisuje proces u kojem dispečer dodjeljuje intervenciju odgovornom serviseru kako bi bilo jasno ko preuzima izvršenje zadatka.
 
-Preduslovi:
-Dispečer je prijavljen u sistem
-Postoji kreirana intervencija
-Postoji barem jedan serviser u sistemu
-Intervencija još nije dodijeljena ili se može promijeniti izvršilac
-Sistem je dostupan
-Glavni tok:
-Dispečer otvara detalje intervencije
-Dispečer bira opciju za dodjelu servisera
-Sistem prikazuje listu dostupnih servisera
-Dispečer odabire servisera
-Dispečer potvrđuje dodjelu
-Sistem dodjeljuje intervenciju izabranom serviseru
-Sistem ažurira status intervencije (npr. "Dodijeljeno")
-Sistem bilježi promjenu u historiji aktivnosti
-Sistem obavještava servisera o dodjeli
-Alternativni tokovi:
+Preduslovi:  
 
-A1: Nema dostupnih servisera
-3a. Sistem ne pronalazi dostupne servisere
-4a. Sistem prikazuje poruku da nema dostupnih izvršilaca
+Dispečer je prijavljen u sistem  
 
-A2: Greška pri dodjeli
-6a. Sistem ne uspije dodijeliti intervenciju
-7a. Sistem prikazuje poruku o grešci
+Postoji kreirana intervencija  
 
-A3: Promjena dodjele
-4a. Intervencija je već dodijeljena
-5a. Dispečer bira drugog servisera
-6a. Sistem ažurira dodjelu novim serviserom
+Postoji barem jedan serviser u sistemu  
 
-Ishod:
-Intervencija je dodijeljena odgovornom serviseru
-Serviser je obaviješten o zadatku
-Status intervencije je ažuriran
-Promjena je evidentirana u sistemu
+Intervencija još nije dodijeljena ili se može promijeniti izvršilac  
+
+Sistem je dostupan  
+
+Glavni tok:  
+
+Dispečer otvara detalje intervencije  
+
+Dispečer bira opciju za dodjelu servisera  
+
+Sistem prikazuje listu dostupnih servisera  
+
+Dispečer odabire servisera  
+
+Dispečer potvrđuje dodjelu  
+
+Sistem dodjeljuje intervenciju izabranom serviseru  
+
+Sistem ažurira status intervencije (npr. "Dodijeljeno")  
+
+Sistem bilježi promjenu u historiji aktivnosti  
+
+Sistem obavještava servisera o dodjeli  
+
+Alternativni tokovi:  
 
 
+A1: Nema dostupnih servisera  
 
-Use Case Model – US-10
+3a. Sistem ne pronalazi dostupne servisere  
 
-Aktor:
+4a. Sistem prikazuje poruku da nema dostupnih izvršilaca  
+
+
+A2: Greška pri dodjeli  
+
+6a. Sistem ne uspije dodijeliti intervenciju  
+
+7a. Sistem prikazuje poruku o grešci  
+
+
+A3: Promjena dodjele  
+
+4a. Intervencija je već dodijeljena  
+
+5a. Dispečer bira drugog servisera  
+
+6a. Sistem ažurira dodjelu novim serviserom  
+
+
+Ishod:  
+
+Intervencija je dodijeljena odgovornom serviseru  
+
+Serviser je obaviješten o zadatku  
+
+Status intervencije je ažuriran  
+
+Promjena je evidentirana u sistemu  
+
+
+
+
+## **Use Case Model – US-10**
+
+Aktor:  
+
 Dispečer
 
-Naziv use case-a:
+Naziv use case-a:  
+
 Dodjela intervencije timu servisera
 
-Kratak opis:
+Kratak opis:  
+
 Ovaj use case opisuje proces u kojem dispečer dodjeljuje intervenciju timu servisera kako bi se složeniji zadaci mogli izvršavati timski i efikasnije.
 
-Preduslovi:
-Dispečer je prijavljen u sistem
-Postoji kreirana intervencija
-Postoji definisan tim servisera u sistemu
-Intervencija nije dodijeljena ili se dodjela može promijeniti
-Sistem je dostupan
-Glavni tok:
-Dispečer otvara detalje intervencije
-Dispečer bira opciju za dodjelu timu
-Sistem prikazuje listu dostupnih timova
-Dispečer odabire tim servisera
-Dispečer potvrđuje dodjelu
-Sistem dodjeljuje intervenciju odabranom timu
-Sistem ažurira status intervencije
-Sistem bilježi promjenu u historiji aktivnosti
-Sistem obavještava članove tima
-Alternativni tokovi:
+Preduslovi:  
 
-A1: Nema dostupnih timova
-3a. Sistem ne pronalazi nijedan tim
-4a. Sistem prikazuje poruku da nema dostupnih timova
+Dispečer je prijavljen u sistem  
 
-A2: Greška pri dodjeli
-6a. Sistem ne uspije dodijeliti intervenciju
-7a. Sistem prikazuje poruku o grešci
+Postoji kreirana intervencija  
 
-A3: Promjena dodjele
-4a. Intervencija je već dodijeljena
-5a. Dispečer bira drugi tim
-6a. Sistem ažurira dodjelu
+Postoji definisan tim servisera u sistemu  
 
-Ishod:
-Intervencija je dodijeljena timu servisera
-Svi članovi tima su obaviješteni
-Status intervencije je ažuriran
-Promjena je evidentirana u sistemu
+Intervencija nije dodijeljena ili se dodjela može promijeniti  
+
+Sistem je dostupan  
+
+Glavni tok:  
+
+Dispečer otvara detalje intervencije  
+
+Dispečer bira opciju za dodjelu timu  
+
+Sistem prikazuje listu dostupnih timova  
+
+Dispečer odabire tim servisera  
+
+Dispečer potvrđuje dodjelu  
+
+Sistem dodjeljuje intervenciju odabranom timu  
+
+Sistem ažurira status intervencije  
+
+Sistem bilježi promjenu u historiji aktivnosti  
+
+Sistem obavještava članove tima  
+
+Alternativni tokovi:  
 
 
+A1: Nema dostupnih timova  
 
-Use Case Model – US-11
+3a. Sistem ne pronalazi nijedan tim  
 
-Aktor:
+4a. Sistem prikazuje poruku da nema dostupnih timova  
+
+
+A2: Greška pri dodjeli  
+
+6a. Sistem ne uspije dodijeliti intervenciju  
+
+7a. Sistem prikazuje poruku o grešci  
+
+
+A3: Promjena dodjele  
+
+ 
+4a. Intervencija je već dodijeljena  
+
+5a. Dispečer bira drugi tim  
+
+6a. Sistem ažurira dodjelu  
+
+
+Ishod:  
+
+Intervencija je dodijeljena timu servisera  
+
+Svi članovi tima su obaviješteni  
+
+Status intervencije je ažuriran  
+
+Promjena je evidentirana u sistemu  
+
+
+
+
+## **Use Case Model – US-11**
+
+Aktor:  
+
 Dispečer
 
-Naziv use case-a:
+Naziv use case-a:  
+
 Planiranje intervencije
 
-Kratak opis:
+Kratak opis:  
+
 Ovaj use case opisuje proces u kojem dispečer planira intervenciju unaprijed definisanjem termina, resursa i organizacije izvršenja zadatka.
 
-Preduslovi:
-Dispečer je prijavljen u sistem
-Postoji kreirana intervencija
-Intervencija ima osnovne podatke (lokacija, opis itd.)
-Dostupni su serviseri ili timovi
-Sistem je dostupan
-Glavni tok:
-Dispečer otvara detalje intervencije
-Dispečer bira opciju planiranja
-Sistem prikazuje dostupne termine i resurse
-Dispečer odabire datum i vrijeme intervencije
-Dispečer određuje potrebne resurse (serviser/tim)
-Dispečer potvrđuje plan
-Sistem sprema planirane podatke
-Sistem ažurira status intervencije (npr. "Planirano")
-Sistem obavještava uključene servisere
-Alternativni tokovi:
+Preduslovi:  
 
-A1: Nema dostupnih termina
-3a. Sistem ne pronalazi slobodan termin
-4a. Sistem prikazuje poruku o nedostupnosti
+Dispečer je prijavljen u sistem  
 
-A2: Konflikt termina
-4a. Odabrani termin se preklapa sa drugim zadatkom
-5a. Sistem upozorava dispečera
-6a. Dispečer bira novi termin
+Postoji kreirana intervencija  
 
-A3: Greška pri spremanju
-7a. Sistem ne uspije spremiti plan
-8a. Sistem prikazuje poruku o grešci
+Intervencija ima osnovne podatke (lokacija, opis itd.)  
 
-Ishod:
-Intervencija ima definisan termin i resurse
-Status intervencije je ažuriran
-Serviseri su obaviješteni o planu
-Omogućeno efikasnije izvršenje zadatka
+Dostupni su serviseri ili timovi  
+
+Sistem je dostupan  
+
+Glavni tok:  
+
+Dispečer otvara detalje intervencije  
+
+Dispečer bira opciju planiranja  
+
+Sistem prikazuje dostupne termine i resurse  
+
+  
+Dispečer odabire datum i vrijeme intervencije  
+
+Dispečer određuje potrebne resurse (serviser/tim)  
+
+Dispečer potvrđuje plan  
+
+Sistem sprema planirane podatke  
+
+Sistem ažurira status intervencije (npr. "Planirano")  
+
+Sistem obavještava uključene servisere  
+
+Alternativni tokovi:  
 
 
+A1: Nema dostupnih termina  
 
-Use Case Model – US-12
+3a. Sistem ne pronalazi slobodan termin  
 
-Aktor:
+4a. Sistem prikazuje poruku o nedostupnosti  
+
+
+A2: Konflikt termina  
+
+4a. Odabrani termin se preklapa sa drugim zadatkom  
+
+5a. Sistem upozorava dispečera  
+
+
+6a. Dispečer bira novi termin  
+
+
+A3: Greška pri spremanju  
+
+7a. Sistem ne uspije spremiti plan  
+
+8a. Sistem prikazuje poruku o grešci  
+
+
+Ishod:  
+
+Intervencija ima definisan termin i resurse  
+
+Status intervencije je ažuriran  
+
+Serviseri su obaviješteni o planu  
+
+Omogućeno efikasnije izvršenje zadatka  
+
+
+
+
+## **Use Case Model – US-12**
+
+Aktor:  
+
 Dispečer
 
-Naziv use case-a:
+Naziv use case-a:  
+
 Određivanje prioriteta intervencije
 
-Kratak opis:
+Kratak opis:  
+
 Ovaj use case opisuje proces u kojem dispečer određuje prioritet intervencije kako bi zahtjevi bili obrađeni i raspoređeni prema njihovoj hitnosti i važnosti.
 
-Preduslovi:
-Dispečer je prijavljen u sistem
-Postoji kreirana intervencija
-Intervencija ima osnovne informacije (opis, lokacija, hitnost)
-Sistem je dostupan
-Glavni tok:
-Dispečer otvara detalje intervencije
-Dispečer bira opciju za postavljanje prioriteta
-Sistem prikazuje dostupne nivoe prioriteta (npr. nizak, srednji, visok)
-Dispečer odabire nivo prioriteta
-Dispečer potvrđuje izbor
-Sistem sprema odabrani prioritet
-Sistem ažurira prikaz intervencije
-Sistem bilježi promjenu u historiji aktivnosti
-Alternativni tokovi:
+Preduslovi:  
 
-A1: Već postavljen prioritet
-2a. Intervencija već ima prioritet
-3a. Dispečer može promijeniti postojeći prioritet
+Dispečer je prijavljen u sistem  
 
-A2: Greška pri spremanju
-6a. Sistem ne uspije spremiti promjenu
-7a. Sistem prikazuje poruku o grešci
+Postoji kreirana intervencija  
 
-A3: Neovlašten pristup
-2a. Korisnik bez uloge dispečera pokuša promijeniti prioritet
-3a. Sistem blokira akciju
+Intervencija ima osnovne informacije (opis, lokacija, hitnost)  
 
-Ishod:
-Intervencija ima definisan prioritet
-Prioritet je vidljiv u sistemu
-Promjena je evidentirana
-Omogućena bolja organizacija i raspodjela zadataka
+Sistem je dostupan  
+
+Glavni tok:  
+
+Dispečer otvara detalje intervencije  
+
+Dispečer bira opciju za postavljanje prioriteta  
+
+Sistem prikazuje dostupne nivoe prioriteta (npr. nizak, srednji, visok)  
+
+Dispečer odabire nivo prioriteta  
+
+Dispečer potvrđuje izbor  
+
+Sistem sprema odabrani prioritet  
+
+Sistem ažurira prikaz intervencije  
+
+Sistem bilježi promjenu u historiji aktivnosti  
+
+Alternativni tokovi:  
+
+
+A1: Već postavljen prioritet  
+
+2a. Intervencija već ima prioritet  
+
+3a. Dispečer može promijeniti postojeći prioritet  
+
+
+A2: Greška pri spremanju  
+
+6a. Sistem ne uspije spremiti promjenu  
+
+7a. Sistem prikazuje poruku o grešci  
+
+
+A3: Neovlašten pristup  
+
+2a. Korisnik bez uloge dispečera pokuša promijeniti prioritet  
+
+3a. Sistem blokira akciju  
+
+
+Ishod:  
+
+Intervencija ima definisan prioritet  
+
+Prioritet je vidljiv u sistemu  
+
+Promjena je evidentirana  
+
+Omogućena bolja organizacija i raspodjela zadataka  
+
