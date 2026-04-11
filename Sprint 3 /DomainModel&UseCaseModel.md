@@ -98,68 +98,41 @@ Intervencija se smatra završenom tek nakon unosa atributa *ishod_rada* u entite
 
 
         
-## **Use Case Model – US-01**  
+## Use Case Model – US-01
 
+### **Aktor:**
+Korisnik usluge
 
+### **Naziv use case-a:**
+Samostalna registracija korisnika
 
+### **Kratak opis:**
+Ovaj use case opisuje proces u kojem korisnik usluge kreira novi korisnički nalog kako bi mogao pristupiti sistemu i koristiti njegove funkcionalnosti.
 
-Aktor:  
+### **Preduslovi:**
+- Korisnik ima pristup registracionoj formi  
+- Sistem je dostupan i funkcionalan  
 
-Korisnik usluge  
+### **Glavni tok:**
+1. Korisnik otvara formu za registraciju  
+2. Korisnik unosi potrebne podatke (ime, email, lozinka itd.)  
+3. Korisnik potvrđuje registraciju  
+4. Sistem validira unesene podatke  
+5. Sistem kreira novi korisnički nalog  
+6. Sistem automatski dodjeljuje ulogu korisnika  
+7. Sistem prikazuje poruku o uspješnoj registraciji  
 
+### **Alternativni tokovi:**
 
-Naziv use case-a:  
-
-Samostalna registracija korisnika  
-
-
-Kratak opis:  
-
-Ovaj use case opisuje proces u kojem korisnik usluge kreira novi korisnički nalog kako bi mogao pristupiti sistemu i koristiti njegove funkcionalnosti.  
-
-
-Preduslovi:  
-
-Korisnik ima pristup registracionoj formi  
-
-Sistem je dostupan i funkcionalan  
-
-Glavni tok:  
-
-Korisnik otvara formu za registraciju  
-
-Korisnik unosi potrebne podatke (ime, email, lozinka itd.)  
-
-Korisnik potvrđuje registraciju  
-
-Sistem validira unesene podatke  
-
-Sistem kreira novi korisnički nalog  
-
-Sistem automatski dodjeljuje ulogu korisnika  
-
-Sistem prikazuje poruku o uspješnoj registraciji  
-
-Alternativni tokovi:  
-
-
-A1: Neispravni ili nepotpuni podaci  
-
+**A1: Neispravni ili nepotpuni podaci**  
 3a. Korisnik nije unio sve obavezne podatke ili su neispravni  
-
 4a. Sistem detektuje grešku  
-
 5a. Sistem ne kreira nalog  
-
 6a. Sistem prikazuje poruku o grešci  
 
-
-Ishod:  
-
-Korisnički nalog je uspješno kreiran  
-
-Korisnik može pristupiti sistemu  
-
+### **Ishod:**
+- Korisnički nalog je uspješno kreiran  
+- Korisnik može pristupiti sistemu  
 
 
 
