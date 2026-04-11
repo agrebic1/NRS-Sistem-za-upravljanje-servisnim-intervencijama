@@ -269,10 +269,6 @@ Kroz **testiranje korisničkog interfejsa** provjerava se preglednost i razumlji
 
 Prikazana raspodjela pokazuje da se funkcionalne cjeline sistema ne posmatraju samo iz jedne perspektive, nego se provjeravaju kroz više nivoa testiranja u skladu sa njihovom ulogom u sistemu. Na taj način nastoji se osigurati da sistem bude tehnički ispravan, međusobno usklađen i funkcionalno prikladan za stvarnu upotrebu.
 
-Veza sa acceptance kriterijima
-
-| User story ID | Acceptance Criteria ID | Test Case ID | Nivo testiranja | Status |
-|---------------|------------------------|--------------|-----------------|--------|
 
 ## Veza sa acceptance kriterijima
 
