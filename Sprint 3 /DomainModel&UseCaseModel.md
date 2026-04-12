@@ -89,108 +89,33 @@ Proces intervencije smatra se završenim tek kada su ispunjeni svi uslovi za nje
 Intervencija se smatra završenom tek nakon unosa atributa *ishod_rada* u entitetu **Evidencija rada** i postavljanja finalnog statusa.  
 
 
-    
-
-
-
-
-
-
-
+--
+# Use case model 
         
-## Use Case Model – US-01
+## Use Case 01 – US-01
 
-### **Aktor:**
-Korisnik usluge
+| Stavka | Sadržaj |
+|--------|---------|
+| **Aktor** | Korisnik usluge |
+| **Naziv use case-a** | Samostalna registracija korisnika usluge |
+| **Kratak opis** | Ovaj use case opisuje proces u kojem korisnik usluge samostalno kreira novi korisnički nalog kako bi kasnije mogao pristupiti sistemu i koristiti njegove funkcionalnosti. |
+| **Preduslovi** | Korisnik ima pristup registracionoj formi.<br>Sistem je dostupan i funkcionalan. |
+| **Glavni tok** | 1. Korisnik otvara formu za registraciju.<br>2. Korisnik unosi potrebne podatke za registraciju (ime, email, lozinka i sl.).<br>3. Korisnik potvrđuje registraciju.<br>4. Sistem validira unesene podatke.<br>5. Sistem kreira novi korisnički nalog.<br>6. Sistem automatski dodjeljuje korisničku ulogu.<br>7. Sistem prikazuje poruku o uspješnoj registraciji. |
+| **Alternativni tokovi** | **A1: Neispravni ili nepotpuni podaci**<br>&nbsp;&nbsp;3a. Korisnik potvrdi registraciju sa nepotpunim ili neispravnim podacima.<br>&nbsp;&nbsp;4a. Sistem detektuje grešku u unosu.<br>&nbsp;&nbsp;5a. Sistem ne kreira novi nalog.<br>&nbsp;&nbsp;6a. Sistem prikazuje poruku o grešci i traži ispravku podataka.<br><br>**A2: Korisnik već postoji u sistemu**<br>&nbsp;&nbsp;4b. Sistem utvrdi da korisnik sa istim jedinstvenim podacima već postoji.<br>&nbsp;&nbsp;5b. Sistem ne kreira novi nalog.<br>&nbsp;&nbsp;6b. Sistem prikazuje poruku da korisnik već postoji. |
+| **Ishod** | Korisnički nalog je uspješno kreiran.<br>Korisniku je dodijeljena odgovarajuća korisnička uloga.<br>Korisnik se može prijaviti u sistem. |
 
-### **Naziv use case-a:**
-Samostalna registracija korisnika usluge
-
-### **Kratak opis:**
-Ovaj use case opisuje proces u kojem korisnik usluge samostalno kreira novi korisnički nalog kako bi kasnije mogao pristupiti sistemu i koristiti njegove funkcionalnosti.
-
-### **Preduslovi:**
-- Korisnik ima pristup registracionoj formi  
-- Sistem je dostupan i funkcionalan  
-
-### **Glavni tok:**
-1. Korisnik otvara formu za registraciju  
-2. Korisnik unosi potrebne podatke za registraciju (ime, email, lozinka itd.)  
-3. Korisnik potvrđuje registraciju  
-4. Sistem validira unesene podatke  
-5. Sistem kreira novi korisnički nalog  
-6. Sistem automatski dodjeljuje ulogu korisnika  
-7. Sistem prikazuje poruku o uspješnoj registraciji  
-
-### **Alternativni tokovi:**
-
-**A1: Neispravni ili nepotpuni podaci**  
-3a. Korisnik potvrdi registraciju sa nepotpunim ili neispravnim podacima
-4a. Sistem detektuje grešku u unosu 
-5a. Sistem ne kreira novi nalog  
-6a. Sistem prikazuje poruku o grešci i traži ispravku podataka
-
-**A2: Korisnik već postoji u sistemu**
-4b. Sistem utvrdi da korisnik sa istim jedinstvenim podacima već postoji
-5b. Sistem ne kreira novi nalog
-6b. Ssistem prikazuje poruku da korisnik već postoji
-
-### **Ishod:**
-- Korisnički nalog je uspješno kreiran
-- Korisniku je dodijeljena odgovarajuća korisnička uloga
-- Korisnik se može prijaviti u sistem
-
----
   
-## Use Case Model – US-02
+## Use Case 02 – US-02
 
-### **Aktor:**
-Korisnik usluge
-
-### **Naziv use case-a:**
-Prijava korisnika u sistem
-
-### **Kratak opis:**
-Ovaj use case opisuje proces u kojem registrovani korisnik unosi svoje kredencijale kako bi se prijavio u sistem i pristupio funkcionalnostima koje su mu dostupne.
-
-### **Preduslovi:**
-- Korisnik ima kreiran korisnički nalog  
-- Korisnik ima pristup login formi  
-- Sistem je dostupan i funkcionalan  
-
-### **Glavni tok:**
-1. Korisnik otvara formu za prijavu  
-2. Korisnik unosi email i lozinku  
-3. Korisnik potvrđuje prijavu  
-4. Sistem validira unesene podatke  
-5. Sistem provjerava kredencijale korisnika  
-6. Sistem kreira korisničku sesiju  
-7. Sistem preusmjerava korisnika na odgivarajuću početnu stranicu 
-
-### Alternativni tokovi
-
-**A1: Neispravni kredencijali**  
-3a. Korisnik potvrdi prijavu sa netačnim kredencijalima  
-4a. Sistem utvrđuje da kredencijali nisu ispravni  
-5a. Sistem ne dozvoljava prijavu  
-6a. Sistem prikazuje poruku o grešci  
-
-**A2: Nepotpuni podaci za prijavu**  
-2a. Korisnik ne unese email ili lozinku  
-3a. Sistem detektuje nedostatak podataka  
-4a. Sistem prikazuje poruku da su polja obavezna  
-
-**A3: Neaktivan korisnički nalog**  
-5a. Sistem utvrđuje da korisnički nalog nije aktivan  
-6a. Sistem ne dozvoljava prijavu  
-7a. Sistem prikazuje odgovarajuću poruku
-
-### **Ishod:**
-- Korisnik je uspješno prijavljen u sistem  
-- Kreirana je aktivna korisnička sesija  
-- Korisnik ima pristup funkcionalnostima u skladu sa svojom ulogom  
-
----
+| Stavka | Sadržaj |
+|--------|---------|
+| **Aktor** | Korisnik usluge |
+| **Naziv use case-a** | Prijava korisnika u sistem |
+| **Kratak opis** | Ovaj use case opisuje proces u kojem registrovani korisnik unosi svoje kredencijale kako bi se prijavio u sistem i pristupio funkcionalnostima koje su mu dostupne. |
+| **Preduslovi** | Korisnik ima kreiran korisnički nalog.<br>Korisnik ima pristup login formi.<br>Sistem je dostupan i funkcionalan. |
+| **Glavni tok** | 1. Korisnik otvara formu za prijavu.<br>2. Korisnik unosi email i lozinku.<br>3. Korisnik potvrđuje prijavu.<br>4. Sistem validira unesene podatke.<br>5. Sistem provjerava kredencijale korisnika.<br>6. Sistem kreira korisničku sesiju.<br>7. Sistem preusmjerava korisnika na odgovarajuću početnu stranicu. |
+| **Alternativni tokovi** | **A1: Neispravni kredencijali**<br>&nbsp;&nbsp;3a. Korisnik potvrdi prijavu sa netačnim kredencijalima.<br>&nbsp;&nbsp;4a. Sistem utvrđuje da kredencijali nisu ispravni.<br>&nbsp;&nbsp;5a. Sistem ne dozvoljava prijavu.<br>&nbsp;&nbsp;6a. Sistem prikazuje poruku o grešci.<br><br>**A2: Nepotpuni podaci za prijavu**<br>&nbsp;&nbsp;2a. Korisnik ne unese email ili lozinku.<br>&nbsp;&nbsp;3a. Sistem detektuje nedostatak podataka.<br>&nbsp;&nbsp;4a. Sistem prikazuje poruku da su polja obavezna.<br><br>**A3: Neaktivan korisnički nalog**<br>&nbsp;&nbsp;5a. Sistem utvrđuje da korisnički nalog nije aktivan.<br>&nbsp;&nbsp;6a. Sistem ne dozvoljava prijavu.<br>&nbsp;&nbsp;7a. Sistem prikazuje odgovarajuću poruku. |
+| **Ishod** | Korisnik je uspješno prijavljen u sistem.<br>Kreirana je aktivna korisnička sesija.<br>Korisnik ima pristup funkcionalnostima u skladu sa svojom ulogom. |
 
 ## Use Case Model – US-03
 
