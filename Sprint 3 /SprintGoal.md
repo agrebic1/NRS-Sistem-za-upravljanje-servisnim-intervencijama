@@ -9,7 +9,7 @@ kako bi naredne faze razvoja bile zasnovane na stvarnim zahtjevima, a ne na proi
 
 ## Ključne stavke koje tim želi završiti
 - izrada **Risk Register** dokumenta
-- izrada **Domain Modela** i/ili **Use Case Modela**
+- izrada **Domain Modela** i **Use Case Modela**
 - definisanje **Architecture Overview** dokumenta
 - izrada **Test Strategy** dokumenta
 - usklađivanje modela i arhitekture sa zahtjevima sistema
