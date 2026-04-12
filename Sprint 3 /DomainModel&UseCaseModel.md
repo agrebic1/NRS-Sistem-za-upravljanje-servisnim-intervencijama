@@ -89,10 +89,11 @@ Proces intervencije smatra se završenim tek kada su ispunjeni svi uslovi za nje
 Intervencija se smatra završenom tek nakon unosa atributa *ishod_rada* u entitetu **Evidencija rada** i postavljanja finalnog statusa.  
 
 
---
+---
+
 # Use case model 
         
-## Use Case 01 – US-01
+## Use Case 01 (US-01)
 
 | Stavka | Sadržaj |
 |--------|---------|
@@ -105,7 +106,7 @@ Intervencija se smatra završenom tek nakon unosa atributa *ishod_rada* u entite
 | **Ishod** | Korisnički nalog je uspješno kreiran.<br>Korisniku je dodijeljena odgovarajuća korisnička uloga.<br>Korisnik se može prijaviti u sistem. |
 
   
-## Use Case 02 – US-02
+## Use Case 02 (US-02)
 
 | Stavka | Sadržaj |
 |--------|---------|
@@ -117,233 +118,65 @@ Intervencija se smatra završenom tek nakon unosa atributa *ishod_rada* u entite
 | **Alternativni tokovi** | **A1: Neispravni kredencijali**<br>&nbsp;&nbsp;3a. Korisnik potvrdi prijavu sa netačnim kredencijalima.<br>&nbsp;&nbsp;4a. Sistem utvrđuje da kredencijali nisu ispravni.<br>&nbsp;&nbsp;5a. Sistem ne dozvoljava prijavu.<br>&nbsp;&nbsp;6a. Sistem prikazuje poruku o grešci.<br><br>**A2: Nepotpuni podaci za prijavu**<br>&nbsp;&nbsp;2a. Korisnik ne unese email ili lozinku.<br>&nbsp;&nbsp;3a. Sistem detektuje nedostatak podataka.<br>&nbsp;&nbsp;4a. Sistem prikazuje poruku da su polja obavezna.<br><br>**A3: Neaktivan korisnički nalog**<br>&nbsp;&nbsp;5a. Sistem utvrđuje da korisnički nalog nije aktivan.<br>&nbsp;&nbsp;6a. Sistem ne dozvoljava prijavu.<br>&nbsp;&nbsp;7a. Sistem prikazuje odgovarajuću poruku. |
 | **Ishod** | Korisnik je uspješno prijavljen u sistem.<br>Kreirana je aktivna korisnička sesija.<br>Korisnik ima pristup funkcionalnostima u skladu sa svojom ulogom. |
 
-## Use Case Model – US-03
+## Use Case 03 (US-03)
 
-### **Aktor:**
-Korisnik sistema
+| Stavka | Sadržaj |
+|--------|---------|
+| **Aktor** | Korisnik sistema |
+| **Naziv use case-a** | Odjava korisnika iz sistema |
+| **Kratak opis** | Ovaj use case opisuje proces u kojem prijavljeni korisnik završava svoju sesiju u sistemu kako bi spriječio neovlašten pristup svom korisničkom nalogu nakon završetka rada. |
+| **Preduslovi** | Korisnik je prijavljen u sistem.<br>Postoji aktivna korisnička sesija.<br>Sistem je dostupan i funkcionalan. |
+| **Glavni tok** | 1. Korisnik klikne na opciju za odjavu (logout).<br>2. Sistem prima zahtjev za odjavu.<br>3. Sistem invalidira korisničku sesiju.<br>4. Sistem briše sesijske podatke.<br>5. Sistem preusmjerava korisnika na login stranicu.<br>6. Sistem prikazuje poruku o uspješnoj odjavi. |
+| **Alternativni tokovi** | **A1: Istek sesije (automatska odjava)**<br>&nbsp;&nbsp;1a. Korisnik je neaktivan tokom definisanog vremenskog perioda.<br>&nbsp;&nbsp;2a. Sistem automatski završava korisničku sesiju.<br>&nbsp;&nbsp;3a. Sistem preusmjerava korisnika na login stranicu.<br>&nbsp;&nbsp;4a. Sistem prikazuje poruku da je sesija istekla. |
+| **Ishod** | Korisnik je uspješno odjavljen iz sistema.<br>Sesija je zatvorena.<br>Onemogućen je dalji pristup bez ponovne prijave. |
 
-### **Naziv use case-a:**
-Odjava korisnika iz sistema
+## Use Case 04 (US-04)
 
-### **Kratak opis:**
-Ovaj use case opisuje proces u kojem prijavljeni korisnik završava svoju sesiju u sistemu kako bi spriječio neovlašten pristup svom korisničkom nalogu nakon završetka rada.
+| Stavka | Sadržaj |
+|--------|---------|
+| **Aktor** | Administrator |
+| **Naziv use case-a** | Kontrola pristupa prema korisničkoj ulozi |
+| **Kratak opis** | Ovaj use case opisuje proces u kojem administrator upravlja korisničkim ulogama i pristupom funkcionalnostima sistema, kako bi svaki korisnik imao pristup samo onim podacima i akcijama koje odgovaraju njegovoj odgovornosti. |
+| **Preduslovi** | Administrator je prijavljen u sistem.<br>U sistemu postoje definisane korisničke uloge.<br>Korisnici su evidentirani u sistemu.<br>Sistem je dostupan i funkcionalan. |
+| **Glavni tok** | 1. Administrator pristupa modulu za upravljanje korisnicima i pravima pristupa.<br>2. Administrator bira korisnika iz liste.<br>3. Sistem prikazuje trenutnu korisničku ulogu i dostupne opcije pristupa.<br>4. Administrator dodjeljuje ili mijenja korisničku ulogu.<br>5. Sistem validira odabranu ulogu i pripadajuća pravila pristupa.<br>6. Sistem ažurira prava pristupa korisnika u skladu sa odabranom ulogom.<br>7. Sistem sprema promjene.<br>8. Sistem prikazuje potvrdu o uspješnoj izmjeni. |
+| **Alternativni tokovi** | **A1: Nevažeća ili nedozvoljena uloga**<br>&nbsp;&nbsp;4a. Administrator odabere nepostojeću ili nedozvoljenu ulogu.<br>&nbsp;&nbsp;5a. Sistem detektuje grešku.<br>&nbsp;&nbsp;6a. Sistem ne dozvoljava izmjenu.<br>&nbsp;&nbsp;7a. Sistem prikazuje poruku o grešci.<br><br>**A2: Korisnik nije dostupan u sistemu**<br>&nbsp;&nbsp;2a. Administrator odabere korisnika koji više nije dostupan ili nije moguće učitati njegove podatke.<br>&nbsp;&nbsp;3a. Sistem prikazuje poruku o grešci.<br><br>**A3: Nedozvoljen pristup modulu**<br>&nbsp;&nbsp;1a. Korisnik bez administratorskih ovlaštenja pokuša pristupiti modulu za upravljanje korisnicima i pravima pristupa.<br>&nbsp;&nbsp;2a. Sistem odbija pristup.<br>&nbsp;&nbsp;3a. Sistem prikazuje poruku o nedozvoljenom pristupu. |
+| **Ishod** | Korisniku je dodijeljena ili izmijenjena odgovarajuća korisnička uloga.<br>Pristup funkcionalnostima i podacima sistema je usklađen sa korisničkom ulogom.<br>Sistem osigurava kontrolu pristupa i jasnu raspodjelu odgovornosti. |
 
-### **Preduslovi:**
-- Korisnik je prijavljen u sistem  
-- Postoji aktivna korisnička sesija  
-- Sistem je dostupan i funkcionalan  
+## Use Case 05 (US-05)
 
-### **Glavni tok:**
-1. Korisnik klikne na opciju za odjavu (logout)  
-2. Sistem prima zahtjev za odjavu  
-3. Sistem invalidira korisničku sesiju  
-4. Sistem briše sesijske podatke  
-5. Sistem preusmjerava korisnika na login stranicu  
-6. Sistem prikazuje poruku o uspješnoj odjavi  
+| Stavka | Sadržaj |
+|--------|---------|
+| **Aktor** | Korisnik usluge |
+| **Naziv use case-a** | Prijava zahtjeva za servisnu intervenciju |
+| **Kratak opis** | Ovaj use case opisuje proces u kojem korisnik usluge prijavljuje kvar ili zahtjev za servisnu intervenciju. Sistem evidentira unesene podatke, validira ih i kreira novi zahtjev koji postaje dostupan za dalju obradu. |
+| **Preduslovi** | Korisnik je registrovan u sistemu.<br>Korisnik je prijavljen u sistem.<br>Korisnik ima pristup formi za prijavu zahtjeva.<br>Sistem je dostupan i funkcionalan. |
+| **Glavni tok** | 1. Korisnik otvara formu za prijavu zahtjeva.<br>2. Korisnik unosi podatke o kvaru ili zahtjevu (opis, lokacija, vrijeme i sl.).<br>3. Korisnik potvrđuje slanje zahtjeva.<br>4. Sistem validira unesene podatke.<br>5. Sistem kreira novi zahtjev u bazi podataka.<br>6. Sistem automatski dodjeljuje početni status zahtjevu.<br>7. Sistem povezuje zahtjev sa korisnikom koji ga je podnio.<br>8. Sistem prikazuje potvrdu o uspješnoj prijavi. |
+| **Alternativni tokovi** | **A1: Nepotpuni podaci**<br>&nbsp;&nbsp;2a. Korisnik ne unese sve obavezne podatke.<br>&nbsp;&nbsp;4a. Sistem detektuje nedostatak podataka.<br>&nbsp;&nbsp;5a. Sistem ne kreira zahtjev.<br>&nbsp;&nbsp;6a. Sistem prikazuje poruku o grešci i traži dopunu podataka.<br><br>**A2: Nevažeći podaci**<br>&nbsp;&nbsp;2a. Korisnik unese podatke u neispravnom formatu ili unese nevažeće vrijednosti.<br>&nbsp;&nbsp;4a. Sistem detektuje grešku u unosu.<br>&nbsp;&nbsp;5a. Sistem ne kreira zahtjev.<br>&nbsp;&nbsp;6a. Sistem prikazuje poruku o grešci.<br><br>**A3: Greška pri kreiranju zahtjeva**<br>&nbsp;&nbsp;5a. Dođe do greške pri kreiranju zahtjeva u sistemu.<br>&nbsp;&nbsp;6a. Sistem ne sprema zahtjev.<br>&nbsp;&nbsp;7a. Sistem obavještava korisnika da pokuša ponovo. |
+| **Ishod** | Novi zahtjev za servisnu intervenciju je kreiran.<br>Zahtjev je povezan sa korisnikom koji ga je podnio.<br>Zahtjevu je dodijeljen početni status.<br>Zahtjev je spreman za dalju obradu od strane dispečera. |
 
-### **Alternativni tokovi:**
+## Use Case 06 (US-06)
 
-**A1: Istek sesije (automatska odjava)**  
-1a. Korisnik je neaktivan tokom definisanog vremenskog perioda  
-2a. Sistem automatski završava korisničku sesiju  
-3a. Sistem preusmjerava korisnika na login stranicu  
-4a. Sistem prikazuje poruku da je sesija istekla  
+| Stavka | Sadržaj |
+|--------|---------|
+| **Aktor** | Korisnik usluge |
+| **Naziv use case-a** | Pregled vlastitog zahtjeva |
+| **Kratak opis** | Ovaj use case opisuje proces u kojem korisnik pregledava svoje prethodno prijavljene zahtjeve, uključujući osnovne informacije i trenutni status obrade. |
+| **Preduslovi** | Korisnik je registrovan u sistemu.<br>Korisnik je prijavljen u sistem.<br>Sistem je dostupan i funkcionalan. |
+| **Glavni tok** | 1. Korisnik otvara listu svojih zahtjeva.<br>2. Sistem prikazuje listu svih zahtjeva povezanih sa korisnikom.<br>3. Korisnik bira jedan zahtjev za pregled.<br>4. Sistem prikazuje detalje odabranog zahtjeva (opis, status, datum i druge relevantne informacije).<br>5. Korisnik pregledava prikazane informacije. |
+| **Alternativni tokovi** | **A1: Korisnik nema prijavljenih zahtjeva**<br>&nbsp;&nbsp;1a. Korisnik nema nijedan evidentiran zahtjev u sistemu.<br>&nbsp;&nbsp;2a. Sistem prikazuje poruku da nema dostupnih zahtjeva.<br><br>**A2: Greška pri učitavanju zahtjeva**<br>&nbsp;&nbsp;2a. Sistem ne može učitati listu zahtjeva ili detalje odabranog zahtjeva.<br>&nbsp;&nbsp;3a. Sistem prikazuje poruku o grešci.<br><br>**A3: Pokušaj pristupa tuđem zahtjevu**<br>&nbsp;&nbsp;3a. Korisnik pokuša otvoriti zahtjev koji nije povezan sa njegovim nalogom.<br>&nbsp;&nbsp;4a. Sistem blokira pristup.<br>&nbsp;&nbsp;5a. Sistem prikazuje poruku o zabrani pristupa. |
+| **Ishod** | Korisnik vidi listu svojih zahtjeva.<br>Korisnik može pregledati detalje pojedinačnog zahtjeva.<br>Prikazan je tačan status i relevantne informacije o zahtjevu. |
 
-### **Ishod:**
-- Korisnik je uspješno odjavljen iz sistema  
-- Sesija je zatvorena  
-- Onemogućen je dalji pristup bez ponovne prijave  
-    
----
+## Use Case 07 (US-07)
 
-## Use Case Model – US-04
-
-### **Aktor:**
-Administrator
-
-### **Naziv use case-a:**
-Kontrola pristupa prema korisničkoj ulozi
-
-### **Kratak opis:**
-Ovaj use case opisuje proces u kojem administrator upravlja pristupom funkcionalnostima sistema dodjeljivanjem odgovarajućih uloga korisnicima, čime se osigurava da svaki korisnik ima pristup samo relevantnim podacima i akcijama.
-
-### **Preduslovi:**
-- Administrator je prijavljen u sistem  
-- Postoje definisane korisničke uloge  
-- Korisnici su registrovani u sistemu  
-- Sistem je dostupan i funkcionalan  
-
-### **Glavni tok:**
-1. Administrator pristupa modulu za upravljanje korisnicima  
-2. Administrator bira korisnika iz liste  
-3. Administrator pregleda trenutnu korisničku ulogu  
-4. Administrator mijenja ili dodjeljuje novu ulogu korisniku  
-5. Sistem validira odabranu ulogu  
-6. Sistem ažurira prava pristupa korisnika  
-7. Sistem sprema promjene  
-8. Sistem prikazuje potvrdu o uspješnoj izmjeni  
-
-### **Alternativni tokovi:**
-
-**A1: Nevažeća uloga**  
-4a. Administrator odabere nepostojeću ili nevažeću ulogu  
-5a. Sistem detektuje grešku  
-6a. Sistem ne dozvoljava izmjenu  
-7a. Sistem prikazuje poruku o grešci  
-
-**A2: Nedozvoljen pristup**  
-1a. Korisnik koji nije administrator pokušava pristupiti modulu  
-2a. Sistem odbija pristup  
-3a. Sistem prikazuje poruku o nedozvoljenom pristupu  
-
-### **Ishod:**
-- Korisniku je dodijeljena odgovarajuća uloga  
-- Pristup funkcionalnostima sistema je ograničen prema ulozi  
-- Sistem osigurava sigurnost i kontrolu pristupa  
-
----
-
-## Use Case Model – US-05
-
-### **Aktor:**
-Korisnik usluge
-
-### **Naziv use case-a:**
-Prijava zahtjeva za servisnu intervenciju
-
-### **Kratak opis:**
-Ovaj use case opisuje proces u kojem korisnik usluge prijavljuje kvar ili zahtjev za servisnu intervenciju. Sistem evidentira unesene podatke, validira ih i kreira novi zahtjev koji postaje dostupan za dalju obradu.
-
-### **Preduslovi:**
-- Korisnik je registrovan u sistemu  
-- Korisnik je prijavljen u sistem  
-- Korisnik ima pristup formi za prijavu zahtjeva  
-- Sistem je dostupan i funkcionalan  
-
-### **Glavni tok:**
-1. Korisnik otvara formu za prijavu zahtjeva  
-2. Korisnik unosi podatke o kvaru (opis, lokacija, vrijeme itd.)  
-3. Korisnik potvrđuje slanje zahtjeva  
-4. Sistem validira unesene podatke  
-5. Sistem kreira novi zahtjev u bazi podataka  
-6. Sistem automatski dodjeljuje početni status zahtjevu  
-7. Sistem povezuje zahtjev sa korisnikom  
-8. Sistem prikazuje potvrdu o uspješnoj prijavi  
-
-### **Alternativni tokovi:**
-
-**A1: Nepotpuni podaci**  
-2a. Korisnik ne unese sve obavezne podatke  
-4a. Sistem detektuje nedostatak podataka  
-5a. Sistem ne kreira zahtjev  
-6a. Sistem prikazuje poruku o grešci i traži dopunu  
-
-**A2: Nevažeći podaci**  
-2a. Korisnik unese pogrešan format (npr. nevalidna lokacija)  
-4a. Sistem detektuje grešku  
-5a. Sistem odbija unos  
-6a. Sistem prikazuje poruku o grešci  
-
-**A3: Greška sistema**  
-5a. Dođe do greške pri kreiranju zahtjeva  
-6a. Sistem ne sprema zahtjev  
-7a. Sistem obavještava korisnika da pokuša ponovo  
-
-### **Ishod:**
-- Novi zahtjev za servisnu intervenciju je kreiran  
-- Zahtjev je povezan sa korisnikom  
-- Zahtjev ima početni status (npr. "Kreiran")  
-- Zahtjev je spreman za dalju obradu od strane dispečera  
-
----
-
-## Use Case Model – US-06
-
-### **Aktor:**
-Korisnik usluge
-
-### **Naziv use case-a:**
-Pregled vlastitog zahtjeva
-
-### **Kratak opis:**
-Ovaj use case opisuje proces u kojem korisnik pregledava svoje prethodno prijavljene zahtjeve, uključujući osnovne informacije i trenutni status obrade.
-
-### **Preduslovi:**
-- Korisnik je registrovan u sistemu  
-- Korisnik je prijavljen u sistem  
-- Korisnik ima kreiran barem jedan zahtjev  
-- Sistem je dostupan  
-
-### **Glavni tok:**
-1. Korisnik otvara listu svojih zahtjeva  
-2. Sistem prikazuje listu svih korisnikovih zahtjeva  
-3. Korisnik bira jedan zahtjev za pregled  
-4. Sistem prikazuje detalje zahtjeva (opis, status, datum, itd.)  
-5. Korisnik pregledava informacije  
-
-### **Alternativni tokovi:**
-
-**A1: Nema zahtjeva**  
-1a. Korisnik nema nijedan zahtjev  
-2a. Sistem prikazuje poruku da nema dostupnih zahtjeva  
-
-**A2: Greška pri učitavanju**  
-2a. Sistem ne može učitati zahtjeve  
-3a. Sistem prikazuje poruku o grešci  
-
-**A3: Neovlašten pristup**  
-3a. Korisnik pokuša pristupiti zahtjevu koji nije njegov  
-4a. Sistem blokira pristup  
-5a. Sistem prikazuje poruku o zabrani pristupa  
-
-### **Ishod:**
-- Korisnik vidi listu svojih zahtjeva  
-- Korisnik može pregledati detalje pojedinačnog zahtjeva  
-- Prikazan je tačan status i informacije o zahtjevu  
-
-## Use Case Model – US-07
-
-### **Aktor:**
-Dispečer
-
-### **Naziv use case-a:**
-Pregled otvorenih intervencija
-
-### **Kratak opis:**
-Ovaj use case opisuje proces u kojem dispečer pregledava sve otvorene i aktivne intervencije kako bi imao jasan uvid u zahtjeve koji čekaju obradu ili su trenutno u toku.
-
-### **Preduslovi:**
-- Dispečer je registrovan u sistemu  
-- Dispečer je prijavljen u sistem  
-- U sistemu postoje otvorene ili aktivne intervencije  
-- Sistem je dostupan  
-
-### **Glavni tok:**
-1. Dispečer otvara pregled intervencija (dashboard ili lista)  
-2. Sistem prikazuje listu svih otvorenih i aktivnih intervencija  
-3. Sistem prikazuje ključne informacije (status, prioritet, lokacija, dodijeljeni serviser itd.)  
-4. Dispečer pregledava listu i identifikuje relevantne intervencije  
-5. Dispečer može odabrati intervenciju za detaljniji pregled  
-
-### **Alternativni tokovi:**
-
-**A1: Nema otvorenih intervencija**  
-2a. Sistem ne pronalazi nijednu otvorenu intervenciju  
-3a. Sistem prikazuje poruku da nema aktivnih zahtjeva  
-
-**A2: Greška pri učitavanju**  
-2a. Sistem ne može učitati intervencije  
-3a. Sistem prikazuje poruku o grešci  
-
-**A3: Neovlašten pristup**  
-1a. Korisnik bez uloge dispečera pokuša pristupiti  
-2a. Sistem blokira pristup  
-3a. Sistem prikazuje poruku o zabrani pristupa  
-
-### **Ishod:**
-- Dispečer ima pregled svih aktivnih intervencija  
-- Intervencije su jasno prikazane sa ključnim informacijama  
-- Omogućen je dalji rad (dodjela, pregled detalja, promjene)  
+| Stavka | Sadržaj |
+|--------|---------|
+| **Aktor** | Dispečer |
+| **Naziv use case-a** | Pregled otvorenih intervencija |
+| **Kratak opis** | Ovaj use case opisuje proces u kojem dispečer pregledava sve otvorene i aktivne intervencije kako bi imao jasan uvid u zahtjeve koji čekaju obradu ili su trenutno u toku. |
+| **Preduslovi** | Dispečer je prijavljen u sistemu.<br>Sistem je dostupan i funkcionalan. |
+| **Glavni tok** | 1. Dispečer otvara pregled intervencija (dashboard ili lista).<br>2. Sistem prikazuje listu svih otvorenih i aktivnih intervencija.<br>3. Sistem prikazuje ključne informacije o svakoj intervenciji (status, prioritet, lokacija, dodijeljeni serviser i sl.).<br>4. Dispečer pregledava listu i identifikuje relevantne intervencije.<br>5. Dispečer može odabrati intervenciju za detaljniji pregled ili dalju obradu. |
+| **Alternativni tokovi** | **A1: Nema otvorenih intervencija**<br>&nbsp;&nbsp;2a. Sistem ne pronalazi nijednu otvorenu ili aktivnu intervenciju.<br>&nbsp;&nbsp;3a. Sistem prikazuje poruku da nema aktivnih intervencija.<br><br>**A2: Greška pri učitavanju intervencija**<br>&nbsp;&nbsp;2a. Sistem ne može učitati listu intervencija.<br>&nbsp;&nbsp;3a. Sistem prikazuje poruku o grešci.<br><br>**A3: Nedozvoljen pristup**<br>&nbsp;&nbsp;1a. Korisnik bez odgovarajuće uloge pokuša pristupiti pregledu intervencija.<br>&nbsp;&nbsp;2a. Sistem blokira pristup.<br>&nbsp;&nbsp;3a. Sistem prikazuje poruku o zabrani pristupa. |
+| **Ishod** | Dispečer ima pregled svih aktivnih intervencija.<br>Intervencije su prikazane sa ključnim informacijama.<br>Omogućen je dalji rad nad odabranim intervencijama. |
 
 ## Use Case Model – US-08
 
