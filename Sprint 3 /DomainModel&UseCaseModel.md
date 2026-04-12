@@ -104,10 +104,10 @@ Intervencija se smatra završenom tek nakon unosa atributa *ishod_rada* u entite
 Korisnik usluge
 
 ### **Naziv use case-a:**
-Samostalna registracija korisnika
+Samostalna registracija korisnika usluge
 
 ### **Kratak opis:**
-Ovaj use case opisuje proces u kojem korisnik usluge kreira novi korisnički nalog kako bi mogao pristupiti sistemu i koristiti njegove funkcionalnosti.
+Ovaj use case opisuje proces u kojem korisnik usluge samostalno kreira novi korisnički nalog kako bi kasnije mogao pristupiti sistemu i koristiti njegove funkcionalnosti.
 
 ### **Preduslovi:**
 - Korisnik ima pristup registracionoj formi  
@@ -115,7 +115,7 @@ Ovaj use case opisuje proces u kojem korisnik usluge kreira novi korisnički nal
 
 ### **Glavni tok:**
 1. Korisnik otvara formu za registraciju  
-2. Korisnik unosi potrebne podatke (ime, email, lozinka itd.)  
+2. Korisnik unosi potrebne podatke za registraciju (ime, email, lozinka itd.)  
 3. Korisnik potvrđuje registraciju  
 4. Sistem validira unesene podatke  
 5. Sistem kreira novi korisnički nalog  
@@ -125,21 +125,23 @@ Ovaj use case opisuje proces u kojem korisnik usluge kreira novi korisnički nal
 ### **Alternativni tokovi:**
 
 **A1: Neispravni ili nepotpuni podaci**  
-3a. Korisnik nije unio sve obavezne podatke ili su neispravni  
-4a. Sistem detektuje grešku  
-5a. Sistem ne kreira nalog  
-6a. Sistem prikazuje poruku o grešci  
+3a. Korisnik potvrdi registraciju sa nepotpunim ili neispravnim podacima
+4a. Sistem detektuje grešku u unosu 
+5a. Sistem ne kreira novi nalog  
+6a. Sistem prikazuje poruku o grešci i traži ispravku podataka
+
+**A2: Korisnik već postoji u sistemu**
+4b. Sistem utvrdi da korisnik sa istim jedinstvenim podacima već postoji
+5b. Sistem ne kreira novi nalog
+6b. Ssistem prikazuje poruku da korisnik već postoji
 
 ### **Ishod:**
-- Korisnički nalog je uspješno kreiran  
-- Korisnik može pristupiti sistemu  
+- Korisnički nalog je uspješno kreiran
+- Korisniku je dodijeljena odgovarajuća korisnička uloga
+- Korisnik se može prijaviti u sistem
 
-
-
-
-
-        
-
+---
+  
 ## Use Case Model – US-02
 
 ### **Aktor:**
@@ -149,7 +151,7 @@ Korisnik usluge
 Prijava korisnika u sistem
 
 ### **Kratak opis:**
-Ovaj use case opisuje proces u kojem registrovani korisnik unosi svoje kredencijale kako bi se prijavio u sistem i pristupio dostupnim funkcionalnostima.
+Ovaj use case opisuje proces u kojem registrovani korisnik unosi svoje kredencijale kako bi se prijavio u sistem i pristupio funkcionalnostima koje su mu dostupne.
 
 ### **Preduslovi:**
 - Korisnik ima kreiran korisnički nalog  
@@ -163,25 +165,32 @@ Ovaj use case opisuje proces u kojem registrovani korisnik unosi svoje kredencij
 4. Sistem validira unesene podatke  
 5. Sistem provjerava kredencijale korisnika  
 6. Sistem kreira korisničku sesiju  
-7. Sistem preusmjerava korisnika na početnu stranicu (dashboard)  
+7. Sistem preusmjerava korisnika na odgivarajuću početnu stranicu 
 
-### **Alternativni tokovi:**
+### Alternativni tokovi
 
 **A1: Neispravni kredencijali**  
-4a. Sistem utvrdi da email ili lozinka nisu tačni  
+3a. Korisnik potvrdi prijavu sa netačnim kredencijalima  
+4a. Sistem utvrđuje da kredencijali nisu ispravni  
 5a. Sistem ne dozvoljava prijavu  
 6a. Sistem prikazuje poruku o grešci  
 
-**A2: Prazna polja**  
-2a. Korisnik nije unio email ili lozinku  
+**A2: Nepotpuni podaci za prijavu**  
+2a. Korisnik ne unese email ili lozinku  
 3a. Sistem detektuje nedostatak podataka  
 4a. Sistem prikazuje poruku da su polja obavezna  
 
+**A3: Neaktivan korisnički nalog**  
+5a. Sistem utvrđuje da korisnički nalog nije aktivan  
+6a. Sistem ne dozvoljava prijavu  
+7a. Sistem prikazuje odgovarajuću poruku
+
 ### **Ishod:**
 - Korisnik je uspješno prijavljen u sistem  
-- Kreirana je aktivna sesija  
-- Korisnik ima pristup funkcionalnostima prema svojoj ulozi  
+- Kreirana je aktivna korisnička sesija  
+- Korisnik ima pristup funkcionalnostima u skladu sa svojom ulogom  
 
+---
 
 ## Use Case Model – US-03
 
@@ -192,7 +201,7 @@ Korisnik sistema
 Odjava korisnika iz sistema
 
 ### **Kratak opis:**
-Ovaj use case opisuje proces u kojem prijavljeni korisnik završava svoju sesiju u sistemu kako bi spriječio neovlašten pristup svom korisničkom nalogu.
+Ovaj use case opisuje proces u kojem prijavljeni korisnik završava svoju sesiju u sistemu kako bi spriječio neovlašten pristup svom korisničkom nalogu nakon završetka rada.
 
 ### **Preduslovi:**
 - Korisnik je prijavljen u sistem  
@@ -210,8 +219,8 @@ Ovaj use case opisuje proces u kojem prijavljeni korisnik završava svoju sesiju
 ### **Alternativni tokovi:**
 
 **A1: Istek sesije (automatska odjava)**  
-1a. Korisnik je neaktivan određeni vremenski period  
-2a. Sistem automatski prekida sesiju  
+1a. Korisnik je neaktivan tokom definisanog vremenskog perioda  
+2a. Sistem automatski završava korisničku sesiju  
 3a. Sistem preusmjerava korisnika na login stranicu  
 4a. Sistem prikazuje poruku da je sesija istekla  
 
@@ -220,8 +229,7 @@ Ovaj use case opisuje proces u kojem prijavljeni korisnik završava svoju sesiju
 - Sesija je zatvorena  
 - Onemogućen je dalji pristup bez ponovne prijave  
     
-
-
+---
 
 ## Use Case Model – US-04
 
@@ -268,8 +276,7 @@ Ovaj use case opisuje proces u kojem administrator upravlja pristupom funkcional
 - Pristup funkcionalnostima sistema je ograničen prema ulozi  
 - Sistem osigurava sigurnost i kontrolu pristupa  
 
-
-
+---
 
 ## Use Case Model – US-05
 
@@ -323,8 +330,7 @@ Ovaj use case opisuje proces u kojem korisnik usluge prijavljuje kvar ili zahtje
 - Zahtjev ima početni status (npr. "Kreiran")  
 - Zahtjev je spreman za dalju obradu od strane dispečera  
 
-
-
+---
 
 ## Use Case Model – US-06
 
