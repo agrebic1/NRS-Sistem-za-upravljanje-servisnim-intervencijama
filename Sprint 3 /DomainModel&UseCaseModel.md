@@ -370,9 +370,6 @@ Ovaj use case opisuje proces u kojem korisnik pregledava svoje prethodno prijavl
 - Korisnik može pregledati detalje pojedinačnog zahtjeva  
 - Prikazan je tačan status i informacije o zahtjevu  
 
-
-
-
 ## Use Case Model – US-07
 
 ### **Aktor:**
@@ -417,9 +414,6 @@ Ovaj use case opisuje proces u kojem dispečer pregledava sve otvorene i aktivne
 - Intervencije su jasno prikazane sa ključnim informacijama  
 - Omogućen je dalji rad (dodjela, pregled detalja, promjene)  
 
-
-
-
 ## Use Case Model – US-08
 
 ### **Aktor:**
@@ -463,9 +457,6 @@ Ovaj use case opisuje proces u kojem dispečer pregledava detaljne informacije o
 - Dispečer ima detaljan uvid u intervenciju  
 - Prikazani su svi relevantni podaci  
 - Omogućeno donošenje odluka (dodjela, promjena prioriteta itd.)  
-
-
-
 
 ## Use Case Model – US-09
 
@@ -517,9 +508,6 @@ Ovaj use case opisuje proces u kojem dispečer dodjeljuje intervenciju odgovorno
 - Status intervencije je ažuriran  
 - Promjena je evidentirana u sistemu  
 
-
-
-
 ## Use Case Model – US-10
 
 ### **Aktor:**
@@ -569,9 +557,6 @@ Ovaj use case opisuje proces u kojem dispečer dodjeljuje intervenciju timu serv
 - Svi članovi tima su obaviješteni  
 - Status intervencije je ažuriran  
 - Promjena je evidentirana u sistemu  
-
-
-
 
 ## Use Case Model – US-11
 
@@ -718,7 +703,6 @@ Ovaj use case opisuje proces u kojem dispečer pregledava statuse intervencija k
 - Lakše se uočavaju zastoji i problemi  
 - Omogućena je bolja kontrola rada  
 
-
 ## Use Case Model – US-14
 
 ### **Aktor:**
@@ -859,7 +843,7 @@ Ovaj use case opisuje proces u kojem serviser pregledava detalje zadatka na tere
 - Poboljšana je priprema prije intervencije  
 - Omogućeno efikasnije izvršenje zadatka
 
-  ## Use Case Model – US-17
+## Use Case Model – US-17
 
 ### **Aktor:**
 Serviser
@@ -910,7 +894,7 @@ Ovaj use case opisuje proces u kojem serviser evidentira izvršeni rad kako bi s
 - Omogućena je transparentnost procesa  
 - Omogućen je pregled izvršenja rada
 
-  ## Use Case Model – US-18
+## Use Case Model – US-18
 
 ### **Aktor:**
 Administrator
@@ -962,7 +946,7 @@ Ovaj use case opisuje proces u kojem administrator kreira korisnički nalog za i
 - Omogućen je pristup sistemu  
 - Jasno su definisane odgovornosti korisnika
 
-  ## Use Case Model – US-19
+## Use Case Model – US-19
 
 ### **Aktor:**
 Administrator
@@ -1057,7 +1041,7 @@ Ovaj use case opisuje proces u kojem administrator mijenja korisničku ulogu kak
 - Osigurana je sigurnost sistema  
 - Omogućena je bolja organizacija rada
 
-  ## Use Case Model – US-21
+## Use Case Model – US-21
 
 ### **Aktor:**
 Administrator
