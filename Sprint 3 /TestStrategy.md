@@ -425,4 +425,15 @@ Tabela rizika:
 
 | ID | Rizik kvaliteta-| Opis rizika | Moguće posljedice | Način kontrole kroz testiranje |
 |----|-----------------|-------------|-------------------|--------------------------------|
-| QR-01 | Pogrešna prava pristupa | Korisnik vidi podatke koje ne bi smio vidjeti ili ima funkcionalnosti koje ne bi smio imati | Sigurnosni i funkcionalni problem | Testiranje po ulogama | 
+| QR-01 | Pogrešna prava pristupa | Korisnik vidi podatke koje ne bi smio vidjeti ili ima funkcionalnosti koje ne bi smio imati | Sigurnosni i funkcionalni problem | Testiranje po ulogama |
+| QR-02 | Nekonzistentan prikaz podataka | Različiti korisnici vide različite ili netačne podatke | Nepouzdani podaci i pogrešne odluke | Integraciono i sistemsko testiranje prikaza | 
+| QR-03 | Neispravan tok statusa intervencije | Status intervencije ne prati stvarni tok rada | Pogrešmo praćenje procesa i zabuna u radu | Testiranje scenarija i promjene statusa | 
+| QR-04 | Greške pri dodjeli zadataka | Dodjela serviseru ili timu ne radi ispravno | Kašnjenje u izvršenju zadataka | Testiranje dodjele i preraspodjele |
+| QR-05 | Neispravna validacija unosa | Sistem prihvata neispravne ili nepotpune podatke | Greške u sistemu i loš kvalitet podataka | Unit i UI testiranje validacije |
+| QR-06 | Problemi sa autentifikacijom | Korisnik se ne može prijaviti ili pristup nije pravilno ograničen | Nemoguć pristup sistemu ili sigurnosni rizik | Testiranje prijave i sesija | 
+| QR-07 | Gubitak ili neispravno spremanje podataka | Podaci se ne spremaju ili se gube | Gubitak informacija i nepouzdan sistem | Testiranje spremanja i baze podataka |
+| QR-08 | Loš prikaz u korisničkom interfejsu | Podaci nisu pravilno prikazani u UI | Loše korisničko iskustvo | UI i sistemsko testiranje | 
+| QR-09 | Neispravno planiranje termina | Sistem dozvoljava nevalidne termine | Konflikti i neorganizovan rad | Testiranje validacije datuma i vremena | 
+| QR-10 | Neispravno evidentiranje rada | Podaci o radu nisu tačno evidentirani | Netačni izvještaji i analiza rada | Testiranje unosa i prikaza evidencije | 
+| QR-11 | Problemi sa performansama | Sistem spor pri radu sa većim brojem podataka | Loše korisničko iskustvo | Testiranje performansi |
+| QR-12 | Neispravna notifikacija | Korisnici ne dobijaju obavijesti | Kašnjenje u radu i komunikaciji | Testiranje notifikacija | 
