@@ -289,6 +289,38 @@ Pojedini acceptance kriteriji mogu se provjeravati na više nivoa testiranja, u 
 | ID storyja | Acceptance kriterij | Nivo testiranja | Način provjere | Očekivani rezultat |
 |------------|---------------------|-----------------|----------------|--------------------|
 | **US-01** | Korisnik unese validne podatke i registracija bude uspješna | Unit, integraciono, sistemsko, UI | test validacije, provjera kreiranja naloga i prikaza forme | korisnički nalog je uspješno kreiran |
+| **US-01** | Registracija sa neispravnim podacima | Unit, UI | test validacije unosa | sistem prikazuje grešku |
+| **US-02** | Uspješna prijava korisnika | Integraciono, sistemsko, UI | test autentifikacije | korisnik dobija pristup sistemu |
+| **US-03** | Odjava korisnika | Sistemsko, UI | test sesije i pristupa | sesija je prekinuta |
+| **US-04** | Ograničen pristup prema ulozi | Sistemsko, sigurnosno | test autorizacije | korisnik vidi samo dozvoljene funkcije |
+| **US-05** | Uspješna prijava zahtjeva | Integraciono, sistemsko | test unosa i spremanje zahtjeva | zahtjev je evidentiran |
+| **US-06** | Pregled vlastitih zahtjeva | Sistemsko, UI | test prikaza podataka | korisnik vidi svoje zahtjeve |
+| **US-07** | Pregled otvorenih intervencija | Sistemsko | test liste intervencija | prikazuju aktivne intervencije |
+| **US-08** | Pregled detalja intervencije | Sistemsko, UI | test prikaza detalja | prikazani svi relevantni podaci |
+| **US-09** | Dodjela intervencije serviseru | Integraciono, sistemsko | test dodjele zadatka | intervencija dodijeljena serviseru | 
+| **US-10** | Dodjela intervencije timu | Integraciono, sistemsko | test timske dodjele | tim uspješno dodijeljen |
+| **US-11** | Planiranje intervencije | Integraciono, sistemsko | test unosa termina | termin uspješno postavljen |
+| **US-12** | Postavljanje prioriteta | Integraciono | test prioriteta | prioritet spremljen i vidljiv |
+| **US-13** | Pregled statusa intervencije | Sistemsko, UI | test prikazna statusa i osvježavanje liste | prikazani tačni i ažurirani statusi intervencija |
+| **US-14** | Ažuriranje statusa intervencije | Integraciono, UI | test promjene statusa | status ažuriran |
+| **US-15** | Pregled dodijeljenih intervencija w Sistemsko, UI | test prikaza liste | serviser vidi svoje dodijeljene intervencije |
+| **US-16** | Pregled detalja zadatka na terenu | Sistemsko, UI | test prikaza detalja | prikazani opis, lokacija i prioritet |
+| **US-17** | Evidentiranje izvršenog rada | Integraciono, sistemsko | test unosa evidencije | podaci o radu spremljeni |
+| **US-18** | Kreiranje internog korisnika | Sistemsko test admin funkcije | korisnik kreiran |
+| **US-19** | Pregled liste korisnika | Sistemsko, UI | test prikaza korisnika | prikazana lista svih korisnika |
+| **US-20** | Promjena korisničke uloge | Sistemsko, sigurnosno | test izmjene uloge i prava pristupa | korisniku dodijeljena nova uloga |
+| **US-21** | Deaktivacija korisnika | Sistemsko, sigurnosno | test statusa naloga | pristup korisniku onemogućen |
+| **US-22** | Prihvatanje zadatka | Integraciono | test promjene statusa | zadatak prihvaćen |
+| **US-23** |  Odbijanje zadatka | Integraciono | test odbijanja | zadatak vraćen dispečeru |
+| **US-24** | Pregled izvršenog rada | Sistemsko | test pregleda | dispečer vidi izvještaj |
+| **US-25** | Zatvaranje intervencija | Sistemsko | test zatvaranja | status "zatvoreno" |
+| **US-26** | Izmjena zahtjeva | Sistemsko, UI | test izmjene | podaci ažurirani |
+| **US-27** | Otkazivanje zahtjeva | Sistemsko | test otkazivanja | status "otkazano" |
+| **US-28** | Promjena izvršioca | Integraciono | test preraspodjele | novi izvršilac dodijeljen |
+| **US-29** | Vraćanje zadatka | Integraciono | test vraćanja | zadatak vraćen u obradu |
+| **US-30** | DOdavanje napomena | Sistemsko | test unosa napomena | napomena vidljiva |
+| **US-31** | Pregled operativnog statusa | Sistemsko | test dashboarda | prikaz statistike | 
+| **US-32** | Historija aktivnosti | Sistemsko | test audit loga | prikazana historija promjene |
 
 ## Način evidentiranja rezultata testiranja
 
