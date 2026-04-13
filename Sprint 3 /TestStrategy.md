@@ -389,13 +389,27 @@ Za potrebe ovog projekta rezultati testiranja i uočene greške mogu se evidenti
 
 | ID testa | Funkcionalnost / modul | Opis testa | Sprint / faza | Datum testiranja | Izvršilac testiranja | Očekivani rezultat | Stvarni rezultat | Status testa | Napomena |
 |----------|------------------------|------------|---------------|------------------|----------------------|--------------------|------------------|--------------|----------|
-| TC-01 | Registracija korisnika | Provjera uspješne registracije sa validnim podacima | Sprint 6 |  |  | Korisnički nalog je uspješno kreiran |  |  |  |
+| TC-01 | Registracija korisnika | Provjera uspješne registracije sa validnim podacima | Sprint 6 |  | QA tim | Korisnički nalog je uspješno kreiran |  |  |  |
+| TC-02 | Registracija korisnika | Registracija neispravnim podacima | Sprint 6 | | QA tim | Sistem prikazuje grešku | | | | 
+| TC-03 | Prijava korisnika | Prijava sa tačnim podacima | Sprint 6 | | QA tim | Korisnik dobija pristup sistemu | | | | 
+| TC-04 | Prijava korisnika | Prijava korisnika sa pogrešnim podacima | Sprint 6 | | QA tim | Sistem prikazuje grešku | | | | 
+| TC-05 | Dodjela intervencije | Dodjela zadatka serviseru | Sprint 6 | | QA tim | Intervencija dodijeljena serviseru | | | |
+| TC-06 | Planiranje intervencije | Unos termina intervencije | Sprint 6 | | QA tim | Termin uspješno spremljen | | | |
+| TC-07 | Prioritet intervencije | Postavljanje prioriteta | Sprint 6 | | QA tim | Prioritet vidljiv | | | |
+| TC-08 | Ažuriranje statusa | Promjena statusa intervencije | Sprint 6 | | QA tim | Status ažuriran | | | |
+| TC-09 | Evidentiranje rada | Unos izvršenog rada | Sprint 6 | | QA tim | Podaci spremljeni | | | | 
+| TC-10 | Pregled intervencija | Pregled liste intervencija | Sprint 6 | | QA tim | Lista ispravno prikazana | | | | 
+| TC-11 | Uloge korisnika | Provjera pristupa prema ulozi | Sprint 6 | | QA tim | Korisnik vidi samo dozvoljene funkcije | | | |
+| TC-12 | Planiranje intervencije | Unos termina u prošlosti | Sprint 6 | | QA tim | Sistem ne dozvoljava unos | | | | 
+| TC-13 | Dodjela intervencije | Dodjela bez odabira servisera | Sprint 6 | | QA tim | Sistem prikazuje grešku | | | |
+| TC-14 | Pregled zahtjeva | Prikaz prazne liste | Sprint 6 | | QA tim | Prikazana prazna lista | | | | 
+| TC-15 | Dodavanje napomena | Unos napomene na intervenciju | Sprint 6 | | QA tim | Napomena se sprema i prikazuje | | | | 
 
 ### Tabelarni pregled uočenih grešaka
 
 | ID greške | Povezani ID testa | Funkcionalnost / modul | Opis greške | Prioritet greške | Status greške | Sprint / faza | Napomena |
 |---|---|---|---|---|---|---|---|
-| B-01 | TC-01 | | | | | | |
+| B-01 | TC-08 | | | | | | |
 
 Na ovaj način tim dobija jasan i povezan pregled nad provedenim testovima, njihovim rezultatima, uočenim greškama i statusom njihovog rješavanja. Takav pristup omogućava efikasnije upravljanje kvalitetom sistema i pruža bolju osnovu za završno testiranje, dorade i pripremu sistema za demonstraciju i predaju.
 
