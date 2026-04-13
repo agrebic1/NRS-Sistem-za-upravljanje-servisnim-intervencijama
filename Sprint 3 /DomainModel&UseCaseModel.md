@@ -232,49 +232,17 @@ U sljedećoj tabeli su prikazani svi entiteti i svi atributi koji im pripadaju:
 | **Alternativni tokovi** | **A1: Nema otvorenih intervencija**<br>&nbsp;&nbsp;2a. Sistem ne pronalazi nijednu otvorenu ili aktivnu intervenciju.<br>&nbsp;&nbsp;3a. Sistem prikazuje poruku da nema aktivnih intervencija.<br><br>**A2: Greška pri učitavanju intervencija**<br>&nbsp;&nbsp;2a. Sistem ne može učitati listu intervencija.<br>&nbsp;&nbsp;3a. Sistem prikazuje poruku o grešci.<br><br>**A3: Nedozvoljen pristup**<br>&nbsp;&nbsp;1a. Korisnik bez odgovarajuće uloge pokuša pristupiti pregledu intervencija.<br>&nbsp;&nbsp;2a. Sistem blokira pristup.<br>&nbsp;&nbsp;3a. Sistem prikazuje poruku o zabrani pristupa. |
 | **Ishod** | Dispečer ima pregled svih aktivnih intervencija.<br>Intervencije su prikazane sa ključnim informacijama.<br>Omogućen je dalji rad nad odabranim intervencijama. |
 
-## Use Case Model – US-08
+## Use Case 08 (US-08)
 
-### **Aktor:**
-Dispečer
-
-### **Naziv use case-a:**
-Pregled detalja pojedinačne intervencije
-
-### **Kratak opis:**
-Ovaj use case opisuje proces u kojem dispečer pregledava detaljne informacije o jednoj intervenciji kako bi imao potpuni uvid u njen status, tok i zaduženja.
-
-### **Preduslovi:**
-- Dispečer je prijavljen u sistem  
-- Postoji barem jedna intervencija u sistemu  
-- Dispečer ima pristup listi intervencija  
-- Sistem je dostupan  
-
-### **Glavni tok:**
-1. Dispečer otvara listu intervencija  
-2. Dispečer odabire jednu intervenciju  
-3. Sistem prikazuje detalje intervencije  
-4. Sistem prikazuje informacije (opis, status, prioritet, lokacija, dodijeljeni serviser, historija aktivnosti itd.)  
-5. Dispečer pregledava podatke  
-
-### **Alternativni tokovi:**
-
-**A1: Intervencija ne postoji**  
-2a. Odabrana intervencija više ne postoji  
-3a. Sistem prikazuje poruku o grešci  
-
-**A2: Greška pri učitavanju detalja**  
-3a. Sistem ne može učitati detalje  
-4a. Sistem prikazuje poruku o grešci  
-
-**A3: Neovlašten pristup**  
-2a. Korisnik bez prava pristupa pokuša otvoriti intervenciju  
-3a. Sistem blokira pristup  
-4a. Sistem prikazuje poruku o zabrani  
-
-### **Ishod:**
-- Dispečer ima detaljan uvid u intervenciju  
-- Prikazani su svi relevantni podaci  
-- Omogućeno donošenje odluka (dodjela, promjena prioriteta itd.)  
+| Stavka | Sadržaj |
+|--------|--------|
+| **Aktor** | Dispečer |
+| **Naziv use case-a** | Pregled detalja pojedinačne intervencije |
+| **Kratak opis** | Ovaj use case opisuje proces u kojem dispečer pregledava detaljne informacije o jednoj intervenciji kako bi imao potpuni uvid u njen status, tok i zaduženja. |
+| **Preduslovi** | Dispečer je prijavljen u sistem.<br>Postoji barem jedna intervencija u sistemu.<br>Dispečer ima pristup listi intervencija.<br>Sistem je dostupan. |
+| **Glavni tok** | 1. Dispečer otvara listu intervencija.<br>2. Dispečer odabire jednu intervenciju.<br>3. Sistem prikazuje detalje intervencije.<br>4. Sistem prikazuje informacije (opis, status, prioritet, lokacija, dodijeljeni serviser, historija aktivnosti itd.).<br>5. Dispečer pregledava podatke. |
+| **Alternativni tokovi** | **A1: Intervencija ne postoji**<br>2a. Odabrana intervencija više ne postoji.<br>3a. Sistem prikazuje poruku o grešci.<br><br>**A2: Greška pri učitavanju detalja**<br>3a. Sistem ne može učitati detalje.<br>4a. Sistem prikazuje poruku o grešci.<br><br>**A3: Neovlašten pristup**<br>2a. Korisnik bez prava pristupa pokuša otvoriti intervenciju.<br>3a. Sistem blokira pristup.<br>4a. Sistem prikazuje poruku o zabrani. |
+| **Ishod** | Dispečer ima detaljan uvid u intervenciju.<br>Prikazani su svi relevantni podaci.<br>Omogućeno donošenje odluka (dodjela, promjena prioriteta itd.). |
 
 ## Use Case Model – US-09
 
