@@ -244,105 +244,29 @@ U sljedećoj tabeli su prikazani svi entiteti i svi atributi koji im pripadaju:
 | **Alternativni tokovi** | **A1: Intervencija ne postoji**<br>2a. Odabrana intervencija više ne postoji.<br>3a. Sistem prikazuje poruku o grešci.<br><br>**A2: Greška pri učitavanju detalja**<br>3a. Sistem ne može učitati detalje.<br>4a. Sistem prikazuje poruku o grešci.<br><br>**A3: Neovlašten pristup**<br>2a. Korisnik bez prava pristupa pokuša otvoriti intervenciju.<br>3a. Sistem blokira pristup.<br>4a. Sistem prikazuje poruku o zabrani. |
 | **Ishod** | Dispečer ima detaljan uvid u intervenciju.<br>Prikazani su svi relevantni podaci.<br>Omogućeno donošenje odluka (dodjela, promjena prioriteta itd.). |
 
-## Use Case Model – US-09
+## Use Case 09 (US-09)
 
-### **Aktor:**
-Dispečer
+| Stavka | Sadržaj |
+|--------|--------|
+| **Aktor** | Dispečer |
+| **Naziv use case-a** | Dodjela intervencije odgovornom serviseru |
+| **Kratak opis** | Ovaj use case opisuje proces u kojem dispečer dodjeljuje intervenciju odgovornom serviseru kako bi bilo jasno ko preuzima izvršenje zadatka. |
+| **Preduslovi** | Dispečer je prijavljen u sistem.<br>Postoji kreirana intervencija.<br>Postoji barem jedan serviser u sistemu.<br>Intervencija još nije dodijeljena ili se može promijeniti izvršilac.<br>Sistem je dostupan. |
+| **Glavni tok** | 1. Dispečer otvara detalje intervencije.<br>2. Dispečer bira opciju za dodjelu servisera.<br>3. Sistem prikazuje listu dostupnih servisera.<br>4. Dispečer odabire servisera.<br>5. Dispečer potvrđuje dodjelu.<br>6. Sistem dodjeljuje intervenciju izabranom serviseru.<br>7. Sistem ažurira status intervencije (npr. "Dodijeljeno").<br>8. Sistem bilježi promjenu u historiji aktivnosti.<br>9. Sistem obavještava servisera o dodjeli. |
+| **Alternativni tokovi** | **A1: Nema dostupnih servisera**<br>3a. Sistem ne pronalazi dostupne servisere.<br>4a. Sistem prikazuje poruku da nema dostupnih izvršilaca.<br><br>**A2: Greška pri dodjeli**<br>6a. Sistem ne uspije dodijeliti intervenciju.<br>7a. Sistem prikazuje poruku o grešci.<br><br>**A3: Promjena dodjele**<br>4a. Intervencija je već dodijeljena.<br>5a. Dispečer bira drugog servisera.<br>6a. Sistem ažurira dodjelu novim serviserom. |
+| **Ishod** | Intervencija je dodijeljena odgovornom serviseru.<br>Serviser je obaviješten o zadatku.<br>Status intervencije je ažuriran.<br>Promjena je evidentirana u sistemu. |
 
-### **Naziv use case-a:**
-Dodjela intervencije odgovornom serviseru
+## Use Case 10 (US-10)
 
-### **Kratak opis:**
-Ovaj use case opisuje proces u kojem dispečer dodjeljuje intervenciju odgovornom serviseru kako bi bilo jasno ko preuzima izvršenje zadatka.
-
-### **Preduslovi:**
-- Dispečer je prijavljen u sistem  
-- Postoji kreirana intervencija  
-- Postoji barem jedan serviser u sistemu  
-- Intervencija još nije dodijeljena ili se može promijeniti izvršilac  
-- Sistem je dostupan  
-
-### **Glavni tok:**
-1. Dispečer otvara detalje intervencije  
-2. Dispečer bira opciju za dodjelu servisera  
-3. Sistem prikazuje listu dostupnih servisera  
-4. Dispečer odabire servisera  
-5. Dispečer potvrđuje dodjelu  
-6. Sistem dodjeljuje intervenciju izabranom serviseru  
-7. Sistem ažurira status intervencije (npr. "Dodijeljeno")  
-8. Sistem bilježi promjenu u historiji aktivnosti  
-9. Sistem obavještava servisera o dodjeli  
-
-### **Alternativni tokovi:**
-
-**A1: Nema dostupnih servisera**  
-3a. Sistem ne pronalazi dostupne servisere  
-4a. Sistem prikazuje poruku da nema dostupnih izvršilaca  
-
-**A2: Greška pri dodjeli**  
-6a. Sistem ne uspije dodijeliti intervenciju  
-7a. Sistem prikazuje poruku o grešci  
-
-**A3: Promjena dodjele**  
-4a. Intervencija je već dodijeljena  
-5a. Dispečer bira drugog servisera  
-6a. Sistem ažurira dodjelu novim serviserom  
-
-### **Ishod:**
-- Intervencija je dodijeljena odgovornom serviseru  
-- Serviser je obaviješten o zadatku  
-- Status intervencije je ažuriran  
-- Promjena je evidentirana u sistemu  
-
-## Use Case Model – US-10
-
-### **Aktor:**
-Dispečer
-
-### **Naziv use case-a:**
-Dodjela intervencije timu servisera
-
-### **Kratak opis:**
-Ovaj use case opisuje proces u kojem dispečer dodjeljuje intervenciju timu servisera kako bi se složeniji zadaci mogli izvršavati timski i efikasnije.
-
-### **Preduslovi:**
-- Dispečer je prijavljen u sistem  
-- Postoji kreirana intervencija  
-- Postoji definisan tim servisera u sistemu  
-- Intervencija nije dodijeljena ili se dodjela može promijeniti  
-- Sistem je dostupan  
-
-### **Glavni tok:**
-1. Dispečer otvara detalje intervencije  
-2. Dispečer bira opciju za dodjelu timu  
-3. Sistem prikazuje listu dostupnih timova  
-4. Dispečer odabire tim servisera  
-5. Dispečer potvrđuje dodjelu  
-6. Sistem dodjeljuje intervenciju odabranom timu  
-7. Sistem ažurira status intervencije  
-8. Sistem bilježi promjenu u historiji aktivnosti  
-9. Sistem obavještava članove tima  
-
-### **Alternativni tokovi:**
-
-**A1: Nema dostupnih timova**  
-3a. Sistem ne pronalazi nijedan tim  
-4a. Sistem prikazuje poruku da nema dostupnih timova  
-
-**A2: Greška pri dodjeli**  
-6a. Sistem ne uspije dodijeliti intervenciju  
-7a. Sistem prikazuje poruku o grešci  
-
-**A3: Promjena dodjele**  
-4a. Intervencija je već dodijeljena  
-5a. Dispečer bira drugi tim  
-6a. Sistem ažurira dodjelu  
-
-### **Ishod:**
-- Intervencija je dodijeljena timu servisera  
-- Svi članovi tima su obaviješteni  
-- Status intervencije je ažuriran  
-- Promjena je evidentirana u sistemu  
+| Stavka | Sadržaj |
+|--------|--------|
+| **Aktor** | Dispečer |
+| **Naziv use case-a** | Dodjela intervencije timu servisera |
+| **Kratak opis** | Ovaj use case opisuje proces u kojem dispečer dodjeljuje intervenciju timu servisera kako bi se složeniji zadaci mogli izvršavati timski i efikasnije. |
+| **Preduslovi** | Dispečer je prijavljen u sistem.<br>Postoji kreirana intervencija.<br>Postoji definisan tim servisera u sistemu.<br>Intervencija nije dodijeljena ili se dodjela može promijeniti.<br>Sistem je dostupan. |
+| **Glavni tok** | 1. Dispečer otvara detalje intervencije.<br>2. Dispečer bira opciju za dodjelu timu.<br>3. Sistem prikazuje listu dostupnih timova.<br>4. Dispečer odabire tim servisera.<br>5. Dispečer potvrđuje dodjelu.<br>6. Sistem dodjeljuje intervenciju odabranom timu.<br>7. Sistem ažurira status intervencije.<br>8. Sistem bilježi promjenu u historiji aktivnosti.<br>9. Sistem obavještava članove tima. |
+| **Alternativni tokovi** | **A1: Nema dostupnih timova**<br>3a. Sistem ne pronalazi nijedan tim.<br>4a. Sistem prikazuje poruku da nema dostupnih timova.<br><br>**A2: Greška pri dodjeli**<br>6a. Sistem ne uspije dodijeliti intervenciju.<br>7a. Sistem prikazuje poruku o grešci.<br><br>**A3: Promjena dodjele**<br>4a. Intervencija je već dodijeljena.<br>5a. Dispečer bira drugi tim.<br>6a. Sistem ažurira dodjelu. |
+| **Ishod** | Intervencija je dodijeljena timu servisera.<br>Svi članovi tima su obaviješteni.<br>Status intervencije je ažuriran.<br>Promjena je evidentirana u sistemu. |
 
 ## Use Case Model – US-11
 
