@@ -3,15 +3,15 @@
 Kroz ovaj dokument opisan je i obrazložen izbor slojevite arhitekture.
 
 Odabir slojevite arhitekture direktno je utemeljen na zahtjevima sistema:
-1. Izolacija poslovne logike.  
+1. Izolacija poslovne logike   
    Funkcionalnosti kao što su prioritizacija intervencija, planiranje izlazaka na teren i preraspodjela servisera predstavljaju složenu poslovnu logiku koja mora biti testabilna neovisno o korisničkom interfejsu.
-2. Centralizovana primjena sigurnosnog modela.  
+2. Centralizovana primjena sigurnosnog modela  
    RBAC model zahtijeva dosljedno i jednoznačno provođenje provjere pristupa. U slojevitoj arhitekturi, ta provjera je locirana u aplikacijskom sloju i primjenjuje se konzistentno za sve zahtjeve, bez dupliciranja sigurnosne logike po prezentacijskim komponentama.
-3. Neovisnost o izvoru podataka.  
-   Pristup podacima isključivo se odvija kroz repozitorij sloj, a nikad direktno iz prezentacijskih komponenti. Ova odluka osigurava da zamjena ili proširenje infrastrukture, na primjer, prelazak na drugi mehanizam pohrane, zahtijeva izmjene samo u infrastrukturnom sloju, dok ostatak sistema ostaje nepromijenjen.
-4. Paralelni razvoj unutar tima.   
+3. Neovisnost o izvoru podataka   
+   Pristup podacima isključivo se odvija kroz repozitorij sloj, a nikad direktno iz prezentacijskih komponenti. Ova odluka osigurava da zamjena ili proširenje infrastrukture, na primjer prelazak na drugi mehanizam pohrane, zahtijeva izmjene samo u infrastrukturnom sloju, dok ostatak sistema ostaje nepromijenjen.
+4. Paralelni razvoj unutar tima     
    Budući da svaki sloj ima jasno definisane granice i interfejse, članovi tima mogu raditi paralelno na različitim slojevima bez međusobnog blokiranja.
-5. Podrška skalabilnosti.  
+5. Podrška skalabilnosti    
     Slojevita arhitektura omogućava dodavanje novih modula ili integracija u kasnijim fazama razvoja bez strukturnih izmjena postojećeg koda.
 
 U nastavku dokumenta ovaj segment je detaljno razrađen.
