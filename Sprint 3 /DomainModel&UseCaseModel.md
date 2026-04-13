@@ -268,681 +268,287 @@ U sljedećoj tabeli su prikazani svi entiteti i svi atributi koji im pripadaju:
 | **Alternativni tokovi** | **A1: Nema dostupnih timova**<br>3a. Sistem ne pronalazi nijedan tim.<br>4a. Sistem prikazuje poruku da nema dostupnih timova.<br><br>**A2: Greška pri dodjeli**<br>6a. Sistem ne uspije dodijeliti intervenciju.<br>7a. Sistem prikazuje poruku o grešci.<br><br>**A3: Promjena dodjele**<br>4a. Intervencija je već dodijeljena.<br>5a. Dispečer bira drugi tim.<br>6a. Sistem ažurira dodjelu. |
 | **Ishod** | Intervencija je dodijeljena timu servisera.<br>Svi članovi tima su obaviješteni.<br>Status intervencije je ažuriran.<br>Promjena je evidentirana u sistemu. |
 
-## Use Case Model – US-11
-
-### **Aktor:**
-Dispečer
-
-### **Naziv use case-a:**
-Planiranje intervencije
-
-### **Kratak opis:**
-Ovaj use case opisuje proces u kojem dispečer planira intervenciju unaprijed definisanjem termina, resursa i organizacije izvršenja zadatka.
-
-### **Preduslovi:**
-- Dispečer je prijavljen u sistem  
-- Postoji kreirana intervencija  
-- Intervencija ima osnovne podatke (lokacija, opis itd.)  
-- Dostupni su serviseri ili timovi  
-- Sistem je dostupan  
-
-### **Glavni tok:**
-1. Dispečer otvara detalje intervencije  
-2. Dispečer bira opciju planiranja  
-3. Sistem prikazuje dostupne termine i resurse  
-4. Dispečer odabire datum i vrijeme intervencije  
-5. Dispečer određuje potrebne resurse (serviser/tim)  
-6. Dispečer potvrđuje plan  
-7. Sistem sprema planirane podatke  
-8. Sistem ažurira status intervencije (npr. "Planirano")  
-9. Sistem obavještava uključene servisere  
-
-### **Alternativni tokovi:**
-
-**A1: Nema dostupnih termina**  
-3a. Sistem ne pronalazi slobodan termin  
-4a. Sistem prikazuje poruku o nedostupnosti  
-
-**A2: Konflikt termina**  
-4a. Odabrani termin se preklapa sa drugim zadatkom  
-5a. Sistem upozorava dispečera  
-6a. Dispečer bira novi termin  
-
-**A3: Greška pri spremanju**  
-7a. Sistem ne uspije spremiti plan  
-8a. Sistem prikazuje poruku o grešci  
-
-### **Ishod:**
-- Intervencija ima definisan termin i resurse  
-- Status intervencije je ažuriran  
-- Serviseri su obaviješteni o planu  
-- Omogućeno efikasnije izvršenje zadatka  
-
-
-
-## Use Case Model – US-12
-
-### **Aktor:**
-Dispečer
-
-### **Naziv use case-a:**
-Određivanje prioriteta intervencije
-
-### **Kratak opis:**
-Ovaj use case opisuje proces u kojem dispečer određuje prioritet intervencije kako bi zahtjevi bili obrađeni i raspoređeni prema njihovoj hitnosti i važnosti.
-
-### **Preduslovi:**
-- Dispečer je prijavljen u sistem  
-- Postoji kreirana intervencija  
-- Intervencija ima osnovne informacije (opis, lokacija, hitnost)  
-- Sistem je dostupan  
-
-### **Glavni tok:**
-1. Dispečer otvara detalje intervencije  
-2. Dispečer bira opciju za postavljanje prioriteta  
-3. Sistem prikazuje dostupne nivoe prioriteta (npr. nizak, srednji, visok)  
-4. Dispečer odabire nivo prioriteta  
-5. Dispečer potvrđuje izbor  
-6. Sistem sprema odabrani prioritet  
-7. Sistem ažurira prikaz intervencije  
-8. Sistem bilježi promjenu u historiji aktivnosti  
-
-### **Alternativni tokovi:**
-
-**A1: Već postavljen prioritet**  
-2a. Intervencija već ima prioritet  
-3a. Dispečer može promijeniti postojeći prioritet  
-
-**A2: Greška pri spremanju**  
-6a. Sistem ne uspije spremiti promjenu  
-7a. Sistem prikazuje poruku o grešci  
-
-**A3: Neovlašten pristup**  
-2a. Korisnik bez uloge dispečera pokuša promijeniti prioritet  
-3a. Sistem blokira akciju  
-
-### **Ishod:**
-- Intervencija ima definisan prioritet  
-- Prioritet je vidljiv u sistemu  
-- Promjena je evidentirana  
-- Omogućena bolja organizacija i raspodjela zadataka
-
-
-## Use Case Model – US-13
-
-### **Aktor:**
-Dispečer
-
-### **Naziv use case-a:**
-Pregled statusa intervencija od strane dispečera
-
-### **Kratak opis:**
-Ovaj use case opisuje proces u kojem dispečer pregledava statuse intervencija kako bi mogao pratiti tok rada i imati jasan uvid u trenutnu fazu obrade svakog zahtjeva.
-
-### **Preduslovi:**
-- Dispečer je prijavljen u sistem  
-- Postoje intervencije u sistemu  
-- Intervencije imaju definisan status  
-- Sistem je dostupan  
-
-### **Glavni tok:**
-1. Dispečer otvara pregled intervencija  
-2. Sistem prikazuje listu intervencija sa njihovim statusima  
-3. Sistem prikazuje dodatne informacije (npr. prioritet, dodijeljeni serviser, rok)  
-4. Dispečer pregledava statuse intervencija  
-5. Dispečer prati tok rada i identifikuje intervencije koje zahtijevaju pažnju  
-
-### **Alternativni tokovi:**
-
-**A1: Nema intervencija**  
-2a. Sistem ne pronalazi nijednu intervenciju  
-3a. Sistem prikazuje poruku da nema dostupnih podataka  
-
-**A2: Greška pri učitavanju**  
-2a. Sistem ne može učitati podatke  
-3a. Sistem prikazuje poruku o grešci  
-
-**A3: Neovlašten pristup**  
-1a. Korisnik bez uloge dispečera pokuša pristupiti  
-2a. Sistem blokira pristup  
-3a. Sistem prikazuje poruku o zabrani pristupa  
-
-### **Ishod:**
-- Dispečer ima pregled statusa svih intervencija  
-- Omogućen je nadzor procesa  
-- Lakše se uočavaju zastoji i problemi  
-- Omogućena je bolja kontrola rada  
-
-## Use Case Model – US-14
-
-### **Aktor:**
-Serviser
-
-### **Naziv use case-a:**
-Ažuriranje statusa intervencije od strane servisera
-
-### **Kratak opis:**
-Ovaj use case opisuje proces u kojem serviser po potrebi ažurira status intervencije na kojoj radi, kako bi sistem odražavao trenutno stanje rada na terenu.
-
-### **Preduslovi:**
-- Serviser je prijavljen u sistem  
-- Serviser ima dodijeljenu intervenciju  
-- Intervencija postoji u sistemu  
-- Sistem je dostupan  
-
-### **Glavni tok:**
-1. Serviser otvara listu svojih dodijeljenih intervencija  
-2. Serviser odabire intervenciju  
-3. Serviser bira opciju za promjenu statusa  
-4. Sistem prikazuje dostupne statuse (npr. "U toku", "Završeno", "Na čekanju")  
-5. Serviser odabire novi status  
-6. Serviser potvrđuje izmjenu  
-7. Sistem ažurira status intervencije  
-8. Sistem bilježi promjenu u historiji aktivnosti  
-
-### **Alternativni tokovi:**
-
-**A1: Nevažeći status**  
-5a. Serviser odabere nevažeći status  
-6a. Sistem detektuje grešku  
-7a. Sistem ne dozvoljava izmjenu  
-8a. Sistem prikazuje poruku o grešci  
-
-**A2: Greška pri spremanju**  
-7a. Sistem ne uspije spremiti promjenu  
-8a. Sistem prikazuje poruku o grešci  
-
-**A3: Neovlašten pristup**  
-2a. Serviser pokuša pristupiti intervenciji koja mu nije dodijeljena  
-3a. Sistem blokira pristup  
-4a. Sistem prikazuje poruku o zabrani pristupa  
-
-### **Ishod:**
-- Status intervencije je ažuriran  
-- Sistem prikazuje tačno stanje rada  
-- Smanjena je potreba za dodatnim provjerama  
-- Poboljšana je koordinacija između učesnika
-
-## Use Case Model – US-15
-
-### **Aktor:**
-Serviser
-
-### **Naziv use case-a:**
-Pregled dodijeljenih intervencija
-
-### **Kratak opis:**
-Ovaj use case opisuje proces u kojem serviser pregledava intervencije koje su mu dodijeljene, kako bi znao koje zadatke treba izvršiti i kojim redoslijedom ih treba obraditi.
-
-### **Preduslovi:**
-- Serviser je prijavljen u sistem  
-- Serviser ima dodijeljene intervencije  
-- Intervencije postoje u sistemu  
-- Sistem je dostupan  
-
-### **Glavni tok:**
-1. Serviser otvara listu svojih dodijeljenih intervencija  
-2. Sistem prikazuje listu intervencija dodijeljenih serviseru  
-3. Sistem prikazuje ključne informacije (status, prioritet, lokacija, rok itd.)  
-4. Serviser pregledava listu i organizuje redoslijed rada  
-5. Serviser može odabrati intervenciju za detaljniji pregled  
-
-### **Alternativni tokovi:**
-
-**A1: Nema dodijeljenih intervencija**  
-2a. Sistem ne pronalazi nijednu intervenciju  
-3a. Sistem prikazuje poruku da nema dodijeljenih zadataka  
-
-**A2: Greška pri učitavanju**  
-2a. Sistem ne može učitati intervencije  
-3a. Sistem prikazuje poruku o grešci  
-
-**A3: Neovlašten pristup**  
-1a. Neautorizovan korisnik pokuša pristupiti listi  
-2a. Sistem blokira pristup  
-3a. Sistem prikazuje poruku o zabrani pristupa  
-
-### **Ishod:**
-- Serviser ima pregled svojih zadataka  
-- Omogućena je lakša organizacija rada  
-- Smanjen je broj propuštenih intervencija  
-- Serviser može planirati izvršenje zadataka
-
-## Use Case Model – US-16
-
-### **Aktor:**
-Serviser
-
-### **Naziv use case-a:**
-Pregled detalja zadatka na terenu
-
-### **Kratak opis:**
-Ovaj use case opisuje proces u kojem serviser pregledava detalje zadatka na terenu kako bi imao sve potrebne informacije za njegovo pravilno i efikasno izvršavanje.
-
-### **Preduslovi:**
-- Serviser je prijavljen u sistem  
-- Serviser ima dodijeljenu intervenciju  
-- Intervencija postoji u sistemu  
-- Sistem je dostupan  
-
-### **Glavni tok:**
-1. Serviser otvara listu svojih intervencija  
-2. Serviser odabire intervenciju  
-3. Sistem prikazuje detalje zadatka  
-4. Sistem prikazuje informacije (opis kvara, lokacija, prioritet, status, napomene itd.)  
-5. Serviser pregledava podatke prije izvršenja zadatka  
-
-### **Alternativni tokovi:**
-
-**A1: Intervencija ne postoji**  
-2a. Odabrana intervencija više ne postoji  
-3a. Sistem prikazuje poruku o grešci  
-
-**A2: Greška pri učitavanju**  
-3a. Sistem ne može učitati detalje  
-4a. Sistem prikazuje poruku o grešci  
-
-**A3: Neovlašten pristup**  
-2a. Serviser pokuša pristupiti intervenciji koja mu nije dodijeljena  
-3a. Sistem blokira pristup  
-4a. Sistem prikazuje poruku o zabrani pristupa  
-
-### **Ishod:**
-- Serviser ima sve potrebne informacije za izvršenje zadatka  
-- Smanjen je broj grešaka tokom rada  
-- Poboljšana je priprema prije intervencije  
-- Omogućeno efikasnije izvršenje zadatka
-
-## Use Case Model – US-17
-
-### **Aktor:**
-Serviser
-
-### **Naziv use case-a:**
-Evidentiranje izvršenog rada
-
-### **Kratak opis:**
-Ovaj use case opisuje proces u kojem serviser evidentira izvršeni rad kako bi sistem sadržavao tačan zapis o aktivnostima obavljenim tokom intervencije.
-
-### **Preduslovi:**
-- Serviser je prijavljen u sistem  
-- Serviser ima dodijeljenu intervenciju  
-- Intervencija postoji u sistemu  
-- Intervencija je u toku ili završena  
-- Sistem je dostupan  
-
-### **Glavni tok:**
-1. Serviser otvara detalje intervencije  
-2. Serviser bira opciju za evidentiranje rada  
-3. Serviser unosi podatke o izvršenim aktivnostima (opis rada, utrošeno vrijeme, materijal itd.)  
-4. Serviser potvrđuje unos  
-5. Sistem validira unesene podatke  
-6. Sistem sprema evidenciju rada  
-7. Sistem povezuje zapis sa intervencijom  
-8. Sistem bilježi promjenu u historiji aktivnosti  
-
-### **Alternativni tokovi:**
-
-**A1: Nepotpuni podaci**  
-3a. Serviser ne unese sve obavezne podatke  
-5a. Sistem detektuje nedostatak podataka  
-6a. Sistem ne sprema zapis  
-7a. Sistem prikazuje poruku o grešci  
-
-**A2: Greška pri spremanju**  
-6a. Sistem ne uspije spremiti podatke  
-7a. Sistem prikazuje poruku o grešci  
-
-**A3: Neovlašten pristup**  
-1a. Serviser pokuša pristupiti intervenciji koja mu nije dodijeljena  
-2a. Sistem blokira pristup  
-3a. Sistem prikazuje poruku o zabrani pristupa  
-
-### **Ishod:**
-- Evidencija izvršenog rada je uspješno zabilježena  
-- Podaci o intervenciji su ažurirani  
-- Omogućena je transparentnost procesa  
-- Omogućen je pregled izvršenja rada
-
-## Use Case Model – US-18
-
-### **Aktor:**
-Administrator
-
-### **Naziv use case-a:**
-Administrativno kreiranje internog korisničkog naloga
-
-### **Kratak opis:**
-Ovaj use case opisuje proces u kojem administrator kreira korisnički nalog za internog korisnika sistema, kako bi mu omogućio pristup sistemu u skladu sa njegovom ulogom.
-
-### **Preduslovi:**
-- Administrator je prijavljen u sistem  
-- Postoje definisane korisničke uloge  
-- Sistem je dostupan i funkcionalan  
-
-### **Glavni tok:**
-1. Administrator otvara modul za upravljanje korisnicima  
-2. Administrator bira opciju za kreiranje novog korisnika  
-3. Administrator unosi podatke o korisniku (ime, email, uloga itd.)  
-4. Administrator potvrđuje unos  
-5. Sistem validira unesene podatke  
-6. Sistem kreira novi korisnički nalog  
-7. Sistem dodjeljuje odgovarajuću ulogu korisniku  
-8. Sistem sprema podatke  
-9. Sistem prikazuje potvrdu o uspješnom kreiranju naloga  
-
-### **Alternativni tokovi:**
-
-**A1: Nepotpuni ili nevažeći podaci**  
-3a. Administrator unese nepotpune ili neispravne podatke  
-5a. Sistem detektuje grešku  
-6a. Sistem ne kreira nalog  
-7a. Sistem prikazuje poruku o grešci  
-
-**A2: Duplikat korisnika**  
-3a. Administrator unese email koji već postoji u sistemu  
-5a. Sistem detektuje duplikat  
-6a. Sistem ne dozvoljava kreiranje naloga  
-7a. Sistem prikazuje poruku da korisnik već postoji  
-
-**A3: Neovlašten pristup**  
-1a. Korisnik bez administratorske uloge pokuša pristupiti modulu  
-2a. Sistem blokira pristup  
-3a. Sistem prikazuje poruku o zabrani pristupa  
-
-### **Ishod:**
-- Novi korisnički nalog je kreiran  
-- Korisniku je dodijeljena odgovarajuća uloga  
-- Omogućen je pristup sistemu  
-- Jasno su definisane odgovornosti korisnika
-
-## Use Case Model – US-19
-
-### **Aktor:**
-Administrator
-
-### **Naziv use case-a:**
-Pregled postojećih korisničkih naloga
-
-### **Kratak opis:**
-Ovaj use case opisuje proces u kojem administrator pregledava postojeće korisničke naloge kako bi imao uvid u korisnike sistema i mogao njima upravljati.
-
-### **Preduslovi:**
-- Administrator je prijavljen u sistem  
-- Postoje korisnički nalozi u sistemu  
-- Sistem je dostupan i funkcionalan  
-
-### **Glavni tok:**
-1. Administrator otvara modul za upravljanje korisnicima  
-2. Sistem prikazuje listu svih korisničkih naloga  
-3. Sistem prikazuje osnovne informacije (ime, email, uloga, status itd.)  
-4. Administrator pregledava listu korisnika  
-5. Administrator može odabrati korisnika za detaljniji pregled ili izmjene  
-
-### **Alternativni tokovi:**
-
-**A1: Nema korisničkih naloga**  
-2a. Sistem ne pronalazi nijedan korisnički nalog  
-3a. Sistem prikazuje poruku da nema dostupnih korisnika  
-
-**A2: Greška pri učitavanju**  
-2a. Sistem ne može učitati korisničke naloge  
-3a. Sistem prikazuje poruku o grešci  
-
-**A3: Neovlašten pristup**  
-1a. Korisnik bez administratorske uloge pokuša pristupiti modulu  
-2a. Sistem blokira pristup  
-3a. Sistem prikazuje poruku o zabrani pristupa  
-
-### **Ishod:**
-- Administrator ima pregled svih korisničkih naloga  
-- Omogućen je uvid u korisničke uloge  
-- Olakšano je upravljanje korisnicima  
-- Sistem omogućava dalje administrativne akcije
-
-## Use Case Model – US-20
-
-### **Aktor:**
-Administrator
-
-### **Naziv use case-a:**
-Promjena korisničke uloge
-
-### **Kratak opis:**
-Ovaj use case opisuje proces u kojem administrator mijenja korisničku ulogu kako bi korisnik imao pristup funkcionalnostima koje odgovaraju njegovoj novoj odgovornosti u sistemu.
-
-### **Preduslovi:**
-- Administrator je prijavljen u sistem  
-- Postoje korisnički nalozi u sistemu  
-- Postoje definisane korisničke uloge  
-- Sistem je dostupan i funkcionalan  
-
-### **Glavni tok:**
-1. Administrator otvara modul za upravljanje korisnicima  
-2. Administrator bira korisnika iz liste  
-3. Administrator pregleda trenutnu korisničku ulogu  
-4. Administrator bira novu korisničku ulogu  
-5. Administrator potvrđuje izmjenu  
-6. Sistem validira odabranu ulogu  
-7. Sistem ažurira korisničku ulogu  
-8. Sistem sprema promjene  
-9. Sistem prikazuje potvrdu o uspješnoj izmjeni  
-
-### **Alternativni tokovi:**
-
-**A1: Nevažeća uloga**  
-4a. Administrator odabere nepostojeću ili nevažeću ulogu  
-6a. Sistem detektuje grešku  
-7a. Sistem ne dozvoljava izmjenu  
-8a. Sistem prikazuje poruku o grešci  
-
-**A2: Greška pri spremanju**  
-7a. Sistem ne uspije spremiti promjene  
-8a. Sistem prikazuje poruku o grešci  
-
-**A3: Neovlašten pristup**  
-1a. Korisnik bez administratorske uloge pokuša pristupiti modulu  
-2a. Sistem blokira pristup  
-3a. Sistem prikazuje poruku o zabrani pristupa  
-
-### **Ishod:**
-- Korisniku je dodijeljena nova uloga  
-- Pristup funkcionalnostima je ažuriran  
-- Osigurana je sigurnost sistema  
-- Omogućena je bolja organizacija rada
-
-## Use Case Model – US-21
-
-### **Aktor:**
-Administrator
-
-### **Naziv use case-a:**
-Deaktivacija korisničkog naloga
-
-### **Kratak opis:**
-Ovaj use case opisuje proces u kojem administrator deaktivira korisnički nalog kako bi spriječio dalji pristup korisniku koji više ne treba koristiti sistem.
-
-### **Preduslovi:**
-- Administrator je prijavljen u sistem  
-- Postoje korisnički nalozi u sistemu  
-- Korisnik čiji se nalog deaktivira postoji u sistemu  
-- Sistem je dostupan i funkcionalan  
-
-### **Glavni tok:**
-1. Administrator otvara modul za upravljanje korisnicima  
-2. Administrator bira korisnički nalog iz liste  
-3. Administrator pregleda detalje korisnika  
-4. Administrator bira opciju za deaktivaciju naloga  
-5. Administrator potvrđuje deaktivaciju  
-6. Sistem mijenja status naloga u "deaktiviran"  
-7. Sistem onemogućava dalju prijavu korisnika  
-8. Sistem sprema promjene  
-9. Sistem prikazuje potvrdu o uspješnoj deaktivaciji  
-
-### **Alternativni tokovi:**
-
-**A1: Već deaktiviran nalog**  
-4a. Administrator pokuša deaktivirati već deaktiviran nalog  
-5a. Sistem prikazuje informaciju da je nalog već deaktiviran  
-
-**A2: Greška pri spremanju**  
-6a. Sistem ne uspije promijeniti status naloga  
-7a. Sistem prikazuje poruku o grešci  
-
-**A3: Neovlašten pristup**  
-1a. Korisnik bez administratorske uloge pokuša izvršiti deaktivaciju  
-2a. Sistem blokira pristup  
-3a. Sistem prikazuje poruku o zabrani pristupa  
-
-### **Ishod:**
-- Korisnički nalog je deaktiviran  
-- Korisniku je onemogućen pristup sistemu  
-- Podaci o korisniku ostaju sačuvani u sistemu  
-- Osigurana je sigurnost i kontrola pristupa
-
-## Use Case Model – US-22
-
-### **Aktor:**
-Serviser
-
-### **Naziv use case-a:**
-Prihvatanje dodijeljenog zadatka
-
-### **Kratak opis:**
-Ovaj use case opisuje proces u kojem serviser prihvata dodijeljeni zadatak kako bi potvrdio da preuzima odgovornost za njegovu realizaciju.
-
-### **Preduslovi:**
-- Serviser je prijavljen u sistem  
-- Postoji dodijeljena intervencija serviseru  
-- Serviser ima pristup listi svojih zadataka  
-- Sistem je dostupan i funkcionalan  
-
-### **Glavni tok:**
-1. Serviser otvara listu dodijeljenih intervencija  
-2. Serviser bira jednu intervenciju  
-3. Serviser pregleda detalje zadatka  
-4. Serviser bira opciju za prihvatanje zadatka  
-5. Serviser potvrđuje prihvatanje  
-6. Sistem ažurira status intervencije (npr. "U toku")  
-7. Sistem bilježi promjenu u historiji aktivnosti  
-8. Sistem prikazuje potvrdu o uspješnom prihvatanju  
-
-### **Alternativni tokovi:**
-
-**A1: Zadatak već prihvaćen**  
-4a. Intervencija je već prihvaćena od strane servisera  
-5a. Sistem prikazuje informaciju da je zadatak već u obradi  
-
-**A2: Greška pri ažuriranju**  
-6a. Sistem ne uspije ažurirati status  
-7a. Sistem prikazuje poruku o grešci  
-
-**A3: Neovlašten pristup**  
-2a. Korisnik koji nije dodijeljeni serviser pokušava pristupiti zadatku  
-3a. Sistem blokira pristup  
-4a. Sistem prikazuje poruku o zabrani pristupa  
-
-### **Ishod:**
-- Zadatak je prihvaćen od strane servisera  
-- Status intervencije je ažuriran  
-- Serviser preuzima odgovornost za izvršenje  
-- Promjena je evidentirana u sistemu
-
-## Use Case Model – US-23
-
-### **Aktor:**
-Serviser
-
-### **Naziv use case-a:**
-Odbijanje dodijeljenog zadatka
-
-### **Kratak opis:**
-Ovaj use case opisuje proces u kojem serviser odbija dodijeljeni zadatak kako bi dispečer mogao pravovremeno reagovati i dodijeliti ga drugom izvršiocu.
-
-### **Preduslovi:**
-- Serviser je prijavljen u sistem  
-- Postoji dodijeljena intervencija serviseru  
-- Serviser ima pristup listi svojih zadataka  
-- Sistem je dostupan i funkcionalan  
-
-### **Glavni tok:**
-1. Serviser otvara listu dodijeljenih intervencija  
-2. Serviser bira jednu intervenciju  
-3. Serviser pregleda detalje zadatka  
-4. Serviser bira opciju za odbijanje zadatka  
-5. Serviser unosi razlog odbijanja (opcionalno)  
-6. Serviser potvrđuje odbijanje  
-7. Sistem ažurira status intervencije (npr. "Odbijeno")  
-8. Sistem bilježi promjenu u historiji aktivnosti  
-9. Sistem obavještava dispečera o odbijanju  
-
-### **Alternativni tokovi:**
-
-**A1: Zadatak već prihvaćen**  
-4a. Intervencija je već prihvaćena od strane servisera  
-5a. Sistem ne dozvoljava odbijanje i prikazuje poruku  
-
-**A2: Greška pri ažuriranju**  
-7a. Sistem ne uspije ažurirati status  
-8a. Sistem prikazuje poruku o grešci  
-
-**A3: Neovlašten pristup**  
-2a. Korisnik koji nije dodijeljeni serviser pokušava izvršiti akciju  
-3a. Sistem blokira pristup  
-4a. Sistem prikazuje poruku o zabrani pristupa  
-
-### **Ishod:**
-- Zadatak je odbijen od strane servisera  
-- Dispečer je obaviješten o odbijanju  
-- Intervencija je spremna za ponovnu dodjelu  
-- Promjena je evidentirana u sistemu
-
-## Use Case Model – US-24
-
-### **Aktor:**
-Dispečer
-
-### **Naziv use case-a:**
-Pregled evidentiranog izvršenog rada
-
-### **Kratak opis:**
-Ovaj use case opisuje proces u kojem dispečer pregledava evidentirani izvršeni rad kako bi imao uvid u aktivnosti koje je serviser obavio prije zatvaranja intervencije.
-
-### **Preduslovi:**
-- Dispečer je prijavljen u sistem  
-- Postoji intervencija sa evidentiranim izvršenim radom  
-- Serviser je unio podatke o izvršenom radu  
-- Sistem je dostupan i funkcionalan  
-
-### **Glavni tok:**
-1. Dispečer otvara listu intervencija  
-2. Dispečer bira intervenciju za pregled  
-3. Dispečer otvara sekciju evidentiranog rada  
-4. Sistem prikazuje detalje izvršenog rada (opis, vrijeme, utrošeni materijal itd.)  
-5. Dispečer pregledava unesene informacije  
-6. Dispečer donosi odluku o daljim koracima (npr. zatvaranje intervencije)  
-
-### **Alternativni tokovi:**
-
-**A1: Nema evidentiranog rada**  
-3a. Intervencija nema unesene podatke o radu  
-4a. Sistem prikazuje poruku da nema dostupnih informacija  
-
-**A2: Greška pri učitavanju**  
-4a. Sistem ne može učitati podatke  
-5a. Sistem prikazuje poruku o grešci  
-
-**A3: Neovlašten pristup**  
-2a. Korisnik bez uloge dispečera pokuša pristupiti  
-3a. Sistem blokira pristup  
-4a. Sistem prikazuje poruku o zabrani  
-
-### **Ishod:**
-- Dispečer ima uvid u izvršeni rad  
-- Podaci o radu su jasno prikazani  
-- Omogućena je kontrola i verifikacija rada  
-- Intervencija je spremna za zatvaranje ili dodatne akcije
-
+## Use Case 11 (US-11)
+
+| Stavka | Sadržaj |
+|--------|--------|
+| **Aktor** | Dispečer |
+| **Naziv use case-a** | Planiranje intervencije |
+| **Kratak opis** | Ovaj use case opisuje proces u kojem dispečer planira intervenciju unaprijed definisanjem termina, resursa i organizacije izvršenja zadatka. |
+| **Preduslovi** | Dispečer je prijavljen u sistem.<br>Postoji kreirana intervencija.<br>Intervencija ima osnovne podatke (lokacija, opis itd.).<br>Dostupni su serviseri ili timovi.<br>Sistem je dostupan. |
+| **Glavni tok** | 1. Dispečer otvara detalje intervencije.<br>2. Dispečer bira opciju planiranja.<br>3. Sistem prikazuje dostupne termine i resurse.<br>4. Dispečer odabire datum i vrijeme intervencije.<br>5. Dispečer određuje potrebne resurse (serviser/tim).<br>6. Dispečer potvrđuje plan.<br>7. Sistem sprema planirane podatke.<br>8. Sistem ažurira status intervencije (npr. "Planirano").<br>9. Sistem obavještava uključene servisere. |
+| **Alternativni tokovi** | **A1: Nema dostupnih termina**<br>3a. Sistem ne pronalazi slobodan termin.<br>4a. Sistem prikazuje poruku o nedostupnosti.<br><br>**A2: Konflikt termina**<br>4a. Odabrani termin se preklapa sa drugim zadatkom.<br>5a. Sistem upozorava dispečera.<br>6a. Dispečer bira novi termin.<br><br>**A3: Greška pri spremanju**<br>7a. Sistem ne uspije spremiti plan.<br>8a. Sistem prikazuje poruku o grešci. |
+| **Ishod** | Intervencija ima definisan termin i resurse.<br>Status intervencije je ažuriran.<br>Serviseri su obaviješteni o planu.<br>Omogućeno efikasnije izvršenje zadatka. |
+
+
+## Use Case 12 (US-12)
+
+| Stavka | Sadržaj |
+|--------|--------|
+| **Aktor** | Dispečer |
+| **Naziv use case-a** | Određivanje prioriteta intervencije |
+| **Kratak opis** | Ovaj use case opisuje proces u kojem dispečer određuje prioritet intervencije kako bi zahtjevi bili obrađeni i raspoređeni prema njihovoj hitnosti i važnosti. |
+| **Preduslovi** | Dispečer je prijavljen u sistem.<br>Postoji kreirana intervencija.<br>Intervencija ima osnovne informacije (opis, lokacija, hitnost).<br>Sistem je dostupan. |
+| **Glavni tok** | 1. Dispečer otvara detalje intervencije.<br>2. Dispečer bira opciju za postavljanje prioriteta.<br>3. Sistem prikazuje dostupne nivoe prioriteta (npr. nizak, srednji, visok).<br>4. Dispečer odabire nivo prioriteta.<br>5. Dispečer potvrđuje izbor.<br>6. Sistem sprema odabrani prioritet.<br>7. Sistem ažurira prikaz intervencije.<br>8. Sistem bilježi promjenu u historiji aktivnosti. |
+| **Alternativni tokovi** | **A1: Već postavljen prioritet**<br>2a. Intervencija već ima prioritet.<br>3a. Dispečer može promijeniti postojeći prioritet.<br><br>**A2: Greška pri spremanju**<br>6a. Sistem ne uspije spremiti promjenu.<br>7a. Sistem prikazuje poruku o grešci.<br><br>**A3: Neovlašten pristup**<br>2a. Korisnik bez uloge dispečera pokuša promijeniti prioritet.<br>3a. Sistem blokira akciju. |
+| **Ishod** | Intervencija ima definisan prioritet.<br>Prioritet je vidljiv u sistemu.<br>Promjena je evidentirana.<br>Omogućena bolja organizacija i raspodjela zadataka. |
+
+
+## Use Case 13 (US-13)
+
+| Stavka | Sadržaj |
+|--------|--------|
+| **Aktor** | Dispečer |
+| **Naziv use case-a** | Pregled statusa intervencija od strane dispečera |
+| **Kratak opis** | Ovaj use case opisuje proces u kojem dispečer pregledava statuse intervencija kako bi mogao pratiti tok rada i imati jasan uvid u trenutnu fazu obrade svakog zahtjeva. |
+| **Preduslovi** | Dispečer je prijavljen u sistem.<br>Postoje intervencije u sistemu.<br>Intervencije imaju definisan status.<br>Sistem je dostupan. |
+| **Glavni tok** | 1. Dispečer otvara pregled intervencija.<br>2. Sistem prikazuje listu intervencija sa njihovim statusima.<br>3. Sistem prikazuje dodatne informacije (npr. prioritet, dodijeljeni serviser, rok).<br>4. Dispečer pregledava statuse intervencija.<br>5. Dispečer prati tok rada i identifikuje intervencije koje zahtijevaju pažnju. |
+| **Alternativni tokovi** | **A1: Nema intervencija**<br>2a. Sistem ne pronalazi nijednu intervenciju.<br>3a. Sistem prikazuje poruku da nema dostupnih podataka.<br><br>**A2: Greška pri učitavanju**<br>2a. Sistem ne može učitati podatke.<br>3a. Sistem prikazuje poruku o grešci.<br><br>**A3: Neovlašten pristup**<br>1a. Korisnik bez uloge dispečera pokuša pristupiti.<br>2a. Sistem blokira pristup.<br>3a. Sistem prikazuje poruku o zabrani pristupa. |
+| **Ishod** | Dispečer ima pregled statusa svih intervencija.<br>Omogućen je nadzor procesa.<br>Lakše se uočavaju zastoji i problemi.<br>Omogućena je bolja kontrola rada. |
+
+## Use Case 14 (US-14)
+
+| Stavka | Sadržaj |
+|--------|--------|
+| **Aktor** | Serviser |
+| **Naziv use case-a** | Ažuriranje statusa intervencije od strane servisera |
+| **Kratak opis** | Ovaj use case opisuje proces u kojem serviser po potrebi ažurira status intervencije na kojoj radi, kako bi sistem odražavao trenutno stanje rada na terenu. |
+| **Preduslovi** | Serviser je prijavljen u sistem.<br>Serviser ima dodijeljenu intervenciju.<br>Intervencija postoji u sistemu.<br>Sistem je dostupan. |
+| **Glavni tok** | 1. Serviser otvara listu svojih dodijeljenih intervencija.<br>2. Serviser odabire intervenciju.<br>3. Serviser bira opciju za promjenu statusa.<br>4. Sistem prikazuje dostupne statuse (npr. "U toku", "Završeno", "Na čekanju").<br>5. Serviser odabire novi status.<br>6. Serviser potvrđuje izmjenu.<br>7. Sistem ažurira status intervencije.<br>8. Sistem bilježi promjenu u historiji aktivnosti. |
+| **Alternativni tokovi** | **A1: Nevažeći status**<br>5a. Serviser odabere nevažeći status.<br>6a. Sistem detektuje grešku.<br>7a. Sistem ne dozvoljava izmjenu.<br>8a. Sistem prikazuje poruku o grešci.<br><br>**A2: Greška pri spremanju**<br>7a. Sistem ne uspije spremiti promjenu.<br>8a. Sistem prikazuje poruku o grešci.<br><br>**A3: Neovlašten pristup**<br>2a. Serviser pokuša pristupiti intervenciji koja mu nije dodijeljena.<br>3a. Sistem blokira pristup.<br>4a. Sistem prikazuje poruku o zabrani pristupa. |
+| **Ishod** | Status intervencije je ažuriran.<br>Sistem prikazuje tačno stanje rada.<br>Smanjena je potreba za dodatnim provjerama.<br>Poboljšana je koordinacija između učesnika. |
+
+## Use Case 15 (US-15)
+
+| Stavka | Sadržaj |
+|--------|--------|
+| **Aktor** | Serviser |
+| **Naziv use case-a** | Pregled dodijeljenih intervencija |
+| **Kratak opis** | Ovaj use case opisuje proces u kojem serviser pregledava intervencije koje su mu dodijeljene, kako bi znao koje zadatke treba izvršiti i kojim redoslijedom ih treba obraditi. |
+| **Preduslovi** | Serviser je prijavljen u sistem.<br>Serviser ima dodijeljene intervencije.<br>Intervencije postoje u sistemu.<br>Sistem je dostupan. |
+| **Glavni tok** | 1. Serviser otvara listu svojih dodijeljenih intervencija.<br>2. Sistem prikazuje listu intervencija dodijeljenih serviseru.<br>3. Sistem prikazuje ključne informacije (status, prioritet, lokacija, rok itd.).<br>4. Serviser pregledava listu i organizuje redoslijed rada.<br>5. Serviser može odabrati intervenciju za detaljniji pregled. |
+| **Alternativni tokovi** | **A1: Nema dodijeljenih intervencija**<br>2a. Sistem ne pronalazi nijednu intervenciju.<br>3a. Sistem prikazuje poruku da nema dodijeljenih zadataka.<br><br>**A2: Greška pri učitavanju**<br>2a. Sistem ne može učitati intervencije.<br>3a. Sistem prikazuje poruku o grešci.<br><br>**A3: Neovlašten pristup**<br>1a. Neautorizovan korisnik pokuša pristupiti listi.<br>2a. Sistem blokira pristup.<br>3a. Sistem prikazuje poruku o zabrani pristupa. |
+| **Ishod** | Serviser ima pregled svojih zadataka.<br>Omogućena je lakša organizacija rada.<br>Smanjen je broj propuštenih intervencija.<br>Serviser može planirati izvršenje zadataka. |
+
+## Use Case 16 (US-16)
+
+| Stavka | Sadržaj |
+|--------|--------|
+| **Aktor** | Serviser |
+| **Naziv use case-a** | Pregled detalja zadatka na terenu |
+| **Kratak opis** | Ovaj use case opisuje proces u kojem serviser pregledava detalje zadatka na terenu kako bi imao sve potrebne informacije za njegovo pravilno i efikasno izvršavanje. |
+| **Preduslovi** | Serviser je prijavljen u sistem.<br>Serviser ima dodijeljenu intervenciju.<br>Intervencija postoji u sistemu.<br>Sistem je dostupan. |
+| **Glavni tok** | 1. Serviser otvara listu svojih intervencija.<br>2. Serviser odabire intervenciju.<br>3. Sistem prikazuje detalje zadatka.<br>4. Sistem prikazuje informacije (opis kvara, lokacija, prioritet, status, napomene itd.).<br>5. Serviser pregledava podatke prije izvršenja zadatka. |
+| **Alternativni tokovi** | **A1: Intervencija ne postoji**<br>2a. Odabrana intervencija više ne postoji.<br>3a. Sistem prikazuje poruku o grešci.<br><br>**A2: Greška pri učitavanju**<br>3a. Sistem ne može učitati detalje.<br>4a. Sistem prikazuje poruku o grešci.<br><br>**A3: Neovlašten pristup**<br>2a. Serviser pokuša pristupiti intervenciji koja mu nije dodijeljena.<br>3a. Sistem blokira pristup.<br>4a. Sistem prikazuje poruku o zabrani pristupa. |
+| **Ishod** | Serviser ima sve potrebne informacije za izvršenje zadatka.<br>Smanjen je broj grešaka tokom rada.<br>Poboljšana je priprema prije intervencije.<br>Omogućeno efikasnije izvršenje zadatka. |
+
+## Use Case 17 (US-17)
+
+| Stavka | Sadržaj |
+|--------|--------|
+| **Aktor** | Serviser |
+| **Naziv use case-a** | Evidentiranje izvršenog rada |
+| **Kratak opis** | Ovaj use case opisuje proces u kojem serviser evidentira izvršeni rad kako bi sistem sadržavao tačan zapis o aktivnostima obavljenim tokom intervencije. |
+| **Preduslovi** | Serviser je prijavljen u sistem.<br>Serviser ima dodijeljenu intervenciju.<br>Intervencija postoji u sistemu.<br>Intervencija je u toku ili završena.<br>Sistem je dostupan. |
+| **Glavni tok** | 1. Serviser otvara detalje intervencije.<br>2. Serviser bira opciju za evidentiranje rada.<br>3. Serviser unosi podatke o izvršenim aktivnostima (opis rada, utrošeno vrijeme, materijal itd.).<br>4. Serviser potvrđuje unos.<br>5. Sistem validira unesene podatke.<br>6. Sistem sprema evidenciju rada.<br>7. Sistem povezuje zapis sa intervencijom.<br>8. Sistem bilježi promjenu u historiji aktivnosti. |
+| **Alternativni tokovi** | **A1: Nepotpuni podaci**<br>3a. Serviser ne unese sve obavezne podatke.<br>5a. Sistem detektuje nedostatak podataka.<br>6a. Sistem ne sprema zapis.<br>7a. Sistem prikazuje poruku o grešci.<br><br>**A2: Greška pri spremanju**<br>6a. Sistem ne uspije spremiti podatke.<br>7a. Sistem prikazuje poruku o grešci.<br><br>**A3: Neovlašten pristup**<br>1a. Serviser pokuša pristupiti intervenciji koja mu nije dodijeljena.<br>2a. Sistem blokira pristup.<br>3a. Sistem prikazuje poruku o zabrani pristupa. |
+| **Ishod** | Evidencija izvršenog rada je uspješno zabilježena.<br>Podaci o intervenciji su ažurirani.<br>Omogućena je transparentnost procesa.<br>Omogućen je pregled izvršenja rada. |
+
+## Use Case 18 (US-18)
+
+| Stavka | Sadržaj |
+|--------|--------|
+| **Aktor** | Administrator |
+| **Naziv use case-a** | Administrativno kreiranje internog korisničkog naloga |
+| **Kratak opis** | Ovaj use case opisuje proces u kojem administrator kreira korisnički nalog za internog korisnika sistema, kako bi mu omogućio pristup sistemu u skladu sa njegovom ulogom. |
+| **Preduslovi** | Administrator je prijavljen u sistem.<br>Postoje definisane korisničke uloge.<br>Sistem je dostupan i funkcionalan. |
+| **Glavni tok** | 1. Administrator otvara modul za upravljanje korisnicima.<br>2. Administrator bira opciju za kreiranje novog korisnika.<br>3. Administrator unosi podatke o korisniku (ime, email, uloga itd.).<br>4. Administrator potvrđuje unos.<br>5. Sistem validira unesene podatke.<br>6. Sistem kreira novi korisnički nalog.<br>7. Sistem dodjeljuje odgovarajuću ulogu korisniku.<br>8. Sistem sprema podatke.<br>9. Sistem prikazuje potvrdu o uspješnom kreiranju naloga. |
+| **Alternativni tokovi** | **A1: Nepotpuni ili nevažeći podaci**<br>3a. Administrator unese nepotpune ili neispravne podatke.<br>5a. Sistem detektuje grešku.<br>6a. Sistem ne kreira nalog.<br>7a. Sistem prikazuje poruku o grešci.<br><br>**A2: Duplikat korisnika**<br>3a. Administrator unese email koji već postoji u sistemu.<br>5a. Sistem detektuje duplikat.<br>6a. Sistem ne dozvoljava kreiranje naloga.<br>7a. Sistem prikazuje poruku da korisnik već postoji.<br><br>**A3: Neovlašten pristup**<br>1a. Korisnik bez administratorske uloge pokuša pristupiti modulu.<br>2a. Sistem blokira pristup.<br>3a. Sistem prikazuje poruku o zabrani pristupa. |
+| **Ishod** | Novi korisnički nalog je kreiran.<br>Korisniku je dodijeljena odgovarajuća uloga.<br>Omogućen je pristup sistemu.<br>Jasno su definisane odgovornosti korisnika. |
+
+## Use Case 19 (US-19)
+
+| Stavka | Sadržaj |
+|--------|--------|
+| **Aktor** | Administrator |
+| **Naziv use case-a** | Pregled postojećih korisničkih naloga |
+| **Kratak opis** | Ovaj use case opisuje proces u kojem administrator pregledava postojeće korisničke naloge kako bi imao uvid u korisnike sistema i mogao njima upravljati. |
+| **Preduslovi** | Administrator je prijavljen u sistem.<br>Postoje korisnički nalozi u sistemu.<br>Sistem je dostupan i funkcionalan. |
+| **Glavni tok** | 1. Administrator otvara modul za upravljanje korisnicima.<br>2. Sistem prikazuje listu svih korisničkih naloga.<br>3. Sistem prikazuje osnovne informacije (ime, email, uloga, status itd.).<br>4. Administrator pregledava listu korisnika.<br>5. Administrator može odabrati korisnika za detaljniji pregled ili izmjene. |
+| **Alternativni tokovi** | **A1: Nema korisničkih naloga**<br>2a. Sistem ne pronalazi nijedan korisnički nalog.<br>3a. Sistem prikazuje poruku da nema dostupnih korisnika.<br><br>**A2: Greška pri učitavanju**<br>2a. Sistem ne može učitati korisničke naloge.<br>3a. Sistem prikazuje poruku o grešci.<br><br>**A3: Neovlašten pristup**<br>1a. Korisnik bez administratorske uloge pokuša pristupiti modulu.<br>2a. Sistem blokira pristup.<br>3a. Sistem prikazuje poruku o zabrani pristupa. |
+| **Ishod** | Administrator ima pregled svih korisničkih naloga.<br>Omogućen je uvid u korisničke uloge.<br>Olakšano je upravljanje korisnicima.<br>Sistem omogućava dalje administrativne akcije. |
+
+## Use Case 20 (US-20)
+
+| Stavka | Sadržaj |
+|--------|--------|
+| **Aktor** | Administrator |
+| **Naziv use case-a** | Promjena korisničke uloge |
+| **Kratak opis** | Ovaj use case opisuje proces u kojem administrator mijenja korisničku ulogu kako bi korisnik imao pristup funkcionalnostima koje odgovaraju njegovoj novoj odgovornosti u sistemu. |
+| **Preduslovi** | Administrator je prijavljen u sistem.<br>Postoje korisnički nalozi u sistemu.<br>Postoje definisane korisničke uloge.<br>Sistem je dostupan i funkcionalan. |
+| **Glavni tok** | 1. Administrator otvara modul za upravljanje korisnicima.<br>2. Administrator bira korisnika iz liste.<br>3. Administrator pregleda trenutnu korisničku ulogu.<br>4. Administrator bira novu korisničku ulogu.<br>5. Administrator potvrđuje izmjenu.<br>6. Sistem validira odabranu ulogu.<br>7. Sistem ažurira korisničku ulogu.<br>8. Sistem sprema promjene.<br>9. Sistem prikazuje potvrdu o uspješnoj izmjeni. |
+| **Alternativni tokovi** | **A1: Nevažeća uloga**<br>4a. Administrator odabere nepostojeću ili nevažeću ulogu.<br>6a. Sistem detektuje grešku.<br>7a. Sistem ne dozvoljava izmjenu.<br>8a. Sistem prikazuje poruku o grešci.<br><br>**A2: Greška pri spremanju**<br>7a. Sistem ne uspije spremiti promjene.<br>8a. Sistem prikazuje poruku o grešci.<br><br>**A3: Neovlašten pristup**<br>1a. Korisnik bez administratorske uloge pokuša pristupiti modulu.<br>2a. Sistem blokira pristup.<br>3a. Sistem prikazuje poruku o zabrani pristupa. |
+| **Ishod** | Korisniku je dodijeljena nova uloga.<br>Pristup funkcionalnostima je ažuriran.<br>Osigurana je sigurnost sistema.<br>Omogućena je bolja organizacija rada. |
+
+## Use Case 21 (US-21)
+
+| Stavka | Sadržaj |
+|--------|--------|
+| **Aktor** | Administrator |
+| **Naziv use case-a** | Deaktivacija korisničkog naloga |
+| **Kratak opis** | Ovaj use case opisuje proces u kojem administrator deaktivira korisnički nalog kako bi spriječio dalji pristup korisniku koji više ne treba koristiti sistem. |
+| **Preduslovi** | Administrator je prijavljen u sistem.<br>Postoje korisnički nalozi u sistemu.<br>Korisnik čiji se nalog deaktivira postoji u sistemu.<br>Sistem je dostupan i funkcionalan. |
+| **Glavni tok** | 1. Administrator otvara modul za upravljanje korisnicima.<br>2. Administrator bira korisnički nalog iz liste.<br>3. Administrator pregleda detalje korisnika.<br>4. Administrator bira opciju za deaktivaciju naloga.<br>5. Administrator potvrđuje deaktivaciju.<br>6. Sistem mijenja status naloga u "deaktiviran".<br>7. Sistem onemogućava dalju prijavu korisnika.<br>8. Sistem sprema promjene.<br>9. Sistem prikazuje potvrdu o uspješnoj deaktivaciji. |
+| **Alternativni tokovi** | **A1: Već deaktiviran nalog**<br>4a. Administrator pokuša deaktivirati već deaktiviran nalog.<br>5a. Sistem prikazuje informaciju da je nalog već deaktiviran.<br><br>**A2: Greška pri spremanju**<br>6a. Sistem ne uspije promijeniti status naloga.<br>7a. Sistem prikazuje poruku o grešci.<br><br>**A3: Neovlašten pristup**<br>1a. Korisnik bez administratorske uloge pokuša izvršiti deaktivaciju.<br>2a. Sistem blokira pristup.<br>3a. Sistem prikazuje poruku o zabrani pristupa. |
+| **Ishod** | Korisnički nalog je deaktiviran.<br>Korisniku je onemogućen pristup sistemu.<br>Podaci o korisniku ostaju sačuvani u sistemu.<br>Osigurana je sigurnost i kontrola pristupa. |
+
+## Use Case 22 (US-22)
+
+| Stavka | Sadržaj |
+|--------|--------|
+| **Aktor** | Serviser |
+| **Naziv use case-a** | Prihvatanje dodijeljenog zadatka |
+| **Kratak opis** | Ovaj use case opisuje proces u kojem serviser prihvata dodijeljeni zadatak kako bi potvrdio da preuzima odgovornost za njegovu realizaciju. |
+| **Preduslovi** | Serviser je prijavljen u sistem.<br>Postoji dodijeljena intervencija serviseru.<br>Serviser ima pristup listi svojih zadataka.<br>Sistem je dostupan i funkcionalan. |
+| **Glavni tok** | 1. Serviser otvara listu dodijeljenih intervencija.<br>2. Serviser bira jednu intervenciju.<br>3. Serviser pregleda detalje zadatka.<br>4. Serviser bira opciju za prihvatanje zadatka.<br>5. Serviser potvrđuje prihvatanje.<br>6. Sistem ažurira status intervencije (npr. "U toku").<br>7. Sistem bilježi promjenu u historiji aktivnosti.<br>8. Sistem prikazuje potvrdu o uspješnom prihvatanju. |
+| **Alternativni tokovi** | **A1: Zadatak već prihvaćen**<br>4a. Intervencija je već prihvaćena od strane servisera.<br>5a. Sistem prikazuje informaciju da je zadatak već u obradi.<br><br>**A2: Greška pri ažuriranju**<br>6a. Sistem ne uspije ažurirati status.<br>7a. Sistem prikazuje poruku o grešci.<br><br>**A3: Neovlašten pristup**<br>2a. Korisnik koji nije dodijeljeni serviser pokušava pristupiti zadatku.<br>3a. Sistem blokira pristup.<br>4a. Sistem prikazuje poruku o zabrani pristupa. |
+| **Ishod** | Zadatak je prihvaćen od strane servisera.<br>Status intervencije je ažuriran.<br>Serviser preuzima odgovornost za izvršenje.<br>Promjena je evidentirana u sistemu. |
+
+## Use Case 23 (US-23)
+
+| Stavka | Sadržaj |
+|--------|--------|
+| **Aktor** | Serviser |
+| **Naziv use case-a** | Odbijanje dodijeljenog zadatka |
+| **Kratak opis** | Ovaj use case opisuje proces u kojem serviser odbija dodijeljeni zadatak kako bi dispečer mogao pravovremeno reagovati i dodijeliti ga drugom izvršiocu. |
+| **Preduslovi** | Serviser je prijavljen u sistem.<br>Postoji dodijeljena intervencija serviseru.<br>Serviser ima pristup listi svojih zadataka.<br>Sistem je dostupan i funkcionalan. |
+| **Glavni tok** | 1. Serviser otvara listu dodijeljenih intervencija.<br>2. Serviser bira jednu intervenciju.<br>3. Serviser pregleda detalje zadatka.<br>4. Serviser bira opciju za odbijanje zadatka.<br>5. Serviser unosi razlog odbijanja (opcionalno).<br>6. Serviser potvrđuje odbijanje.<br>7. Sistem ažurira status intervencije (npr. "Odbijeno").<br>8. Sistem bilježi promjenu u historiji aktivnosti.<br>9. Sistem obavještava dispečera o odbijanju. |
+| **Alternativni tokovi** | **A1: Zadatak već prihvaćen**<br>4a. Intervencija je već prihvaćena od strane servisera.<br>5a. Sistem ne dozvoljava odbijanje i prikazuje poruku.<br><br>**A2: Greška pri ažuriranju**<br>7a. Sistem ne uspije ažurirati status.<br>8a. Sistem prikazuje poruku o grešci.<br><br>**A3: Neovlašten pristup**<br>2a. Korisnik koji nije dodijeljeni serviser pokušava izvršiti akciju.<br>3a. Sistem blokira pristup.<br>4a. Sistem prikazuje poruku o zabrani pristupa. |
+| **Ishod** | Zadatak je odbijen od strane servisera.<br>Dispečer je obaviješten o odbijanju.<br>Intervencija je spremna za ponovnu dodjelu.<br>Promjena je evidentirana u sistemu. |
+
+## Use Case 24 (US-24)
+
+| Stavka | Sadržaj |
+|--------|--------|
+| **Aktor** | Dispečer |
+| **Naziv use case-a** | Pregled evidentiranog izvršenog rada |
+| **Kratak opis** | Ovaj use case opisuje proces u kojem dispečer pregledava evidentirani izvršeni rad kako bi imao uvid u aktivnosti koje je serviser obavio prije zatvaranja intervencije. |
+| **Preduslovi** | Dispečer je prijavljen u sistem.<br>Postoji intervencija sa evidentiranim izvršenim radom.<br>Serviser je unio podatke o izvršenom radu.<br>Sistem je dostupan i funkcionalan. |
+| **Glavni tok** | 1. Dispečer otvara listu intervencija.<br>2. Dispečer bira intervenciju za pregled.<br>3. Dispečer otvara sekciju evidentiranog rada.<br>4. Sistem prikazuje detalje izvršenog rada (opis, vrijeme, utrošeni materijal itd.).<br>5. Dispečer pregledava unesene informacije.<br>6. Dispečer donosi odluku o daljim koracima (npr. zatvaranje intervencije). |
+| **Alternativni tokovi** | **A1: Nema evidentiranog rada**<br>3a. Intervencija nema unesene podatke o radu.<br>4a. Sistem prikazuje poruku da nema dostupnih informacija.<br><br>**A2: Greška pri učitavanju**<br>4a. Sistem ne može učitati podatke.<br>5a. Sistem prikazuje poruku o grešci.<br><br>**A3: Neovlašten pristup**<br>2a. Korisnik bez uloge dispečera pokuša pristupiti.<br>3a. Sistem blokira pristup.<br>4a. Sistem prikazuje poruku o zabrani. |
+| **Ishod** | Dispečer ima uvid u izvršeni rad.<br>Podaci o radu su jasno prikazani.<br>Omogućena je kontrola i verifikacija rada.<br>Intervencija je spremna za zatvaranje ili dodatne akcije. |
+
+## Use Case 25 (US-25)
+
+| Stavka | Sadržaj |
+|--------|--------|
+| **Aktor** | Dispečer |
+| **Naziv use case-a** | Potvrda i zatvaranje intervencije |
+| **Kratak opis** | Ovaj use case opisuje proces u kojem dispečer potvrđuje i zatvara završenu intervenciju, kako bi proces bio formalno okončan u sistemu. |
+| **Preduslovi** | Dispečer je prijavljen u sistem.<br>Postoji intervencija koja je označena kao završena.<br>Evidentiran je izvršeni rad od strane servisera.<br>Sistem je dostupan i funkcionalan. |
+| **Glavni tok** | 1. Dispečer otvara listu intervencija.<br>2. Dispečer bira završenu intervenciju.<br>3. Dispečer pregledava evidentirani rad i detalje intervencije.<br>4. Dispečer bira opciju za zatvaranje intervencije.<br>5. Dispečer potvrđuje zatvaranje.<br>6. Sistem mijenja status intervencije u "Zatvoreno".<br>7. Sistem bilježi promjenu u historiji aktivnosti.<br>8. Sistem prikazuje potvrdu o uspješnom zatvaranju. |
+| **Alternativni tokovi** | **A1: Nije evidentiran rad**<br>3a. Intervencija nema evidentiran izvršeni rad.<br>4a. Sistem ne dozvoljava zatvaranje.<br>5a. Sistem prikazuje poruku o grešci.<br><br>**A2: Greška pri zatvaranju**<br>6a. Sistem ne uspije promijeniti status.<br>7a. Sistem prikazuje poruku o grešci.<br><br>**A3: Neovlašten pristup**<br>1a. Korisnik bez uloge dispečera pokuša zatvoriti intervenciju.<br>2a. Sistem blokira pristup.<br>3a. Sistem prikazuje poruku o zabrani pristupa. |
+| **Ishod** | Intervencija je formalno zatvorena.<br>Status intervencije je ažuriran.<br>Proces je završen i evidentiran.<br>Osigurana je uredna evidencija i kontrola procesa. |
+| **Pretpostavke** | Serviser je prethodno unio tačne podatke o izvršenom radu.<br>Intervencija je spremna za zatvaranje (završena).<br>Dispečer ima odgovarajuća prava za zatvaranje intervencije. |
+| **Otvorena pitanja** | Da li je moguće ponovo otvoriti zatvorenu intervenciju?<br>Da li je potrebna dodatna verifikacija prije zatvaranja (npr. od strane klijenta)?<br>Ko sve ima pravo zatvoriti intervenciju osim dispečera? |
+
+## Use Case 26 (US-26)
+
+| Stavka | Sadržaj |
+|--------|--------|
+| **Aktor** | Korisnik usluge |
+| **Naziv use case-a** | Izmjena vlastitog zahtjeva |
+| **Kratak opis** | Ovaj use case opisuje proces u kojem korisnik usluge može izmijeniti svoj zahtjev dok još nije preuzet u obradu, kako bi ispravio pogrešno unesene ili nepotpune podatke. |
+| **Preduslovi** | Korisnik je prijavljen u sistem.<br>Postoji kreiran zahtjev od strane korisnika.<br>Zahtjev još nije preuzet u obradu.<br>Sistem je dostupan i funkcionalan. |
+| **Glavni tok** | 1. Korisnik otvara listu svojih zahtjeva.<br>2. Korisnik bira zahtjev koji želi izmijeniti.<br>3. Sistem prikazuje detalje zahtjeva.<br>4. Korisnik bira opciju za izmjenu.<br>5. Korisnik mijenja podatke (opis, lokacija, itd.).<br>6. Korisnik potvrđuje izmjene.<br>7. Sistem validira unesene podatke.<br>8. Sistem sprema izmjene.<br>9. Sistem prikazuje potvrdu o uspješnoj izmjeni. |
+| **Alternativni tokovi** | **A1: Zahtjev već u obradi**<br>2a. Zahtjev je već preuzet u obradu.<br>3a. Sistem ne dozvoljava izmjene.<br>4a. Sistem prikazuje poruku o zabrani izmjene.<br><br>**A2: Neispravni podaci**<br>5a. Korisnik unese nevažeće ili nepotpune podatke.<br>7a. Sistem detektuje grešku.<br>8a. Sistem ne sprema izmjene.<br>9a. Sistem prikazuje poruku o grešci.<br><br>**A3: Greška pri spremanju**<br>8a. Sistem ne uspije spremiti izmjene.<br>9a. Sistem prikazuje poruku o grešci. |
+| **Ishod** | Zahtjev je uspješno izmijenjen.<br>Podaci su ažurirani u sistemu.<br>Smanjena je mogućnost grešaka u obradi.<br>Zahtjev je spreman za dalju obradu sa tačnim informacijama. |
+| **Pretpostavke** | Korisnik unosi tačne i relevantne podatke.<br>Sistem omogućava izmjene samo prije obrade zahtjeva.<br>Korisnik ima prava pristupa svom zahtjevu. |
+| **Otvorena pitanja** | Da li postoji vremensko ograničenje za izmjenu zahtjeva?<br>Da li se čuva historija izmjena zahtjeva?<br>Može li dispečer ili serviser vidjeti prethodne verzije zahtjeva? |
+
+## Use Case 27 (US-27)
+
+| Stavka | Sadržaj |
+|--------|--------|
+| **Aktor** | Korisnik usluge |
+| **Naziv use case-a** | Otkazivanje vlastitog zahtjeva |
+| **Kratak opis** | Ovaj use case opisuje proces u kojem korisnik usluge može otkazati svoj zahtjev dok još nije u aktivnoj obradi, kako bi povukao greškom prijavljeni ili više nepotreban zahtjev. |
+| **Preduslovi** | Korisnik je prijavljen u sistem.<br>Postoji kreiran zahtjev od strane korisnika.<br>Zahtjev nije u aktivnoj obradi.<br>Sistem je dostupan i funkcionalan. |
+| **Glavni tok** | 1. Korisnik otvara listu svojih zahtjeva.<br>2. Korisnik bira zahtjev koji želi otkazati.<br>3. Sistem prikazuje detalje zahtjeva.<br>4. Korisnik bira opciju za otkazivanje zahtjeva.<br>5. Korisnik potvrđuje otkazivanje.<br>6. Sistem mijenja status zahtjeva u "Otkazan".<br>7. Sistem bilježi promjenu u historiji aktivnosti.<br>8. Sistem prikazuje potvrdu o uspješnom otkazivanju. |
+| **Alternativni tokovi** | **A1: Zahtjev već u obradi**<br>2a. Zahtjev je već u aktivnoj obradi.<br>3a. Sistem ne dozvoljava otkazivanje.<br>4a. Sistem prikazuje poruku o zabrani.<br><br>**A2: Greška pri otkazivanju**<br>6a. Sistem ne uspije promijeniti status zahtjeva.<br>7a. Sistem prikazuje poruku o grešci.<br><br>**A3: Neovlašten pristup**<br>2a. Korisnik pokuša pristupiti zahtjevu koji nije njegov.<br>3a. Sistem blokira pristup.<br>4a. Sistem prikazuje poruku o zabrani pristupa. |
+| **Ishod** | Zahtjev je uspješno otkazan.<br>Status zahtjeva je ažuriran.<br>Smanjen je broj nepotrebnih zahtjeva u sistemu.<br>Sistem održava urednu evidenciju zahtjeva. |
+| **Pretpostavke** | Korisnik pravovremeno reaguje prije početka obrade.<br>Sistem omogućava otkazivanje samo u određenim fazama.<br>Korisnik ima prava pristupa svom zahtjevu. |
+| **Otvorena pitanja** | Da li korisnik može ponovo aktivirati otkazani zahtjev?<br>Da li se čuva razlog otkazivanja?<br>Da li dispečer dobija obavijest o otkazivanju zahtjeva? |
+
+## Use Case 28 (US-28)
+
+| Stavka | Sadržaj |
+|--------|--------|
+| **Aktor** | Dispečer |
+| **Naziv use case-a** | Promjena izvršioca intervencije |
+| **Kratak opis** | Ovaj use case opisuje proces u kojem dispečer mijenja izvršioca intervencije kako bi zadatak mogao biti dodijeljen drugom serviseru kada prvobitno dodijeljeni izvršilac ne može preuzeti ili završiti rad. |
+| **Preduslovi** | Dispečer je prijavljen u sistem.<br>Postoji kreirana i dodijeljena intervencija.<br>Postoji više servisera u sistemu.<br>Sistem je dostupan i funkcionalan. |
+| **Glavni tok** | 1. Dispečer otvara listu intervencija.<br>2. Dispečer bira intervenciju kojoj želi promijeniti izvršioca.<br>3. Dispečer otvara opciju za promjenu izvršioca.<br>4. Sistem prikazuje listu dostupnih servisera.<br>5. Dispečer odabire novog servisera.<br>6. Dispečer potvrđuje promjenu.<br>7. Sistem ažurira izvršioca intervencije.<br>8. Sistem bilježi promjenu u historiji aktivnosti.<br>9. Sistem obavještava novog servisera o dodjeli. |
+| **Alternativni tokovi** | **A1: Nema dostupnih servisera**<br>4a. Sistem ne pronalazi dostupne servisere.<br>5a. Sistem prikazuje poruku da nema dostupnih izvršilaca.<br><br>**A2: Greška pri promjeni**<br>7a. Sistem ne uspije ažurirati izvršioca.<br>8a. Sistem prikazuje poruku o grešci.<br><br>**A3: Neovlašten pristup**<br>2a. Korisnik bez uloge dispečera pokuša izvršiti promjenu.<br>3a. Sistem blokira pristup.<br>4a. Sistem prikazuje poruku o zabrani pristupa. |
+| **Ishod** | Izvršilac intervencije je uspješno promijenjen.<br>Novi serviser je obaviješten.<br>Osiguran je kontinuitet procesa.<br>Promjena je evidentirana u sistemu. |
+| **Pretpostavke** | Postoje dostupni serviseri za preuzimanje zadatka.<br>Dispečer ima pravo izmjene izvršioca.<br>Sistem prati historiju dodjela. |
+| **Otvorena pitanja** | Da li je potrebno obrazloženje za promjenu izvršioca?<br>Da li prethodni serviser dobija obavijest o promjeni?<br>Da li postoji ograničenje koliko puta se izvršilac može promijeniti? |
+
+## Use Case 29 (US-29)
+
+| Stavka | Sadržaj |
+|--------|--------|
+| **Aktor** | Serviser |
+| **Naziv use case-a** | Vraćanje zadatka na ponovnu dodjelu |
+| **Kratak opis** | Ovaj use case opisuje proces u kojem serviser vraća zadatak na ponovnu dodjelu, kako bi dispečer mogao organizovati dalje izvršenje kada zadatak nije moguće završiti u postojećim okolnostima. |
+| **Preduslovi** | Serviser je prijavljen u sistem.<br>Serviser ima dodijeljenu intervenciju.<br>Intervencija je u toku ili nije završena.<br>Sistem je dostupan i funkcionalan. |
+| **Glavni tok** | 1. Serviser otvara listu svojih intervencija.<br>2. Serviser bira intervenciju koju ne može završiti.<br>3. Serviser otvara opciju za vraćanje zadatka.<br>4. Serviser unosi razlog vraćanja (opcionalno).<br>5. Serviser potvrđuje akciju.<br>6. Sistem mijenja status intervencije (npr. "Za ponovnu dodjelu").<br>7. Sistem uklanja trenutnog izvršioca sa zadatka.<br>8. Sistem bilježi promjenu u historiji aktivnosti.<br>9. Sistem obavještava dispečera. |
+| **Alternativni tokovi** | **A1: Zadatak nije u toku**<br>2a. Intervencija nije u odgovarajućem statusu.<br>3a. Sistem ne dozvoljava vraćanje zadatka.<br>4a. Sistem prikazuje poruku o grešci.<br><br>**A2: Greška pri ažuriranju**<br>6a. Sistem ne uspije promijeniti status.<br>7a. Sistem prikazuje poruku o grešci.<br><br>**A3: Neovlašten pristup**<br>2a. Serviser pokuša pristupiti intervenciji koja mu nije dodijeljena.<br>3a. Sistem blokira pristup.<br>4a. Sistem prikazuje poruku o zabrani pristupa. |
+| **Ishod** | Intervencija je vraćena na ponovnu dodjelu.<br>Zadatak je dostupan dispečeru za novu organizaciju.<br>Smanjen je rizik od zastoja.<br>Promjena je evidentirana u sistemu. |
+| **Pretpostavke** | Serviser realno procjenjuje da ne može završiti zadatak.<br>Sistem omogućava promjenu statusa zadatka.<br>Dispečer će pravovremeno reagovati na promjenu. |
+| **Otvorena pitanja** | Da li je unos razloga vraćanja obavezan?<br>Da li dispečer dobija notifikaciju odmah?<br>Da li postoji ograničenje koliko puta se zadatak može vratiti? |
+
+## Use Case 30 (US-30)
+
+| Stavka | Sadržaj |
+|--------|--------|
+| **Aktor** | Dispečer ili Serviser |
+| **Naziv use case-a** | Razmjena napomena na intervenciji |
+| **Kratak opis** | Ovaj use case opisuje proces u kojem dispečer ili serviser dodaje kratku napomenu na konkretnu intervenciju kako bi sve važne operativne informacije bile dostupne na jednom mjestu svim učesnicima u procesu. |
+| **Preduslovi** | Korisnik (dispečer ili serviser) je prijavljen u sistem.<br>Postoji aktivna intervencija.<br>Korisnik ima pristup intervenciji.<br>Sistem je dostupan i funkcionalan. |
+| **Glavni tok** | 1. Korisnik otvara detalje intervencije.<br>2. Korisnik bira opciju za dodavanje napomene.<br>3. Korisnik unosi tekst napomene.<br>4. Korisnik potvrđuje unos.<br>5. Sistem validira unos.<br>6. Sistem sprema napomenu uz intervenciju.<br>7. Sistem bilježi promjenu u historiji aktivnosti.<br>8. Sistem prikazuje potvrdu o uspješnom unosu. |
+| **Alternativni tokovi** | **A1: Prazna napomena**<br>3a. Korisnik ne unese tekst napomene.<br>5a. Sistem detektuje grešku.<br>6a. Sistem ne sprema napomenu.<br>7a. Sistem prikazuje poruku o grešci.<br><br>**A2: Greška pri spremanju**<br>6a. Sistem ne uspije spremiti napomenu.<br>7a. Sistem prikazuje poruku o grešci.<br><br>**A3: Neovlašten pristup**<br>1a. Korisnik pokuša pristupiti intervenciji bez prava.<br>2a. Sistem blokira pristup.<br>3a. Sistem prikazuje poruku o zabrani pristupa. |
+| **Ishod** | Napomena je uspješno dodana uz intervenciju.<br>Informacije su dostupne svim relevantnim učesnicima.<br>Poboljšana je interna komunikacija.<br>Sve promjene su evidentirane u sistemu. |
+| **Pretpostavke** | Korisnici unose relevantne i jasne informacije.<br>Sistem omogućava više napomena po intervenciji.<br>Svi učesnici imaju pristup napomenama prema svojoj ulozi. |
+| **Otvorena pitanja** | Da li se napomene mogu uređivati ili brisati?<br>Da li postoji vremenski zapis i autor napomene?<br>Da li se šalju notifikacije kada se doda nova napomena? |
+
+## Use Case 31 (US-31)
+
+| Stavka | Sadržaj |
+|--------|--------|
+| **Aktor** | Dispečer |
+| **Naziv use case-a** | Pregled sažetog operativnog statusa intervencija |
+| **Kratak opis** | Ovaj use case opisuje proces u kojem dispečer na početnom ekranu vidi sažet operativni status intervencija, kako bi odmah imao pregled trenutnog obima posla i stanja intervencija po ključnim fazama obrade. |
+| **Preduslovi** | Dispečer je prijavljen u sistem.<br>Postoje intervencije u sistemu.<br>Intervencije imaju definisane statuse.<br>Sistem je dostupan i funkcionalan. |
+| **Glavni tok** | 1. Dispečer se prijavljuje u sistem.<br>2. Sistem prikazuje početni ekran (dashboard).<br>3. Sistem prikazuje sažet pregled intervencija (broj po statusima, prioritetima itd.).<br>4. Sistem prikazuje ključne indikatore (npr. broj aktivnih, završenih, na čekanju).<br>5. Dispečer analizira prikazane podatke.<br>6. Dispečer koristi pregled za donošenje odluka ili dalju navigaciju. |
+| **Alternativni tokovi** | **A1: Nema podataka**<br>3a. Sistem ne pronalazi intervencije.<br>4a. Sistem prikazuje poruku da nema dostupnih podataka.<br><br>**A2: Greška pri učitavanju**<br>3a. Sistem ne može učitati podatke.<br>4a. Sistem prikazuje poruku o grešci.<br><br>**A3: Neovlašten pristup**<br>1a. Korisnik bez uloge dispečera pokuša pristupiti dashboardu.<br>2a. Sistem blokira pristup.<br>3a. Sistem prikazuje poruku o zabrani pristupa. |
+| **Ishod** | Dispečer ima brz pregled stanja sistema.<br>Omogućeno je brzo uočavanje zastoja.<br>Poboljšano je operativno odlučivanje.<br>Omogućen je lakši pristup detaljnim pregledima. |
+| **Pretpostavke** | Podaci u sistemu su ažurni i tačni.<br>Sistem redovno osvježava prikaz stanja.<br>Dispečer ima odgovarajuća prava pristupa. |
+| **Otvorena pitanja** | Da li se podaci ažuriraju u realnom vremenu?<br>Da li dispečer može prilagoditi prikaz (filteri, grafovi)?<br>Koji su ključni KPI pokazatelji koji se prikazuju? |
+
+## Use Case 32 (US-32)
+
+| Stavka | Sadržaj |
+|--------|--------|
+| **Aktor** | Dispečer |
+| **Naziv use case-a** | Pregled historije aktivnosti intervencije |
+| **Kratak opis** | Ovaj use case opisuje proces u kojem dispečer pregledava listu svih prethodnih promjena i aktivnosti na zahtjevu, kako bi imao jasan uvid u hronologiju obrade od trenutka prijave do trenutnog statusa. |
+| **Preduslovi** | Dispečer je prijavljen u sistem.<br>Postoji intervencija u sistemu.<br>Postoji evidentirana historija aktivnosti.<br>Sistem je dostupan i funkcionalan. |
+| **Glavni tok** | 1. Dispečer otvara listu intervencija.<br>2. Dispečer bira intervenciju.<br>3. Dispečer otvara sekciju historije aktivnosti.<br>4. Sistem prikazuje hronološki zapis svih aktivnosti (statusi, promjene, dodjele itd.).<br>5. Sistem prikazuje dodatne informacije (vrijeme, korisnik, opis aktivnosti).<br>6. Dispečer pregledava historiju i analizira tok obrade. |
+| **Alternativni tokovi** | **A1: Nema historije aktivnosti**<br>3a. Intervencija nema evidentiranu historiju.<br>4a. Sistem prikazuje poruku da nema dostupnih podataka.<br><br>**A2: Greška pri učitavanju**<br>4a. Sistem ne može učitati podatke.<br>5a. Sistem prikazuje poruku o grešci.<br><br>**A3: Neovlašten pristup**<br>2a. Korisnik bez odgovarajuće uloge pokuša pristupiti.<br>3a. Sistem blokira pristup.<br>4a. Sistem prikazuje poruku o zabrani pristupa. |
+| **Ishod** | Dispečer ima potpun uvid u tok obrade intervencije.<br>Osigurana je transparentnost procesa.<br>Omogućeno je praćenje svih promjena.<br>Sistem podržava audit i kontrolu rada. |
+| **Pretpostavke** | Sistem bilježi sve relevantne aktivnosti i promjene.<br>Podaci u historiji su tačni i vremenski ispravni.<br>Dispečer ima pravo pristupa historiji aktivnosti. |
+| **Otvorena pitanja** | Koliko dugo se čuva historija aktivnosti?<br>Da li je moguće filtrirati ili pretraživati historiju?<br>Da li se može eksportovati historija (npr. PDF, izvještaj)? |
 
 ## Zaključak
 
