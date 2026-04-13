@@ -303,10 +303,10 @@ Pojedini acceptance kriteriji mogu se provjeravati na više nivoa testiranja, u 
 | **US-12** | Postavljanje prioriteta | Integraciono | test prioriteta | prioritet spremljen i vidljiv |
 | **US-13** | Pregled statusa intervencije | Sistemsko, UI | test prikazna statusa i osvježavanje liste | prikazani tačni i ažurirani statusi intervencija |
 | **US-14** | Ažuriranje statusa intervencije | Integraciono, UI | test promjene statusa | status ažuriran |
-| **US-15** | Pregled dodijeljenih intervencija w Sistemsko, UI | test prikaza liste | serviser vidi svoje dodijeljene intervencije |
+| **US-15** | Pregled dodijeljenih intervencija | Sistemsko, UI | test prikaza liste | serviser vidi svoje dodijeljene intervencije |
 | **US-16** | Pregled detalja zadatka na terenu | Sistemsko, UI | test prikaza detalja | prikazani opis, lokacija i prioritet |
 | **US-17** | Evidentiranje izvršenog rada | Integraciono, sistemsko | test unosa evidencije | podaci o radu spremljeni |
-| **US-18** | Kreiranje internog korisnika | Sistemsko test admin funkcije | korisnik kreiran |
+| **US-18** | Kreiranje internog korisnika | Sistemsko | test admin funkcije | korisnik kreiran |
 | **US-19** | Pregled liste korisnika | Sistemsko, UI | test prikaza korisnika | prikazana lista svih korisnika |
 | **US-20** | Promjena korisničke uloge | Sistemsko, sigurnosno | test izmjene uloge i prava pristupa | korisniku dodijeljena nova uloga |
 | **US-21** | Deaktivacija korisnika | Sistemsko, sigurnosno | test statusa naloga | pristup korisniku onemogućen |
