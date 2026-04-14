@@ -46,7 +46,7 @@ Klasifikacija kvarova ostvarena je putem entiteta **Kategorija_kvara**, čime se
 
 Za prioritizaciju rada koristi se entitet **Prioritet**, koji definiše nivo hitnosti rješavanja intervencije i direktno utiče na redoslijed izvršavanja zadataka.
 
-Entitet **Status** omogućava praćenje trenutnog stanja sistema. Status je centralizovan entitet koji se koristi za više tipova objekata, pri čemu atribut `tip_statusa` (ENUM) definiše na koji se tip entiteta odnosi.
+Entitet **Status** predstavlja centralizovani mehanizam za praćenje trenutnog stanja različitih objekata unutar sistema. Umjesto kreiranja više odvojenih entiteta kao što su *status_intervencije*, *status_zahtjeva* ili *status_dodjele*, u modelu je definisan jedinstven entitet **Status** koji se koristi u svim ovim kontekstima. Svi statusi se nalaze na jednom mjestu, čime se osigurava konzistentnost u njihovom korištenju i lakša kontrola nad promjenama. Razlikovanje između tipova statusa postiže se putem atributa `tip_statusa`, koji je definisan kao ENUM. Ovaj atribut određuje na koji se tip entiteta konkretni status odnosi (npr. zahtjev, intervencija, dodjela), čime se omogućava logičko razdvajanje bez potrebe za dodatnim tabelama.
 
 Entitet **Uloga** definiše funkcionalnu podjelu sistema između korisnika.
 
@@ -69,59 +69,118 @@ Kod entiteta **Evidencija_rada**, pored vremena početka i završetka, ključan 
 Entitet **Lokacija** je direktno povezan sa **Zahtjev**, a **Intervencija** ga nasljeđuje kroz 1:1 vezu.
 
 ---
-
 ## Veze između entiteta
 
-**Korisnik_usluge** (1:N) **Zahtjev**
+**Korisnik_usluge (1:N) Zahtjev**  
+Jedan korisnik usluge može kreirati više zahtjeva, dok svaki zahtjev pripada tačno jednom korisniku putem atributa `id_korisnika_usluge`.
 
-**Zahtjev** → **Status**, **Kategorija_kvara**, **Lokacija**
+**Zahtjev (N:1) Status**  
+Svaki zahtjev ima jedan status (`id_statusa`), dok jedan status može biti dodijeljen većem broju zahtjeva.
 
-**Zahtjev** (1:1) **Intervencija**
+**Zahtjev (N:1) Kategorija_kvara**  
+Svaki zahtjev pripada jednoj kategoriji kvara (`id_kategorije_kvara`), dok jedna kategorija može biti povezana sa više zahtjeva.
 
-**Intervencija** → **Uposlenici (dispečer)**, **Status**, **Prioritet**
+**Zahtjev (N:1) Lokacija**  
+Svaki zahtjev je vezan za jednu lokaciju (`id_lokacije`), dok jedna lokacija može imati više zahtjeva.
 
-**Intervencija** (1:N) **Dodjela**
+**Zahtjev (1:1) Intervencija**  
+Svaki zahtjev može rezultirati najviše jednom intervencijom, i svaka intervencija je vezana za tačno jedan zahtjev putem atributa `id_zahtjeva`.
 
-**Dodjela** (1:N) **Uposlenici**
+---
+
+**Intervencija (N:1) Status**  
+Svaka intervencija ima jedan status (`id_statusa`), dok jedan status može biti dodijeljen većem broju intervencija.
+
+**Intervencija (N:1) Prioritet**  
+Svaka intervencija ima jedan prioritet (`id_prioriteta`), dok jedan prioritet može važiti za više intervencija.
+
+**Intervencija (N:1) Uposlenici (dispečer)**  
+Jedan uposlenik (u ulozi dispečera) može biti zadužen za više intervencija, dok svaka intervencija ima tačno jednog dispečera putem atributa `id_dispecera`.
+
+---
+
+**Intervencija (1:N) Dodjela**  
+Jedna intervencija može imati više dodjela, dok svaka dodjela pripada jednoj intervenciji putem atributa `id_intervencije`.
+
+**Dodjela (N:1) Status**  
+Svaka dodjela ima jedan status (`id_statusa`), dok jedan status može biti povezan sa više dodjela.
+
+**Dodjela (N:1) Uposlenici – trostruka relacija**  
+Dodjela ostvaruje vezu sa entitetom **Uposlenici** putem tri strane uloge:
+- `id_dispecera`
 - `id_servisera`
 - `id_pomocnog_servisera`
-- `id_dispecera`
 
-**Dodjela** ostvaruje trostruku relaciju sa **Uposlenici** putem stranih ključeva (dispečer, glavni serviser, pomoćni serviser).
+Jedan uposlenik može učestvovati u više dodjela u različitim ulogama (dispečer, glavni serviser, pomoćni serviser), dok svaka dodjela referencira tačno po jednog uposlenika za svaku od ovih uloga.
 
-**Dodjela** → **Status**
+---
 
-**Intervencija** (1:N) **Napomena**
+**Intervencija (1:N) Napomena**  
+Jedna intervencija može imati više napomena, dok svaka napomena pripada jednoj intervenciji putem atributa `id_intervencije`.
 
-**Napomena** (N:1) **Uposlenici** (`id_autora`)
+**Napomena (N:1) Uposlenici (autor)**  
+Jedan uposlenik može napisati više napomena, dok svaka napomena ima jednog autora putem atributa `id_autora`.
 
-**Intervencija** (1:N) **Evidencija_rada**
+---
 
-**Evidencija_rada** je direktno povezana sa **Intervencija** (1:N) i **Uposlenici**.
+**Intervencija (1:N) Evidencija_rada**  
+Jedna intervencija može imati više zapisa evidencije rada, dok svaki zapis pripada jednoj intervenciji putem atributa `id_intervencije`.
 
-**Uposlenici** (1:N) **Evidencija_rada**
+**Evidencija_rada (N:1) Uposlenici**  
+Jedan uposlenik može imati više evidencija rada, dok svaka evidencija rada pripada jednom uposleniku putem atributa `id_servisera`.
 
-**Historija_aktivnosti** → **Uposlenici** (`id_autora`)
+---
 
-**Historija_aktivnosti** i **Intervencija** (1:N) omogućava hronološki audit svih promjena.
+**Historija_aktivnosti (N:1) Intervencija**  
+Svaka aktivnost je vezana za jednu intervenciju, dok jedna intervencija može imati više zapisa u historiji aktivnosti putem atributa `id_intervencije`.
+
+**Historija_aktivnosti (N:1) Uposlenici (autor)**  
+Jedan uposlenik može biti autor više aktivnosti, dok svaka aktivnost ima tačno jednog autora putem atributa `id_autora`.
+
+---
+
+**Napomena:**  
+Entitet **Historija_aktivnosti** omogućava vođenje hronološkog zapisa (audit trail) svih promjena nad intervencijama, uključujući informacije o autoru, vremenu i tipu promjene.
 
 ---
 
 ## Poslovna pravila
 
-- Prava zavise od `id_uloge`
-- Svaka izmjena ide u **Historija_aktivnosti** sa `id_autora`
-- Historija mora biti vezana za `id_intervencije` i `id_autora`
-- Status mora odgovarati `tip_statusa`
-- Intervencija ne postoji bez Zahtjev
-- Svaka Intervencija ima Prioritet
-- Dodjela ima tačno jednog glavnog servisera (`id_servisera`)
-- `id_pomocnog_servisera` je opcionalan
-- Nema "u toku" bez `datum_odgovora`
-- Zahtjev i Intervencija imaju `id_lokacije`
-- Intervencija završava tek sa `ishod_rada` + završni status
-- `utroseni_materijal` može biti NULL
+- **Prava pristupa zavise od `id_uloge`**  
+  Svaki korisnik sistema ima dodijeljenu ulogu koja određuje njegova prava i dozvoljene akcije u sistemu. Na osnovu vrijednosti atributa `id_uloge`, sistem kontroliše pristup funkcionalnostima kao što su kreiranje zahtjeva, upravljanje intervencijama ili administracija podataka.
 
+- **Svaka izmjena se evidentira u entitetu Historija_aktivnosti sa `id_autora`**  
+  Svaka promjena nad podacima (npr. promjena statusa, dodjela servisera, ažuriranje opisa) mora biti zabilježena u entitetu **Historija_aktivnosti**. Uz svaku izmjenu obavezno se bilježi korisnik koji je izvršio promjenu putem atributa `id_autora`.
+
+- **Historija mora biti vezana za `id_intervencije` i `id_autora`**  
+  Svaki zapis u **Historija_aktivnosti** mora biti povezan sa tačno jednom intervencijom (`id_intervencije`) i jednim uposlenikom (`id_autora`). Na taj način se omogućava potpuna sljedivost svih promjena i odgovornosti u sistemu.
+
+- **Status mora odgovarati `tip_statusa`**  
+  Svaki status u sistemu mora biti usklađen sa unaprijed definisanim tipom statusa (`tip_statusa`). Sistem treba osigurati da se statusi koriste isključivo u odgovarajućem kontekstu (npr. statusi za zahtjeve, intervencije ili dodjele).
+
+- **Intervencija ne može postojati bez Zahtjeva**  
+  Svaka intervencija mora biti direktno povezana sa jednim zahtjevom putem atributa `id_zahtjeva`. Nije dozvoljeno kreirati intervenciju bez prethodno evidentiranog zahtjeva.
+
+- **Svaka Intervencija mora imati definisan Prioritet**  
+  Prilikom kreiranja intervencije obavezno je dodijeliti prioritet (`id_prioriteta`). Prioritet određuje redoslijed izvršavanja intervencija i nivo njihove hitnosti.
+
+- **Dodjela mora imati tačno jednog glavnog servisera (`id_servisera`)**  
+  Svaka dodjela mora sadržavati jednog i samo jednog glavnog servisera koji je odgovoran za izvršenje zadatka. Ovaj podatak se evidentira kroz atribut `id_servisera`.
+
+- **`id_pomocnog_servisera` je opcionalan**  
+  U okviru dodjele moguće je definisati pomoćnog servisera, ali ovaj podatak nije obavezan. Sistem mora omogućiti da vrijednost atributa `id_pomocnog_servisera` bude NULL.
+
+- **Status "u toku" zahtijeva definisan `datum_odgovora`**  
+  Nije dozvoljeno postaviti status u stanje "u toku" ukoliko nije evidentiran datum odgovora (`datum_odgovora`). Ovim pravilom se osigurava da je svaka aktivna obrada zahtjeva vremenski evidentirana.
+
+- **Zahtjev i Intervencija moraju imati definisanu lokaciju (`id_lokacije`)**  
+  Svaki zahtjev mora biti vezan za tačnu lokaciju putem atributa `id_lokacije`, a ta lokacija se prenosi i na intervenciju. Lokacija predstavlja ključni kontekst za izvršenje servisne aktivnosti.
+
+- **Intervencija se može završiti samo uz `ishod_rada` i završni status**  
+  Intervencija se smatra završenom tek kada je definisan ishod rada (`ishod_rada`) i kada je postavljen odgovarajući završni status. Bez ova dva elementa nije moguće zatvoriti intervenciju.
+
+- **`utroseni_materijal` može biti NULL**  
+  Atribut `utroseni_materijal` u entitetu evidencije rada nije obavezan. U slučajevima kada tokom intervencije nije korišten materijal, ova vrijednost može ostati nedefinisana (NULL).
  
 ### Tabela entiteta i atributa
 
@@ -239,7 +298,7 @@ U sljedećoj tabeli su prikazani svi entiteti i svi atributi koji im pripadaju:
 | **Aktor** | Dispečer |
 | **Naziv use case-a** | Pregled detalja pojedinačne intervencije |
 | **Kratak opis** | Ovaj use case opisuje proces u kojem dispečer pregledava detaljne informacije o jednoj intervenciji kako bi imao potpuni uvid u njen status, tok i zaduženja. |
-| **Preduslovi** | Dispečer je prijavljen u sistem.<br>Postoji barem jedna intervencija u sistemu.<br>Dispečer ima pristup listi intervencija.<br>Sistem je dostupan. |
+| **Preduslovi** | Dispečer je prijavljen u sistem.<br>Dispečer ima pristup listi intervencija.<br>Sistem je dostupan. |
 | **Glavni tok** | 1. Dispečer otvara listu intervencija.<br>2. Dispečer odabire jednu intervenciju.<br>3. Sistem prikazuje detalje intervencije.<br>4. Sistem prikazuje informacije (opis, status, prioritet, lokacija, dodijeljeni serviser, historija aktivnosti itd.).<br>5. Dispečer pregledava podatke. |
 | **Alternativni tokovi** | **A1: Intervencija ne postoji**<br>2a. Odabrana intervencija više ne postoji.<br>3a. Sistem prikazuje poruku o grešci.<br><br>**A2: Greška pri učitavanju detalja**<br>3a. Sistem ne može učitati detalje.<br>4a. Sistem prikazuje poruku o grešci.<br><br>**A3: Neovlašten pristup**<br>2a. Korisnik bez prava pristupa pokuša otvoriti intervenciju.<br>3a. Sistem blokira pristup.<br>4a. Sistem prikazuje poruku o zabrani. |
 | **Ishod** | Dispečer ima detaljan uvid u intervenciju.<br>Prikazani su svi relevantni podaci.<br>Omogućeno donošenje odluka (dodjela, promjena prioriteta itd.). |
@@ -251,7 +310,7 @@ U sljedećoj tabeli su prikazani svi entiteti i svi atributi koji im pripadaju:
 | **Aktor** | Dispečer |
 | **Naziv use case-a** | Dodjela intervencije odgovornom serviseru |
 | **Kratak opis** | Ovaj use case opisuje proces u kojem dispečer dodjeljuje intervenciju odgovornom serviseru kako bi bilo jasno ko preuzima izvršenje zadatka. |
-| **Preduslovi** | Dispečer je prijavljen u sistem.<br>Postoji kreirana intervencija.<br>Postoji barem jedan serviser u sistemu.<br>Intervencija još nije dodijeljena ili se može promijeniti izvršilac.<br>Sistem je dostupan. |
+| **Preduslovi** | Dispečer je prijavljen u sistem.<br>Dispečer ima pristup intervenciji.<br>Sistem je dostupan. |
 | **Glavni tok** | 1. Dispečer otvara detalje intervencije.<br>2. Dispečer bira opciju za dodjelu servisera.<br>3. Sistem prikazuje listu dostupnih servisera.<br>4. Dispečer odabire servisera.<br>5. Dispečer potvrđuje dodjelu.<br>6. Sistem dodjeljuje intervenciju izabranom serviseru.<br>7. Sistem ažurira status intervencije (npr. "Dodijeljeno").<br>8. Sistem bilježi promjenu u historiji aktivnosti.<br>9. Sistem obavještava servisera o dodjeli. |
 | **Alternativni tokovi** | **A1: Nema dostupnih servisera**<br>3a. Sistem ne pronalazi dostupne servisere.<br>4a. Sistem prikazuje poruku da nema dostupnih izvršilaca.<br><br>**A2: Greška pri dodjeli**<br>6a. Sistem ne uspije dodijeliti intervenciju.<br>7a. Sistem prikazuje poruku o grešci.<br><br>**A3: Promjena dodjele**<br>4a. Intervencija je već dodijeljena.<br>5a. Dispečer bira drugog servisera.<br>6a. Sistem ažurira dodjelu novim serviserom. |
 | **Ishod** | Intervencija je dodijeljena odgovornom serviseru.<br>Serviser je obaviješten o zadatku.<br>Status intervencije je ažuriran.<br>Promjena je evidentirana u sistemu. |
@@ -261,12 +320,12 @@ U sljedećoj tabeli su prikazani svi entiteti i svi atributi koji im pripadaju:
 | Stavka | Sadržaj |
 |--------|--------|
 | **Aktor** | Dispečer |
-| **Naziv use case-a** | Dodjela intervencije timu servisera |
-| **Kratak opis** | Ovaj use case opisuje proces u kojem dispečer dodjeljuje intervenciju timu servisera kako bi se složeniji zadaci mogli izvršavati timski i efikasnije. |
-| **Preduslovi** | Dispečer je prijavljen u sistem.<br>Postoji kreirana intervencija.<br>Postoji definisan tim servisera u sistemu.<br>Intervencija nije dodijeljena ili se dodjela može promijeniti.<br>Sistem je dostupan. |
-| **Glavni tok** | 1. Dispečer otvara detalje intervencije.<br>2. Dispečer bira opciju za dodjelu timu.<br>3. Sistem prikazuje listu dostupnih timova.<br>4. Dispečer odabire tim servisera.<br>5. Dispečer potvrđuje dodjelu.<br>6. Sistem dodjeljuje intervenciju odabranom timu.<br>7. Sistem ažurira status intervencije.<br>8. Sistem bilježi promjenu u historiji aktivnosti.<br>9. Sistem obavještava članove tima. |
-| **Alternativni tokovi** | **A1: Nema dostupnih timova**<br>3a. Sistem ne pronalazi nijedan tim.<br>4a. Sistem prikazuje poruku da nema dostupnih timova.<br><br>**A2: Greška pri dodjeli**<br>6a. Sistem ne uspije dodijeliti intervenciju.<br>7a. Sistem prikazuje poruku o grešci.<br><br>**A3: Promjena dodjele**<br>4a. Intervencija je već dodijeljena.<br>5a. Dispečer bira drugi tim.<br>6a. Sistem ažurira dodjelu. |
-| **Ishod** | Intervencija je dodijeljena timu servisera.<br>Svi članovi tima su obaviješteni.<br>Status intervencije je ažuriran.<br>Promjena je evidentirana u sistemu. |
+| **Naziv use case-a** | Dodjela intervencije serviserima |
+| **Kratak opis** | Ovaj use case opisuje proces u kojem dispečer dodjeljuje intervenciju serviserima kroz entitet **Dodjela**, pri čemu definiše glavnog i opcionalno pomoćnog servisera. |
+| **Preduslovi** | Dispečer je prijavljen u sistem.<br>Postoji intervencija kojoj se može pristupiti.<br>Intervencija ima odgovarajući status (`id_statusa`).<br>Sistem je dostupan. |
+| **Glavni tok** | 1. Dispečer otvara detalje intervencije.<br>2. Sistem prikazuje postojeće informacije i eventualne dodjele.<br>3. Dispečer bira opciju za dodjelu servisera.<br>4. Sistem prikazuje listu dostupnih uposlenika (servisera).<br>5. Dispečer odabire glavnog servisera (`id_servisera`) i opcionalno pomoćnog servisera (`id_pomocnog_servisera`).<br>6. Dispečer potvrđuje dodjelu.<br>7. Sistem kreira zapis u entitetu **Dodjela** (`id_intervencije`, `id_dispecera`, `id_servisera`, `id_pomocnog_servisera`, `datum_dodjele`, `id_statusa`).<br>8. Sistem ažurira status intervencije (`id_statusa`).<br>9. Sistem bilježi promjenu u **Historija_aktivnosti** (`id_intervencije`, `id_autora`).<br>10. Sistem obavještava odabrane servisere. |
+| **Alternativni tokovi** | **A1: Nema dostupnih servisera**<br>4a. Sistem ne pronalazi dostupne servisere.<br>5a. Sistem prikazuje poruku da nema dostupnih servisera.<br><br>**A2: Greška pri dodjeli**<br>7a. Sistem ne uspije kreirati zapis u **Dodjela**.<br>8a. Sistem prikazuje poruku o grešci.<br><br>**A3: Promjena dodjele**<br>2a. Intervencija već ima postojeću dodjelu.<br>3a. Dispečer bira izmjenu dodjele.<br>4a. Sistem kreira novi zapis u **Dodjela** ili ažurira postojeći.<br>5a. Sistem evidentira promjenu u **Historija_aktivnosti**. |
+| **Ishod** | Intervencija je dodijeljena serviserima kroz entitet **Dodjela**.<br>Definisan je glavni (`id_servisera`) i opcionalno pomoćni serviser (`id_pomocnog_servisera`).<br>Status intervencije je ažuriran.<br>Promjena je evidentirana u **Historija_aktivnosti**.<br>Serviseri su obaviješteni. |
 
 ## Use Case 11 (US-11)
 
@@ -301,7 +360,7 @@ U sljedećoj tabeli su prikazani svi entiteti i svi atributi koji im pripadaju:
 | **Aktor** | Dispečer |
 | **Naziv use case-a** | Pregled statusa intervencija od strane dispečera |
 | **Kratak opis** | Ovaj use case opisuje proces u kojem dispečer pregledava statuse intervencija kako bi mogao pratiti tok rada i imati jasan uvid u trenutnu fazu obrade svakog zahtjeva. |
-| **Preduslovi** | Dispečer je prijavljen u sistem.<br>Postoje intervencije u sistemu.<br>Intervencije imaju definisan status.<br>Sistem je dostupan. |
+| **Preduslovi** | Dispečer je prijavljen u sistem.<br>Dispečer ima pristup pregledu intervencija.<br>Sistem je dostupan. |
 | **Glavni tok** | 1. Dispečer otvara pregled intervencija.<br>2. Sistem prikazuje listu intervencija sa njihovim statusima.<br>3. Sistem prikazuje dodatne informacije (npr. prioritet, dodijeljeni serviser, rok).<br>4. Dispečer pregledava statuse intervencija.<br>5. Dispečer prati tok rada i identifikuje intervencije koje zahtijevaju pažnju. |
 | **Alternativni tokovi** | **A1: Nema intervencija**<br>2a. Sistem ne pronalazi nijednu intervenciju.<br>3a. Sistem prikazuje poruku da nema dostupnih podataka.<br><br>**A2: Greška pri učitavanju**<br>2a. Sistem ne može učitati podatke.<br>3a. Sistem prikazuje poruku o grešci.<br><br>**A3: Neovlašten pristup**<br>1a. Korisnik bez uloge dispečera pokuša pristupiti.<br>2a. Sistem blokira pristup.<br>3a. Sistem prikazuje poruku o zabrani pristupa. |
 | **Ishod** | Dispečer ima pregled statusa svih intervencija.<br>Omogućen je nadzor procesa.<br>Lakše se uočavaju zastoji i problemi.<br>Omogućena je bolja kontrola rada. |
@@ -313,7 +372,7 @@ U sljedećoj tabeli su prikazani svi entiteti i svi atributi koji im pripadaju:
 | **Aktor** | Serviser |
 | **Naziv use case-a** | Ažuriranje statusa intervencije od strane servisera |
 | **Kratak opis** | Ovaj use case opisuje proces u kojem serviser po potrebi ažurira status intervencije na kojoj radi, kako bi sistem odražavao trenutno stanje rada na terenu. |
-| **Preduslovi** | Serviser je prijavljen u sistem.<br>Serviser ima dodijeljenu intervenciju.<br>Intervencija postoji u sistemu.<br>Sistem je dostupan. |
+| **Preduslovi** | Serviser je prijavljen u sistem.<br>Serviser ima pristup svojim intervencijama.<br>Sistem je dostupan. |
 | **Glavni tok** | 1. Serviser otvara listu svojih dodijeljenih intervencija.<br>2. Serviser odabire intervenciju.<br>3. Serviser bira opciju za promjenu statusa.<br>4. Sistem prikazuje dostupne statuse (npr. "U toku", "Završeno", "Na čekanju").<br>5. Serviser odabire novi status.<br>6. Serviser potvrđuje izmjenu.<br>7. Sistem ažurira status intervencije.<br>8. Sistem bilježi promjenu u historiji aktivnosti. |
 | **Alternativni tokovi** | **A1: Nevažeći status**<br>5a. Serviser odabere nevažeći status.<br>6a. Sistem detektuje grešku.<br>7a. Sistem ne dozvoljava izmjenu.<br>8a. Sistem prikazuje poruku o grešci.<br><br>**A2: Greška pri spremanju**<br>7a. Sistem ne uspije spremiti promjenu.<br>8a. Sistem prikazuje poruku o grešci.<br><br>**A3: Neovlašten pristup**<br>2a. Serviser pokuša pristupiti intervenciji koja mu nije dodijeljena.<br>3a. Sistem blokira pristup.<br>4a. Sistem prikazuje poruku o zabrani pristupa. |
 | **Ishod** | Status intervencije je ažuriran.<br>Sistem prikazuje tačno stanje rada.<br>Smanjena je potreba za dodatnim provjerama.<br>Poboljšana je koordinacija između učesnika. |
@@ -325,7 +384,7 @@ U sljedećoj tabeli su prikazani svi entiteti i svi atributi koji im pripadaju:
 | **Aktor** | Serviser |
 | **Naziv use case-a** | Pregled dodijeljenih intervencija |
 | **Kratak opis** | Ovaj use case opisuje proces u kojem serviser pregledava intervencije koje su mu dodijeljene, kako bi znao koje zadatke treba izvršiti i kojim redoslijedom ih treba obraditi. |
-| **Preduslovi** | Serviser je prijavljen u sistem.<br>Serviser ima dodijeljene intervencije.<br>Intervencije postoje u sistemu.<br>Sistem je dostupan. |
+| **Preduslovi** | Serviser je prijavljen u sistem.<br>Serviser ima pristup svojim intervencijama.<br>Sistem je dostupan. |
 | **Glavni tok** | 1. Serviser otvara listu svojih dodijeljenih intervencija.<br>2. Sistem prikazuje listu intervencija dodijeljenih serviseru.<br>3. Sistem prikazuje ključne informacije (status, prioritet, lokacija, rok itd.).<br>4. Serviser pregledava listu i organizuje redoslijed rada.<br>5. Serviser može odabrati intervenciju za detaljniji pregled. |
 | **Alternativni tokovi** | **A1: Nema dodijeljenih intervencija**<br>2a. Sistem ne pronalazi nijednu intervenciju.<br>3a. Sistem prikazuje poruku da nema dodijeljenih zadataka.<br><br>**A2: Greška pri učitavanju**<br>2a. Sistem ne može učitati intervencije.<br>3a. Sistem prikazuje poruku o grešci.<br><br>**A3: Neovlašten pristup**<br>1a. Neautorizovan korisnik pokuša pristupiti listi.<br>2a. Sistem blokira pristup.<br>3a. Sistem prikazuje poruku o zabrani pristupa. |
 | **Ishod** | Serviser ima pregled svojih zadataka.<br>Omogućena je lakša organizacija rada.<br>Smanjen je broj propuštenih intervencija.<br>Serviser može planirati izvršenje zadataka. |
@@ -337,7 +396,7 @@ U sljedećoj tabeli su prikazani svi entiteti i svi atributi koji im pripadaju:
 | **Aktor** | Serviser |
 | **Naziv use case-a** | Pregled detalja zadatka na terenu |
 | **Kratak opis** | Ovaj use case opisuje proces u kojem serviser pregledava detalje zadatka na terenu kako bi imao sve potrebne informacije za njegovo pravilno i efikasno izvršavanje. |
-| **Preduslovi** | Serviser je prijavljen u sistem.<br>Serviser ima dodijeljenu intervenciju.<br>Intervencija postoji u sistemu.<br>Sistem je dostupan. |
+| **Preduslovi** | Serviser je prijavljen u sistem.<br>Serviser ima pristup svojim intervencijama.<br>Sistem je dostupan. |
 | **Glavni tok** | 1. Serviser otvara listu svojih intervencija.<br>2. Serviser odabire intervenciju.<br>3. Sistem prikazuje detalje zadatka.<br>4. Sistem prikazuje informacije (opis kvara, lokacija, prioritet, status, napomene itd.).<br>5. Serviser pregledava podatke prije izvršenja zadatka. |
 | **Alternativni tokovi** | **A1: Intervencija ne postoji**<br>2a. Odabrana intervencija više ne postoji.<br>3a. Sistem prikazuje poruku o grešci.<br><br>**A2: Greška pri učitavanju**<br>3a. Sistem ne može učitati detalje.<br>4a. Sistem prikazuje poruku o grešci.<br><br>**A3: Neovlašten pristup**<br>2a. Serviser pokuša pristupiti intervenciji koja mu nije dodijeljena.<br>3a. Sistem blokira pristup.<br>4a. Sistem prikazuje poruku o zabrani pristupa. |
 | **Ishod** | Serviser ima sve potrebne informacije za izvršenje zadatka.<br>Smanjen je broj grešaka tokom rada.<br>Poboljšana je priprema prije intervencije.<br>Omogućeno efikasnije izvršenje zadatka. |
@@ -349,7 +408,7 @@ U sljedećoj tabeli su prikazani svi entiteti i svi atributi koji im pripadaju:
 | **Aktor** | Serviser |
 | **Naziv use case-a** | Evidentiranje izvršenog rada |
 | **Kratak opis** | Ovaj use case opisuje proces u kojem serviser evidentira izvršeni rad kako bi sistem sadržavao tačan zapis o aktivnostima obavljenim tokom intervencije. |
-| **Preduslovi** | Serviser je prijavljen u sistem.<br>Serviser ima dodijeljenu intervenciju.<br>Intervencija postoji u sistemu.<br>Intervencija je u toku ili završena.<br>Sistem je dostupan. |
+| **Preduslovi** | Serviser je prijavljen u sistem.<br>Serviser ima pristup svojim intervencijama.<br>Sistem je dostupan.|
 | **Glavni tok** | 1. Serviser otvara detalje intervencije.<br>2. Serviser bira opciju za evidentiranje rada.<br>3. Serviser unosi podatke o izvršenim aktivnostima (opis rada, utrošeno vrijeme, materijal itd.).<br>4. Serviser potvrđuje unos.<br>5. Sistem validira unesene podatke.<br>6. Sistem sprema evidenciju rada.<br>7. Sistem povezuje zapis sa intervencijom.<br>8. Sistem bilježi promjenu u historiji aktivnosti. |
 | **Alternativni tokovi** | **A1: Nepotpuni podaci**<br>3a. Serviser ne unese sve obavezne podatke.<br>5a. Sistem detektuje nedostatak podataka.<br>6a. Sistem ne sprema zapis.<br>7a. Sistem prikazuje poruku o grešci.<br><br>**A2: Greška pri spremanju**<br>6a. Sistem ne uspije spremiti podatke.<br>7a. Sistem prikazuje poruku o grešci.<br><br>**A3: Neovlašten pristup**<br>1a. Serviser pokuša pristupiti intervenciji koja mu nije dodijeljena.<br>2a. Sistem blokira pristup.<br>3a. Sistem prikazuje poruku o zabrani pristupa. |
 | **Ishod** | Evidencija izvršenog rada je uspješno zabilježena.<br>Podaci o intervenciji su ažurirani.<br>Omogućena je transparentnost procesa.<br>Omogućen je pregled izvršenja rada. |
@@ -373,7 +432,7 @@ U sljedećoj tabeli su prikazani svi entiteti i svi atributi koji im pripadaju:
 | **Aktor** | Administrator |
 | **Naziv use case-a** | Pregled postojećih korisničkih naloga |
 | **Kratak opis** | Ovaj use case opisuje proces u kojem administrator pregledava postojeće korisničke naloge kako bi imao uvid u korisnike sistema i mogao njima upravljati. |
-| **Preduslovi** | Administrator je prijavljen u sistem.<br>Postoje korisnički nalozi u sistemu.<br>Sistem je dostupan i funkcionalan. |
+| **Preduslovi** | Administrator je prijavljen u sistem.<br>Administrator ima pristup modulu za upravljanje korisnicima.<br>Sistem je dostupan. |
 | **Glavni tok** | 1. Administrator otvara modul za upravljanje korisnicima.<br>2. Sistem prikazuje listu svih korisničkih naloga.<br>3. Sistem prikazuje osnovne informacije (ime, email, uloga, status itd.).<br>4. Administrator pregledava listu korisnika.<br>5. Administrator može odabrati korisnika za detaljniji pregled ili izmjene. |
 | **Alternativni tokovi** | **A1: Nema korisničkih naloga**<br>2a. Sistem ne pronalazi nijedan korisnički nalog.<br>3a. Sistem prikazuje poruku da nema dostupnih korisnika.<br><br>**A2: Greška pri učitavanju**<br>2a. Sistem ne može učitati korisničke naloge.<br>3a. Sistem prikazuje poruku o grešci.<br><br>**A3: Neovlašten pristup**<br>1a. Korisnik bez administratorske uloge pokuša pristupiti modulu.<br>2a. Sistem blokira pristup.<br>3a. Sistem prikazuje poruku o zabrani pristupa. |
 | **Ishod** | Administrator ima pregled svih korisničkih naloga.<br>Omogućen je uvid u korisničke uloge.<br>Olakšano je upravljanje korisnicima.<br>Sistem omogućava dalje administrativne akcije. |
@@ -385,7 +444,7 @@ U sljedećoj tabeli su prikazani svi entiteti i svi atributi koji im pripadaju:
 | **Aktor** | Administrator |
 | **Naziv use case-a** | Promjena korisničke uloge |
 | **Kratak opis** | Ovaj use case opisuje proces u kojem administrator mijenja korisničku ulogu kako bi korisnik imao pristup funkcionalnostima koje odgovaraju njegovoj novoj odgovornosti u sistemu. |
-| **Preduslovi** | Administrator je prijavljen u sistem.<br>Postoje korisnički nalozi u sistemu.<br>Postoje definisane korisničke uloge.<br>Sistem je dostupan i funkcionalan. |
+| **Preduslovi** | Administrator je prijavljen u sistem.<br>Administrator ima pristup modulu za upravljanje korisnicima.<br>Sistem je dostupan. |
 | **Glavni tok** | 1. Administrator otvara modul za upravljanje korisnicima.<br>2. Administrator bira korisnika iz liste.<br>3. Administrator pregleda trenutnu korisničku ulogu.<br>4. Administrator bira novu korisničku ulogu.<br>5. Administrator potvrđuje izmjenu.<br>6. Sistem validira odabranu ulogu.<br>7. Sistem ažurira korisničku ulogu.<br>8. Sistem sprema promjene.<br>9. Sistem prikazuje potvrdu o uspješnoj izmjeni. |
 | **Alternativni tokovi** | **A1: Nevažeća uloga**<br>4a. Administrator odabere nepostojeću ili nevažeću ulogu.<br>6a. Sistem detektuje grešku.<br>7a. Sistem ne dozvoljava izmjenu.<br>8a. Sistem prikazuje poruku o grešci.<br><br>**A2: Greška pri spremanju**<br>7a. Sistem ne uspije spremiti promjene.<br>8a. Sistem prikazuje poruku o grešci.<br><br>**A3: Neovlašten pristup**<br>1a. Korisnik bez administratorske uloge pokuša pristupiti modulu.<br>2a. Sistem blokira pristup.<br>3a. Sistem prikazuje poruku o zabrani pristupa. |
 | **Ishod** | Korisniku je dodijeljena nova uloga.<br>Pristup funkcionalnostima je ažuriran.<br>Osigurana je sigurnost sistema.<br>Omogućena je bolja organizacija rada. |
@@ -397,7 +456,7 @@ U sljedećoj tabeli su prikazani svi entiteti i svi atributi koji im pripadaju:
 | **Aktor** | Administrator |
 | **Naziv use case-a** | Deaktivacija korisničkog naloga |
 | **Kratak opis** | Ovaj use case opisuje proces u kojem administrator deaktivira korisnički nalog kako bi spriječio dalji pristup korisniku koji više ne treba koristiti sistem. |
-| **Preduslovi** | Administrator je prijavljen u sistem.<br>Postoje korisnički nalozi u sistemu.<br>Korisnik čiji se nalog deaktivira postoji u sistemu.<br>Sistem je dostupan i funkcionalan. |
+| **Preduslovi** | Administrator je prijavljen u sistem.<br>Administrator ima pristup modulu za upravljanje korisnicima.<br>Sistem je dostupan. |
 | **Glavni tok** | 1. Administrator otvara modul za upravljanje korisnicima.<br>2. Administrator bira korisnički nalog iz liste.<br>3. Administrator pregleda detalje korisnika.<br>4. Administrator bira opciju za deaktivaciju naloga.<br>5. Administrator potvrđuje deaktivaciju.<br>6. Sistem mijenja status naloga u "deaktiviran".<br>7. Sistem onemogućava dalju prijavu korisnika.<br>8. Sistem sprema promjene.<br>9. Sistem prikazuje potvrdu o uspješnoj deaktivaciji. |
 | **Alternativni tokovi** | **A1: Već deaktiviran nalog**<br>4a. Administrator pokuša deaktivirati već deaktiviran nalog.<br>5a. Sistem prikazuje informaciju da je nalog već deaktiviran.<br><br>**A2: Greška pri spremanju**<br>6a. Sistem ne uspije promijeniti status naloga.<br>7a. Sistem prikazuje poruku o grešci.<br><br>**A3: Neovlašten pristup**<br>1a. Korisnik bez administratorske uloge pokuša izvršiti deaktivaciju.<br>2a. Sistem blokira pristup.<br>3a. Sistem prikazuje poruku o zabrani pristupa. |
 | **Ishod** | Korisnički nalog je deaktiviran.<br>Korisniku je onemogućen pristup sistemu.<br>Podaci o korisniku ostaju sačuvani u sistemu.<br>Osigurana je sigurnost i kontrola pristupa. |
@@ -433,7 +492,7 @@ U sljedećoj tabeli su prikazani svi entiteti i svi atributi koji im pripadaju:
 | **Aktor** | Dispečer |
 | **Naziv use case-a** | Pregled evidentiranog izvršenog rada |
 | **Kratak opis** | Ovaj use case opisuje proces u kojem dispečer pregledava evidentirani izvršeni rad kako bi imao uvid u aktivnosti koje je serviser obavio prije zatvaranja intervencije. |
-| **Preduslovi** | Dispečer je prijavljen u sistem.<br>Postoji intervencija sa evidentiranim izvršenim radom.<br>Serviser je unio podatke o izvršenom radu.<br>Sistem je dostupan i funkcionalan. |
+| **Preduslovi** | Dispečer je prijavljen u sistem.<br>Dispečer ima pristup intervencijama.<br>Sistem je dostupan. |
 | **Glavni tok** | 1. Dispečer otvara listu intervencija.<br>2. Dispečer bira intervenciju za pregled.<br>3. Dispečer otvara sekciju evidentiranog rada.<br>4. Sistem prikazuje detalje izvršenog rada (opis, vrijeme, utrošeni materijal itd.).<br>5. Dispečer pregledava unesene informacije.<br>6. Dispečer donosi odluku o daljim koracima (npr. zatvaranje intervencije). |
 | **Alternativni tokovi** | **A1: Nema evidentiranog rada**<br>3a. Intervencija nema unesene podatke o radu.<br>4a. Sistem prikazuje poruku da nema dostupnih informacija.<br><br>**A2: Greška pri učitavanju**<br>4a. Sistem ne može učitati podatke.<br>5a. Sistem prikazuje poruku o grešci.<br><br>**A3: Neovlašten pristup**<br>2a. Korisnik bez uloge dispečera pokuša pristupiti.<br>3a. Sistem blokira pristup.<br>4a. Sistem prikazuje poruku o zabrani. |
 | **Ishod** | Dispečer ima uvid u izvršeni rad.<br>Podaci o radu su jasno prikazani.<br>Omogućena je kontrola i verifikacija rada.<br>Intervencija je spremna za zatvaranje ili dodatne akcije. |
@@ -445,12 +504,11 @@ U sljedećoj tabeli su prikazani svi entiteti i svi atributi koji im pripadaju:
 | **Aktor** | Dispečer |
 | **Naziv use case-a** | Potvrda i zatvaranje intervencije |
 | **Kratak opis** | Ovaj use case opisuje proces u kojem dispečer potvrđuje i zatvara završenu intervenciju, kako bi proces bio formalno okončan u sistemu. |
-| **Preduslovi** | Dispečer je prijavljen u sistem.<br>Postoji intervencija koja je označena kao završena.<br>Evidentiran je izvršeni rad od strane servisera.<br>Sistem je dostupan i funkcionalan. |
+| **Preduslovi** | Dispečer je prijavljen u sistem.<br>Dispečer ima pristup intervenciji.<br>Sistem je dostupan. |
 | **Glavni tok** | 1. Dispečer otvara listu intervencija.<br>2. Dispečer bira završenu intervenciju.<br>3. Dispečer pregledava evidentirani rad i detalje intervencije.<br>4. Dispečer bira opciju za zatvaranje intervencije.<br>5. Dispečer potvrđuje zatvaranje.<br>6. Sistem mijenja status intervencije u "Zatvoreno".<br>7. Sistem bilježi promjenu u historiji aktivnosti.<br>8. Sistem prikazuje potvrdu o uspješnom zatvaranju. |
 | **Alternativni tokovi** | **A1: Nije evidentiran rad**<br>3a. Intervencija nema evidentiran izvršeni rad.<br>4a. Sistem ne dozvoljava zatvaranje.<br>5a. Sistem prikazuje poruku o grešci.<br><br>**A2: Greška pri zatvaranju**<br>6a. Sistem ne uspije promijeniti status.<br>7a. Sistem prikazuje poruku o grešci.<br><br>**A3: Neovlašten pristup**<br>1a. Korisnik bez uloge dispečera pokuša zatvoriti intervenciju.<br>2a. Sistem blokira pristup.<br>3a. Sistem prikazuje poruku o zabrani pristupa. |
 | **Ishod** | Intervencija je formalno zatvorena.<br>Status intervencije je ažuriran.<br>Proces je završen i evidentiran.<br>Osigurana je uredna evidencija i kontrola procesa. |
-| **Pretpostavke** | Serviser je prethodno unio tačne podatke o izvršenom radu.<br>Intervencija je spremna za zatvaranje (završena).<br>Dispečer ima odgovarajuća prava za zatvaranje intervencije. |
-| **Otvorena pitanja** | Da li je moguće ponovo otvoriti zatvorenu intervenciju?<br>Da li je potrebna dodatna verifikacija prije zatvaranja (npr. od strane klijenta)?<br>Ko sve ima pravo zatvoriti intervenciju osim dispečera? |
+
 
 ## Use Case 26 (US-26)
 
@@ -463,8 +521,7 @@ U sljedećoj tabeli su prikazani svi entiteti i svi atributi koji im pripadaju:
 | **Glavni tok** | 1. Korisnik otvara listu svojih zahtjeva.<br>2. Korisnik bira zahtjev koji želi izmijeniti.<br>3. Sistem prikazuje detalje zahtjeva.<br>4. Korisnik bira opciju za izmjenu.<br>5. Korisnik mijenja podatke (opis, lokacija, itd.).<br>6. Korisnik potvrđuje izmjene.<br>7. Sistem validira unesene podatke.<br>8. Sistem sprema izmjene.<br>9. Sistem prikazuje potvrdu o uspješnoj izmjeni. |
 | **Alternativni tokovi** | **A1: Zahtjev već u obradi**<br>2a. Zahtjev je već preuzet u obradu.<br>3a. Sistem ne dozvoljava izmjene.<br>4a. Sistem prikazuje poruku o zabrani izmjene.<br><br>**A2: Neispravni podaci**<br>5a. Korisnik unese nevažeće ili nepotpune podatke.<br>7a. Sistem detektuje grešku.<br>8a. Sistem ne sprema izmjene.<br>9a. Sistem prikazuje poruku o grešci.<br><br>**A3: Greška pri spremanju**<br>8a. Sistem ne uspije spremiti izmjene.<br>9a. Sistem prikazuje poruku o grešci. |
 | **Ishod** | Zahtjev je uspješno izmijenjen.<br>Podaci su ažurirani u sistemu.<br>Smanjena je mogućnost grešaka u obradi.<br>Zahtjev je spreman za dalju obradu sa tačnim informacijama. |
-| **Pretpostavke** | Korisnik unosi tačne i relevantne podatke.<br>Sistem omogućava izmjene samo prije obrade zahtjeva.<br>Korisnik ima prava pristupa svom zahtjevu. |
-| **Otvorena pitanja** | Da li postoji vremensko ograničenje za izmjenu zahtjeva?<br>Da li se čuva historija izmjena zahtjeva?<br>Može li dispečer ili serviser vidjeti prethodne verzije zahtjeva? |
+
 
 ## Use Case 27 (US-27)
 
@@ -477,8 +534,7 @@ U sljedećoj tabeli su prikazani svi entiteti i svi atributi koji im pripadaju:
 | **Glavni tok** | 1. Korisnik otvara listu svojih zahtjeva.<br>2. Korisnik bira zahtjev koji želi otkazati.<br>3. Sistem prikazuje detalje zahtjeva.<br>4. Korisnik bira opciju za otkazivanje zahtjeva.<br>5. Korisnik potvrđuje otkazivanje.<br>6. Sistem mijenja status zahtjeva u "Otkazan".<br>7. Sistem bilježi promjenu u historiji aktivnosti.<br>8. Sistem prikazuje potvrdu o uspješnom otkazivanju. |
 | **Alternativni tokovi** | **A1: Zahtjev već u obradi**<br>2a. Zahtjev je već u aktivnoj obradi.<br>3a. Sistem ne dozvoljava otkazivanje.<br>4a. Sistem prikazuje poruku o zabrani.<br><br>**A2: Greška pri otkazivanju**<br>6a. Sistem ne uspije promijeniti status zahtjeva.<br>7a. Sistem prikazuje poruku o grešci.<br><br>**A3: Neovlašten pristup**<br>2a. Korisnik pokuša pristupiti zahtjevu koji nije njegov.<br>3a. Sistem blokira pristup.<br>4a. Sistem prikazuje poruku o zabrani pristupa. |
 | **Ishod** | Zahtjev je uspješno otkazan.<br>Status zahtjeva je ažuriran.<br>Smanjen je broj nepotrebnih zahtjeva u sistemu.<br>Sistem održava urednu evidenciju zahtjeva. |
-| **Pretpostavke** | Korisnik pravovremeno reaguje prije početka obrade.<br>Sistem omogućava otkazivanje samo u određenim fazama.<br>Korisnik ima prava pristupa svom zahtjevu. |
-| **Otvorena pitanja** | Da li korisnik može ponovo aktivirati otkazani zahtjev?<br>Da li se čuva razlog otkazivanja?<br>Da li dispečer dobija obavijest o otkazivanju zahtjeva? |
+
 
 ## Use Case 28 (US-28)
 
@@ -487,12 +543,11 @@ U sljedećoj tabeli su prikazani svi entiteti i svi atributi koji im pripadaju:
 | **Aktor** | Dispečer |
 | **Naziv use case-a** | Promjena izvršioca intervencije |
 | **Kratak opis** | Ovaj use case opisuje proces u kojem dispečer mijenja izvršioca intervencije kako bi zadatak mogao biti dodijeljen drugom serviseru kada prvobitno dodijeljeni izvršilac ne može preuzeti ili završiti rad. |
-| **Preduslovi** | Dispečer je prijavljen u sistem.<br>Postoji kreirana i dodijeljena intervencija.<br>Postoji više servisera u sistemu.<br>Sistem je dostupan i funkcionalan. |
+| **Preduslovi** | Dispečer je prijavljen u sistem.<br>Dispečer ima pristup dodijeljenoj intervenciji.<br>Sistem je dostupan.|
 | **Glavni tok** | 1. Dispečer otvara listu intervencija.<br>2. Dispečer bira intervenciju kojoj želi promijeniti izvršioca.<br>3. Dispečer otvara opciju za promjenu izvršioca.<br>4. Sistem prikazuje listu dostupnih servisera.<br>5. Dispečer odabire novog servisera.<br>6. Dispečer potvrđuje promjenu.<br>7. Sistem ažurira izvršioca intervencije.<br>8. Sistem bilježi promjenu u historiji aktivnosti.<br>9. Sistem obavještava novog servisera o dodjeli. |
 | **Alternativni tokovi** | **A1: Nema dostupnih servisera**<br>4a. Sistem ne pronalazi dostupne servisere.<br>5a. Sistem prikazuje poruku da nema dostupnih izvršilaca.<br><br>**A2: Greška pri promjeni**<br>7a. Sistem ne uspije ažurirati izvršioca.<br>8a. Sistem prikazuje poruku o grešci.<br><br>**A3: Neovlašten pristup**<br>2a. Korisnik bez uloge dispečera pokuša izvršiti promjenu.<br>3a. Sistem blokira pristup.<br>4a. Sistem prikazuje poruku o zabrani pristupa. |
 | **Ishod** | Izvršilac intervencije je uspješno promijenjen.<br>Novi serviser je obaviješten.<br>Osiguran je kontinuitet procesa.<br>Promjena je evidentirana u sistemu. |
-| **Pretpostavke** | Postoje dostupni serviseri za preuzimanje zadatka.<br>Dispečer ima pravo izmjene izvršioca.<br>Sistem prati historiju dodjela. |
-| **Otvorena pitanja** | Da li je potrebno obrazloženje za promjenu izvršioca?<br>Da li prethodni serviser dobija obavijest o promjeni?<br>Da li postoji ograničenje koliko puta se izvršilac može promijeniti? |
+
 
 ## Use Case 29 (US-29)
 
@@ -505,8 +560,7 @@ U sljedećoj tabeli su prikazani svi entiteti i svi atributi koji im pripadaju:
 | **Glavni tok** | 1. Serviser otvara listu svojih intervencija.<br>2. Serviser bira intervenciju koju ne može završiti.<br>3. Serviser otvara opciju za vraćanje zadatka.<br>4. Serviser unosi razlog vraćanja (opcionalno).<br>5. Serviser potvrđuje akciju.<br>6. Sistem mijenja status intervencije (npr. "Za ponovnu dodjelu").<br>7. Sistem uklanja trenutnog izvršioca sa zadatka.<br>8. Sistem bilježi promjenu u historiji aktivnosti.<br>9. Sistem obavještava dispečera. |
 | **Alternativni tokovi** | **A1: Zadatak nije u toku**<br>2a. Intervencija nije u odgovarajućem statusu.<br>3a. Sistem ne dozvoljava vraćanje zadatka.<br>4a. Sistem prikazuje poruku o grešci.<br><br>**A2: Greška pri ažuriranju**<br>6a. Sistem ne uspije promijeniti status.<br>7a. Sistem prikazuje poruku o grešci.<br><br>**A3: Neovlašten pristup**<br>2a. Serviser pokuša pristupiti intervenciji koja mu nije dodijeljena.<br>3a. Sistem blokira pristup.<br>4a. Sistem prikazuje poruku o zabrani pristupa. |
 | **Ishod** | Intervencija je vraćena na ponovnu dodjelu.<br>Zadatak je dostupan dispečeru za novu organizaciju.<br>Smanjen je rizik od zastoja.<br>Promjena je evidentirana u sistemu. |
-| **Pretpostavke** | Serviser realno procjenjuje da ne može završiti zadatak.<br>Sistem omogućava promjenu statusa zadatka.<br>Dispečer će pravovremeno reagovati na promjenu. |
-| **Otvorena pitanja** | Da li je unos razloga vraćanja obavezan?<br>Da li dispečer dobija notifikaciju odmah?<br>Da li postoji ograničenje koliko puta se zadatak može vratiti? |
+
 
 ## Use Case 30 (US-30)
 
@@ -519,8 +573,7 @@ U sljedećoj tabeli su prikazani svi entiteti i svi atributi koji im pripadaju:
 | **Glavni tok** | 1. Korisnik otvara detalje intervencije.<br>2. Korisnik bira opciju za dodavanje napomene.<br>3. Korisnik unosi tekst napomene.<br>4. Korisnik potvrđuje unos.<br>5. Sistem validira unos.<br>6. Sistem sprema napomenu uz intervenciju.<br>7. Sistem bilježi promjenu u historiji aktivnosti.<br>8. Sistem prikazuje potvrdu o uspješnom unosu. |
 | **Alternativni tokovi** | **A1: Prazna napomena**<br>3a. Korisnik ne unese tekst napomene.<br>5a. Sistem detektuje grešku.<br>6a. Sistem ne sprema napomenu.<br>7a. Sistem prikazuje poruku o grešci.<br><br>**A2: Greška pri spremanju**<br>6a. Sistem ne uspije spremiti napomenu.<br>7a. Sistem prikazuje poruku o grešci.<br><br>**A3: Neovlašten pristup**<br>1a. Korisnik pokuša pristupiti intervenciji bez prava.<br>2a. Sistem blokira pristup.<br>3a. Sistem prikazuje poruku o zabrani pristupa. |
 | **Ishod** | Napomena je uspješno dodana uz intervenciju.<br>Informacije su dostupne svim relevantnim učesnicima.<br>Poboljšana je interna komunikacija.<br>Sve promjene su evidentirane u sistemu. |
-| **Pretpostavke** | Korisnici unose relevantne i jasne informacije.<br>Sistem omogućava više napomena po intervenciji.<br>Svi učesnici imaju pristup napomenama prema svojoj ulozi. |
-| **Otvorena pitanja** | Da li se napomene mogu uređivati ili brisati?<br>Da li postoji vremenski zapis i autor napomene?<br>Da li se šalju notifikacije kada se doda nova napomena? |
+
 
 ## Use Case 31 (US-31)
 
@@ -533,8 +586,7 @@ U sljedećoj tabeli su prikazani svi entiteti i svi atributi koji im pripadaju:
 | **Glavni tok** | 1. Dispečer se prijavljuje u sistem.<br>2. Sistem prikazuje početni ekran (dashboard).<br>3. Sistem prikazuje sažet pregled intervencija (broj po statusima, prioritetima itd.).<br>4. Sistem prikazuje ključne indikatore (npr. broj aktivnih, završenih, na čekanju).<br>5. Dispečer analizira prikazane podatke.<br>6. Dispečer koristi pregled za donošenje odluka ili dalju navigaciju. |
 | **Alternativni tokovi** | **A1: Nema podataka**<br>3a. Sistem ne pronalazi intervencije.<br>4a. Sistem prikazuje poruku da nema dostupnih podataka.<br><br>**A2: Greška pri učitavanju**<br>3a. Sistem ne može učitati podatke.<br>4a. Sistem prikazuje poruku o grešci.<br><br>**A3: Neovlašten pristup**<br>1a. Korisnik bez uloge dispečera pokuša pristupiti dashboardu.<br>2a. Sistem blokira pristup.<br>3a. Sistem prikazuje poruku o zabrani pristupa. |
 | **Ishod** | Dispečer ima brz pregled stanja sistema.<br>Omogućeno je brzo uočavanje zastoja.<br>Poboljšano je operativno odlučivanje.<br>Omogućen je lakši pristup detaljnim pregledima. |
-| **Pretpostavke** | Podaci u sistemu su ažurni i tačni.<br>Sistem redovno osvježava prikaz stanja.<br>Dispečer ima odgovarajuća prava pristupa. |
-| **Otvorena pitanja** | Da li se podaci ažuriraju u realnom vremenu?<br>Da li dispečer može prilagoditi prikaz (filteri, grafovi)?<br>Koji su ključni KPI pokazatelji koji se prikazuju? |
+
 
 ## Use Case 32 (US-32)
 
@@ -547,8 +599,7 @@ U sljedećoj tabeli su prikazani svi entiteti i svi atributi koji im pripadaju:
 | **Glavni tok** | 1. Dispečer otvara listu intervencija.<br>2. Dispečer bira intervenciju.<br>3. Dispečer otvara sekciju historije aktivnosti.<br>4. Sistem prikazuje hronološki zapis svih aktivnosti (statusi, promjene, dodjele itd.).<br>5. Sistem prikazuje dodatne informacije (vrijeme, korisnik, opis aktivnosti).<br>6. Dispečer pregledava historiju i analizira tok obrade. |
 | **Alternativni tokovi** | **A1: Nema historije aktivnosti**<br>3a. Intervencija nema evidentiranu historiju.<br>4a. Sistem prikazuje poruku da nema dostupnih podataka.<br><br>**A2: Greška pri učitavanju**<br>4a. Sistem ne može učitati podatke.<br>5a. Sistem prikazuje poruku o grešci.<br><br>**A3: Neovlašten pristup**<br>2a. Korisnik bez odgovarajuće uloge pokuša pristupiti.<br>3a. Sistem blokira pristup.<br>4a. Sistem prikazuje poruku o zabrani pristupa. |
 | **Ishod** | Dispečer ima potpun uvid u tok obrade intervencije.<br>Osigurana je transparentnost procesa.<br>Omogućeno je praćenje svih promjena.<br>Sistem podržava audit i kontrolu rada. |
-| **Pretpostavke** | Sistem bilježi sve relevantne aktivnosti i promjene.<br>Podaci u historiji su tačni i vremenski ispravni.<br>Dispečer ima pravo pristupa historiji aktivnosti. |
-| **Otvorena pitanja** | Koliko dugo se čuva historija aktivnosti?<br>Da li je moguće filtrirati ili pretraživati historiju?<br>Da li se može eksportovati historija (npr. PDF, izvještaj)? |
+
 
 ## Zaključak
 
