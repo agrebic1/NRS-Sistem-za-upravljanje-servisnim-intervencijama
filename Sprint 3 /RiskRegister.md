@@ -4,23 +4,23 @@ Tabela rizika:
 
 | ID | Opis rizika | Uzrok | Vjerovatnoća | Uticaj | Prioritet rizika | Plan mitigacije | Odgovorna osoba ili uloga | Status |
 |----|-------------|-------|--------------|--------|------------------|-----------------|---------------------------|--------|
-| R-01 | Problemi sa autentifikacijom i RBAC logikom: | Nedovoljno jasno definisana pravila pristupa i greške u implementaciji autentifikacije | 2 | 3 | 6 | Implementirati provjerene autentifikacijske mehanizme, jasno definisati RBAC pravila i izvršiti detaljno testiranje pristupa | Backend developer | Otvoren |
-| R-02 | Kašnjenje integracije između modula: |
-| R-03 | Preširok obim sprinta: |
-| R-04 | Nedovoljno testiranja po sprintu: |
-| R-05 | Prekompleksna logika prioriteta i dodjela: |
-| R-06 | Nejasno modeliranje statusa i toka intervencija: |
-| R-07 | Neravnomjeran doprinos članova tima: |
-| R-08 | Problemi sa kvalitetom podataka unesenih od strane korisnika: |
-| R-09 | Pogrešno razumijevanje zahtjeva ili uputa asistenata: |
-| R-10 | Loša raspodjela zadataka u timu: |
-| R-11 | Kašnjenje integracije paralelno razvijanih dijelova: |
-| R-12 | Kasne promjene odluka o modelu sistema: |
-| R-13 | Nedovoljno razrađeni alternativni scenariji: |
-| R-14 | Prevelika zavisnost između sprintova: |
-| R-15 | Površno tetsiranje samo happy path-a: |
-| R-16 | Ostavljanje previše posla za završne sprintove: |
-| R-17 | Tehnički dug koji se gomila kroz sprintove: |
+| R-01 | Problemi sa autentifikacijom i RBAC logikom: | Nedovoljno jasno definisana pravila pristupa i greške u implementaciji autentifikacije | 2 | 3 | 6 | Implementirati provjerene autentifikacijske mehanizme, jasno definisati RBAC pravila i izvršiti detaljno testiranje pristupa | Backend developer | U praćenju |
+| R-02 | Kašnjenje integracije između modula: | Neusklađen razvoj različitih modula i nedovoljna komunikacija u timu | 3 | 2 | 6 | Definisati jasne interfejse između modula i uvesti redovne integracione provjere | Team lead | U praćenju |
+| R-03 | Preširok obim sprinta: | Loša procjena vremena i prevelik broj zadataka u sprintu | 2 | 3 | 6 | Bolje planiranje sprinta i realnija procjena zadataka | Scrum master | Zatvoren |
+| R-04 | Nedovoljno testiranja po sprintu: | Nedostatak vremena ili resursa za testiranje | 2 | 3 | 6 | Uvesti obavezno testiranje i automatizovane testove prije završetka sprinta | QA / tim | U praćenju |
+| R-05 | Prekompleksna logika prioriteta i dodjela: | Previše pravila i nedovoljno jasno definisana poslovna logika | 2 | 2 | 4 | Pojednostaviti logiku i jasno definisati pravila za prioritete i dodjelu | Backend developer | Otvoren | 
+| R-06 | Nejasno modeliranje statusa i toka intervencija: | Nedovoljno definisan workflow i stanja intervencija | 2 | 3 | 6 | Definisati jasan workflow i dokumentovati sve statuse i prelaze između njih | Analitičar / Team lead | U praćenju |
+| R-07 | Neravnomjeran doprinos članova tima: | Loša raspodjela zadataka i nedostatak koordinacije | 2 | 2 | 4 | Jasno definisati zadatke i redovno pratiti napredak članova tima | Team lead | Otvoren |
+| R-08 | Problemi sa kvalitetom podataka unesenih od strane korisnika: | Nedostatak validacije i korisničke greške pri unosu | 3 | 2 | 6 | Uvesti validaciju podataka i ograničenja pri unosu | Backend / Frontend developer | U praćenju | 
+| R-09 | Pogrešno razumijevanje zahtjeva ili uputa asistenata: | Nedovoljno jasni zahtjevi i komunikacija unutar tima | 2 | 2 | 4 | Precizno definisati zahtjeve i održavati redovne sastanke za razjašnjenje | Team lead / cijeli tim | Zatvoren |
+| R-10 | Loša raspodjela zadataka u timu: | Neadekvatno planiranje i neuzimanje u obzir kapaciteta članova tima | 2 | 2 | 4 | Planirati zadatke prema sposobnostima i dostupnosti članova tima | Scrum master / Team lead | Otvoren |
+| R-11 | Kašnjenje integracije paralelno razvijanih dijelova: | Paralelni razvoj bez koordinacije i neusklađeni interfejsi | 3 | 2 | 6 | Redovno usklađivanje između timova i ranije testiranje integracije | Team lead | U praćenju |
+| R-12 | Kasne promjene odluka o modelu sistema: | Nedovoljno jasno definisani zahtjevi na početku projekta | 2 | 3 | 6 | Bolja analiza zahtjeva i validacija sa stakeholderima prije implementacije | Analitičar / Team lead | Otvoren |
+| R-13 | Nedovoljno razrađeni alternativni scenariji: | Fokus samo na osnovne (happy path) scenarije | 2 | 2 | 4 | Detaljnije definisati edge case-ove i negativne scenarije | Tim | Otvoren |
+| R-14 | Prevelika zavisnost između sprintova: | Loše planiranje i međusobna zavisnost funkcionalnosti | 2 | 3 | 6 | Planirati sprintove tako da budu što nezavisniji | Scrum master / Team lead | U praćenju |
+| R-15 | Površno tetsiranje samo happy path-a: | Nedostatak vremena ili fokus samo na osnovne funkcionalnosti | 3 | 2 | 6 | Uvesti testiranje edge case-ova i negativnih scenarija | QA / tim | U praćenju |
+| R-16 | Ostavljanje previše posla za završne sprintove: | Loše planiranje i odgađanje kompleksnih zadataka | 2 | 3 | 6 | Ravnomjerno rasporediti zadatke kroz sprintove | Scrum master | Otvoren |
+| R-17 | Tehnički dug koji se gomila kroz sprintove: | Brzo implementiranje bez refaktorisanja i optimizacije | 3 | 3 | 9 | Planirati refaktorisanje i redovno smanjivati tehnički dug | Development tim | U praćenju | 
 
 
 
