@@ -4,7 +4,7 @@ Tabela rizika:
 
 | ID | Opis rizika | Uzrok | Vjerovatnoća | Uticaj | Prioritet rizika | Plan mitigacije | Odgovorna osoba ili uloga | Status |
 |----|-------------|-------|--------------|--------|------------------|-----------------|---------------------------|--------|
-| R-01 | Problemi sa autentifikacijom i RBAC logikom: | | | | | | | |
+| R-01 | Problemi sa autentifikacijom i RBAC logikom: | Nedovoljno jasno definisana pravila pristupa i greške u implementaciji autentifikacije | 2 | 3 | 6 | Implementirati provjerene autentifikacijske mehanizme, jasno definisati RBAC pravila i izvršiti detaljno testiranje pristupa | Backend developer | Otvoren |
 | R-02 | Kašnjenje integracije između modula: |
 | R-03 | Preširok obim sprinta: |
 | R-04 | Nedovoljno testiranja po sprintu: |
