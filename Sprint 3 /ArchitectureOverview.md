@@ -125,346 +125,99 @@ Sistem je organizovan u četiri arhitektonska sloja. Svaki sloj ima precizno def
 --- 
 ## 4. Tok podataka i interakcija
 
-Svaka korisničku akcija u sistemu prolazi kroz jasno definisan višeslojni tok: počinje u prezentacijskom sloju, nastavlja se u aplikacijskom sloju gdje se primjenjuju sigurnosna pravila i poslovna logika, domenski sloj validira poslovne koncepte i statusne tranzicije, a infrastrukturni sloj osigurava trajnu pohranu i revizijski trag. Na isti način prolaze i dispečerske i serviserske akcije — svaka akcija ima svog ljudskog pokretača, i svaki tok završava konkretnom promjenom stanja sistema uz potpunu evidenciju.
+Svaka akcija u sistemu prolazi kroz jasno definisan put: počinje u korisničkom interfejsu, nastavlja se kroz slojeve koji provjeravaju ko je korisnik i šta smije raditi, primjenjuje poslovna pravila, i završava trajnom pohranjem podataka uz potpunu evidenciju svake promjene. Ovaj put nije slučajan, svaki korak postoji zbog konkretnog zahtjeva iz dokumentacije. Bez provjere identiteta nema sigurnosti (NFR-007, NFR-008). Bez provjere uloge dispečer bi mogao raditi ono što smije samo administrator (PBI-002). Bez evidencije promjena nema revizijskog traga koji zakon zahtijeva (EXT-ZAK-02).
 
-> **Napomena o dubini toka:** Neke akcije se u potpunosti rješavaju unutar jednog sloja (npr. prikaz podataka koji je već učitan u prezenacijskom sloju), neke prelaze kroz dva sloja (npr. validacija forme u prezentacijskom sloju pa pohrana u infrastrukturnom), dok se najsloženiji poslovni tokovi protežu kroz sva četiri sloja.
-
----
-
-### 4.1 Tok prijave zahtjeva za servisnu intervenciju (US-05)
-
-**Ko pokreće akciju:** Korisnik usluge koji želi prijaviti kvar.
-
-Korisnik usluge otvara formu za prijavu kvara u mobilnom ili desktop pretraživaču. Popunjava obavezna polja — opis problema, lokaciju i tip kvara — i šalje zahtjev.
-
-**Prezentacijski sloj** prima unos i primjenjuje prvu liniju validacije direktno u interfejsu: provjerava da li su obavezna polja popunjena i da li je format lokacije ispravan. Ako validacija ne prođe, greška se prikazuje korisniku bez ijednog zahtjeva prema serveru. Tek nakon uspješne klijentske validacije, interfejs šalje HTTP `POST /api/v1/interventions` zahtjev s JWT tokenom u `Authorization` headeru.
-
-**Aplikacijski sloj** prima zahtjev i odmah pokreće autentifikacijsku i autorizacijsku provjeru: Auth middleware verificira JWT token, a RBAC middleware potvrđuje da korisnik ima ulogu klijenta. Ako provjera ne prođe — zahtjev je blokiran ovdje, korisnik dobija odgovarajuću grešku. Intervention service zatim provodi server-side validaciju obaveznih polja neovisno o klijentskoj validaciji (NFR-005). Ovo je ključno sigurnosno pravilo: server nikad ne smije slijepo vjerovati unosu s klijenta.
-
-**Domenski sloj** kreira novi entitet `Zahtjev` i automatski mu dodjeljuje početni status `Na čekanju` (US-05 AC4). Entitet se veže za korisnički nalog koji ga je podnio (US-05 AC5). Ovdje se primjenjuju sva poslovna pravila vezana za životni ciklus zahtjeva.
-
-**Infrastrukturni sloj** upisuje novi entitet u PostgreSQL putem Supabase klijenta. RLS politike provjeravaju pristup na nivou baze — drugi sloj zaštite. Pohrana se potvrđuje povratnom informacijom prema gore.
-
-**Aplikacijski sloj** vraća HTTP 201 Created s ID-em novog zahtjeva. **Prezentacijski sloj** prikazuje korisniku potvrdu da je zahtjev uspješno evidentiran i da čeka obradu.
-
-Korisnik sada može pregledati vlastiti zahtjev i pratiti njegov status (US-06).
-
-```
-Korisnik usluge
-      │ popunjava formu za prijavu kvara
-      ▼
-[PREZENTACIJSKI SLOJ]
-  → klijentska validacija forme (obavezna polja, format lokacije)
-  → HTTP POST /api/v1/interventions + JWT token
-      │
-      ▼
-[APLIKACIJSKI SLOJ]
-  → Auth middleware: verifikacija JWT tokena
-  → RBAC middleware: provjera uloge klijenta
-  → Intervention service: server-side validacija polja (NFR-005)
-      │
-      ▼
-[DOMENSKI SLOJ]
-  → kreiranje entiteta Zahtjev
-  → dodjela statusa "Na čekanju" (US-05 AC4)
-  → vezivanje za korisnički nalog (US-05 AC5)
-      │
-      ▼
-[INFRASTRUKTURNI SLOJ]
-  → Repository: INSERT u PostgreSQL putem Supabase
-  → RLS politike: provjera pristupa na nivou baze
-      │
-      ▼
-[APLIKACIJSKI SLOJ]
-  → HTTP 201 Created + ID novog zahtjeva
-      │
-      ▼
-[PREZENTACIJSKI SLOJ]
-  → prikaz potvrde korisniku
-```
+Nije svaka akcija jednako složena. Neke se završe unutar jednog sloja. Primjerice, pregled podataka koji su već prikazani u interfejsu ne zahtijeva nikakav poziv prema serveru. Neke prelaze kroz dva sloja, čitanje podataka o intervenciji zahtijeva provjeru identiteta i dohvatanje iz baze, ali ne uključuje nikakvu poslovnu logiku. Najsloženiji tokovi, poput dodjele servisera, prolaze kroz sve četiri sloja jer uključuju sigurnosne provjere, poslovnu logiku provjere dostupnosti, kreiranje novih poslovnih entiteta i trajnu pohranu s evidencijom.
 
 ---
 
-### 4.2 Tok određivanja prioriteta i dodjele intervencije serviseru (US-12, US-09, US-11)
+### 4.1 Tok dodjele intervencije serviseru (US-09, US-11, US-12)
 
-**Ko pokreće akciju:** Dispečer koji obrađuje pristigle zahtjeve.
+**Ko pokreće akciju:** Dispečer koji obrađuje pristigle zahtjeve klijenata.
 
-Dispečer se prijavljuje u sistem i na kontrolnoj tabli (US-31) odmah vidi sažet pregled intervencija po fazama. Otvara listu otvorenih zahtjeva (US-07), pregleda detalje konkretne intervencije (US-08) i donosi odluku o prioritetu i dodjeli.
+Dispečer se prijavljuje u sistem i na svojoj kontrolnoj tabli odmah vidi sažet pregled svih otvorenih intervencija po fazama (US-31). Otvara listu zahtjeva (US-07), pregleda detalje konkretne intervencije (US-08) i donosi tri međusobno zavisne odluke: koliki je prioritet kvara, kada serviser izlazi na teren, i koji serviser je odgovaran.
 
-**Određivanje prioriteta (US-12):**
+Ove tri odluke su namjerno razdvojene u zasebne korake jer svaka ima svoju poslovnu logiku. Prioritet određuje redoslijed obrade i ne zahtijeva provjeru dostupnosti servisera. Planiranje termina zahtijeva uvid u kalendar i provjeru da li odabrani serviser već ima zakazan izlazak u to vrijeme, bez ove provjere sistem bi dozvolio konflikt termina (US-11). Tek nakon što su prioritet i termin definisani, dodjela serviseru ima smisla jer dispečer tada zna koga traži i kada.
 
-Dispečer odabire prioritet intervencije (hitno, visoko, srednje, nisko) i potvrđuje izbor.
+**Određivanje prioriteta:**
 
-**Prezentacijski sloj** šalje HTTP `PATCH /api/v1/interventions/{id}/priority` s JWT tokenom. **Aplikacijski sloj** verificira token i potvrđuje ulogu dispečera. Intervention service primjenjuje poslovnu logiku prioritizacije. **Domenski sloj** ažurira polje prioriteta na entitetu Intervencija. **Infrastrukturni sloj** izvršava `UPDATE` i bilježi promjenu u `HistorijaAktivnosti`. Dispečerski interfejs osvježava prikaz.
+Dispečer odabira prioritet intervencije i potvrđuje izbor. Korisnikov interfejs šalje zahtjev za izmjenu prioriteta prema sistemu. Sigurnosni sloj provjerava identitet korisnika i potvrđuje da ima ulogu dispečera, bez ove provjere bilo ko bi mogao mijenjati prioritete. Sloj poslovne logike primjenjuje pravila prioritizacije. Podaci se ažuriraju i svaka promjena se bilježi uz zapis o tome ko je, kada i šta promijenio (EXT-ZAK-02).
 
-**Planiranje termina (US-11):**
+**Planiranje termina:**
 
-Dispečer pregleda kalendar dostupnosti servisera i odabira termin izlaska na teren.
+Dispečer pregleda kalendar dostupnosti i odabira termin izlaska. Sloj poslovne logike provjerava dostupnost servisera i odsustvo konflikata s već zakazanim terminima (US-11). Ova provjera je ključna, bez nje sistem ne bi mogao garantovati da dodjela ima smisla u praksi. Planirani termin se bilježi na intervenciji.
 
-**Prezentacijski sloj** prikazuje dostupne termine. **Aplikacijski sloj** prima odabir termina — Assignment service provjerava dostupnost servisera i odsustvo konflikata termina (US-11). **Domenski sloj** bilježi planirani termin na entitetu Intervencija. **Infrastrukturni sloj** pohranjuje izmjenu i dodaje zapis u `HistorijaAktivnosti`.
+## Dispečer
 
-**Dodjela serviseru (US-09):**
-
-Dispečer iz liste dostupnih servisera odabira odgovornog izvršioca i potvrđuje dodjelu.
-
-**Prezentacijski sloj** šalje HTTP `PATCH /api/v1/interventions/{id}/assign` s JWT tokenom. **Aplikacijski sloj** verificira token, potvrđuje ulogu dispečera i poziva Assignment service koji provjerava dostupnost servisera. **Domenski sloj** kreira entitet `Dodjela`, ažurira status intervencije u `Dodijeljeno` i evidentira promjenu. **Infrastrukturni sloj** izvršava `UPDATE` na intervenciji i `INSERT` u `HistorijaAktivnosti` s identitetom dispečera i vremenskom oznakom (EXT-ZAK-02, US-32). **Aplikacijski sloj** vraća HTTP 200 OK. Serviser sada vidi novi zadatak u svom pregledu dodijeljenih intervencija (US-15).
-
-```
-Dispečer
-      │ pregleda listu otvorenih zahtjeva (US-07, US-08)
-      │ određuje prioritet → PATCH /api/v1/interventions/{id}/priority
-      │ planira termin    → Assignment service: provjera dostupnosti (US-11)
-      │ dodjeljuje serviseru → PATCH /api/v1/interventions/{id}/assign
-      ▼
-[APLIKACIJSKI SLOJ]
-  → Auth + RBAC: provjera uloge dispečera
-  → Intervention service: primjena logike prioritizacije
-  → Assignment service: provjera dostupnosti i konflikata termina (US-11)
-      │
-      ▼
-[DOMENSKI SLOJ]
-  → ažuriranje prioriteta na Intervenciji
-  → kreiranje entiteta Dodjela
-  → promjena statusa: "Na čekanju" → "Dodijeljeno"
-      │
-      ▼
-[INFRASTRUKTURNI SLOJ]
-  → UPDATE status intervencije
-  → INSERT u HistorijaAktivnosti (ko, kada, šta)
-      │
-      ▼
-[PREZENTACIJSKI SLOJ]
-  → osvježen prikaz dispečera
-  → novi zadatak vidljiv serviseru (US-15)
-```
+- pregleda otvorene intervencije (US-07, US-08)  
+- određuje prioritet  
+- planira termin izlaska na teren  
+- dodjeljuje serviseru  
 
 ---
 
-### 4.3 Tok prihvatanja zadatka i ažuriranja statusa intervencije (US-22, US-23, US-14)
+## [SIGURNOSNI SLOJ]
 
-**Ko pokreće akciju:** Serviser kome je zadatak dodijeljen.
-
-Serviser otvara mobilni interfejs i vidi listu dodijeljenih intervencija (US-15). Pregleda detalje zadatka — opis kvara, lokaciju, planirani termin, napomene dispečera (US-16). Donosi odluku: prihvata ili odbija zadatak.
-
-**Prihvatanje zadatka (US-22):**
-
-Serviser pritisne "Prihvati zadatak".
-
-**Prezentacijski sloj** šalje HTTP `PATCH /api/v1/interventions/{id}/accept`. **Aplikacijski sloj** verificira token i RBAC middleware provjerava da je upravo taj serviser dodijeljen toj konkretnoj intervenciji — ne bilo koji serviser, već tačno taj. **Domenski sloj** primjenjuje statusnu tranziciju: `Dodijeljeno → Prihvaćeno`. **Infrastrukturni sloj** bilježi promjenu s vremenskom oznakom u `HistorijaAktivnosti`. Dispečer na svojoj kontrolnoj tabli vidi da je serviser preuzeo zadatak.
-
-**Odbijanje zadatka (US-23):**
-
-Serviser pritisne "Odbij zadatak" i unese razlog odbijanja.
-
-**Prezentacijski sloj** šalje zahtjev s razlogom odbijanja. **Aplikacijski sloj** prima odbijanje — Assignment service registruje razlog i status intervencije se vraća u stanje koje zahtijeva ponovnu dodjelu (US-29). **Domenski sloj** bilježi odbijanje i razlog na entitetu Dodjela. **Infrastrukturni sloj** ažurira status i dodaje zapis u `HistorijaAktivnosti`. Dispečer dobija informaciju da je zadatak odbijen i može dodijeliti drugog servisera (US-28).
-
-**Ažuriranje statusa tokom rada (US-14):**
-
-Serviser je na terenu i ažurira status kako rad napreduje.
-
-**Prezentacijski sloj** šalje HTTP `PATCH /api/v1/interventions/{id}/status` s novim statusom i JWT tokenom. **Aplikacijski sloj** verificira token i RBAC middleware provjerava da je taj serviser dodijeljen toj konkretnoj intervenciji. Intervention service provjerava da li je zatražena statusna tranzicija dozvoljena prema definisanom životnom ciklusu intervencije:
-
-```
-Na čekanju → Dodijeljeno → Prihvaćeno → U toku → Završeno
-```
-
-Svaka tranzicija van ovog redoslijeda je odbijena na aplikacijskom sloju. **Domenski sloj** primjenjuje novu tranziciju. **Infrastrukturni sloj** izvršava `UPDATE` na statusu i `INSERT` u `HistorijaAktivnosti` s identitetom servisera i vremenskom oznakom (US-32). Dispečer u realnom vremenu prati napredak na kontrolnoj tabli (US-13).
-
-```
-Serviser
-      │ pregleda dodijeljene intervencije (US-15, US-16)
-      │ prihvata ili odbija zadatak (US-22 / US-23)
-      │ ažurira status tokom rada → PATCH /api/v1/interventions/{id}/status
-      ▼
-[APLIKACIJSKI SLOJ]
-  → Auth + RBAC: provjera da je taj serviser dodijeljen toj intervenciji
-  → Intervention service: validacija statusne tranzicije
-    (Na čekanju → Dodijeljeno → Prihvaćeno → U toku → Završeno)
-      │
-      ▼
-[DOMENSKI SLOJ]
-  → primjena dozvoljene statusne tranzicije
-  → evidencija odbijanja + razloga (US-23)
-      │
-      ▼
-[INFRASTRUKTURNI SLOJ]
-  → UPDATE status intervencije
-  → INSERT u HistorijaAktivnosti (ko, kada, šta) (US-32)
-      │
-      ▼
-[PREZENTACIJSKI SLOJ]
-  → osvježen prikaz servisera
-  → dispečer vidi ažurirani status na kontrolnoj tabli (US-13)
-```
+- provjera identiteta korisnika  
+- provjera da korisnik ima ulogu dispečera  
 
 ---
 
-### 4.4 Tok evidentiranja rada i zatvaranja intervencije (US-17, US-24, US-25)
+## [SLOJ POSLOVNE LOGIKE]
 
-**Ko pokreće akciju:** Serviser koji je završio rad na terenu, a zatim dispečer koji formalno zatvara proces.
-
-Serviser je završio intervenciju na terenu. Otvara formu za evidenciju i unosi utrošeno vrijeme, korištene materijale, opis obavljenih aktivnosti i opciono fotografije kao dokaze izvršenog rada (US-17, PBI-017).
-
-**Prezentacijski sloj** šalje HTTP `POST /api/v1/interventions/{id}/work-log` s podacima o radu i eventualnim slikovnim dokazima. **Aplikacijski sloj** verificira token i potvrđuje ulogu servisera. Intervention service validira unesene podatke. **Domenski sloj** kreira entitet `EvidencijaRada` i vezuje ga za intervenciju. **Infrastrukturni sloj** pohranjuje zapis u PostgreSQL, a slikovne dokaze u Supabase File Storage. Zapis se dodaje u `HistorijaAktivnosti`. Serviser ažurira status na `Završeno`.
-
-**Dispečer pregleda evidentirani rad (US-24):**
-
-Dispečer otvara intervenciju i pregleda sve što je serviser evidentirao — opis rada, utrošeno vrijeme, materijale i slikovne dokaze. Ova provjera je preduvjet za zatvaranje: dispečer mora biti siguran da je problem stvarno riješen.
-
-**Zatvaranje intervencije (US-25):**
-
-Dispečer potvrđuje zatvaranje. **Prezentacijski sloj** šalje HTTP `PATCH /api/v1/interventions/{id}/close`. **Aplikacijski sloj** verificira token i potvrđuje ulogu dispečera. Intervention service provjerava da su svi preduvjeti za zatvaranje ispunjeni — evidencija rada mora postojati. **Domenski sloj** primjenjuje finalnu statusnu tranziciju na `Zatvoreno` i zaključava intervenciju za dalje izmjene. **Infrastrukturni sloj** finalizira sve zapise i dodaje završni zapis u `HistorijaAktivnosti` s identitetom dispečera, datumom i vremenom zatvaranja. Korisnik koji je prijavio kvar može vidjeti da je njegova intervencija zatvorena (US-06).
-
-```
-Serviser
-      │ evidentira rad: vrijeme, materijal, opis, slike (US-17)
-      │ ažurira status na "Završeno"
-      ▼
-[APLIKACIJSKI SLOJ]
-  → validacija unesenih podataka o radu
-      │
-      ▼
-[DOMENSKI SLOJ]
-  → kreiranje entiteta EvidencijaRada
-  → vezivanje za Intervenciju
-      │
-      ▼
-[INFRASTRUKTURNI SLOJ]
-  → pohrana u PostgreSQL
-  → slikovni dokazi → Supabase File Storage (PBI-017)
-  → INSERT u HistorijaAktivnosti
-
-Dispečer
-      │ pregleda evidentirani rad (US-24)
-      │ potvrđuje zatvaranje → PATCH /api/v1/interventions/{id}/close
-      ▼
-[APLIKACIJSKI SLOJ]
-  → provjera preduvjeta: evidencija rada mora postojati
-      │
-      ▼
-[DOMENSKI SLOJ]
-  → finalna statusna tranzicija: "Završeno" → "Zatvoreno"
-  → zaključavanje intervencije za izmjene
-      │
-      ▼
-[INFRASTRUKTURNI SLOJ]
-  → finalizacija zapisa
-  → INSERT završni zapis u HistorijaAktivnosti (dispečer, datum, US-32)
-      │
-      ▼
-[PREZENTACIJSKI SLOJ]
-  → korisnik vidi status "Zatvoreno" na svom zahtjevu (US-06)
-```
+- primjena pravila prioritizacije  
+- provjera dostupnosti servisera i konflikata termina (US-11)  
+- provjera da je serviser stvarno slobodan za dodjelu  
 
 ---
 
-### 4.5 Autentifikacijski tok (US-02, US-03)
+## [SLOJ POSLOVNIH ENTITETA]
 
-**Ko pokreće akciju:** Bilo koji registrovani korisnik sistema koji pristupa sistemu.
-
-Korisnik otvara stranicu za prijavu i unosi email i lozinku. Ovo je polazna tačka za sve uloge — klijent, dispečer, serviser i administrator imaju isti mehanizam prijave, ali se nakon uspješne autentifikacije preusmjeravaju na interfejse specifične za svoju ulogu.
-
-**Prezentacijski sloj** šalje `POST /api/v1/auth/login`. **Aplikacijski sloj** prosljeđuje zahtjev Supabase Auth servisu. **Infrastrukturni sloj** (Supabase Auth) provjerava bcrypt hash lozinke; pri neuspjehu vraća generičku poruku o grešci kako bi se spriječilo otkrivanje validnih email adresa (NFR-007). Pri uspjehu, Supabase Auth izdaje JWT token s rokom trajanja 8 sati (NFR-008). **Aplikacijski sloj** čita korisničku ulogu iz tokena i preusmjerava korisnika na odgovarajući interfejs. **Prezentacijski sloj** pohranjuje token i sve naredne akcije prenose JWT u `Authorization` headeru — Auth middleware verificira token pri svakom zahtjevu, a RLS politike na bazi osiguravaju drugi sloj zaštite (NFR-009).
-
-Pri odjavi (US-03), **prezentacijski sloj** inicira invalidaciju tokena, sesija se uništava i korisnik se preusmjerava na stranicu za prijavu.
-
-```
-Korisnik (bilo koja uloga)
-      │ unosi email i lozinku
-      │ POST /api/v1/auth/login
-      ▼
-[APLIKACIJSKI SLOJ]
-  → prosljeđivanje prema Supabase Auth
-      │
-      ▼
-[INFRASTRUKTURNI SLOJ — Supabase Auth]
-  → provjera bcrypt hash lozinke
-  → generička greška pri neuspjehu (NFR-007)
-  → JWT token (8h trajanje) pri uspjehu (NFR-008)
-      │
-      ▼
-[APLIKACIJSKI SLOJ]
-  → čitanje uloge iz JWT tokena
-  → preusmjeravanje na interfejs prema ulozi
-      │
-      ▼
-[PREZENTACIJSKI SLOJ]
-  → pohrana JWT tokena
-  → svaki naredni zahtjev: JWT u Authorization headeru
-  → Auth middleware verificira token pri svakom zahtjevu
-  → RLS politike: drugi sloj zaštite (NFR-009)
-```
+- ažuriranje prioriteta na intervenciji  
+- kreiranje evidencije dodjele  
+- promjena statusa: `"Na čekanju"` → `"Dodijeljeno"`  
 
 ---
 
-### 4.6 Komunikacijski kanali
+## [SLOJ POHRANE]
+
+- trajno snimanje svih izmjena  
+- bilježenje: ko je dodijelio, kada, kome (EXT-ZAK-02, US-32)  
+
+---
+
+## [KORISNIKOV INTERFEJS]
+
+- osvježen prikaz dispečera  
+- novi zadatak vidljiv serviseru u njegovom pregledu (US-15)  
+
+---
+
+## Zašto ovaj redoslijed i ne neki drugi
+
+Sigurnosna provjera mora biti prva jer je besmisleno primjenjivati poslovnu logiku na zahtjev koji dolazi od neovlaštene osobe.  
+
+Poslovna logika mora doći prije kreiranja entiteta jer ne smijemo kreirati dodjelu ako serviser nije dostupan.  
+
+Pohrana je uvijek zadnja jer se snima samo ono što je prošlo sve prethodne provjere.
+
+### 4.2 Komunikacijski kanali
 
 | Komunikacijski kanal | Namjena | Protokol |
 |---|---|---|
-| Korisnik ↔ Prezentacijski sloj | Interakcija s UI-om, unos podataka, prikaz statusa i poruka | HTTPS / Browser |
-| Prezentacijski sloj ↔ Aplikacijski sloj | CRUD operacije, autentifikacija, ažuriranje statusa | HTTPS / REST API (`/api/v1/`) |
+| Korisnik ↔ Prezentacijski sloj | Interakcija sa UI-om, unos podataka, prikaz statusa i poruka | HTTPS / Browser |
+| Prezentacijski sloj → Aplikacijski sloj | CRUD operacije, autentifikacija, ažuriranje statusa | HTTPS / REST API (`/api/v1/`) |
 | Aplikacijski sloj ↔ Infrastrukturni sloj | Čitanje i pisanje poslovnih podataka putem Repository sloja | HTTPS (Supabase klijent) |
 | Aplikacijski sloj ↔ Supabase Auth | Verifikacija JWT tokena, upravljanje sesijama | HTTPS (Supabase Auth) |
-| Aplikacijski sloj ↔ HistorijaAktivnosti | Evidentiranje svih promjena na intervencijama | Interni servisni poziv (Audit logger) |
+| Aplikacijski sloj ↔ AuditLogger | Evidentiranje svih promjena na intervencijama | Interni servisni poziv (Audit logger) |
 | Infrastrukturni sloj ↔ PostgreSQL | Perzistencija podataka, RLS provjere pristupa | SQL (interno) |
 | Infrastrukturni sloj ↔ File Storage | Pohrana slikovnih dokaza evidentiranog rada (PBI-017) | HTTPS (Supabase Storage) |
 
 ---
 
-### 4.7 Vizualni prikaz: koje akcije ostaju u jednom sloju, a koje se protežu kroz sve slojeve
+### 4.3 Zašto ne neki drugi pristup komunikacije
 
-Nije svaka akcija jednako "duboka". Neke se rješavaju unutar jednog sloja i nikad ne dolaze do baze, neke prelaze kroz dva sloja, a puni poslovni tokovi protežu se kroz sva četiri. Sljedeći primjeri to ilustruju:
-
-**Primjer A — Akcija unutar jednog sloja:**
-Korisnik otvara pregled vlastitog zahtjeva (US-06). Ako su podaci već učitani i prikazani u interfejsu, jedina aktivnost je u prezentacijskom sloju — prikaz već dostupnih podataka. Nema HTTP zahtjeva, nema poziva prema serveru.
-
-**Primjer B — Akcija kroz dva sloja:**
-Serviser otvara stranicu sa detaljima zadatka (US-16). Prezentacijski sloj šalje zahtjev za podatke, aplikacijski sloj verificira token i dohvaća podatke iz infrastrukturnog sloja, vraća ih u prezentacijski sloj koji ih prikazuje. Domenski sloj nije uključen jer nema poslovne logike — samo čitanje postojećeg entiteta.
-
-**Primjer C — Akcija kroz sva četiri sloja:**
-Dispečer dodjeljuje intervenciju serviseru (US-09). Tok prolazi kroz: prezentacijski sloj (UI akcija i HTTP zahtjev) → aplikacijski sloj (autentifikacija, autorizacija, Assignment service, provjera dostupnosti) → domenski sloj (kreiranje entiteta Dodjela, statusna tranzicija, poslovna pravila) → infrastrukturni sloj (pohrana u bazu, zapis u HistorijaAktivnosti, RLS provjere).
-
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│  PRIMJER A: Pregled podataka (US-06)                                │
-│                                                                     │
-│  [PREZENTACIJSKI]  ←── samo prikaz već učitanih podataka           │
-│       ↕                                                             │
-│  [APLIKACIJSKI]    ←── GET podaci, verifikacija tokena             │
-│       ↕                                                             │
-│  [DOMENSKI]        ←── nije uključen (samo čitanje)                │
-│       ↕                                                             │
-│  [INFRASTRUKTURNI] ←── SELECT iz baze                              │
-└─────────────────────────────────────────────────────────────────────┘
-
-┌─────────────────────────────────────────────────────────────────────┐
-│  PRIMJER B: Ažuriranje statusa (US-14)                              │
-│                                                                     │
-│  [PREZENTACIJSKI]  ←── PATCH /status, korisnikov unos              │
-│       ↕                                                             │
-│  [APLIKACIJSKI]    ←── Auth + RBAC + validacija tranzicije         │
-│       ↕                                                             │
-│  [DOMENSKI]        ←── primjena statusne tranzicije                │
-│       ↕                                                             │
-│  [INFRASTRUKTURNI] ←── UPDATE + INSERT u HistorijaAktivnosti       │
-└─────────────────────────────────────────────────────────────────────┘
-
-┌─────────────────────────────────────────────────────────────────────┐
-│  PRIMJER C: Dodjela intervencije serviseru (US-09)                  │
-│             → Najsloženiji tok, prolazi kroz SVA ČETIRI sloja       │
-│                                                                     │
-│  [PREZENTACIJSKI]  ←── UI akcija + PATCH /assign + JWT             │
-│       ↕                                                             │
-│  [APLIKACIJSKI]    ←── Auth + RBAC + Assignment service            │
-│                        provjera dostupnosti servisera (US-11)       │
-│       ↕                                                             │
-│  [DOMENSKI]        ←── kreiranje entiteta Dodjela                  │
-│                        statusna tranzicija: Na čekanju→Dodijeljeno  │
-│       ↕                                                             │
-│  [INFRASTRUKTURNI] ←── UPDATE + INSERT HistorijaAktivnosti         │
-│                        RLS provjera pristupa                        │
-└─────────────────────────────────────────────────────────────────────┘
-```
+Jedina alternativa koja je razmatrana bila je direktna komunikacija između korisničkog interfejsa i baze podataka, bez slojeva poslovne logike između. Ovaj pristup bi bio brži za implementaciju, ali bi u potpunosti uklonio mogućnost primjene sigurnosnih provjera i poslovnih pravila na centralnom mjestu. Provjera dostupnosti servisera, validacija statusnih tranzicija i evidencija promjena moraju biti na jednom kontrolisanom mjestu — ne raspršene po korisničkom interfejsu koji se lako može zaobići. Odabrani pristup to garantuje jer svaki zahtjev neizbježno prolazi kroz isti sigurnosni i logički sloj, bez obzira odakle dolazi.
 
 ---
 
