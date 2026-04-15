@@ -1,20 +1,25 @@
-# Test strategy 
+# Test Strategy 
 
 ## Cilj testiranja
 
-Cilj testiranja je provjeriti i osigurati da sistem za upravljanje servisnim intervencijama funkcioniše ispravno, pouzdano i u skladu sa definisanim zahtjevima, user storyjima i acceptance kriterijima. Testiranjem se ne provjerava samo da li su pojedine funkcionalnosti tehnički implementirane bez grešaka, već i da li su ispravno osmišljene i realizovane u skladu sa stvarnim potrebama korisnika i predviđenim tokom poslovnog procesa.
+Cilj testiranja je provjeriti i osigurati da sistem za upravljanje servisnim intervencijama funkcioniše ispravno, pouzdano i u skladu sa definisanim zahtjevima, user storyjima i acceptance kriterijima.
 
-U tom smislu, testiranje obuhvata i **verifikaciju** i **validaciju** sistema. Verifikacijom se provjerava da li je sistem izgrađen ispravno u odnosu na specifikaciju i definisane zahtjeve, dok se validacijom provjerava da li razvijeno rješenje zaista odgovara svojoj namjeni i podržava aktivnosti svih relevantnih korisničkih uloga u sistemu.
+Testiranjem se ne provjerava samo da li su pojedine funkcionalnosti tehnički implementirane bez grešaka, nego i da li su osmišljene i realizovane u skladu sa stvarnim potrebama korisnika i predviđenim tokom poslovnog procesa.
 
-Poseban fokus testiranja stavlja se na tačnost obrade i prikaza podataka, ispravnost prava pristupa prema korisničkim ulogama, povezanost i međusobnu usklađenost modula, pravilno odvijanje glavnog toka od prijave zahtjeva do zatvaranja intervencije, kao i na podršku najvažnijim alternativnim scenarijima koji se mogu pojaviti u stvarnom radu sistema.
+Na taj način testiranje obuhvata i verifikaciju i validaciju sistema, kao i provjeru da li razvijeno rješenje zaista podržava rad svih relevantnih korisničkih uloga.
+
+Glavni ciljevi testiranja su:
+- provjeriti ispunjenost funkcionalnih zahtjeva
+- potvrditi usklađenost sa acceptance kriterijima
+- provjeriti ispravnost prava pristupa i korisničkih uloga
+- osigurati ispravno odvijanje glavnog i alternativnih tokova rada
+- smanjiti rizik od grešaka u produkciji
+- obezbijediti pouzdan i upotrebljiv sistem za sve korisničke uloge
 
 ## Nivoi testiranja
 
-U okviru ovog projekta testiranje se organizuje kroz više nivoa kako bi se kvalitet sistema provjerio iz različitih perspektiva. Na taj način ne provjerava se samo da li pojedinačne funkcionalnosti rade tehnički ispravno, nego i da li moduli međusobno pravilno sarađuju, da li kompletan sistem podržava predviđeni tok rada te da li razvijeno rješenje odgovara stvarnim potrebama korisnika i definisanim zahtjevima.
+U okviru ovog projekta testiranje se organizuje kroz klasične nivoe testiranja, a dodatno se primjenjuju i pojedine vrste testiranja koje predstavljaju poseban fokus provjere kvaliteta. Na taj način se ne provjerava samo da li pojedinačne funkcionalnosti rade tehnički ispravno, nego i da li moduli pravilno sarađuju, da li kompletan sistem podržava predviđeni tok rada, da li su prava pristupa ispravno ograničena i da li je sistem razumljiv i upotrebljiv za različite korisničke uloge.
 
-Korištenjem više nivoa testiranja obuhvataju se i **verifikacija** i **validacija** sistema. Verifikacijom se provjerava da li je sistem implementiran ispravno u odnosu na specifikaciju i definisane zahtjeve, dok se validacijom provjerava da li razvijeno rješenje zaista odgovara svojoj namjeni i podržava stvarni poslovni proces servisnih intervencija.
-
-Iako su nivoi testiranja konceptualno odvojeni, pojedini testni scenariji mogu se koristiti na više nivoa testiranja, pri čemu se njihova svrha razlikuje u zavisnosti od fokusa provjere.
 
 ### Unit testiranje
 
@@ -59,6 +64,21 @@ U okviru ovog projekta prihvatno testiranje obuhvata provjeru:
 - da li administrator može upravljati internim korisnicima i pravima pristupa
 - da li sistem u cjelini podržava predviđeni poslovni proces i potrebe svih relevantnih korisničkih uloga
 
+### Tabelarni pregled nivoa testiranja
+
+| Nivo testiranja | Svrha | Šta se testira u projektu |
+|-----------------|-------|---------------------------|
+| **Unit testiranje** | Provjera pojedinačnih funkcija, pravila i logičkih cjelina | validacija unosa, logika prioriteta, pravila prelaza statusa, osnovne provjere prava pristupa, pomoćne funkcije |
+| **Integraciono testiranje** | Provjera saradnje povezanih modula i razmjene podataka | registracija i prijava sa bazom, prijava zahtjeva i evidentiranje, prikaz zahtjeva korisniku i dispečeru, dodjela zadatka serviseru, evidentiranje i pregled rada |
+| **Sistemsko testiranje** | Provjera kompletnog sistema kao jedne funkcionalne cjeline | glavni tok od prijave zahtjeva do zatvaranja intervencije, dispečerska obrada, serviserski tok rada, alternativni scenariji |
+| **Prihvatno testiranje** | Provjera usklađenosti sistema sa zahtjevima, user storyjima i potrebama korisnika | podrška radu korisnika usluge, dispečera, servisera i administratora, kao i usklađenost sa predviđenim poslovnim procesom |
+
+Kombinovanjem navedenih nivoa testiranja nastoji se osigurati da sistem bude tehnički ispravan, međusobno usklađen i funkcionalno prikladan za stvarnu upotrebu u okviru predviđenog poslovnog procesa.
+
+## Dodatne vrste testiranja 
+
+Pored navedenih nivoa testiranja, u okviru projekta primjenjuju se i dodatne vrste testiranja koje predstavljaju poseban fokus provjere kvaliteta.
+
 ### Regresijsko testiranje
 
 Regresijsko testiranje koristi se za provjeru da nove izmjene i funkcionalnosti nisu narušile ispravnost dijelova sistema koji su ranije implementirani. Ovo je posebno važno u agilnom načinu razvoja, gdje se sistem proširuje postepeno i gdje svaka nova izmjena može uticati na postojeće funkcionalnosti.
@@ -70,7 +90,7 @@ U okviru ovog projekta regresijsko testiranje provodi se nakon uvođenja novih f
 - serviserskog rada na zadatku
 - zatvaranja intervencije
 
-### Testiranje korisničkog interfejsa
+### Testiranje korisničkog interfejsa (UI testiranje)
 
 Testiranje korisničkog interfejsa koristi se za provjeru ispravnosti i preglednosti korisničkog interfejsa. Na ovom nivou provjerava se da li forme, prikazi, poruke i osnovna navigacija funkcionišu ispravno i da li su razumljivi korisnicima različitih uloga.
 
@@ -82,192 +102,77 @@ U okviru ovog projekta testiranje korisničkog interfejsa obuhvata:
 - pregled statusa, detalja i napomena
 - osnovnu preglednost i upotrebljivost interfejsa za korisnike usluge, dispečera, servisera i administratora
 
-### Tabelarni pregled nivoa testiranja
+### Sigurnosno testiranje
+Sigurnosno testiranje koristi se za provjeru zaštite sistema, korisničkih naloga, sesija i prava pristupa. Njegov cilj je potvrditi da neovlašteni korisnici ne mogu pristupiti funkcionalnostima i podacima koji im ne pripadaju, te da autentifikacija i autorizacija rade ispravno.
 
-| Nivo testiranja | Svrha | Šta se testira u projektu |
-|-----------------|-------|---------------------------|
-| **Unit testiranje** | Provjera pojedinačnih funkcija, pravila i logičkih cjelina | validacija unosa, logika prioriteta, pravila prelaza statusa, osnovne provjere prava pristupa, pomoćne funkcije |
-| **Integraciono testiranje** | Provjera saradnje povezanih modula i razmjene podataka | registracija i prijava sa bazom, prijava zahtjeva i evidentiranje, prikaz zahtjeva korisniku i dispečeru, dodjela zadatka serviseru, evidentiranje i pregled rada |
-| **Sistemsko testiranje** | Provjera kompletnog sistema kao jedne funkcionalne cjeline | glavni tok od prijave zahtjeva do zatvaranja intervencije, dispečerska obrada, serviserski tok rada, alternativni scenariji |
-| **Prihvatno testiranje** | Provjera usklađenosti sistema sa zahtjevima, user storyjima i potrebama korisnika | podrška radu korisnika usluge, dispečera, servisera i administratora, kao i usklađenost sa predviđenim poslovnim procesom |
-| **Regresijsko testiranje** | Provjera da nove izmjene nisu pokvarile ranije implementirane funkcionalnosti | autentifikacija, prijava i pregled zahtjeva, dodjela, serviserski tok rada, zatvaranje intervencije |
-| **Testiranje korisničkog interfejsa** | Provjera ispravnosti i preglednosti korisničkog interfejsa | forme, prikazi, poruke o grešci, statusi, detalji, napomene i osnovna upotrebljivost interfejsa |
+U okviru ovog projekta sigurnosno testiranje obuhvata:
+- provjeru autentifikacije i upravljanja sesijom
+- provjeru pristupa funkcionalnostima prema korisničkoj ulozi
+- provjeru zabrane pristupa tuđim zahtjevima i intervencijama
+- provjeru sigurnosti osjetljivih operacija nad korisničkim nalozima i podacima
 
-Kombinovanjem navedenih nivoa testiranja nastoji se osigurati da sistem bude tehnički ispravan, međusobno usklađen i funkcionalno prikladan za stvarnu upotrebu u okviru predviđenog poslovnog procesa.
+### Testiranje upotrebljivosti
+Testiranje upotrebljivosti koristi se za provjeru da li je sistem razumljiv, pregledan i praktičan za korištenje različitim korisničkim ulogama. Fokus nije samo na tehničkoj ispravnosti, nego i na tome da li korisnici mogu lako razumjeti prikazane informacije i izvršiti potrebne akcije bez zabune.
+
+U okviru ovog projekta testiranje upotrebljivosti obuhvata:
+- razumljivost formi i poruka sistema
+- preglednost lista, detaljnih prikaza i statusa
+- jasnoću akcija za dispečera, servisera, administratora i korisnika usluge
+- praktičnost osnovnih tokova rada kroz sistem
+
+### Povezanost dodatnih vrsta testiranja sa nivoima testiranja
+
+Dodatne vrste testiranja ne predstavljaju zaseban nivo testiranja, nego se provode unutar jednog ili više nivoa, u zavisnosti od toga šta se provjerava i koji je fokus testiranja.
+
+| Vrsta / aspekt testiranja | Unit | Integraciono | Sistemsko | Prihvatno |
+|---------------------------|------|--------------|-----------|-----------|
+| **Funkcionalno testiranje** | ✓ | ✓ | ✓ | ✓ |
+| **Regresijsko testiranje** | ✓ | ✓ | ✓ | ✓ |
+| **Testiranje korisničkog interfejsa** |  | ✓ | ✓ | ✓ |
+| **Sigurnosno testiranje** | ✓ | ✓ | ✓ | ✓ |
+| **Testiranje upotrebljivosti** |  |  | ✓ | ✓ |
+
+### Provjera rješenja razvijenih uz podršku AI alata
+
+S obzirom na intenzivno korištenje AI alata u razvoju sistema tokom sprintova 5 do 11, poseban fokus testiranja stavlja se i na provjeru rješenja koja su djelimično ili u potpunosti nastala uz podršku AI alata. Tim ne prihvata AI-generisana rješenja bez dodatne provjere, nego ih verifikuje kroz ručni pregled, poređenje sa zahtjevima, user storyjima, acceptance kriterijima i poslovnim pravilima, kao i kroz odgovarajuće nivoe testiranja.
+
+Na taj način osigurava se da AI-podržana implementacija nije samo tehnički uvjerljiva, nego i stvarno ispravna, korisna i usklađena sa potrebama sistema. Odgovornost za ispravnost implementacije zadržava tim, bez obzira na to da li je određeno rješenje nastalo ručno ili uz podršku AI alata.
   
 ## Šta se testira na kojem nivou
 
-Nakon definisanja nivoa testiranja, potrebno je jasno odrediti koje funkcionalnosti i aspekti sistema se provjeravaju na kojem nivou. Time se osigurava da testiranje bude direktno povezano sa konkretnim dijelovima sistema i stvarnim poslovnim tokom servisnih intervencija, a ne svedeno samo na opšti opis vrsta testova.
+Nakon definisanja nivoa i dodatnih vrsta testiranja, potrebno je jasno odrediti koje funkcionalnosti i aspekti sistema se provjeravaju na kojem nivou. Time se osigurava da testiranje bude direktno povezano sa konkretnim dijelovima sistema i stvarnim poslovnim tokom servisnih intervencija.
 
-U okviru ovog projekta pojedine funkcionalne cjeline testiraju se na više nivoa, ali sa različitim fokusom. Ista funkcionalnost može biti predmet unit testiranja radi provjere pojedinačne logike, integracionog testiranja radi provjere povezanosti sa drugim modulima, sistemskog testiranja radi provjere mjesta te funkcionalnosti u cjelokupnom toku rada, te prihvatnog testiranja radi provjere da li rješenje zaista odgovara potrebama korisnika i definisanom poslovnom procesu.
+### Tabelarni pregled funkcionalnosti i nivoa / vrsta testiranja
 
-### 1. Autentifikacija i pristup sistemu
+| Funkcionalnost / cjelina | Unit | Integraciono | Sistemsko | Prihvatno | Regresijsko | UI | Sigurnosno | Upotrebljivost |
+|--------------------------|------|--------------|-----------|-----------|-------------|----|------------|----------------|
+| Autentifikacija i pristup sistemu | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |  |
+| Upravljanje korisnicima, ulogama i pravima pristupa | ✓ | ✓ | ✓ | ✓ | ✓ |  | ✓ |  |
+| Prijava i pregled zahtjeva korisnika usluge | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |  | ✓ |
+| Izmjena i otkazivanje zahtjeva | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |  | ✓ |
+| Dispečerski pregled i obrada intervencija | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |  | ✓ |
+| Određivanje prioriteta intervencije | ✓ | ✓ | ✓ | ✓ | ✓ |  |  |  |
+| Dodjela i organizacija izvršenja intervencije |  | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Planiranje intervencije | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |  | ✓ |
+| Pregled i preuzimanje zadataka od strane servisera |  | ✓ | ✓ | ✓ | ✓ | ✓ |  | ✓ |
+| Ažuriranje toka rada na terenu | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |  | ✓ |
+| Evidentiranje i pregled izvršenog rada | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |  | ✓ |
+| Zatvaranje intervencije |  | ✓ | ✓ | ✓ | ✓ | ✓ |  | ✓ |
+| Komunikacija na intervenciji |  | ✓ | ✓ | ✓ | ✓ | ✓ |  | ✓ |
+| Praćenje historije aktivnosti |  | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |  |
 
-Funkcionalnosti registracije, prijave i odjave korisnika testiraju se kroz unit, integraciono, sistemsko, prihvatno, regresijsko i testiranje korisničkog interfejsa.
 
-Na **unit nivou** provjerava se validacija unosa, obavezna polja, format email adrese, osnovna pravila lozinke i logika autentifikacije.  
-Na **integracionom nivou** provjerava se povezivanje registracije i prijave sa bazom podataka, kreiranje korisničkog naloga, upravljanje sesijom i pravilno prepoznavanje korisničke uloge nakon prijave.  
-Na **sistemskom nivou** provjerava se da li korisnik može pristupiti sistemu i koristiti funkcionalnosti u skladu sa svojom ulogom.  
-Na **prihvatnom nivou** provjerava se da li autentifikacija zaista podržava očekivani način pristupa sistemu za klijente i interne korisnike.  
-Na **regresijskom nivou** provjerava se da kasnije izmjene ne naruše registraciju, prijavu i odjavu.  
-Kroz **testiranje korisničkog interfejsa** provjeravaju se forme, validacijske poruke, poruke greške i preglednost procesa prijave i registracije.
+**Autentifikacija i pristup sistemu** testiraju se kroz više nivoa jer obuhvataju validaciju unosa, vezu sa bazom podataka, upravljanje sesijom, prikaz formi i sigurnost pristupa prema korisničkim ulogama.
 
-### 2. Upravljanje korisnicima, ulogama i pravima pristupa
+**Upravljanje korisnicima, ulogama i pravima pristupa** zahtijeva provjeru poslovnih pravila dodjele uloga, stvarnog ograničenja pristupa i sigurnosti administratorskih operacija.
 
-Funkcionalnosti vezane za kreiranje internih korisnika, pregled naloga, promjenu uloga, deaktivaciju naloga i kontrolu pristupa prema korisničkoj ulozi testiraju se kroz unit, integraciono, sistemsko, prihvatno i regresijsko testiranje.
+**Prijava, izmjena i otkazivanje zahtjeva** testiraju se zbog validacije unosa, pravilnog spremanja podataka, prikaza korisniku i logike dozvoljenih promjena u zavisnosti od faze obrade.
 
-Na **unit nivou** provjeravaju se pravila dodjele uloga, ograničenja pristupa i osnovna logika promjene statusa naloga.  
-Na **integracionom nivou** provjerava se da li promjena korisničke uloge ili statusa naloga ispravno utiče na funkcionalnosti koje korisnik vidi i koristi.  
-Na **sistemskom nivou** provjerava se da li različiti korisnici zaista imaju pristup samo onim dijelovima sistema koji odgovaraju njihovoj ulozi.  
-Na **prihvatnom nivou** provjerava se da li sistem podržava stvarnu poslovnu podjelu odgovornosti između administratora, dispečera, servisera i klijenata.  
-Na **regresijskom nivou** provjerava se da nove izmjene u korisničkim nalozima i ulogama nisu narušile postojeću kontrolu pristupa.
+**Dispečerski pregled, obrada, određivanje prioriteta, dodjela i planiranje intervencije** testiraju se kao jezgro operativnog toka sistema, jer direktno utiču na organizaciju izvršenja i tok rada svih narednih koraka.
 
-### 3. Prijava i pregled zahtjeva korisnika usluge
+**Serviserski tok rada**, uključujući pregled zadataka, prihvatanje ili odbijanje zadatka, ažuriranje statusa i evidentiranje izvršenog rada, testira se kako bi se osiguralo da sistem pravilno podržava rad na terenu i razmjenu informacija sa dispečerom.
 
-Funkcionalnosti prijave zahtjeva i pregleda vlastitog zahtjeva testiraju se kroz unit, integraciono, sistemsko, prihvatno, regresijsko i testiranje korisničkog interfejsa.
-
-Na **unit nivou** provjeravaju se validacija unosa, obavezna polja i osnovna pravila za evidentiranje zahtjeva.  
-Na **integracionom nivou** provjerava se da li se zahtjev pravilno sprema u bazu, da li dobija početni status i da li je povezan sa korisnikom koji ga je podnio.  
-Na **sistemskom nivou** provjerava se da li korisnik može prijaviti zahtjev i zatim pregledati njegove osnovne informacije i status.  
-Na **prihvatnom nivou** provjerava se da li sistem zaista podržava korisničku potrebu da prijavi problem i prati njegovu obradu.  
-Na **regresijskom nivou** provjerava se da uvođenje novih funkcionalnosti ne naruši prijavu i pregled zahtjeva.  
-Kroz **testiranje korisničkog interfejsa** provjeravaju se forma za prijavu zahtjeva, poruke o grešci, pregled zahtjeva i prikaz statusa.
-
-### 4. Izmjena i otkazivanje zahtjeva
-
-Funkcionalnosti izmjene i otkazivanja zahtjeva testiraju se kroz unit, integraciono, sistemsko, prihvatno, regresijsko i testiranje korisničkog interfejsa.
-
-Na **unit nivou** provjeravaju se pravila koja određuju kada je izmjena ili otkazivanje dozvoljeno.  
-Na **integracionom nivou** provjerava se da li promjena podataka ili statusa pravilno utiče na dalju obradu zahtjeva.  
-Na **sistemskom nivou** provjerava se da li korisnik može izvršiti izmjenu ili otkazivanje u odgovarajućoj fazi procesa.  
-Na **prihvatnom nivou** provjerava se da li sistem podržava realne situacije ispravke pogrešno unesenih podataka ili povlačenja nepotrebnog zahtjeva.  
-Na **regresijskom nivou** provjerava se da nova pravila za izmjenu i otkazivanje ne naruše osnovni tok prijave i obrade zahtjeva.  
-Kroz **testiranje korisničkog interfejsa** provjerava se jasnoća opcija za izmjenu i otkazivanje, kao i poruka koje sistem prikazuje.
-
-### 5. Dispečerski pregled i obrada intervencija
-
-Funkcionalnosti pregleda otvorenih intervencija, pregleda detalja intervencije i pregleda statusa od strane dispečera testiraju se kroz integraciono, sistemsko, prihvatno, regresijsko i testiranje korisničkog interfejsa, a djelimično i kroz unit testiranje tamo gdje postoji pomoćna logika filtriranja i prikaza.
-
-Na **unit nivou** mogu se provjeravati pomoćna pravila filtriranja, sortiranja i prikaza podataka.  
-Na **integracionom nivou** provjerava se da li dispečer vidi ispravne i ažurne podatke koji nastaju iz korisničkih prijava i serviserskih aktivnosti.  
-Na **sistemskom nivou** provjerava se da li dispečer može nesmetano pratiti i obrađivati intervencije kao dio ukupnog procesa.  
-Na **prihvatnom nivou** provjerava se da li dispečerski prikaz zaista podržava organizaciju rada i donošenje operativnih odluka.  
-Na **regresijskom nivou** provjerava se da uvođenje novih prikaza, statusa ili dodatnih podataka ne naruši osnovni pregled intervencija.  
-Kroz **testiranje korisničkog interfejsa** provjerava se preglednost liste intervencija, detaljnog prikaza i prikaza statusa.
-
-### 6. Određivanje prioriteta intervencije
-
-Funkcionalnosti vezane za određivanje prioriteta testiraju se kroz unit, integraciono, sistemsko, prihvatno i regresijsko testiranje.
-
-Na **unit nivou** provjerava se logika određivanja prioriteta, uključujući pravila, bodovanje i eventualna ograničenja.  
-Na **integracionom nivou** provjerava se da li je prioritet pravilno povezan sa intervencijom i vidljiv u relevantnim prikazima.  
-Na **sistemskom nivou** provjerava se da li određivanje prioriteta pravilno utiče na dalju obradu i organizaciju rada.  
-Na **prihvatnom nivou** provjerava se da li model određivanja prioriteta zaista odgovara potrebama sistema i realnoj hitnosti intervencija.  
-Na **regresijskom nivou** provjerava se da uvođenje ili izmjena logike prioriteta ne naruši druge dijelove obrade intervencija.
-
-### 7. Dodjela i organizacija izvršenja intervencije
-
-Funkcionalnosti dodjele glavnog izvršioca, evidentiranja pomoćnih izvršilaca, promjene izvršioca i vraćanja zadatka na ponovnu dodjelu testiraju se kroz integraciono, sistemsko, prihvatno, regresijsko i djelimično UI testiranje.
-
-Na **integracionom nivou** provjerava se da li intervencija nakon dodjele postaje dostupna odgovarajućem serviseru i eventualnim pomoćnim izvršiocima.  
-Na **sistemskom nivou** provjerava se da li tok od dispečerske obrade do serviserskog prijema zadatka funkcioniše bez prekida.  
-Na **prihvatnom nivou** provjerava se da li sistem podržava realne organizacijske scenarije, uključujući promjenu izvršioca i vraćanje zadatka u operativni tok.  
-Na **regresijskom nivou** provjerava se da nove izmjene u logici dodjele ne naruše postojeće funkcionalnosti vezane za pregled, prihvatanje i status zadatka.  
-Kroz **testiranje korisničkog interfejsa** provjerava se jasnoća prikaza dodjele, odabira izvršioca i prikaza pomoćnih izvršilaca.
-
-### 8. Planiranje intervencije
-
-Funkcionalnosti planiranja intervencije testiraju se kroz unit, integraciono, sistemsko, prihvatno, regresijsko i UI testiranje.
-
-Na **unit nivou** provjeravaju se osnovna pravila unosa termina i eventualna ograničenja planiranja.  
-Na **integracionom nivou** provjerava se da li planirani termin pravilno postaje dio podataka o intervenciji i da li je vidljiv relevantnim korisnicima.  
-Na **sistemskom nivou** provjerava se da li planiranje pravilno podržava organizaciju izvršenja u ukupnom toku rada.  
-Na **prihvatnom nivou** provjerava se da li sistem omogućava dovoljno jasan i praktičan način planiranja termina.  
-Na **regresijskom nivou** provjerava se da izmjene u planiranju ne naruše dodjelu, pregled intervencija ili zatvaranje procesa.  
-Kroz **testiranje korisničkog interfejsa** provjerava se unos i prikaz termina, poruke greške i opšta preglednost planiranja.
-
-### 9. Pregled i preuzimanje zadataka od strane servisera
-
-Funkcionalnosti pregleda dodijeljenih intervencija, pregleda detalja zadatka, prihvatanja i odbijanja zadatka testiraju se kroz integraciono, sistemsko, prihvatno, regresijsko i testiranje korisničkog interfejsa.
-
-Na **integracionom nivou** provjerava se da li se dodijeljeni zadaci pravilno prikazuju serviseru i da li je veza sa dodjelom ispravna.  
-Na **sistemskom nivou** provjerava se da li serviser može preuzeti i pravilno razumjeti svoj zadatak u okviru ukupnog toka rada.  
-Na **prihvatnom nivou** provjerava se da li serviserski prikaz i logika preuzimanja zadatka odgovaraju stvarnim potrebama rada na terenu.  
-Na **regresijskom nivou** provjerava se da nove izmjene ne naruše pregled zadataka i logiku prihvatanja ili odbijanja.  
-Kroz **testiranje korisničkog interfejsa** provjerava se preglednost liste zadataka, detalja intervencije i opcija za akciju nad zadatkom.
-
-### 10. Ažuriranje toka rada na terenu
-
-Funkcionalnosti ažuriranja statusa i vraćanja zadatka u operativni tok testiraju se kroz unit, integraciono, sistemsko, prihvatno, regresijsko i UI testiranje.
-
-Na **unit nivou** provjeravaju se pravila promjene statusa i dozvoljeni prelazi između statusa.  
-Na **integracionom nivou** provjerava se da li se promjene koje serviser izvrši pravilno odražavaju u dispečerskom pregledu i drugim povezanim prikazima.  
-Na **sistemskom nivou** provjerava se da li statusni tok podržava stvarni tok rada na terenu.  
-Na **prihvatnom nivou** provjerava se da li sistem omogućava realno praćenje napretka intervencije i povratak zadatka u obradu kada je to potrebno.  
-Na **regresijskom nivou** provjerava se da promjene u statusnoj logici ne poremete ranije implementirane procese.  
-Kroz **testiranje korisničkog interfejsa** provjerava se jasnoća opcija za promjenu statusa i prikaz trenutnog stanja intervencije. 
-
-### 11. Evidentiranje i pregled izvršenog rada
-
-Funkcionalnosti evidentiranja izvršenog rada i pregleda evidentiranog rada testiraju se kroz unit, integraciono, sistemsko, prihvatno, regresijsko i UI testiranje.
-
-Na **unit nivou** provjerava se validacija unosa podataka o radu i osnovna pravila evidencije.  
-Na **integracionom nivou** provjerava se da li se podaci o radu pravilno spremaju i prikazuju odgovarajućim korisnicima.  
-Na **sistemskom nivou** provjerava se da li evidencija rada ispravno podržava završni dio procesa.  
-Na **prihvatnom nivou** provjerava se da li sistem omogućava dovoljno jasan i upotrebljiv zapis o izvršenom radu.  
-Na **regresijskom nivou** provjerava se da nova evidencija ne poremeti prikaz statusa, zatvaranje intervencije ili pregled od strane dispečera.  
-Kroz **testiranje korisničkog interfejsa** provjerava se preglednost forme za evidenciju rada i prikaza unesenih podataka.
-
-### 12. Zatvaranje intervencije
-
-Funkcionalnosti potvrde i zatvaranja intervencije testiraju se kroz integraciono, sistemsko, prihvatno, regresijsko i UI testiranje.
-
-Na **integracionom nivou** provjerava se da li dispečer može vidjeti sve prethodno unesene podatke potrebne za zatvaranje intervencije.  
-Na **sistemskom nivou** provjerava se da li kompletan tok završava ispravno, odnosno da li se intervencija može zatvoriti tek nakon ispunjavanja potrebnih uslova.  
-Na **prihvatnom nivou** provjerava se da li završni dio procesa odgovara potrebi da se intervencija formalno i kontrolisano okonča.  
-Na **regresijskom nivou** provjerava se da izmjene u zatvaranju ne naruše prethodne korake procesa.  
-Kroz **testiranje korisničkog interfejsa** provjerava se jasnoća prikaza završnog statusa i akcije zatvaranja.
-
-### 13. Komunikacija na intervenciji
-
-Funkcionalnosti razmjene napomena testiraju se kroz integraciono, sistemsko, prihvatno, regresijsko i UI testiranje.
-
-Na **integracionom nivou** provjerava se da li se napomene pravilno povezuju sa odgovarajućom intervencijom i autorom.  
-Na **sistemskom nivou** provjerava se da li napomene podržavaju kontinuitet rada i komunikaciju između učesnika procesa.  
-Na **prihvatnom nivou** provjerava se da li sistem omogućava smislen i praktičan način razmjene operativnih informacija.  
-Na **regresijskom nivou** provjerava se da uvođenje napomena ne naruši druge prikaze intervencije.  
-Kroz **testiranje korisničkog interfejsa** provjerava se preglednost unosa i prikaza napomena.
-
-### 14. Praćenje historije aktivnosti
-
-Funkcionalnosti pregleda historije aktivnosti testiraju se kroz integraciono, sistemsko, prihvatno, regresijsko i UI testiranje.
-
-Na **integracionom nivou** provjerava se da li se promjene i aktivnosti pravilno bilježe i povezuju sa odgovarajućom intervencijom.  
-Na **sistemskom nivou** provjerava se da li historija aktivnosti podržava transparentnost i sljedivost kompletnog procesa.  
-Na **prihvatnom nivou** provjerava se da li korisnici koji imaju pravo pristupa mogu dobiti smislen uvid u tok obrade intervencije.  
-Na **regresijskom nivou** provjerava se da dodavanje novih aktivnosti i promjena ne naruši postojeći audit trag.  
-Kroz **testiranje korisničkog interfejsa** provjerava se preglednost i razumljivost hronološkog prikaza aktivnosti.
-
-### Tabelarni pregled šta se testira na kojem nivou
-
-| Funkcionalnost / cjelina | Unit | Integraciono | Sistemsko | Prihvatno | Regresijsko | Testiranje korisničkog interfejsa |
-|--------------------------|------|--------------|-----------|-----------|-------------|-----------------------------------|
-| Autentifikacija i pristup sistemu | x | x | x | x | x | x |
-| Upravljanje korisnicima, ulogama i pravima pristupa | x | x | x | x | x |  |
-| Prijava i pregled zahtjeva korisnika usluge | x | x | x | x | x | x |
-| Izmjena i otkazivanje zahtjeva | x | x | x | x | x | x |
-| Dispečerski pregled i obrada intervencija | x | x | x | x | x | x |
-| Određivanje prioriteta intervencije | x | x | x | x | x |  |
-| Dodjela i organizacija izvršenja intervencije |  | x | x | x | x | x |
-| Planiranje intervencije | x | x | x | x | x | x |
-| Pregled i preuzimanje zadataka od strane servisera |  | x | x | x | x | x |
-| Ažuriranje toka rada na terenu | x | x | x | x | x | x |
-| Evidentiranje i pregled izvršenog rada | x | x | x | x | x | x |
-| Zatvaranje intervencije |  | x | x | x | x | x |
-| Komunikacija na intervenciji |  | x | x | x | x | x |
-| Praćenje historije aktivnosti |  | x | x | x | x | x |
-
-Prikazana raspodjela pokazuje da se funkcionalne cjeline sistema ne posmatraju samo iz jedne perspektive, nego se provjeravaju kroz više nivoa testiranja u skladu sa njihovom ulogom u sistemu. Na taj način nastoji se osigurati da sistem bude tehnički ispravan, međusobno usklađen i funkcionalno prikladan za stvarnu upotrebu.
+**Zatvaranje intervencije, napomene i historija aktivnosti** testiraju se radi provjere završnog dijela procesa, transparentnosti rada i dosljedne evidencije svih važnih promjena nad intervencijom.
 
 
 ## Veza sa acceptance kriterijima
@@ -286,49 +191,47 @@ Pojedini acceptance kriteriji mogu se provjeravati na više nivoa testiranja, u 
 
 ### Tabelarni pregled veze sa acceptance kriterijima
 
-| ID storyja | Acceptance kriterij | Nivo testiranja | Način provjere | Očekivani rezultat |
-|------------|---------------------|-----------------|----------------|--------------------|
-| **US-01** | Korisnik unese validne podatke i registracija bude uspješna | Unit, integraciono, sistemsko, UI | test validacije, provjera kreiranja naloga i prikaza forme | korisnički nalog je uspješno kreiran |
-| **US-01** | Registracija sa neispravnim podacima | Unit, UI | test validacije unosa | sistem prikazuje grešku |
-| **US-02** | Uspješna prijava korisnika | Integraciono, sistemsko, UI | test autentifikacije | korisnik dobija pristup sistemu |
-| **US-03** | Odjava korisnika | Sistemsko, UI | test sesije i pristupa | sesija je prekinuta |
-| **US-04** | Ograničen pristup prema ulozi | Sistemsko, sigurnosno | test autorizacije | korisnik vidi samo dozvoljene funkcije |
-| **US-05** | Uspješna prijava zahtjeva | Integraciono, sistemsko | test unosa i spremanje zahtjeva | zahtjev je evidentiran |
-| **US-06** | Pregled vlastitih zahtjeva | Sistemsko, UI | test prikaza podataka | korisnik vidi svoje zahtjeve |
-| **US-07** | Pregled otvorenih intervencija | Sistemsko | test liste intervencija | prikazuju aktivne intervencije |
-| **US-08** | Pregled detalja intervencije | Sistemsko, UI | test prikaza detalja | prikazani svi relevantni podaci |
-| **US-09** | Dodjela intervencije serviseru | Integraciono, sistemsko | test dodjele zadatka | intervencija dodijeljena serviseru | 
-| **US-10** | Dodjela intervencije timu | Integraciono, sistemsko | test timske dodjele | tim uspješno dodijeljen |
-| **US-11** | Planiranje intervencije | Integraciono, sistemsko | test unosa termina | termin uspješno postavljen |
-| **US-12** | Postavljanje prioriteta | Integraciono | test prioriteta | prioritet spremljen i vidljiv |
-| **US-13** | Pregled statusa intervencije | Sistemsko, UI | test prikazna statusa i osvježavanje liste | prikazani tačni i ažurirani statusi intervencija |
-| **US-14** | Ažuriranje statusa intervencije | Integraciono, UI | test promjene statusa | status ažuriran |
-| **US-15** | Pregled dodijeljenih intervencija | Sistemsko, UI | test prikaza liste | serviser vidi svoje dodijeljene intervencije |
-| **US-16** | Pregled detalja zadatka na terenu | Sistemsko, UI | test prikaza detalja | prikazani opis, lokacija i prioritet |
-| **US-17** | Evidentiranje izvršenog rada | Integraciono, sistemsko | test unosa evidencije | podaci o radu spremljeni |
-| **US-18** | Kreiranje internog korisnika | Sistemsko | test admin funkcije | korisnik kreiran |
-| **US-19** | Pregled liste korisnika | Sistemsko, UI | test prikaza korisnika | prikazana lista svih korisnika |
-| **US-20** | Promjena korisničke uloge | Sistemsko, sigurnosno | test izmjene uloge i prava pristupa | korisniku dodijeljena nova uloga |
-| **US-21** | Deaktivacija korisnika | Sistemsko, sigurnosno | test statusa naloga | pristup korisniku onemogućen |
-| **US-22** | Prihvatanje zadatka | Integraciono | test promjene statusa | zadatak prihvaćen |
-| **US-23** |  Odbijanje zadatka | Integraciono | test odbijanja | zadatak vraćen dispečeru |
-| **US-24** | Pregled izvršenog rada | Sistemsko | test pregleda | dispečer vidi izvještaj |
-| **US-25** | Zatvaranje intervencija | Sistemsko | test zatvaranja | status "zatvoreno" |
-| **US-26** | Izmjena zahtjeva | Sistemsko, UI | test izmjene | podaci ažurirani |
-| **US-27** | Otkazivanje zahtjeva | Sistemsko | test otkazivanja | status "otkazano" |
-| **US-28** | Promjena izvršioca | Integraciono | test preraspodjele | novi izvršilac dodijeljen |
-| **US-29** | Vraćanje zadatka | Integraciono | test vraćanja | zadatak vraćen u obradu |
-| **US-30** | DOdavanje napomena | Sistemsko | test unosa napomena | napomena vidljiva |
-| **US-31** | Pregled operativnog statusa | Sistemsko | test dashboarda | prikaz statistike | 
-| **US-32** | Historija aktivnosti | Sistemsko | test audit loga | prikazana historija promjene |
+| ID storyja | Acceptance kriterij | Nivo / vrsta testiranja | Način provjere | Očekivani rezultat |
+|------------|---------------------|-------------------------|----------------|--------------------|
+| **US-01** | Korisnik može uspješno kreirati nalog unosom validnih podataka | Unit, integraciono, sistemsko, UI | test validacije unosa, kreiranja naloga i prikaza forme | korisnički nalog je uspješno kreiran |
+| **US-02** | Registrovani korisnik može uspješno prijaviti u sistem sa ispravnim kredencijalima | Integraciono, sistemsko, UI, sigurnosno | test autentifikacije, sesije i pristupa sistemu | korisnik dobija pristup sistemu u skladu sa svojom ulogom |
+| **US-03** | Prijavljeni korisnik može uspješno završiti sesiju odjavom iz sistema | Sistemsko, UI | test odjave i prekida sesije | korisnička sesija je prekinuta i pristup bez ponovne prijave nije moguć |
+| **US-04** | Korisnicima su dostupne samo funkcionalnosti i podaci koji odgovaraju njihovoj ulozi | Sistemsko, prihvatno, sigurnosno | test autorizacije i vidljivosti funkcionalnosti | korisnik vidi i koristi samo dozvoljene funkcionalnosti |
+| **US-05** | Korisnik usluge može uspješno prijaviti zahtjev za servisnu intervenciju | Unit, integraciono, sistemsko, prihvatno, UI | test validacije unosa, spremanja zahtjeva i dodjele početnog statusa | zahtjev je evidentiran, povezan sa korisnikom i dobija početni status |
+| **US-06** | Korisnik usluge može pregledati vlastite zahtjeve i njihove statuse | Sistemsko, UI | test prikaza liste i detalja zahtjeva | korisnik vidi svoje zahtjeve i njihove osnovne informacije |
+| **US-07** | Dispečer može pregledati otvorene i aktivne intervencije | Sistemsko, UI | test prikaza liste intervencija | prikazane su otvorene i aktivne intervencije sa ključnim podacima |
+| **US-08** | Dispečer može pregledati detalje pojedinačne intervencije | Sistemsko, UI | test prikaza detaljnog pregleda intervencije | prikazani su svi relevantni podaci o odabranoj intervenciji |
+| **US-09** | Dispečer može dodijeliti intervenciju glavnom izvršiocu | Integraciono, sistemsko, prihvatno | test dodjele izvršioca i promjene statusa | intervencija je uspješno dodijeljena odgovornom izvršiocu |
+| **US-10** | Dispečer može dodijeliti intervenciju timu servisera | Integraciono, sistemsko, prihvatno | test timske dodjele i prikaza članova tima | intervencija je uspješno dodijeljena odabranom timu servisera |
+| **US-11** | Dispečer može planirati termin izvršenja intervencije | Unit, integraciono, sistemsko, UI | test unosa termina i provjere ograničenja planiranja | termin je uspješno postavljen i vidljiv u sistemu |
+| **US-12** | Dispečer može odrediti prioritet intervencije | Unit, integraciono, sistemsko | test logike određivanja prioriteta i prikaza prioriteta | prioritet je uspješno spremljen i prikazan u relevantnim pregledima |
+| **US-13** | Dispečer može pregledati statuse intervencija | Sistemsko, UI | test prikaza statusa i osvježavanja liste | prikazani su tačni i ažurirani statusi intervencija |
+| **US-14** | Serviser može ažurirati status intervencije u skladu sa pravilima toka rada | Unit, integraciono, sistemsko, UI | test promjene statusa i dozvoljenih prelaza između statusa | status je ispravno ažuriran i odražava stvarni tok rada |
+| **US-15** | Serviser može pregledati svoje dodijeljene intervencije | Sistemsko, UI | test prikaza liste zadataka | serviser vidi samo svoje dodijeljene intervencije |
+| **US-16** | Serviser može pregledati detalje zadatka na terenu | Sistemsko, UI | test prikaza detalja zadatka | prikazani su opis, lokacija, prioritet i ostale relevantne informacije |
+| **US-17** | Serviser može evidentirati izvršeni rad na intervenciji | Unit, integraciono, sistemsko, UI | test unosa evidencije rada i povezivanja sa intervencijom | podaci o izvršenom radu su uspješno spremljeni i povezani sa intervencijom |
+| **US-18** | Administrator može kreirati interni korisnički nalog | Sistemsko, sigurnosno | test administratorske funkcionalnosti kreiranja korisnika | interni korisnik je uspješno kreiran |
+| **US-19** | Administrator može pregledati postojeće korisničke naloge | Sistemsko, UI | test prikaza liste korisnika | prikazana je lista postojećih korisničkih naloga sa osnovnim informacijama |
+| **US-20** | Administrator može promijeniti korisničku ulogu | Sistemsko, sigurnosno | test izmjene uloge i ažuriranja pristupa | korisniku je dodijeljena nova uloga i pristup je ažuriran |
+| **US-21** | Administrator može deaktivirati korisnički nalog | Sistemsko, sigurnosno | test promjene statusa naloga i zabrane pristupa | korisnički nalog je deaktiviran i dalja prijava nije moguća |
+| **US-22** | Serviser može prihvatiti dodijeljeni zadatak | Integraciono, sistemsko | test prihvatanja zadatka i promjene statusa | zadatak je prihvaćen i status je ispravno ažuriran |
+| **US-23** | Serviser može odbiti dodijeljeni zadatak | Integraciono, sistemsko | test odbijanja zadatka i evidentiranja razloga odbijanja | zadatak je odbijen, a informacija je proslijeđena za dalju obradu |
+| **US-24** | Dispečer može pregledati evidentirani izvršeni rad | Sistemsko, UI | test prikaza evidencije rada | dispečer vidi unesene podatke o izvršenom radu |
+| **US-25** | Dispečer može potvrditi i zatvoriti intervenciju nakon ispunjavanja definisanih uslova | Sistemsko, prihvatno | test zatvaranja intervencije nakon završetka rada | intervencija dobija završni status tek nakon potpune evidencije rada |
+| **US-26** | Korisnik usluge može izmijeniti vlastiti zahtjev kada je to dozvoljeno | Sistemsko, UI | test izmjene zahtjeva u dozvoljenoj fazi procesa | podaci zahtjeva su uspješno ažurirani |
+| **US-27** | Korisnik usluge može otkazati vlastiti zahtjev kada je to dozvoljeno | Sistemsko | test otkazivanja zahtjeva i promjene statusa | zahtjev dobija odgovarajući status otkazivanja |
+| **US-28** | Dispečer može promijeniti izvršioca intervencije | Integraciono, sistemsko | test preraspodjele izvršioca | novi izvršilac je uspješno dodijeljen intervenciji |
+| **US-29** | Dispečer može vratiti zadatak na ponovnu dodjelu | Integraciono, sistemsko | test vraćanja zadatka u operativni tok | zadatak je vraćen u odgovarajuću fazu ponovne dodjele |
+| **US-30** | Učesnici procesa mogu razmjenjivati napomene na intervenciji | Sistemsko, UI | test unosa i prikaza napomena | napomena je uspješno spremljena i vidljiva na intervenciji |
+| **US-31** | Dispečer može pregledati sažeti operativni status intervencija na kontrolnoj tabli | Sistemsko, UI | test prikaza kontrolne table i operativnog statusa | prikazan je tačan i pregledan operativni status intervencija |
+| **US-32** | Ovlašteni korisnik može pregledati historiju aktivnosti intervencije | Sistemsko, UI | test audit traga i prikaza historije aktivnosti | prikazana je hronološka historija aktivnosti i promjena |
+
 
 ## Način evidentiranja rezultata testiranja
 
-Rezultati testiranja u okviru ovog projekta evidentiraju se na sistematičan, pregledan i dosljedan način kako bi tim u svakom trenutku imao jasan uvid u to šta je testirano, kakav je bio ishod testiranja, koje su greške uočene i da li su one naknadno otklonjene. Evidentiranje rezultata testiranja važno je ne samo radi praćenja kvaliteta sistema, nego i radi kontrole napretka kroz sprintove, lakšeg uočavanja ponavljajućih problema i provjere da li su ranije identifikovani nedostaci zaista ispravljeni.
+Rezultati testiranja evidentiraju se na sistematičan, pregledan i dosljedan način kako bi tim u svakom trenutku imao jasan uvid u to šta je testirano, kakav je bio ishod testiranja, koje su greške uočene i da li su one naknadno otklonjene.
 
-U okviru ovog projekta rezultati testiranja evidentiraju se za svaku važniju funkcionalnost i testni scenario. Za svaki izvršeni test bilježe se osnovni podaci o tome šta je testirano, kada je testiranje provedeno, ko je izvršio testiranje, koji je bio očekivani rezultat i kakav je bio stvarni ishod. Na taj način omogućava se jasan pregled nad uspješnim i neuspješnim testovima, kao i nad funkcionalnostima koje zahtijevaju dodatne dorade.
-
-Prilikom evidentiranja rezultata testiranja posebno se bilježi:
+Za svaki izvršeni test bilježe se:
 - identifikator testa
 - funkcionalnost ili modul koji se testira
 - kratak opis testnog scenarija
@@ -340,7 +243,14 @@ Prilikom evidentiranja rezultata testiranja posebno se bilježi:
 - status testa
 - dodatna napomena
 
-Status testa može biti evidentiran na jednostavan i jasan način, kroz sljedeće oznake:
+### Obrazac za evidentiranje rezultata testiranja
+
+| ID testa | Funkcionalnost / modul | Opis testa | Sprint / faza | Datum testiranja | Izvršilac testiranja | Očekivani rezultat | Stvarni rezultat | Status testa | Napomena |
+|----------|------------------------|------------|---------------|------------------|----------------------|--------------------|------------------|--------------|----------|
+| TC-01 |  |  |  |  |  |  |  |  |  |
+
+### Status testa
+
 | Oznaka | Značenje |
 |--------|----------|
 | **Prošao** | funkcionalnost radi u skladu sa očekivanim rezultatom |
@@ -348,7 +258,7 @@ Status testa može biti evidentiran na jednostavan i jasan način, kroz sljedeć
 | **Djelimično prošao** | dio funkcionalnosti radi ispravno, ali postoje određena ograničenja ili nedostaci |
 | **Nije testirano** | test još nije izvršen |
 
-Kada rezultat testiranja ukaže na problem, pored osnovnog rezultata testiranja evidentira se i uočena greška. Time se osigurava da rezultati testiranja ne ostanu samo na nivou konstatacije da nešto „ne radi“, nego da služe kao osnova za dalje otklanjanje problema i unapređenje sistema. Evidencija grešaka omogućava jasnu vezu između testnog scenarija, uočene nepravilnosti i procesa njene ispravke.
+Kada rezultat testiranja ukaže na problem, pored osnovnog rezultata testiranja evidentira se i uočena greška. Time se osigurava da rezultati testiranja ne ostanu samo na nivou konstatacije da nešto ne radi, nego da služe kao osnova za dalje otklanjanje problema i unapređenje sistema.
 
 Za svaku uočenu grešku bilježe se:
 - identifikator greške
@@ -360,7 +270,14 @@ Za svaku uočenu grešku bilježe se:
 - sprint ili faza u kojoj je greška uočena
 - dodatna napomena o planiranoj doradi ili ispravci
 
-Prioritet greške može se evidentirati kroz jednostavne kategorije:
+### Obrazac za evidentiranje uočenih grešaka
+
+| ID greške | Povezani ID testa | Funkcionalnost / modul | Opis greške | Prioritet greške | Status greške | Sprint / faza | Napomena |
+|-----------|-------------------|------------------------|-------------|------------------|---------------|---------------|----------|
+| B-01 |  |  |  |  |  |  |  |
+
+### Prioritet greške
+
 | Kategorija | Opis |
 |------------|------|
 | **Nizak** | greška ne blokira osnovni tok rada i ima manji uticaj na korištenje sistema |
@@ -368,7 +285,8 @@ Prioritet greške može se evidentirati kroz jednostavne kategorije:
 | **Visok** | greška značajno narušava rad sistema ili blokira važan dio procesa |
 | **Kritičan** | greška onemogućava izvršavanje ključnog toka rada ili ozbiljno ugrožava ispravnost sistema |
 
-Status greške može se evidentirati kroz sljedeće oznake:
+### Status greške
+
 | Oznaka | Značenje |
 |--------|----------|
 | **Otvorena** | greška je evidentirana i čeka obradu |
@@ -376,64 +294,27 @@ Status greške može se evidentirati kroz sljedeće oznake:
 | **Ispravljena** | greška je otklonjena i spremna za ponovnu provjeru |
 | **Zatvorena** | greška je potvrđeno otklonjena i više nije prisutna |
 
-Rezultati testiranja i evidentirane greške prate se kontinuirano tokom razvoja, a posebno na kraju svakog sprinta, kada se provjerava inkrement funkcionalnosti razvijen u toj iteraciji. Pored testiranja novih funkcionalnosti, evidentiraju se i rezultati regresijskog testiranja ključnih ranije implementiranih dijelova sistema, kako bi se potvrdilo da nove izmjene nisu narušile postojeće funkcionalnosti aplikacije.
 
-Za potrebe ovog projekta rezultati testiranja i uočene greške mogu se evidentirati u jednostavnim tabelama, dokumentu ili drugom internom alatu koji tim koristi za praćenje rada. Najvažnije je da način evidentiranja bude dosljedan, pregledan i dovoljno jasan da omogući:
-- praćenje statusa testiranja
-- pregled uočenih grešaka
-- povezivanje testova i grešaka sa konkretnim funkcionalnostima i sprintovima
-- provjeru da li su ranije uočeni problemi ispravljeni
-- lakšu pripremu za završno testiranje i demonstraciju sistema
-
-### Tabelarni pregled rezultata testiranja
-
-| ID testa | Funkcionalnost / modul | Opis testa | Sprint / faza | Datum testiranja | Izvršilac testiranja | Očekivani rezultat | Stvarni rezultat | Status testa | Napomena |
-|----------|------------------------|------------|---------------|------------------|----------------------|--------------------|------------------|--------------|----------|
-| TC-01 | Registracija korisnika | Provjera uspješne registracije sa validnim podacima | Sprint 6 |  | QA tim | Korisnički nalog je uspješno kreiran |  |  |  |
-| TC-02 | Registracija korisnika | Registracija neispravnim podacima | Sprint 6 | | QA tim | Sistem prikazuje grešku | | | | 
-| TC-03 | Prijava korisnika | Prijava sa tačnim podacima | Sprint 6 | | QA tim | Korisnik dobija pristup sistemu | | | | 
-| TC-04 | Prijava korisnika | Prijava korisnika sa pogrešnim podacima | Sprint 6 | | QA tim | Sistem prikazuje grešku | | | | 
-| TC-05 | Dodjela intervencije | Dodjela zadatka serviseru | Sprint 6 | | QA tim | Intervencija dodijeljena serviseru | | | |
-| TC-06 | Planiranje intervencije | Unos termina intervencije | Sprint 6 | | QA tim | Termin uspješno spremljen | | | |
-| TC-07 | Prioritet intervencije | Postavljanje prioriteta | Sprint 6 | | QA tim | Prioritet vidljiv | | | |
-| TC-08 | Ažuriranje statusa | Promjena statusa intervencije | Sprint 6 | | QA tim | Status ažuriran | | | |
-| TC-09 | Evidentiranje rada | Unos izvršenog rada | Sprint 6 | | QA tim | Podaci spremljeni | | | | 
-| TC-10 | Pregled intervencija | Pregled liste intervencija | Sprint 6 | | QA tim | Lista ispravno prikazana | | | | 
-| TC-11 | Uloge korisnika | Provjera pristupa prema ulozi | Sprint 6 | | QA tim | Korisnik vidi samo dozvoljene funkcije | | | |
-| TC-12 | Planiranje intervencije | Unos termina u prošlosti | Sprint 6 | | QA tim | Sistem ne dozvoljava unos | | | | 
-| TC-13 | Dodjela intervencije | Dodjela bez odabira servisera | Sprint 6 | | QA tim | Sistem prikazuje grešku | | | |
-| TC-14 | Pregled zahtjeva | Prikaz prazne liste | Sprint 6 | | QA tim | Prikazana prazna lista | | | | 
-| TC-15 | Dodavanje napomena | Unos napomene na intervenciju | Sprint 6 | | QA tim | Napomena se sprema i prikazuje | | | | 
-
-### Tabelarni pregled uočenih grešaka
-
-| ID greške | Povezani ID testa | Funkcionalnost / modul | Opis greške | Prioritet greške | Status greške | Sprint / faza | Napomena |
-|---|---|---|---|---|---|---|---|
-| B-01 | TC-08 | | | | | | |
-
-Na ovaj način tim dobija jasan i povezan pregled nad provedenim testovima, njihovim rezultatima, uočenim greškama i statusom njihovog rješavanja. Takav pristup omogućava efikasnije upravljanje kvalitetom sistema i pruža bolju osnovu za završno testiranje, dorade i pripremu sistema za demonstraciju i predaju.
 
 ## Glavni rizici kvaliteta
 
-Neki primjeri rizika kvaliteta: 
-- Pogrešna prava pristupa po ulozi
-- Nekonzistentan prikaz podataka između uloga
-- Neispravan tok statusa intervencije
-- Greške pri dodjeli i ponovnoj dodjeli zadataka
+Pored tehničkih i organizacijskih rizika koji se prate kroz Risk Register, u okviru test strategije posebno je važno prepoznati i rizike kvaliteta, odnosno one situacije u kojima sistem može formalno biti implementiran, ali i dalje ne pružati očekivani nivo ispravnosti, dosljednosti, sigurnosti i upotrebljivosti.
 
-Tabela rizika: 
+Rizici kvaliteta u ovom projektu najviše se odnose na ispravnost prava pristupa, konzistentnost podataka između korisničkih uloga, tačnost statusnog toka intervencije, validaciju unosa, logiku dodjele zadataka, evidentiranje rada i pouzdanost završnih koraka procesa.
 
-| ID | Rizik kvaliteta-| Opis rizika | Moguće posljedice | Način kontrole kroz testiranje |
-|----|-----------------|-------------|-------------------|--------------------------------|
-| QR-01 | Pogrešna prava pristupa | Korisnik vidi podatke koje ne bi smio vidjeti ili ima funkcionalnosti koje ne bi smio imati | Sigurnosni i funkcionalni problem | Testiranje po ulogama |
-| QR-02 | Nekonzistentan prikaz podataka | Različiti korisnici vide različite ili netačne podatke | Nepouzdani podaci i pogrešne odluke | Integraciono i sistemsko testiranje prikaza | 
-| QR-03 | Neispravan tok statusa intervencije | Status intervencije ne prati stvarni tok rada | Pogrešmo praćenje procesa i zabuna u radu | Testiranje scenarija i promjene statusa | 
-| QR-04 | Greške pri dodjeli zadataka | Dodjela serviseru ili timu ne radi ispravno | Kašnjenje u izvršenju zadataka | Testiranje dodjele i preraspodjele |
-| QR-05 | Neispravna validacija unosa | Sistem prihvata neispravne ili nepotpune podatke | Greške u sistemu i loš kvalitet podataka | Unit i UI testiranje validacije |
-| QR-06 | Problemi sa autentifikacijom | Korisnik se ne može prijaviti ili pristup nije pravilno ograničen | Nemoguć pristup sistemu ili sigurnosni rizik | Testiranje prijave i sesija | 
-| QR-07 | Gubitak ili neispravno spremanje podataka | Podaci se ne spremaju ili se gube | Gubitak informacija i nepouzdan sistem | Testiranje spremanja i baze podataka |
-| QR-08 | Loš prikaz u korisničkom interfejsu | Podaci nisu pravilno prikazani u UI | Loše korisničko iskustvo | UI i sistemsko testiranje | 
-| QR-09 | Neispravno planiranje termina | Sistem dozvoljava nevalidne termine | Konflikti i neorganizovan rad | Testiranje validacije datuma i vremena | 
-| QR-10 | Neispravno evidentiranje rada | Podaci o radu nisu tačno evidentirani | Netačni izvještaji i analiza rada | Testiranje unosa i prikaza evidencije | 
-| QR-11 | Problemi sa performansama | Sistem spor pri radu sa većim brojem podataka | Loše korisničko iskustvo | Testiranje performansi |
-| QR-12 | Neispravna notifikacija | Korisnici ne dobijaju obavijesti | Kašnjenje u radu i komunikaciji | Testiranje notifikacija | 
+### Tabelarni pregled glavnih rizika kvaliteta
+
+| ID | Rizik kvaliteta | Opis rizika | Moguće posljedice | Strategija mitigacije |
+|----|-----------------|-------------|-------------------|-----------------------|
+| QR-01 | Pogrešna prava pristupa | Korisnik vidi podatke koje ne bi smio vidjeti ili ima funkcionalnosti koje ne bi smio imati | sigurnosni i funkcionalni problem, narušena kontrola pristupa | testiranje po korisničkim ulogama i sigurnosno testiranje |
+| QR-02 | Nekonzistentan prikaz podataka | Različiti korisnici vide različite, neažurne ili netačne podatke o istoj intervenciji | nepouzdani podaci i pogrešne operativne odluke | integraciono i sistemsko testiranje prikaza i razmjene podataka |
+| QR-03 | Neispravan tok statusa intervencije | Status intervencije ne prati stvarni tok rada ili dozvoljava nedozvoljene prelaze | pogrešno praćenje procesa i zabuna u radu korisnika | testiranje scenarija promjene statusa i dozvoljenih prelaza |
+| QR-04 | Greške pri dodjeli i preraspodjeli zadataka | Dodjela izvršioca, promjena izvršioca ili vraćanje zadatka ne rade ispravno | kašnjenje u izvršenju zadataka i nejasna odgovornost | integraciono i sistemsko testiranje dodjele i preraspodjele |
+| QR-05 | Neispravna validacija unosa | Sistem prihvata neispravne, nepotpune ili nelogične podatke | greške u obradi i loš kvalitet podataka | unit i UI testiranje validacije unosa |
+| QR-06 | Problemi sa autentifikacijom i pristupom | Korisnik se ne može prijaviti ili pristup nije pravilno ograničen | onemogućen rad sistema ili sigurnosni rizik | testiranje prijave, sesije, prava pristupa i sigurnosno testiranje |
+| QR-07 | Gubitak ili neispravno spremanje podataka | Podaci se ne spremaju ispravno ili se gube tokom rada | gubitak informacija i narušena pouzdanost sistema | integraciono i sistemsko testiranje spremanja i prikaza podataka |
+| QR-08 | Loš prikaz u korisničkom interfejsu | Podaci, poruke ili akcije nisu dovoljno jasno prikazani korisniku | loše korisničko iskustvo i povećan broj grešaka u radu | UI testiranje i testiranje upotrebljivosti |
+| QR-09 | Neispravno planiranje termina | Sistem dozvoljava nevalidne ili nelogične termine intervencije | konflikti u organizaciji rada i otežano izvršenje intervencija | unit, integraciono i sistemsko testiranje planiranja |
+| QR-10 | Neispravno evidentiranje rada | Podaci o izvršenom radu nisu potpuni, tačni ili dosljedno povezani sa intervencijom | netačni izvještaji i otežano zatvaranje intervencije | testiranje unosa, spremanja i pregleda evidencije rada |
+| QR-11 | Slabe performanse pri većoj količini podataka | Sistem postaje spor pri radu sa listama, statusima ili historijom aktivnosti | loše korisničko iskustvo i otežan operativni rad | sistemsko testiranje prikaza i provjera odziva ključnih dijelova sistema |
+| QR-12 | Nepouzdano slanje obavještenja | Korisnici ili učesnici procesa ne dobijaju obavještenja kada su ona predviđena sistemom | kašnjenje u radu i slabija koordinacija procesa | testiranje notifikacijskog toka, ako je ta funkcionalnost implementirana |
