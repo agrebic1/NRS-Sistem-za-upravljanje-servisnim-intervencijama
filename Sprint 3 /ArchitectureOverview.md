@@ -365,7 +365,7 @@ U ovom poglavlju dokumentiraju se ključne arhitektonske odluke s obrazloženjem
 | Monolitna Next.js aplikacija | Mikroservisi nisu opravdani za MVP (resursi i složenost) | Nema nezavisnog skaliranja modula; dovoljno za NFR-003 (≈50 korisnika) |
 | Zavisnost od Supabase servisa | Korištenje managed BaaS platforme | Rizik vendor lock-in; mitigacija: backupi (NFR-006) i moguća migracija na PostgreSQL |
 
-| Rizik | Vjerovatnost | Uticaj | Ublažavanje rizika |
+| Rizik | Vjerovatnoća | Uticaj | Ublažavanje rizika |
 |------|--------------|---------|------------|
 | Neispravan RLS (curenje podataka) | Srednja | Visok | Code review RLS politika; testiranje s različitim ulogama na kraju svakog sprinta |
 | Nedosljedne statusne tranzicije | Srednja | Visok | Centralizacija logike u domenskom sloju; unit testovi za dozvoljene i nedozvoljene tranzicije (ORG-STD-02) |
