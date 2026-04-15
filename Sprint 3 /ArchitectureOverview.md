@@ -1,25 +1,51 @@
 # Architecture Overview
 
-Kroz ovaj dokument opisan je i obrazložen izbor slojevite arhitekture.
-
-Odabir slojevite arhitekture direktno je utemeljen na zahtjevima sistema:
-1. Izolacija poslovne logike   
-   Funkcionalnosti kao što su prioritizacija intervencija, planiranje izlazaka na teren i preraspodjela servisera predstavljaju složenu poslovnu logiku koja mora biti testabilna neovisno o korisničkom interfejsu.
-2. Centralizovana primjena sigurnosnog modela  
-   RBAC model zahtijeva dosljedno i jednoznačno provođenje provjere pristupa. U slojevitoj arhitekturi, ta provjera je locirana u aplikacijskom sloju i primjenjuje se konzistentno za sve zahtjeve, bez dupliciranja sigurnosne logike po prezentacijskim komponentama.
-3. Neovisnost o izvoru podataka   
-   Pristup podacima isključivo se odvija kroz repozitorij sloj, a nikad direktno iz prezentacijskih komponenti. Ova odluka osigurava da zamjena ili proširenje infrastrukture, na primjer prelazak na drugi mehanizam pohrane, zahtijeva izmjene samo u infrastrukturnom sloju, dok ostatak sistema ostaje nepromijenjen.
-4. Paralelni razvoj unutar tima     
-   Budući da svaki sloj ima jasno definisane granice i interfejse, članovi tima mogu raditi paralelno na različitim slojevima bez međusobnog blokiranja.
-5. Podrška skalabilnosti    
-    Slojevita arhitektura omogućava dodavanje novih modula ili integracija u kasnijim fazama razvoja bez strukturnih izmjena postojećeg koda.
-
-U nastavku dokumenta ovaj segment je detaljno razrađen.
-
 ## 1. Opis arhitektonskog pristupa
 
- Odabrani arhitektonski stil je **slojevita (layered) arhitektura** s jasno definisanim i razdvojenim odgovornostima po slojevima. Svaka arhitektonska odluka izvedena je direktno iz konkretnog funkcionalnog ili nefunkcionalnog zahtjeva sistema, što prikazuje sljedeća tabela:
+ Arhitektonske odluke proizlaze iz zahtjeva definisanih kroz korisničke priče, nefunkcionalne zahtjeve i domenski model.   
+Ključni prioriteti koji su vodili dizajn sistema su:
+1. Skalabilnost: Podrška rastu broja korisnika i intervencija bez restrukturiranja sistema (PBI-001 do PBI-021, NFR-003).
+2. Sigurnost podataka: Strogo razdvajanje pristupa podacima po korisničkim ulogama (PBI-002, NFR-007 do NFR-010).
+3. Održivost: Izmjene modula bez uticaja na nepovezane dijelove sistema (NFR-016).
+4. Responzivnost: Funkcionalnost na uređajima različitih veličina bez dodatne instalacije (NFR-013, NFR-015).
+5. Jednostavna implementacija: Omogućena brza izrada MVP verzije.
 
+Na osnovu ovih zahtjeva odabran je **arhitektonski stil slojevite (layered, n-tier) arhitekture** sa jasno razdvojenim odgovornostima.  
+**Sistem je organizovan u četiri logička sloja:**
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                  PREZENTACIJSKI SLOJ                            │
+│           (Next.js React komponente + Tailwind CSS)             │
+│   Korisnik usluge | Dispečer | Serviser | Administrator         │
+└─────────────────────────┬───────────────────────────────────────┘
+                          │ HTTP(S) zahtjevi
+                          ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                  APLIKACIJSKI SLOJ                              │
+│          (Next.js API Routes /api/v1/ — RESTful)                │
+│     Validacija unosa | Provjera autorizacije | Orchestracija    │
+└─────────────────────────┬───────────────────────────────────────┘
+                          │ Pozivi prema domeni
+                          ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                    DOMENSKI SLOJ                                │
+│            (Poslovna logika i pravila sistema)                  │
+│   Statusne tranzicije | Prioritizacija | Pravila dodjele        │
+└─────────────────────────┬───────────────────────────────────────┘
+                          │ Repository pozivi
+                          ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                 INFRASTRUKTURNI SLOJ                            │
+│       (Supabase: PostgreSQL + Auth + RLS + Storage)             │
+│     Trajna pohrana | Autentifikacija | Sigurnosna pravila       │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+Zavisnosti teku isključivo prema unutrašnjosti sistema, čime se osigurava da promjene u infrastrukturnom sloju ne utiču na domensku i prezentacijsku logiku.
+
+Sistem podržava četiri korisničke uloge: klijent, dispečer, serviser i administrator, sa jasno razgraničenim ovlaštenjima.
+
+Veza između zahtjeva sistema i arhitektonskih odluka prikazana je u sljedećoj tabeli:
 | Zahtjev sistema | Arhitektonska odluka |
 | :--- | :--- |
 | **4 uloge s različitim privilegijama** (PBI-002) | RBAC u aplikacijskom sloju + RLS politike u infrastrukturnom sloju |
@@ -30,235 +56,326 @@ U nastavku dokumenta ovaj segment je detaljno razrađen.
 | **Pohrana slikovnih dokaza pri evidenciji rada** (PBI-017) | Supabase File Storage u infrastrukturnom sloju |
 | **GDPR: minimalno prikupljanje i zaštita ličnih podataka** (EXT-ZAK-01) | *Privacy by Design* ugrađen u domenski model od početka razvoja |
 
-Sistem koordinira četiri korisničke uloge s jasno razgraničenim ovlaštenjima i zasebnim poslovnim tokovima: klijenta, dispečera, servisera i administratora. Višeslojna arhitektura s jasno definiranim granicama između slojeva osigurava da se sigurnosna logika, poslovna pravila i mehanizmi pohrane podataka razvijaju i održavaju neovisno jedan od drugog, čime se postiže visok stepen fleksibilnosti i dugoročna održivost sistema.
-
-Arhitektura je organizovana u četiri logička sloja: 
-1. Presentation,
-2. Application,
-3. Domain i
-4. Infrastructure.
-
-Zavisnosti teku isključivo prema unutrašnjosti sistema, vanjski slojevi ovise o unutrašnjima, nikada obrnuto. Ovakva organizacija osigurava da promjena tehnološke implementacije u infrastrukturnom sloju, kao što je zamjena baze podataka ili servisa za autentifikaciju, ne uzrokuje izmjene u domenskoj ili prezentacijskoj logici.
-
 Arhitektonski model implementiran je kroz odabrani tehnološki stack:
-
 | Tehnologija | Sloj | Uloga u sistemu |
 |---|---|---|
 | **Next.js** | Prezentacijski + Aplikacijski | React komponente (UI) i API rute (`/api/v1/`) |
 | **Supabase + PostgreSQL** | Infrastrukturni | Autentifikacija, RLS, file storage, baza podataka |
 | **Vercel** | Deployment | HTTPS, globalni CDN, automatski deployment |
 
-Next.js pokriva prezentacijski sloj putem React komponenti i aplikacijski sloj putem API ruta unutar /api/v1/, čineći prirodnu full-stack granicu unutar jednog okvira. Supabase + PostgreSQL čini infrastrukturni sloj sistema te donosi ugrađenu autentifikaciju, Row Level Security (RLS) i file storage, čime se sigurnosna osnova postiže bez pisanja dodatnog boilerplate koda. Vercel je platforma za deployment koja automatski osigurava HTTPS i globalni CDN, čime se direktno zadovoljavaju nefunkcionalni zahtjevi za sigurnošću komunikacije (NFR-009) i dostupnošću sistema (NFR-004).
+U ovoj arhitekturi, Next.js pokriva prezentacijski sloj kroz React komponente i aplikacijski sloj kroz API rute. Supabase sa PostgreSQL bazom čini infrastrukturni sloj, obezbjeđujući autentifikaciju, sigurnosne mehanizme i pohranu podataka. Vercel osigurava HTTPS i globalnu dostupnost putem CDN-a, čime se zadovoljavaju zahtjevi sigurnosti i performansi.
 
 ## 2. Glavne komponente sistema
-Sistem je organizovan u četiri arhitektonska sloja. Svaki sloj ima precizno definiranu granicu odgovornosti i komunicira isključivo s neposredno susjednim slojem, kroz jasno definirane interfejse.
+Sistem je organiziran u sedam funkcionalnih cjelina koje zajedno pokrivaju cjelokupan životni ciklus servisne intervencije. 
+Svaka cjelina sadrži module koji su raspoređeni po slojevima arhitekture.
 ```
-├── PRESENTATION LAYER
-│       Next.js stranice i React komponente
-│       │
-│       ├── Klijent UI          → Prijava kvara, pregled statusa
-│       ├── Dispečer UI         → Dashboard, dodjela, prioritizacija
-│       ├── Serviser UI         → Zadaci, evidencija rada
-│       └── Admin UI            → Upravljanje korisničkim nalozima
+├── 1. Autentifikacija i upravljanje sesijama
+│       ├── Registracija korisnika usluge (US-01)
+│       ├── Prijava korisnika (US-02)
+│       ├── Odjava korisnika (US-03)
+│       └── Upravljanje sesijama (JWT, istek nakon 8h — NFR-008)
 │
-│                        ↕ HTTP / REST API (/api/v1/...)
+├── 2. Kontrola pristupa (RBAC)
+│       ├── Definicija uloga: klijent, dispečer, serviser, admin
+│       ├── Provjera ovlaštenja na API razini (US-04)
+│       └── Row Level Security (RLS) na razini baze podataka
 │
-├── APPLICATION LAYER
-│       Next.js API rute · poslovni tokovi · RBAC middleware
-│       │
-│       ├── Auth middleware      → Provjera JWT tokena i korisničke uloge
-│       ├── Intervention service → Životni ciklus intervencije
-│       ├── Assignment service   → Dodjela i preraspodjela servisera
-│       └── Audit logger         → Evidencija historije aktivnosti
+├── 3. Upravljanje korisničkim nalozima (Admin)
+│       ├── Kreiranje internih naloga (US-18)
+│       ├── Pregled korisnika (US-19)
+│       ├── Promjena uloge (US-20)
+│       └── Deaktivacija naloga (US-21)
 │
-│                        ↕ Domenski entiteti
+├── 4. Upravljanje zahtjevima
+│       ├── Kreiranje zahtjeva (US-05)
+│       ├── Pregled vlastitog zahtjeva (US-06)
+│       ├── Izmjena zahtjeva (US-26)
+│       └── Otkazivanje zahtjeva (US-27)
 │
-├── DOMAIN LAYER
-│       Entiteti · poslovna pravila · validacija · tehnološki neovisno
-│       │
-│       ├── Zahtjev              → Prijava kvara od strane klijenta
-│       ├── Intervencija         → Operativni zadatak dodijeljen serviseru
-│       ├── Dodjela              → Veza između intervencije i servisera
-│       ├── EvidencijaRada       → Unos vremena, materijala i ishoda
-│       ├── Uposlenici           → Dispečeri i serviseri
-│       └── HistorijaAktivnosti  → Audit trail svih promjena
+├── 5. Operativni modul dispečera
+│       ├── Pregled liste intervencija (US-07, US-13)
+│       ├── Detalji intervencije (US-08)
+│       ├── Operativna kontrolna tabla / dashboard (US-31)
+│       ├── Određivanje prioriteta (US-12)
+│       ├── Planiranje terena (US-11)
+│       ├── Dodjela izvršiocu / timu (US-09, US-10)
+│       └── Preraspodjela i ponovna dodjela (US-28, US-29)
 │
-│                        ↕ Repository pattern
+├── 6. Serviserski modul
+│       ├── Pregled dodijeljenih zadataka (US-15, US-16)
+│       ├── Prihvatanje / odbijanje zadatka (US-22, US-23)
+│       ├── Ažuriranje statusa intervencije (US-14)
+│       └── Evidentiranje izvršenog rada (US-17)
 │
-└── INFRASTRUCTURE LAYER
-       Supabase · PostgreSQL · Vercel
-       │
-       ├── PostgreSQL           → Primarna pohrana svih entiteta
-       ├── Supabase Auth        → JWT sesije, hashiranje lozinki
-       ├── RLS politike         → Kontrola pristupa na nivou baze
-       ├── File Storage         → Slikovni dokazi evidencije rada
-       └── Vercel               → CI/CD, HTTPS, globalni CDN
+└── 7. Zatvaranje i revizija
+        ├── Pregled evidentiranog rada — dispečer (US-24)
+        ├── Potvrda i zatvaranje intervencije (US-25)
+        ├── Napomene na intervenciji (US-30)
+        └── Historija aktivnosti / audit trail (US-32)
 ```
 
 ## 3. Odgovornosti komponenti
 
-**Presentation layer** predstavlja jedinu tačku direktne interakcije između korisnika i sistema. 
-- Implementiran je kroz Next.js stranice i React komponente, organizovane prema korisničkim ulogama definiranim u Product Visionu. Klijentski interfejs pruža funkcionalnosti prijave zahtjeva za servisnu intervenciju i praćenja statusa vlastite prijave.
-- Dispečerski interfejs obuhvata pregled liste aktivnih intervencija, operativnu kontrolnu tablu s ključnim metrikama te ekrane za dodjelu, prioritizaciju i planiranje izlazaka na teren.
-- Serviserski interfejs projektovan je s primarnim fokusom na mobilni prikaz, omogućavajući brz pristup dodijeljenim zadacima i obrazac za evidenciju izvršenog rada.
-- Administratorski interfejs pokriva upravljanje korisničkim nalozima i ulogama. Svi tekstualni resursi eksternalizirani su iz komponenti, čime se osigurava arhitektonska osnova za buduću višejezičnost bez izmjena izvornog koda (EXT-ETI-02). Ovaj sloj ne sadržava poslovnu logiku, isključivo prima korisničke unose i prikazuje podatke dobijene od Application sloja.
+### 3.1 Prezentacijski sloj  
+Prezentacijski sloj implementiran je kroz Next.js React komponente uz Tailwind CSS za stilizovanje. Ovaj sloj je jedini koji je direktno vidljiv krajnjim korisnicima i njegova jedina odgovornost je prikazivanje podataka i prihvatanje korisničkog unosa.
+```
+Struktura komponenti
+│
+├── Zajednički elementi (Shared UI)
+│       ├── Navigacijska traka (prilagođena ulozi)
+│       ├── Komponente forme (InputField, SelectField, DatePicker)
+│       ├── Komponente prikaza (StatusBadge, PriorityBadge)
+│       └── Povratne poruke (ErrorMessage, SuccessToast)
+│
+├── Stranice korisnika usluge
+│       ├── /login — forma za prijavu
+│       ├── /register — forma za registraciju
+│       ├── /zahtjevi/novi — kreiranje zahtjeva
+│       └── /zahtjevi — pregled vlastitih zahtjeva
+│
+├── Stranice dispečera
+│       ├── /dashboard — operativna kontrolna tabla
+│       ├── /intervencije — lista intervencija
+│       ├── /intervencije/[id] — detalji intervencije
+│       └── /intervencije/[id]/dodjela — dodjela servisera
+│
+├── Stranice servisera
+│       ├── /zadaci — lista dodijeljenih zadataka
+│       └── /zadaci/[id] — detalji zadatka + evidencija rada
+│
+└── Stranice administratora
+        └── /korisnici — upravljanje korisničkim nalozima
+```
 
----
+### 3.2 Aplikacijski sloj
+Aplikacijski sloj implementiran je kroz Next.js API Routes unutar /api/v1/ putanje, u skladu sa zahtjevom koji propisuje RESTful dizajn s konzistentnom upotrebom HTTP metoda i standardnih statusnih kodova.
+Ovaj sloj ne sadržava poslovnu logiku, on orkestrira pozive prema domenskom sloju i infrastrukturnom sloju, provjerava formalnu ispravnost unosa i autorizira svaki zahtjev prema korisničkoj ulozi.
 
-**Application layer** realizuje se kroz Next.js API rute strukturirane prema RESTful principima unutar putanje /api/v1/. 
-- Ovaj sloj koordinira poslovne tokove koji odgovaraju use caseovima specificiranim u projektnoj dokumentaciji. Ključne komponente su: Auth middleware, koji pri svakom pristiglom zahtjevu verificira JWT token i korisničku ulogu te blokira neovlašteni pristup prije bilo kakve dalje obrade (PBI-002, NFR-007, NFR-008); Intervention service, koji orkestrira cjelovit životni ciklus intervencije od kreiranja zahtjeva, određivanja prioriteta i dodjele servisera, do evidentiranja rada i formalnog zatvaranja; Assignment service, koji upravlja procesom dodjele i ponovne dodjele intervencije, uključujući scenarije odbijanja zadatka i preraspodjele (PBI-012, PBI-013, US-22, US-23); te Audit logger, koji se poziva po završetku svake akcije promjene stanja kako bi evidentirao identitet aktera, tip akcije i vremensku oznaku (PBI-021, EXT-ZAK-02). 
-- Dependency Injection primjenjuje se u ovom sloju radi upravljanja zavisnostima, čime se postiže visoka testabilnost komponenti i mogućnost zamjene implementacija bez narušavanja poslovne logike.
+```
+Aplikacijski sloj — API endpointi (/api/v1/)
+│
+├── /auth
+│       ├── POST /register        → registracija korisnika usluge
+│       ├── POST /login           → prijava i kreiranje sesije
+│       └── POST /logout          → odjava i poništavanje sesije
+│
+├── /users (Admin)
+│       ├── GET    /users         → lista korisnika
+│       ├── POST   /users         → kreiranje internog korisnika
+│       ├── PATCH  /users/:id     → izmjena uloge
+│       └── DELETE /users/:id     → deaktivacija naloga
+│
+├── /zahtjevi
+│       ├── POST   /zahtjevi      → kreiranje zahtjeva (klijent)
+│       ├── GET    /zahtjevi/:id  → pregled vlastitog zahtjeva
+│       ├── PATCH  /zahtjevi/:id  → izmjena zahtjeva
+│       └── DELETE /zahtjevi/:id  → otkazivanje zahtjeva
+│
+├── /intervencije
+│       ├── GET    /intervencije           → lista (dispečer)
+│       ├── GET    /intervencije/:id       → detalji
+│       ├── PATCH  /intervencije/:id       → izmjena (prioritet, status)
+│       ├── POST   /intervencije/:id/dodjela    → dodjela servisera
+│       └── PATCH  /intervencije/:id/dodjela    → preraspodjela
+│
+├── /zadaci (Serviser)
+│       ├── GET    /zadaci             → dodijeljeni zadaci
+│       ├── PATCH  /zadaci/:id/status  → prihvatanje/odbijanje/ažuriranje
+│       └── POST   /zadaci/:id/evidencija → evidentiranje rada
+│
+└── /napomene, /historija
+        ├── POST /intervencije/:id/napomene → dodavanje napomene
+        └── GET  /intervencije/:id/historija → pregled audit traila
+```
 
----
+### 3.3 Domenski sloj
+Domenski sloj sadrži poslovnu logiku sistema. Ovo je najstabilniji sloj, promjene u infrastrukturi ne smiju zahtijevati izmjene u domenskim pravilima.
+```
+Ključna pravila i entiteti
+│
+├── Upravljanje statusima intervencije
+│       │
+│       └── Dozvoljene tranzicije:
+│               KREIRAN → NA_ČEKANJU → DODIJELJEN → U_TOKU
+│               U_TOKU  → ZAVRŠEN (samo s evidentiranim radom)
+│               DODIJELJEN → NA_PONOVNOJ_DODJELI (odbijanje)
+│               KREIRAN/NA_ČEKANJU → OTKAZAN (klijent)
+│
+├── Upravljanje statusima zahtjeva
+│       └── OTVOREN → U_OBRADI → ZATVOREN | OTKAZAN
+│
+├── Pravila dodjele
+│       ├── Dodjela je dozvoljena samo dispečeru (RBAC)
+│       ├── Intervencija mora biti u statusu NA_ČEKANJU za dodjelu
+│       ├── Jedan primarni serviser + opcionalni pomoćni serviser
+│       └── Odbijanje → vraćanje u NA_PONOVNOJ_DODJELI
+│
+├── Pravila zatvaranja intervencije
+│       ├── Intervencija mora biti u statusu ZAVRŠEN
+│       ├── Evidencija rada mora biti unesena (ne smije biti prazna)
+│       └── Samo dispečer može formalno zatvoriti intervenciju
+│
+├── Pravila izmjene zahtjeva
+│       └── Izmjena/otkazivanje dozvoljeno samo ako je status OTVOREN
+│           (zahtjev nije prešao u internu obradu — US-26, US-27)
+│
+└── Audit trail
+        └── Svaka promjena statusa, dodjela, napomena i zatvaranje
+            automatski se bilježi u Historija_aktivnosti s autorom
+            i vremenskom oznakom (US-32, EXT-ZAK-02)
+```
 
-**Domain layer** predstavlja jezgro sistema i jedini sloj koji je u potpunosti neovisan o vanjskim tehnologijama. 
-- U ovom sloju definirani su svi entiteti identificirani u Domain Modelu: Zahtjev, Intervencija, Dodjela, EvidencijaRada, Uposlenici, HistorijaAktivnosti, Napomena, Lokacija, Prioritet i Status.
-- Ovaj sloj nema direktnu spoznaju o Supabaseu, PostgreSQL-u niti Next.js-u. Sva poslovna pravila enkapsulirana su unutar ovog sloja. Izolacija domenske logike osigurava da izmjena infrastrukturnih tehnologija ili prezentacijskih mehanizama ne zahtijeva modifikaciju poslovnih pravila, što je preduvjet za dugoročnu održivost sistema.
+### 3.4 Infrastrukturni sloj
+Infrastrukturni sloj realiziran je kroz Supabase platformu koja objedinjuje PostgreSQL bazu podataka, ugrađeni autentifikacijski servis, Row Level Security mehanizam i, po potrebi, Edge Functions za serverless logiku.
+Pristup bazi podataka iz domenskog sloja odvija se isključivo kroz Repository pattern, domenski sloj ne poznaje SQL ni Supabase klijentsku biblioteku direktno. Ova apstrakcija omogućava zamjenu infrastrukturne implementacije bez izmjena poslovne logike, što je ključno za buduće proširenje sistema.
+```
+Infrastrukturni sloj — Supabase + PostgreSQL
+│
+├── Baza podataka (PostgreSQL na Supabase)
+│       │
+│       ├── Korisnik_usluge          (prijava, pregled zahtjeva)
+│       ├── Uposlenici               (dispečer, serviser, admin)
+│       ├── Uloga                    (RBAC definicija uloga)
+│       │
+│       ├── Zahtjev                  (prijava kvara, status, lokacija)
+│       ├── Intervencija             (operativni zadatak, prioritet)
+│       ├── Dodjela                  (serviser, prihvatanje/odbijanje)
+│       ├── Evidencija_rada          (utrošeno vrijeme, materijal)
+│       │
+│       ├── Status                   (jedinstveni entitet sa tip_statusa ENUM)
+│       ├── Prioritet                (hitnost intervencije)
+│       ├── Lokacija                 (prostorni podatak kvara)
+│       ├── Kategorija_kvara         (klasifikacija tipa problema)
+│       │
+│       ├── Napomena                 (interna komunikacija na intervenciji)
+│       └── Historija_aktivnosti     (audit trail — sve promjene)
+│
+├── Row Level Security (RLS)
+│       ├── Klijent vidi samo vlastite zahtjeve
+│       ├── Serviser vidi samo njemu dodijeljene intervencije
+│       ├── Dispečer vidi sve aktivne intervencije
+│       └── Admin ima puni pristup korisničkim podacima
+│
+├── Supabase Auth
+│       ├── Registracija + prijava + JWT tokeni
+│       ├── Bcrypt hashiranje lozinki (cost faktor ≥ 10 — NFR-007)
+│       ├── Automatski istek sesije nakon 8h neaktivnosti (NFR-008)
+│       └── HTTPS-only komunikacija (NFR-010)
+│
+└── Repository pattern (apstrakcija pristupa podacima)
+        ├── ZahtjevRepository
+        ├── IntervencijaRepository
+        ├── DodjelaRepository
+        ├── KorisnikRepository
+        └── HistorijaAktivnostiRepository
+```
 
----
-
-**Infrastructure layer** realizuje sve tehničke zavisnosti koje domenski sloj zahtijeva, posredstvom Repository patterna koji apstrahuje interakciju s mehanizmima pohrane podataka. 
-- Supabase PostgreSQL pohrana služi kao primarni mehanizam perzistencije domenskih entiteta. Row-Level Security politike konfigurirane su tako da enforciraju pristupna prava direktno na razini baze podataka, čime se uspostavlja drugi sloj zaštite uz aplikacijsku RBAC implementaciju (NFR-008, NFR-010).
-- Supabase Auth upravlja životnim ciklusom JWT sesija, kriptografskim hashiranjem lozinki i istekom sesija (NFR-009).
-- Supabase File Storage koristi se za pohranu slikovnih dokaza pri evidenciji izvršenog rada (PBI-017). Vercel platforma osigurava automatiziran deployment s GitHub integracijom, HTTPS enkripciju komunikacije i globalnu CDN distribuciju, čime se direktno adresiraju zahtjevi vezani za performanse (NFR-001, NFR-002) i sigurnost prijenosa podataka (NFR-010, EXT-ZAK-04).
-
---- 
 ## 4. Tok podataka i interakcija
 
-Svaka akcija u sistemu prolazi kroz jasno definisan put: počinje u korisničkom interfejsu, nastavlja se kroz slojeve koji provjeravaju ko je korisnik i šta smije raditi, primjenjuje poslovna pravila, i završava trajnom pohranjem podataka uz potpunu evidenciju svake promjene. Ovaj put nije slučajan, svaki korak postoji zbog konkretnog zahtjeva iz dokumentacije. Bez provjere identiteta nema sigurnosti (NFR-007, NFR-008). Bez provjere uloge dispečer bi mogao raditi ono što smije samo administrator (PBI-002). Bez evidencije promjena nema revizijskog traga koji zakon zahtijeva (EXT-ZAK-02).
+### 4.1 Komunikacija između slojeva
+Komunikacija u sistemu teče jednosmjerno prema principu slojevite arhitekture. Prezentacijski sloj šalje HTTP zahtjeve prema aplikacijskom sloju putem REST API-ja. Aplikacijski sloj poziva domenski sloj radi primjene poslovnih pravila, a domenski sloj komunicira s infrastrukturnim slojem isključivo kroz repository apstrakciju. Odgovori se vraćaju istim putem u obrnutom smjeru.
+```
+Korisnik (preglednik)
+        │
+        │  HTTPS / REST API
+        ▼
+Aplikacijski sloj (/api/v1/)
+        │   Provjera JWT tokena
+        │   Provjera uloge (403 ako nije dozvoljena akcija)
+        │   Validacija ulaznih podataka
+        ▼
+Domenski sloj
+        │   Primjena poslovnih pravila
+        │   Provjera statusnih tranzicija
+        │   Kreiranje Historija_aktivnosti zapisa
+        ▼
+Repository (apstrakcija)
+        │
+        ▼
+Supabase (PostgreSQL + RLS)
+        │   RLS provjerava da li korisnik smije čitati/pisati taj red
+        │   Pohrana podataka
+        │   Vraćanje rezultata
+        ▼
+Domenski sloj → Aplikacijski sloj → Prezentacijski sloj
+```
 
-Nije svaka akcija jednako složena. Neke se završe unutar jednog sloja. Primjerice, pregled podataka koji su već prikazani u interfejsu ne zahtijeva nikakav poziv prema serveru. Neke prelaze kroz dva sloja, čitanje podataka o intervenciji zahtijeva provjeru identiteta i dohvatanje iz baze, ali ne uključuje nikakvu poslovnu logiku. Najsloženiji tokovi, poput dodjele servisera, prolaze kroz sve četiri sloja jer uključuju sigurnosne provjere, poslovnu logiku provjere dostupnosti, kreiranje novih poslovnih entiteta i trajnu pohranu s evidencijom.
+### 4.2 Ključni komunikacijski scenariji
+#### 4.2.1 Scenario 1: Kreiranje zahtjeva od strane klijenta 
+```
+Klijent unosi podatke u formu
+        ↓
+[Prezentacijski sloj] Validacija forme na klijentskoj strani
+        ↓
+POST /api/v1/zahtjevi  (s JWT tokenom u Authorization headeru)
+        ↓
+[Aplikacijski sloj] Provjera JWT → Potvrda uloge 'klijent' → Validacija tijela zahtjeva
+        ↓
+[Domenski sloj] Kreiranje Zahtjev entiteta → Dodjela statusa 'OTVOREN'
+                Kreiranje Historija_aktivnosti zapisa
+        ↓
+[Infrastrukturni sloj] ZahtjevRepository.create() → INSERT u PostgreSQL
+        ↓
+HTTP 201 Created → Klijent vidi potvrdu i zahtjev u listi
+```
+#### 4.2.2 Scenario 2: Dodjela intervencije serviseru
+```
+Dispečer odabire servisera iz padajućeg menija
+        ↓
+POST /api/v1/intervencije/:id/dodjela
+        ↓
+[Aplikacijski sloj] JWT provjera → Uloga 'dispečer' potvrđena
+        ↓
+[Domenski sloj] Provjera statusa intervencije (mora biti 'NA_ČEKANJU')
+                Kreiranje Dodjela entiteta → Status → 'DODIJELJEN'
+                Upis u Historija_aktivnosti
+        ↓
+[Infrastrukturni sloj] DodjelaRepository.create() → INSERT
+                       IntervencijaRepository.updateStatus() → UPDATE
+        ↓
+HTTP 200 OK → Serviser vidi novi zadatak u listi (RLS dozvoljava)
+```
+#### 4.2.3 Scenario 3: Pokušaj neovlaštenog pristupa
+```
+Klijent šalje GET /api/v1/intervencije  (lista svih intervencija)
+        ↓
+[Aplikacijski sloj] JWT provjera → Uloga 'klijent' identificirana
+                    Pristup listi svih intervencija nije dozvoljen ulozi 'klijent'
+        ↓
+HTTP 403 Forbidden  → Poruka "Pristup nije dozvoljen"
+Sistemski log: evidentiran pokušaj, vremenska oznaka, ID korisnika
+```
 
----
-
-### 4.1 Tok dodjele intervencije serviseru (US-09, US-11, US-12)
-
-**Ko pokreće akciju:** Dispečer koji obrađuje pristigle zahtjeve klijenata.
-
-Dispečer se prijavljuje u sistem i na svojoj kontrolnoj tabli odmah vidi sažet pregled svih otvorenih intervencija po fazama (US-31). Otvara listu zahtjeva (US-07), pregleda detalje konkretne intervencije (US-08) i donosi tri međusobno zavisne odluke: koliki je prioritet kvara, kada serviser izlazi na teren, i koji serviser je odgovaran.
-
-Ove tri odluke su namjerno razdvojene u zasebne korake jer svaka ima svoju poslovnu logiku. Prioritet određuje redoslijed obrade i ne zahtijeva provjeru dostupnosti servisera. Planiranje termina zahtijeva uvid u kalendar i provjeru da li odabrani serviser već ima zakazan izlazak u to vrijeme, bez ove provjere sistem bi dozvolio konflikt termina (US-11). Tek nakon što su prioritet i termin definisani, dodjela serviseru ima smisla jer dispečer tada zna koga traži i kada.
-
-**Određivanje prioriteta:**
-
-Dispečer odabira prioritet intervencije i potvrđuje izbor. Korisnikov interfejs šalje zahtjev za izmjenu prioriteta prema sistemu. Sigurnosni sloj provjerava identitet korisnika i potvrđuje da ima ulogu dispečera, bez ove provjere bilo ko bi mogao mijenjati prioritete. Sloj poslovne logike primjenjuje pravila prioritizacije. Podaci se ažuriraju i svaka promjena se bilježi uz zapis o tome ko je, kada i šta promijenio (EXT-ZAK-02).
-
-**Planiranje termina:**
-
-Dispečer pregleda kalendar dostupnosti i odabira termin izlaska. Sloj poslovne logike provjerava dostupnost servisera i odsustvo konflikata s već zakazanim terminima (US-11). Ova provjera je ključna, bez nje sistem ne bi mogao garantovati da dodjela ima smisla u praksi. Planirani termin se bilježi na intervenciji.
-
-## Dispečer
-
-- pregleda otvorene intervencije (US-07, US-08)  
-- određuje prioritet  
-- planira termin izlaska na teren  
-- dodjeljuje serviseru  
-
----
-
-## [SIGURNOSNI SLOJ]
-
-- provjera identiteta korisnika  
-- provjera da korisnik ima ulogu dispečera  
-
----
-
-## [SLOJ POSLOVNE LOGIKE]
-
-- primjena pravila prioritizacije  
-- provjera dostupnosti servisera i konflikata termina (US-11)  
-- provjera da je serviser stvarno slobodan za dodjelu  
-
----
-
-## [SLOJ POSLOVNIH ENTITETA]
-
-- ažuriranje prioriteta na intervenciji  
-- kreiranje evidencije dodjele  
-- promjena statusa: `"Na čekanju"` → `"Dodijeljeno"`  
-
----
-
-## [SLOJ POHRANE]
-
-- trajno snimanje svih izmjena  
-- bilježenje: ko je dodijelio, kada, kome (EXT-ZAK-02, US-32)  
-
----
-
-## [KORISNIKOV INTERFEJS]
-
-- osvježen prikaz dispečera  
-- novi zadatak vidljiv serviseru u njegovom pregledu (US-15)  
-
----
-
-## Zašto ovaj redoslijed i ne neki drugi
-
-Sigurnosna provjera mora biti prva jer je besmisleno primjenjivati poslovnu logiku na zahtjev koji dolazi od neovlaštene osobe.  
-
-Poslovna logika mora doći prije kreiranja entiteta jer ne smijemo kreirati dodjelu ako serviser nije dostupan.  
-
-Pohrana je uvijek zadnja jer se snima samo ono što je prošlo sve prethodne provjere.
-
-### 4.2 Komunikacijski kanali
-
-| Komunikacijski kanal | Namjena | Protokol |
-|---|---|---|
-| Korisnik ↔ Prezentacijski sloj | Interakcija sa UI-om, unos podataka, prikaz statusa i poruka | HTTPS / Browser |
-| Prezentacijski sloj → Aplikacijski sloj | CRUD operacije, autentifikacija, ažuriranje statusa | HTTPS / REST API (`/api/v1/`) |
-| Aplikacijski sloj ↔ Infrastrukturni sloj | Čitanje i pisanje poslovnih podataka putem Repository sloja | HTTPS (Supabase klijent) |
-| Aplikacijski sloj ↔ Supabase Auth | Verifikacija JWT tokena, upravljanje sesijama | HTTPS (Supabase Auth) |
-| Aplikacijski sloj ↔ AuditLogger | Evidentiranje svih promjena na intervencijama | Interni servisni poziv (Audit logger) |
-| Infrastrukturni sloj ↔ PostgreSQL | Perzistencija podataka, RLS provjere pristupa | SQL (interno) |
-| Infrastrukturni sloj ↔ File Storage | Pohrana slikovnih dokaza evidentiranog rada (PBI-017) | HTTPS (Supabase Storage) |
-
----
-
-### 4.3 Zašto ne neki drugi pristup komunikacije
-
-Jedina alternativa koja je razmatrana bila je direktna komunikacija između korisničkog interfejsa i baze podataka, bez slojeva poslovne logike između. Ovaj pristup bi bio brži za implementaciju, ali bi u potpunosti uklonio mogućnost primjene sigurnosnih provjera i poslovnih pravila na centralnom mjestu. Provjera dostupnosti servisera, validacija statusnih tranzicija i evidencija promjena moraju biti na jednom kontrolisanom mjestu — ne raspršene po korisničkom interfejsu koji se lako može zaobići. Odabrani pristup to garantuje jer svaki zahtjev neizbježno prolazi kroz isti sigurnosni i logički sloj, bez obzira odakle dolazi.
-
----
-
-## 5. Ključne tehničke odluke
-
-| Odluka | Razlog | Odbijena alternativa | Zašto odbijena |
-|---|---|---|---|
-| Layered (slojevita) arhitektura | Jasna podjela odgovornosti između slojeva, paralelni rad tima, podrška modularnosti (NFR-016). Svaki sloj komunicira isključivo s neposredno susjednim slojem. | Mikroservisi | Zahtijeva zasebnu infrastrukturu po servisu (API gateway, service discovery) — prevelik overhead za tim od 8 studenata i ograničen rok (ORG-ISP-01) |
-| Next.js kao full-stack okvir | Pokriva i UI (React) i API rute unutar jednog projekta. Vercel automatski osigurava HTTPS, globalni CDN i preview deploymente za svaki pull request (NFR-010, NFR-004, ORG-IMP-02). | Odvojen React frontend + Express backend | Dupla infrastruktura i složeniji deployment bez konkretne koristi za MVP obim |
-| Supabase kao infrastrukturna platforma | Dolazi s ugrađenim bcrypt hashiranjem (NFR-007), JWT sesijama s istekom (NFR-008), RLS politikama (NFR-009) i file storageom za slikovne dokaze (PBI-017). Podaci pohranjeni unutar EU (EXT-ZAK-01). Besplatan plan primjeren MVP-u. | Vlastiti auth sistem | Zahtijeva opsežno testiranje sigurnosnih rubnih slučajeva i razvojno vrijeme koje tim nema |
-| REST API | Jednostavan za implementaciju i testiranje. Next.js nativno podržava API rute. Bruno kolekcije verzionirane u repozitoriju (ORG-STD-03). | GraphQL | Dodaje složenost schema definicije i resolver logike bez koristi za MVP — svi podaci se dohvataju prema predvidljivim obrascima |
-| Repository pattern | Izoluje domensku logiku od infrastrukture. Omogućava unit testiranje s mock repozitorijima bez stvarne baze (ORG-STD-02, NFR-016). | Direktni Supabase pozivi u komponentama | Veže poslovnu logiku za infrastrukturnu implementaciju; onemogućava testiranje i povećava dupliciranje koda |
-| Dependency Injection (DI) | Servisi primaju zavisnosti izvana umjesto da ih kreiraju direktno. Visoka testabilnost Application layera (Intervention service, Assignment service, Audit logger). Omogućava zamjenu implementacija bez izmjene poslovne logike (NFR-016). | Direktno kreiranje zavisnosti unutar klasa | Kruta vezanost između komponenti; onemogućava unit testiranje bez stvarnih servisa |
-| JWT autentifikacija (Supabase Auth) | Stateless pristup — bez server-side sesija. Token se verificira pri svakom zahtjevu u Auth middlewareu. Istek nakon 8 sati neaktivnosti (NFR-008). | Session-based autentifikacija | Zahtijeva server-side pohranivanje sesija što komplicira skaliranje i nije u skladu s Supabase ekosistemom |
-| HTTPS / TLS 1.2+ | Sva komunikacija između klijenta i servera enkriptira se. HTTP zahtjevi automatski se preusmjeravaju na HTTPS statusnim kodom 301. Vercel to osigurava automatski (NFR-010). | HTTP bez enkripcije | Nije prihvatljivo — podaci korisnika i JWT tokeni bi bili izloženi (NFR-010) |
-| Strategija testiranja: Jest + Playwright | Jest pokriva unit testove poslovne logike (Domain i Application layer); Playwright pokriva E2E testove kritičnih tokova. Ciljna pokrivenost 40–50% za ključnu logiku (ORG-STD-02). | Isključivo ručno testiranje | Nije skalabilno kroz sprintove 6–10; regresijske greške teško uočljive bez automatizacije |
-
----
+## 5. Ključne tehničke odluke (KTO)
+U ovom poglavlju dokumentiraju se ključne arhitektonske odluke s obrazloženjem zašto je svaka od njih donesena. 
+| Odluka | Razlog |
+|--------|--------|
+| Next.js kao full-stack okvir | Jedinstven projekt za frontend i backend (React + API Routes); ispunjava NFR-015 (web bez instalacije) i NFR-013 (responzivnost); smanjuje kompleksnost (jedan repo, jedan deployment); usklađeno s ORG-IMP-01 |
+| Supabase kao Backend-as-a-Service | PostgreSQL + Auth + RLS + Storage u jednom; podržava NFR-007 (hashiranje), NFR-008 (JWT sesije), NFR-010 (HTTPS), NFR-009 (sigurnost); EU hosting (GDPR); relacijski model odgovara domenskim zahtjevima |
+| RESTful API dizajn | Standardizirani endpointi (/api/v1, HTTP metode); lakša dokumentacija (NFR-017); omogućava paralelan rad frontend/backend (ORG-IMP-03); manja složenost od GraphQL za MVP |
+| RLS + backend RBAC (defense in depth) | Dvostruka kontrola pristupa: API + baza; ispunjava NFR-009 i PBI-002; RLS štiti podatke čak i kod grešaka u aplikaciji |
+| Repository pattern | Apstrakcija pristupa bazi; podržava modularnost (NFR-016); lakše testiranje (mock); izolacija od Supabase vendor lock-in |
+| Vercel deployment | Automatski deployment i GitHub integracija; zadovoljava NFR-004 (dostupnost) i NFR-010 (HTTPS); preview okruženja za PR-ove |
 
 ## 6. Ograničenja i rizici arhitekture
+| Ograničenje | Razlog | Uticaj |
+|------------|--------|---------|
+| Nema offline podrške | Web aplikacija zavisna od Supabase cloud servisa; ProductVision ne zahtijeva offline rad u MVP-u | Bez internet konekcije nema pristupa sistemu; prihvatljivo za MVP |
+| Nema real-time (push) notifikacija | Supabase Realtime nije uključen u MVP scope; ProductVision ograničenje | Potrebno ručno osvježavanje za nove zadatke; može se dodati kasnije |
+| Monolitna Next.js aplikacija | Mikroservisi nisu opravdani za MVP (resursi i složenost) | Nema nezavisnog skaliranja modula; dovoljno za NFR-003 (≈50 korisnika) |
+| Zavisnost od Supabase servisa | Korištenje managed BaaS platforme | Rizik vendor lock-in; mitigacija: backupi (NFR-006) i moguća migracija na PostgreSQL |
 
-| Rizik / Ograničenje | Utjecaj | Vjerovatnoća | Mitigacija |
-|---|---|---|---|
-| Ovisnost o Supabase platformi | Visok | Niska | Repository pattern izolira Infrastructure layer od ostatka sistema. Zamjena platforme zahvata samo jedan sloj. Besplatan plan zadovoljava MVP zahtjeve (ORG-IMP-02). |
-| Ovisnost o Vercel platformi | Srednji | Niska | Vercel nudi besplatan plan za studentske projekte i automatski HTTPS. Migracija na drugi hosting bi zahtijevala rekonfiguraciju CI/CD-a, ali ne bi zahvatila poslovnu logiku. |
-| Sistem podržava jednu organizaciju (single-tenant) | Srednji | Niska | ProductVision eksplicitno definiše MVP za jednu organizaciju. Proširenje na višetenantni model zahtijevalo bi izmjenu sheme baze (tenant_id) i RLS politika — ostaje za post-MVP fazu. |
-| Degradacija performansi pri velikom broju korisnika | Visok | Srednja | NFR-003 propisuje podršku za 50 istovremenih korisnika. Vercel CDN i Supabase connection pooling ublažavaju problem u okviru MVP-a. Monitoring putem UptimeRobot (NFR-004). |
-| Ograničena testna pokrivenost | Srednji | Srednja | Ciljna pokrivenost 40–50% za ključnu poslovnu logiku (ORG-STD-02). Fokus: prijava zahtjeva (US-05), određivanje prioriteta (US-12), dodjela servisera (US-09), ažuriranje statusa (US-14), zatvaranje intervencije (US-25). |
-| RLS politike kao jedina linija autorizacije na bazi | Visok | Srednja | RBAC middleware u Application layeru je prvi sloj autorizacije. RLS je redundantni drugi sloj. NFR-009 propisuje obavezno logiranje svakog pokušaja neovlaštenog pristupa s HTTP 403. |
-| Nema offline podrške | Srednji | Visoka | Sistem zahtijeva aktivnu internet konekciju. Svjesno ograničenje MVP-a navedeno u ProductVision. Pretpostavka dostupnosti konekcije dokumentovana je kao projektna pretpostavka. |
-| Neusklađenost RBAC pravila između frontend i backend sloja | Visok | Srednja | Backend je jedini autoritativni izvor za autorizaciju. Frontend skriva UI elemente radi korisničkog iskustva, ali ne štiti podatke — zaštita je uvijek na API sloju (NFR-009). |
-
----
+| Rizik | Vjerovatnost | Uticaj | Ublažavanje rizika |
+|------|--------------|---------|------------|
+| Neispravan RLS (curenje podataka) | Srednja | Visok | Code review RLS politika; testiranje s različitim ulogama na kraju svakog sprinta |
+| Nedosljedne statusne tranzicije | Srednja | Visok | Centralizacija logike u domenskom sloju; unit testovi za dozvoljene i nedozvoljene tranzicije (ORG-STD-02) |
+| Preopterećenje aplikacijskog sloja | Srednja | Srednji | Code review; jasno razdvajanje odgovornosti i granica slojeva |
+| Sporiji API odgovori pri rastu podataka | Niska | Srednji | Indeksi u PostgreSQL (status, dispečer, datum); SSR i caching u Next.js |
 
 ## 7. Otvorena pitanja
-
-| # | Pitanje | Prioritet | Komentar |
-|---|---|---|---|
-| 1 | Koji mehanizam koristiti za notifikacije servisera i dispečera? | Visok | StakeholderMap navodi pravovremene notifikacije kao ključno očekivanje. US-23 pominje automatsku notifikaciju dispečeru pri odbijanju zadatka, a US-09 i US-22 pretpostavljaju obavještavanje servisera pri dodjeli. Nije definirano: Supabase Realtime, email ili push notifikacije. Niti jedan PBI u backlogu trenutno ne implementira ovaj mehanizam. |
-| 2 | Kako implementirati SLA praćenje i eskalacijski workflow? | Srednji | StakeholderMap definiše menadžera koji prati SLA kršenja i KPI metrike. Niti jedan NFR niti PBI ne implementira automatsko SLA praćenje. Zahtijevalo bi proširenje domenskog modela (SLA pravila, eskalacijski statusi) i novi Application service. Ostaje za post-MVP fazu. |
-| 3 | Kada i kako uvesti višeorganizacijsku (multitenant) podršku? | Nizak | IT tim (StakeholderMap) navodi proširenje na više lokacija i timova kao buduće tehničko očekivanje. Trenutna arhitektura to ne podržava. Migracija zahtijeva izmjenu sheme baze (tenant_id kolona), RLS prilagodbe i zasebni sprint — van MVP scopea. |
-| 4 | Da li uvesti offline podršku za servisere na terenu? | Nizak | NFR-013 zahtijeva responzivnost na mobilnim uređajima, ali ProductVision isključuje offline rad iz MVP-a. Terenska realnost servisera s ograničenim signalom ostavlja ovo kao otvoreno pitanje za buduće faze. Potencijalno rješenje: Service Worker / PWA pristup. |
-
----
+| Tema | Ključno pitanje | Uticaj |
+|------|----------------|--------|
+| Supabase Edge Functions vs Next.js API Routes za kompleksnu logiku | Da li koristiti Supabase Edge Functions za kritičnu poslovnu logiku (npr. automatsko kreiranje `Historija_aktivnosti` zapisa putem database trigera) ili sve zadržati unutar Next.js API Routes? | Odgovor utiče na arhitekturu domenskog sloja i testabilnost. |
+| Granularnost RLS politika | Da li serviser smije čitati detalje intervencija koje su mu bile dodijeljene ranije (historija) ili samo trenutno aktivne? | Odgovor utiče na definiciju sigurnosnih (RLS) politika i pristup podacima. |
+| Strategija cacheovanja za dispečerski dashboard | Dashboard prikazuje agregatne podatke (broj po statusima, prioritetima). Da li koristiti Next.js ISR (Incremental Static Regeneration) ili SWR biblioteku za client-side caching? | Odgovor utiče na performanse (NFR-001) i arhitekturu prezentacijskog sloja. |
+| Notifikacija servisera o dodjeli | Use case US-28 (Promjena izvršioca) navodi "Sistem obavještava novog servisera o dodjeli". Koji je mehanizam: e-mail notifikacija, Supabase Realtime, ili samo ažuriranje liste pri sljedećem osvježavanju? | Odgovor utiče na arhitekturu i opseg MVP-a. |
