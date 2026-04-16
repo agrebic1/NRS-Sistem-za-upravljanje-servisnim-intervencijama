@@ -244,7 +244,7 @@ Pojedini acceptance kriteriji mogu se provjeravati na više nivoa testiranja, u 
 | **US-31** | Dispečer može pregledati sažeti operativni status intervencija na kontrolnoj tabli | Sistemsko, UI | test prikaza kontrolne table i operativnog statusa | prikazan je tačan i pregledan operativni status intervencija |
 | **US-32** | Ovlašteni korisnik može pregledati historiju aktivnosti intervencije | Sistemsko, UI | test audit traga i prikaza historije aktivnosti | prikazana je hronološka historija aktivnosti i promjena |
 
-## Veza testiranja sa nefunkcionalnim zahtjevima
+### Veza testiranja sa nefunkcionalnim zahtjevima
 | ID zahtjeva | Oblast | Šta se provjerava | Nivo / vrsta testiranja | Način provjere | Očekivani rezultat |
 |-------------|--------|-------------------|-------------------------|----------------|--------------------|
 | NFR-001 | Performanse | Vrijeme učitavanja pregleda aktivnih intervencija | Sistemsko, performansno | mjerenje učitavanja ključnog ekrana | ekran se učitava unutar definisanog vremenskog ograničenja |
@@ -355,4 +355,4 @@ Rizici kvaliteta u ovom projektu najviše se odnose na ispravnost prava pristupa
 | QR-09 | Neispravno planiranje termina | Sistem dozvoljava nevalidne ili nelogične termine intervencije | konflikti u organizaciji rada i otežano izvršenje intervencija | unit, integraciono i sistemsko testiranje planiranja |
 | QR-10 | Neispravno evidentiranje rada | Podaci o izvršenom radu nisu potpuni, tačni ili dosljedno povezani sa intervencijom | netačni izvještaji i otežano zatvaranje intervencije | testiranje unosa, spremanja i pregleda evidencije rada |
 | QR-11 | Slabe performanse pri većoj količini podataka | Sistem postaje spor pri radu sa listama, statusima ili historijom aktivnosti | loše korisničko iskustvo i otežan operativni rad | sistemsko testiranje prikaza i provjera odziva ključnih dijelova sistema |
-| QR-12 | Nepouzdano slanje obavještenja | Korisnici ili učesnici procesa ne dobijaju obavještenja kada su ona predviđena sistemom | kašnjenje u radu i slabija koordinacija procesa | testiranje notifikacijskog toka, ako je ta funkcionalnost implementirana |
+
