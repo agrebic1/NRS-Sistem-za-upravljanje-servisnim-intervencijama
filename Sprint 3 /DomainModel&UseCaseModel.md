@@ -192,7 +192,7 @@ U sljedećoj tabeli su prikazani svi entiteti i svi atributi koji im pripadaju:
 
 | Stavka | Sadržaj |
 |--------|---------|
-| **Aktor** | Korisnik usluge |
+| **Aktor** | Neregistrovani korisnici |
 | **Naziv use case-a** | Samostalna registracija korisnika usluge |
 | **Kratak opis** | Ovaj use case opisuje proces u kojem korisnik usluge samostalno kreira novi korisnički nalog kako bi kasnije mogao pristupiti sistemu i koristiti njegove funkcionalnosti. |
 | **Preduslovi** | Korisnik ima pristup registracionoj formi.<br>Sistem je dostupan i funkcionalan. |
@@ -205,7 +205,7 @@ U sljedećoj tabeli su prikazani svi entiteti i svi atributi koji im pripadaju:
 
 | Stavka | Sadržaj |
 |--------|---------|
-| **Aktor** | Korisnik usluge |
+| **Aktor** | Registrovani korisnici |
 | **Naziv use case-a** | Prijava korisnika u sistem |
 | **Kratak opis** | Ovaj use case opisuje proces u kojem registrovani korisnik unosi svoje kredencijale kako bi se prijavio u sistem i pristupio funkcionalnostima koje su mu dostupne. |
 | **Preduslovi** | Korisnik ima kreiran korisnički nalog.<br>Korisnik ima pristup login formi.<br>Sistem je dostupan i funkcionalan. |
