@@ -581,10 +581,3 @@ U sljedećoj tabeli su prikazani svi entiteti i svi atributi koji im pripadaju:
 | **Glavni tok** | 1. Dispečer otvara listu intervencija.<br>2. Dispečer bira intervenciju.<br>3. Dispečer otvara sekciju historije aktivnosti.<br>4. Sistem prikazuje hronološki zapis svih aktivnosti (statusi, promjene, dodjele itd.).<br>5. Sistem prikazuje dodatne informacije (vrijeme, korisnik, opis aktivnosti).<br>6. Dispečer pregledava historiju i analizira tok obrade. |
 | **Alternativni tokovi** | **A1: Nema historije aktivnosti**<br>3a. Intervencija nema evidentiranu historiju.<br>4a. Sistem prikazuje poruku da nema dostupnih podataka.<br><br>**A2: Greška pri učitavanju**<br>4a. Sistem ne može učitati podatke.<br>5a. Sistem prikazuje poruku o grešci.<br><br>**A3: Neovlašten pristup**<br>2a. Korisnik bez odgovarajuće uloge pokuša pristupiti.<br>3a. Sistem blokira pristup.<br>4a. Sistem prikazuje poruku o zabrani pristupa. |
 | **Ishod** | Dispečer ima potpun uvid u tok obrade intervencije.<br>Osigurana je transparentnost procesa.<br>Omogućeno je praćenje svih promjena.<br>Sistem podržava audit i kontrolu rada. |
-
-
-## Zaključak
-
-U ovom dokumentu definisani su ključni use case-ovi sistema za upravljanje servisnim intervencijama. Svaki use case detaljno opisuje interakciju između aktera i sistema, uključujući glavne i alternativne tokove, kao i očekivane ishode.
-
-Ovakva specifikacija omogućava jasno razumijevanje funkcionalnosti sistema, olakšava dalji razvoj i implementaciju, te služi kao osnova za testiranje i validaciju sistema.
