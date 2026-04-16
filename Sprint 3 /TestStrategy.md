@@ -2,7 +2,7 @@
 
 ## Cilj testiranja
 
-Cilj testiranja je provjeriti i osigurati da sistem za upravljanje servisnim intervencijama funkcioniše ispravno, pouzdano i u skladu sa definisanim zahtjevima, user storyjima i acceptance kriterijima.
+Cilj testiranja je provjeriti i osigurati da sistem za upravljanje servisnim intervencijama funkcioniše ispravno, pouzdano i u skladu sa definisanim zahtjevima, user storyjima i acceptance kriterijima. Pored funkcionalnih zahtjeva, testiranje obuhvata i provjeru nefunkcionalnih zahtjeva koji se odnose na performanse, pouzdanost, sigurnost, upotrebljivost, portabilnost i održivost sistema.
 
 Testiranjem se ne provjerava samo da li su pojedine funkcionalnosti tehnički implementirane bez grešaka, nego i da li su osmišljene i realizovane u skladu sa stvarnim potrebama korisnika i predviđenim tokom poslovnog procesa.
 
@@ -15,6 +15,9 @@ Glavni ciljevi testiranja su:
 - osigurati ispravno odvijanje glavnog i alternativnih tokova rada
 - smanjiti rizik od grešaka u produkciji
 - obezbijediti pouzdan i upotrebljiv sistem za sve korisničke uloge
+- provjeriti ispunjenost nefunkcionalnih zahtjeva
+- potvrditi da sistem zadovoljava zahtjeve sigurnosti, dostupnosti, performansi i upotrebljivosti
+- provjeriti da je sistem upotrebljiv i tehnički održiv u okviru MVP obima
 
 ## Nivoi testiranja
 
@@ -120,7 +123,19 @@ U okviru ovog projekta testiranje upotrebljivosti obuhvata:
 - jasnoću akcija za dispečera, servisera, administratora i korisnika usluge
 - praktičnost osnovnih tokova rada kroz sistem
 
-### Povezanost dodatnih vrsta testiranja sa nivoima testiranja
+### Testiranje nefunkcionalnih zahtjeva
+
+Pored funkcionalnih zahtjeva, u okviru ovog projekta provjerava se i ispunjenost nefunkcionalnih zahtjeva definisanih za performanse, pouzdanost, sigurnost, upotrebljivost, portabilnost i održivost sistema. Ovi zahtjevi ne provjeravaju se kroz jedan poseban nivo testiranja, nego kroz kombinaciju više nivoa i dodatnih vrsta testiranja, u zavisnosti od njihove prirode.
+
+Zahtjevi vezani za performanse i efikasnost provjeravaju se kroz sistemsko testiranje i, po potrebi, dodatna mjerenja odziva i opterećenja, posebno za učitavanje ključnih ekrana i vrijeme odgovora API poziva. Pouzdanost sistema provjerava se kroz testiranje dostupnosti, zaštite potvrđenih podataka i validnosti backup mehanizama. Sigurnosni zahtjevi provjeravaju se kroz sigurnosno, integraciono i sistemsko testiranje, posebno u dijelu autentifikacije, autorizacije, upravljanja sesijom, zaštite pristupa podacima i šifrovanja komunikacije.
+
+Zahtjevi upotrebljivosti provjeravaju se kroz UI testiranje i testiranje upotrebljivosti, s fokusom na broj koraka, intuitivnost korištenja i responzivnost interfejsa. Portabilnost sistema provjerava se testiranjem u podržanim preglednicima i na različitim veličinama ekrana, dok se održivost procjenjuje kroz code review, modularnost arhitekture i usklađenost dokumentacije sa implementacijom.
+
+Na ovaj način testiranje obuhvata ne samo provjeru funkcionalne ispravnosti sistema, nego i provjeru da li sistem ispunjava kvalitetne karakteristike definisane nefunkcionalnim zahtjevima.
+
+Pored formalno izdvojenih vrsta testiranja, pojedini nefunkcionalni zahtjevi provjeravaju se i kroz specifične metode kao što su mjerenje performansi, load testiranje, pregled dokumentacije i code review.
+
+### Povezanost vrsta i aspekata testiranja sa nivoima testiranja
 
 Dodatne vrste testiranja ne predstavljaju zaseban nivo testiranja, nego se provode unutar jednog ili više nivoa, u zavisnosti od toga šta se provjerava i koji je fokus testiranja.
 
@@ -131,6 +146,9 @@ Dodatne vrste testiranja ne predstavljaju zaseban nivo testiranja, nego se provo
 | **Testiranje korisničkog interfejsa** |  | ✓ | ✓ | ✓ |
 | **Sigurnosno testiranje** | ✓ | ✓ | ✓ | ✓ |
 | **Testiranje upotrebljivosti** |  |  | ✓ | ✓ |
+| **Testiranje performansi i pouzdanosti** |  | ✓ | ✓ |  |
+| **Testiranje portabilnosti** |  |  | ✓ | ✓ |
+| **Testiranje održivosti** | ✓ | ✓ |  |  |
 
 ### Provjera rješenja razvijenih uz podršku AI alata
 
@@ -226,6 +244,26 @@ Pojedini acceptance kriteriji mogu se provjeravati na više nivoa testiranja, u 
 | **US-31** | Dispečer može pregledati sažeti operativni status intervencija na kontrolnoj tabli | Sistemsko, UI | test prikaza kontrolne table i operativnog statusa | prikazan je tačan i pregledan operativni status intervencija |
 | **US-32** | Ovlašteni korisnik može pregledati historiju aktivnosti intervencije | Sistemsko, UI | test audit traga i prikaza historije aktivnosti | prikazana je hronološka historija aktivnosti i promjena |
 
+## Veza testiranja sa nefunkcionalnim zahtjevima
+| ID zahtjeva | Oblast | Šta se provjerava | Nivo / vrsta testiranja | Način provjere | Očekivani rezultat |
+|-------------|--------|-------------------|-------------------------|----------------|--------------------|
+| NFR-001 | Performanse | Vrijeme učitavanja pregleda aktivnih intervencija | Sistemsko, performansno | mjerenje učitavanja ključnog ekrana | ekran se učitava unutar definisanog vremenskog ograničenja |
+| NFR-002 | Performanse | Vrijeme odgovora API poziva | Integraciono, sistemsko | mjerenje odziva API-ja za GET, POST i PATCH operacije | prosječno vrijeme odgovora ostaje unutar definisane granice |
+| NFR-003 | Performanse | Ponašanje sistema pod opterećenjem | Sistemsko, performansno | load testiranje sa većim brojem paralelnih korisnika | sistem zadržava prihvatljiv odziv pri definisanom opterećenju |
+| NFR-004 | Pouzdanost | Dostupnost sistema u radnom vremenu | Sistemsko | praćenje uptime-a i evidencija prekida rada | sistem ostaje dostupan u definisanom procentu vremena |
+| NFR-005 | Pouzdanost | Očuvanje potvrđenih podataka | Integraciono, sistemsko | simulacija pada nakon potvrđenog zapisa | potvrđeni zapis nije izgubljen |
+| NFR-006 | Pouzdanost | Ispravnost i dostupnost backup-a | Sistemsko | provjera backup konfiguracije i testna restauracija | backup postoji i može se uspješno vratiti |
+| NFR-007 | Sigurnost | Hashiranje lozinki | Sigurnosno, integraciono | provjera načina pohrane lozinki | lozinke nisu pohranjene u čitljivom obliku |
+| NFR-008 | Sigurnost | Istek sesije nakon neaktivnosti | Sigurnosno, sistemsko | testiranje isteka sesije i pristupa zaštićenim rutama | neaktivna sesija postaje nevažeća u definisanom roku |
+| NFR-009 | Sigurnost | Odbijanje neovlaštenog pristupa i logovanje pokušaja | Sigurnosno, sistemsko | testiranje pristupa sa različitim korisničkim ulogama | pristup je odbijen, a pokušaj evidentiran |
+| NFR-010 | Sigurnost | HTTPS komunikacija i redirekcija sa HTTP-a | Sigurnosno, sistemsko | provjera protokola i redirekcije | sva komunikacija koristi HTTPS |
+| NFR-011 | Upotrebljivost | Broj koraka za ažuriranje statusa intervencije | UI, upotrebljivost | korisničko testiranje serviserskog toka | zadatak se izvršava unutar definisanog broja koraka |
+| NFR-012 | Upotrebljivost | Intuitivnost prijave kvara za novog korisnika | UI, upotrebljivost, prihvatno | korisničko testiranje bez prethodne obuke | novi korisnik može prijaviti kvar u definisanom vremenu |
+| NFR-013 | Upotrebljivost | Responzivnost i preglednost interfejsa | UI, upotrebljivost | vizualna provjera na više rezolucija | interfejs ostaje čitljiv i funkcionalan |
+| NFR-014 | Portabilnost | Ispravnost rada u podržanim preglednicima | Sistemsko, UI | testiranje ključnih tokova u više browsera | funkcionalnost i prikaz ostaju dosljedni |
+| NFR-015 | Portabilnost | Rad bez dodatne instalacije | Sistemsko | testiranje pristupa sistemu na čistom uređaju / profilu | sistem radi bez dodatnih plugina i instalacija |
+| NFR-016 | Održivost | Modularnost i niska povezanost modula | Unit, integraciono, code review | pregled promjena i analiza uticaja izmjena | izmjene jednog modula ne zahtijevaju izmjene nepovezanih modula |
+| NFR-017 | Održivost | Dokumentovanost API ruta | Integraciono, code review | pregled API dokumentacije i implementacije | dokumentacija odgovara stvarnom stanju implementacije |
 
 ## Način evidentiranja rezultata testiranja
 
