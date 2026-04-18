@@ -1,0 +1,1 @@
+# Osnovni tehnički setup
