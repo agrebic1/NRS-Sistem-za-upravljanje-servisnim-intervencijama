@@ -8,8 +8,8 @@ Ovaj initial release plan izrađen je na osnovu product backloga, user storyja, 
 
 | Inkrement | Fokus | Sprintovi | Release tačka |
 |---|---|---|---|
-| **Inkrement 1** | osnovni korisnički i dispečerski tok | 5–8 | kraj Sprinta 8 |
-| **Inkrement 2** | izvršenje intervencije, zatvaranje i administrativna kontrola | 9–10 | kraj Sprinta 10 |
+| **Inkrement 1** | osnovni korisnički i dispečerski tok | 5-8 | kraj Sprinta 8 |
+| **Inkrement 2** | izvršenje intervencije, zatvaranje i administrativna kontrola | 9-10 | kraj Sprinta 10 |
 
 ---
 
@@ -21,10 +21,10 @@ Ovaj initial release plan izrađen je na osnovu product backloga, user storyja, 
 | **Glavne funkcionalnosti** | **Tehnička osnova i pristup sistemu**<br>- tehnički setup projekta i osnovni skeleton sistema<br>- osnovni model baze podataka<br>- registracija, prijava i odjava korisnika<br>- osnovna prava pristupa prema korisničkim ulogama<br><br>**Upravljanje zahtjevima korisnika**<br>- prijava zahtjeva za servisnu intervenciju<br>- pregled vlastitih zahtjeva i njihovih statusa<br>- izmjena vlastitog zahtjeva kada je to dozvoljeno<br>- otkazivanje vlastitog zahtjeva kada je to dozvoljeno<br><br>**Početna dispečerska obrada**<br>- pregled otvorenih i aktivnih intervencija od strane dispečera<br>- pregled detalja pojedinačne intervencije<br>- pregled statusa intervencije<br>- određivanje prioriteta intervencije<br>- planiranje termina intervencije |
 | **Zavisnosti** | - uspješno postavljen osnovni skeleton projekta<br>- definisan i implementiran osnovni model baze podataka<br>- funkcionalna autentifikacija i upravljanje sesijom<br>- definisane korisničke uloge i osnovna prava pristupa<br>- usklađenost implementacije sa definisanom arhitekturom sistema |
 | **Glavni rizici** | - kašnjenje u postavljanju tehničke osnove i modela baze<br>- problemi u autentifikaciji, upravljanju sesijom i pravima pristupa<br>- smanjen kapacitet tima u ranim sprintovima<br>- povećan organizacijski rizik u Sprintu 7<br>- potcjenjivanje složenosti logike statusa, prioriteta i dozvoljenih izmjena zahtjeva |
-| **Okvirni sprintovi realizacije** | **Sprint 5–8**<br>**Planirana release tačka:** kraj Sprinta 8 |
+| **Okvirni sprintovi realizacije** | **Sprint 5-8**<br>**Planirana release tačka:** kraj Sprinta 8 |
 
 > **Napomena:**
-> Prvi inkrement obuhvata sprintove 5–8 jer se tek na kraju tog perioda formira dovoljno zaokružena i upotrebljiva funkcionalna cjelina. Ranije pravljenje release-a ne bi bilo smisleno, jer bi obuhvatalo samo djelimično implementirane i međusobno nedovoljno povezane funkcionalnosti, bez potpunog poslovnog toka koji bi sistemu davao stvarnu operativnu vrijednost.
+> Prvi inkrement obuhvata sprintove 5-8 jer se tek na kraju tog perioda formira dovoljno zaokružena i upotrebljiva funkcionalna cjelina. Ranije pravljenje release-a ne bi bilo smisleno, jer bi obuhvatalo samo djelimično implementirane i međusobno nedovoljno povezane funkcionalnosti, bez potpunog poslovnog toka koji bi sistemu davao stvarnu operativnu vrijednost.
 
 ## Kontrolna tabela pokrivenosti - Inkrement 1
 
