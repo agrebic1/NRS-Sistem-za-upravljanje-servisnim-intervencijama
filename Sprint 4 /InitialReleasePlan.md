@@ -45,3 +45,56 @@ Ovaj initial release plan izrađen je na osnovu product backloga, user storyja, 
 | PBI-011 | Planiranje izlazaka na teren | US-11 Planiranje intervencije |
 
 ---
+
+## Inkrement 2 - Izvršenje intervencije, zatvaranje i administrativna kontrola
+
+| Element | Opis |
+|---|---|
+| **Cilj inkrementa** | Zaokružiti sistem kroz funkcionalnosti koje omogućavaju stvarnu operativnu realizaciju intervencije, saradnju između dispečera i servisera, evidentiranje i zatvaranje rada, kao i osnovnu administrativnu i nadzornu kontrolu nad korisnicima i aktivnostima sistema. Ovaj inkrement treba predstavljati prvu cjelovitu funkcionalnu verziju sistema. |
+| **Glavne funkcionalnosti** | **Dodjela i operativna organizacija rada**<br>- dodjela intervencije glavnom izvršiocu<br>- dodjela intervencije timu servisera<br>- promjena izvršioca intervencije<br>- vraćanje zadatka na ponovnu dodjelu<br><br>**Serviserski tok izvršenja**<br>- pregled dodijeljenih intervencija od strane servisera<br>- pregled detalja zadatka na terenu<br>- prihvatanje zadatka<br>- odbijanje zadatka<br>- ažuriranje statusa intervencije od strane servisera<br>- evidentiranje izvršenog rada<br><br>**Zatvaranje i praćenje intervencije**<br>- pregled evidentiranog rada od strane dispečera<br>- potvrda i zatvaranje intervencije<br>- razmjena napomena na intervenciji<br>- pregled historije aktivnosti intervencije<br><br>**Administrativna i nadzorna kontrola**<br>- pregled korisničkih naloga<br>- promjena korisničke uloge<br>- deaktivacija korisničkog naloga<br>- pregled sažetog operativnog statusa na kontrolnoj tabli |
+| **Zavisnosti** | - stabilno implementiran prvi inkrement<br>- jasno definisana pravila statusnih prelaza<br>- konzistentan model intervencije, dodjele i izvršioca<br>- funkcionalna veza između korisničkog, dispečerskog i serviserskog dijela sistema<br>- osnovna podrška za evidenciju aktivnosti i audit trag |
+| **Glavni rizici** | - visoka složenost alternativnih i operativnih tokova<br>- ograničeno backend znanje u timu i oslanjanje na manji broj ključnih članova<br>- problemi pri dodjeli, odbijanju i preraspodjeli zadataka<br>- regresije ranije implementiranih funkcionalnosti<br>- greške u evidenciji rada, historiji aktivnosti i zatvaranju intervencije<br>- prenatrpanost sprintova 9 i 10 ako se previše složenih funkcionalnosti razvija paralelno |
+| **Okvirni sprintovi realizacije** | **Sprint 9-10**<br>**Planirana release tačka:** kraj Sprinta 10 |
+
+---
+
+## Kontrolna tabela pokrivenosti - Inkrement 2
+
+| PBI | Naziv funkcionalnosti | User Story |
+|---|---|---|
+| PBI-003 | Upravljanje korisničkim nalozima | US-18 Administrativno kreiranje internog korisničkog naloga |
+| PBI-003 | Upravljanje korisničkim nalozima | US-19 Pregled postojećih korisničkih naloga |
+| PBI-003 | Upravljanje korisničkim nalozima | US-20 Promjena korisničke uloge |
+| PBI-003 | Upravljanje korisničkim nalozima | US-21 Deaktivacija korisničkog naloga |
+| PBI-009 | Pregled operativnog statusa na kontrolnoj tabli | US-31 Pregled sažetog operativnog statusa intervencija |
+| PBI-012 | Dodjela intervencije izvršiocu ili timu | US-09 Dodjela intervencije odgovornom serviseru |
+| PBI-012 | Dodjela intervencije izvršiocu ili timu | US-10 Dodjela intervencije timu servisera |
+| PBI-013 | Preraspodjela i ponovna dodjela intervencije | US-28 Promjena izvršioca intervencije |
+| PBI-013 | Preraspodjela i ponovna dodjela intervencije | US-29 Vraćanje zadatka na ponovnu dodjelu |
+| PBI-014 | Pregled dodijeljenih zadataka | US-15 Pregled dodijeljenih intervencija |
+| PBI-014 | Pregled dodijeljenih zadataka | US-16 Pregled detalja zadatka na terenu |
+| PBI-015 | Prihvatanje ili odbijanje dodijeljenog zadatka | US-22 Prihvatanje dodijeljenog zadatka |
+| PBI-015 | Prihvatanje ili odbijanje dodijeljenog zadatka | US-23 Odbijanje dodijeljenog zadatka |
+| PBI-016 | Ažuriranje statusa intervencije od strane servisera | US-14 Ažuriranje statusa intervencije od strane servisera |
+| PBI-017 | Evidentiranje izvršenog rada | US-17 Evidentiranje izvršenog rada |
+| PBI-018 | Pregled evidentiranog izvršenog rada | US-24 Pregled evidentiranog izvršenog rada |
+| PBI-019 | Potvrda i zatvaranje intervencije | US-25 Potvrda i zatvaranje intervencije |
+| PBI-020 | Napomene na intervenciji | US-30 Razmjena napomena na intervenciji |
+| PBI-021 | Historija aktivnosti intervencije | US-32 Pregled historije aktivnosti intervencije |
+
+---
+
+> **Napomena:** Iz prikazanih kontrolnih tabela vidi se da su svi definisani PBI-jevi i svih 32 user storyja obuhvaćeni release planom i raspoređeni u jedan od dva planirana inkrementa. Na taj način osigurana je potpuna pokrivenost product backloga kroz planirane release cjeline.
+
+## Završna stabilizacija
+
+Sprint 11 nije planiran kao poseban inkrement, nego kao završni sprint usmjeren na:
+
+- ispravljanje uočenih grešaka
+- regresijsko testiranje
+- integraciono i sistemsko testiranje
+- doradu postojećih funkcionalnosti
+- dopunu dokumentacije
+- pripremu za demonstraciju i predaju
+
+---
