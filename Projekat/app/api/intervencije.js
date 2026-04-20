@@ -1,11 +1,11 @@
-//Rad sa zahtjevima korisnika
+//API za intervencije
 
-function getZahtjevi() {
+function getIntervencije() {
   return [];
 }
 
-function createZahtjev() {
-  return "Zahtjev kreiran";
+function updateStatus() {
+  return "Status ažuriran";
 }
 
-module.exports = { getZahtjevi, createZahtjev };
+module.exports = { getIntervencije, updateStatus };
