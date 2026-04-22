@@ -1,20 +1,45 @@
 # Definition of Done
 
-Stavka (user story, task ili funkcionalnost) se smatra završenom kada su ispunjeni svi sljedeći kriteriji:
 
-- funkcionalnost je u potpunosti implementirana u skladu sa opisom user story-ja  
-- rješenje obuhvata sve definisane acceptance kriterije  
-- osnovni tok izvršavanja, predviđeni alternativni scenariji i očekivani izuzeci implementirani su i funkcionišu ispravno od početka do kraja
-- kod je napisan u skladu sa dogovorenim standardima i konvencijama  
-- rješenje je usklađeno sa definisanom arhitekturom sistema i organizacijom projekta
-- izvršen je code review od strane najmanje jednog člana tima zaduženog za pregled koda, a uočeni nedostaci su ispravljeni  
-- funkcionalnost je testirana u obimu koji odgovara njenoj prirodi, pri čemu svi ključni scenariji prolaze bez grešaka  
-- nema poznatih kritičnih ili blokirajućih bugova povezanih sa tom stavkom
-- izmjene su integrisane u glavnu razvojnu granu, kroz dogovoreni merge/pull request proces, bez neriješenih konflikata
+Definition of Done je definisan kroz tri nivoa završetka: tehnički završeno (task nivo), funkcionalno završeno (user story nivo) i spremno za isporuku (release nivo). Ova podjela osigurava jasnu razliku između implementacije, funkcionalne ispravnosti i spremnosti za demonstraciju.
+
+---
+
+## Tehnički završeno (task nivo)
+
+Task se smatra tehnički završenim kada:
+
+- je funkcionalnost implementirana ili dokumentovana u skladu sa dogovorenim opsegom  
+- je funkcionalnost pravilno povezana sa relevantnim dijelovima sistema  
+- su ispoštovana pravila autentifikacije, autorizacije i RBAC pristupa gdje je primjenjivo  
+- su podaci pravilno obrađeni (kreiranje, izmjena, brisanje i prikaz) u skladu sa poslovnim pravilima  
+- je kod pregledan unutar tima i usklađen sa dogovorenom arhitekturom i organizacijom projekta  
+- kod je stabilan i ne sadrži blokirajuće greške koje sprečavaju dalju integraciju  
+
+---
+
+## Funkcionalno završeno (user story nivo)
+
+User story se smatra funkcionalno završenim kada:
+
+- su ispunjeni svi definisani acceptance kriteriji  
+- su implementirani osnovni ispravni i neispravni scenariji unosa i korištenja  
+- funkcionalnost funkcioniše ispravno kroz cjelovit tok od početka do kraja  
+- je korisnički interfejs jasan, razumljiv i usklađen sa namjenom funkcionalnosti  
+- je implementirana odgovarajuća validacija unosa i obrada grešaka  
+- je funkcionalnost testirana kroz osnovne pozitivne i negativne testne slučajeve  
+- funkcionalnost ne narušava postojeće dijelove sistema  
+
+---
+
+## Spremno za isporuku (release nivo)
+
+User story se smatra spremnom za isporuku kada:
+
+- su svi pripadajući taskovi završeni i integrisani u jedinstvenu funkcionalnu cjelinu  
+- je funkcionalnost uspješno integrisana u glavnu razvojnu granu kroz dogovoreni merge/pull request proces  
 - sistem se uspješno builda i pokreće bez grešaka  
-- funkcionalnost ne narušava postojeće dijelove sistema
-- ažurirani su svi artefakti i evidencije koje ta stavka mijenja, uključujući backlog, dokumentaciju i repozitorij
-- promjene su jasno evidentirane kroz commit poruke i po potrebi dokumentovane  
-- korisnički interfejs, ako postoji, funkcionalan je i razumljiv, uz implementiranu odgovarajuću validaciju unosa  
-- funkcionalnost je spremna za demonstraciju na sprint review sastanku  
-- tim je saglasan da je stavka u potpunosti završena  
+- nema poznatih kritičnih ili blokirajućih bugova povezanih sa tom funkcionalnošću  
+- je dokumentacija ažurirana ukoliko funkcionalnost utiče na API, bazu, poslovna pravila ili korisnički tok  
+- su promjene jasno evidentirane kroz commit poruke i repozitorij  
+- je funkcionalnost spremna za demonstraciju na sprint review sastanku  
