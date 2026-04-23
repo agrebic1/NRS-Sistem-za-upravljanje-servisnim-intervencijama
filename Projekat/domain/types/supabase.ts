@@ -1,0 +1,714 @@
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
+
+export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "14.5"
+  }
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
+  public: {
+    Tables: {
+      dodjela: {
+        Row: {
+          datum_dodjele: string | null
+          datum_odgovora: string | null
+          id_dispecera: string | null
+          id_dodjela: number
+          id_intervencije: number | null
+          id_pomocnog_servisera: string | null
+          id_servisera: string | null
+          id_statusa: number | null
+          razlog_odbijanja: string | null
+        }
+        Insert: {
+          datum_dodjele?: string | null
+          datum_odgovora?: string | null
+          id_dispecera?: string | null
+          id_dodjela?: number
+          id_intervencije?: number | null
+          id_pomocnog_servisera?: string | null
+          id_servisera?: string | null
+          id_statusa?: number | null
+          razlog_odbijanja?: string | null
+        }
+        Update: {
+          datum_dodjele?: string | null
+          datum_odgovora?: string | null
+          id_dispecera?: string | null
+          id_dodjela?: number
+          id_intervencije?: number | null
+          id_pomocnog_servisera?: string | null
+          id_servisera?: string | null
+          id_statusa?: number | null
+          razlog_odbijanja?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dodjela_id_dispecera_fkey"
+            columns: ["id_dispecera"]
+            isOneToOne: false
+            referencedRelation: "uposlenici"
+            referencedColumns: ["id_uposlenika"]
+          },
+          {
+            foreignKeyName: "dodjela_id_intervencije_fkey"
+            columns: ["id_intervencije"]
+            isOneToOne: false
+            referencedRelation: "intervencija"
+            referencedColumns: ["id_intervencije"]
+          },
+          {
+            foreignKeyName: "dodjela_id_pomocnog_servisera_fkey"
+            columns: ["id_pomocnog_servisera"]
+            isOneToOne: false
+            referencedRelation: "uposlenici"
+            referencedColumns: ["id_uposlenika"]
+          },
+          {
+            foreignKeyName: "dodjela_id_servisera_fkey"
+            columns: ["id_servisera"]
+            isOneToOne: false
+            referencedRelation: "uposlenici"
+            referencedColumns: ["id_uposlenika"]
+          },
+          {
+            foreignKeyName: "dodjela_id_statusa_fkey"
+            columns: ["id_statusa"]
+            isOneToOne: false
+            referencedRelation: "status"
+            referencedColumns: ["id_statusa"]
+          },
+        ]
+      }
+      evidencija_rada: {
+        Row: {
+          datum_pocetka: string | null
+          datum_zavrsetka: string | null
+          id_evidencije: number
+          id_intervencije: number | null
+          id_servisera: string | null
+          ishod_rada: boolean | null
+          opis: string | null
+          utroseni_materijal: string | null
+          utroseno_vrijeme: string | null
+          vrijeme_pocetka: string | null
+          vrijeme_zavrsetka: string | null
+        }
+        Insert: {
+          datum_pocetka?: string | null
+          datum_zavrsetka?: string | null
+          id_evidencije?: number
+          id_intervencije?: number | null
+          id_servisera?: string | null
+          ishod_rada?: boolean | null
+          opis?: string | null
+          utroseni_materijal?: string | null
+          utroseno_vrijeme?: string | null
+          vrijeme_pocetka?: string | null
+          vrijeme_zavrsetka?: string | null
+        }
+        Update: {
+          datum_pocetka?: string | null
+          datum_zavrsetka?: string | null
+          id_evidencije?: number
+          id_intervencije?: number | null
+          id_servisera?: string | null
+          ishod_rada?: boolean | null
+          opis?: string | null
+          utroseni_materijal?: string | null
+          utroseno_vrijeme?: string | null
+          vrijeme_pocetka?: string | null
+          vrijeme_zavrsetka?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "evidencija_rada_id_intervencije_fkey"
+            columns: ["id_intervencije"]
+            isOneToOne: false
+            referencedRelation: "intervencija"
+            referencedColumns: ["id_intervencije"]
+          },
+          {
+            foreignKeyName: "evidencija_rada_id_servisera_fkey"
+            columns: ["id_servisera"]
+            isOneToOne: false
+            referencedRelation: "uposlenici"
+            referencedColumns: ["id_uposlenika"]
+          },
+        ]
+      }
+      historija_aktivnosti: {
+        Row: {
+          akcija: string | null
+          datum_promjene: string | null
+          id_autora: string
+          id_historije_aktivnosti: number
+          id_intervencije: number | null
+          nova_vrijednost: string | null
+          stara_vrijednost: string | null
+          vrijeme_promjene: string | null
+        }
+        Insert: {
+          akcija?: string | null
+          datum_promjene?: string | null
+          id_autora: string
+          id_historije_aktivnosti?: number
+          id_intervencije?: number | null
+          nova_vrijednost?: string | null
+          stara_vrijednost?: string | null
+          vrijeme_promjene?: string | null
+        }
+        Update: {
+          akcija?: string | null
+          datum_promjene?: string | null
+          id_autora?: string
+          id_historije_aktivnosti?: number
+          id_intervencije?: number | null
+          nova_vrijednost?: string | null
+          stara_vrijednost?: string | null
+          vrijeme_promjene?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "historija_aktivnosti_id_intervencije_fkey"
+            columns: ["id_intervencije"]
+            isOneToOne: false
+            referencedRelation: "intervencija"
+            referencedColumns: ["id_intervencije"]
+          },
+        ]
+      }
+      intervencija: {
+        Row: {
+          datum_izvrsavanja: string | null
+          datum_kreiranja: string | null
+          id_dispecera: string | null
+          id_intervencije: number
+          id_prioriteta: number | null
+          id_statusa: number | null
+          id_zahtjeva: number | null
+          planirani_datum: string | null
+          vrijeme_izvrsavanja: string | null
+        }
+        Insert: {
+          datum_izvrsavanja?: string | null
+          datum_kreiranja?: string | null
+          id_dispecera?: string | null
+          id_intervencije?: number
+          id_prioriteta?: number | null
+          id_statusa?: number | null
+          id_zahtjeva?: number | null
+          planirani_datum?: string | null
+          vrijeme_izvrsavanja?: string | null
+        }
+        Update: {
+          datum_izvrsavanja?: string | null
+          datum_kreiranja?: string | null
+          id_dispecera?: string | null
+          id_intervencije?: number
+          id_prioriteta?: number | null
+          id_statusa?: number | null
+          id_zahtjeva?: number | null
+          planirani_datum?: string | null
+          vrijeme_izvrsavanja?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "intervencija_id_dispecera_fkey"
+            columns: ["id_dispecera"]
+            isOneToOne: false
+            referencedRelation: "uposlenici"
+            referencedColumns: ["id_uposlenika"]
+          },
+          {
+            foreignKeyName: "intervencija_id_prioriteta_fkey"
+            columns: ["id_prioriteta"]
+            isOneToOne: false
+            referencedRelation: "prioritet"
+            referencedColumns: ["id_prioriteta"]
+          },
+          {
+            foreignKeyName: "intervencija_id_statusa_fkey"
+            columns: ["id_statusa"]
+            isOneToOne: false
+            referencedRelation: "status"
+            referencedColumns: ["id_statusa"]
+          },
+          {
+            foreignKeyName: "intervencija_id_zahtjeva_fkey"
+            columns: ["id_zahtjeva"]
+            isOneToOne: false
+            referencedRelation: "zahtjev"
+            referencedColumns: ["id_zahtjeva"]
+          },
+        ]
+      }
+      kategorija_kvara: {
+        Row: {
+          id_kategorije_kvara: number
+          naziv: string
+        }
+        Insert: {
+          id_kategorije_kvara?: number
+          naziv: string
+        }
+        Update: {
+          id_kategorije_kvara?: number
+          naziv?: string
+        }
+        Relationships: []
+      }
+      korisnik_usluge: {
+        Row: {
+          adresa: string | null
+          broj_telefona: string | null
+          email: string | null
+          id_korisnika_usluge: string
+          id_uloge: number | null
+          ime: string
+          lozinka_hash: string | null
+          prezime: string
+        }
+        Insert: {
+          adresa?: string | null
+          broj_telefona?: string | null
+          email?: string | null
+          id_korisnika_usluge: string
+          id_uloge?: number | null
+          ime: string
+          lozinka_hash?: string | null
+          prezime: string
+        }
+        Update: {
+          adresa?: string | null
+          broj_telefona?: string | null
+          email?: string | null
+          id_korisnika_usluge?: string
+          id_uloge?: number | null
+          ime?: string
+          lozinka_hash?: string | null
+          prezime?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "korisnik_usluge_id_uloge_fkey"
+            columns: ["id_uloge"]
+            isOneToOne: false
+            referencedRelation: "uloga"
+            referencedColumns: ["id_uloge"]
+          },
+        ]
+      }
+      lokacija: {
+        Row: {
+          adresa: string
+          grad: string
+          id_lokacije: number
+          opcina: string
+          opis: string | null
+        }
+        Insert: {
+          adresa: string
+          grad: string
+          id_lokacije?: number
+          opcina: string
+          opis?: string | null
+        }
+        Update: {
+          adresa?: string
+          grad?: string
+          id_lokacije?: number
+          opcina?: string
+          opis?: string | null
+        }
+        Relationships: []
+      }
+      napomene: {
+        Row: {
+          datum: string | null
+          id_autora: string | null
+          id_intervencije: number | null
+          id_napomene: number
+          tekst: string
+          tip_napomene: string | null
+          vrijeme: string | null
+        }
+        Insert: {
+          datum?: string | null
+          id_autora?: string | null
+          id_intervencije?: number | null
+          id_napomene?: number
+          tekst: string
+          tip_napomene?: string | null
+          vrijeme?: string | null
+        }
+        Update: {
+          datum?: string | null
+          id_autora?: string | null
+          id_intervencije?: number | null
+          id_napomene?: number
+          tekst?: string
+          tip_napomene?: string | null
+          vrijeme?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "napomene_id_autora_fkey"
+            columns: ["id_autora"]
+            isOneToOne: false
+            referencedRelation: "uposlenici"
+            referencedColumns: ["id_uposlenika"]
+          },
+          {
+            foreignKeyName: "napomene_id_intervencije_fkey"
+            columns: ["id_intervencije"]
+            isOneToOne: false
+            referencedRelation: "intervencija"
+            referencedColumns: ["id_intervencije"]
+          },
+        ]
+      }
+      prioritet: {
+        Row: {
+          id_prioriteta: number
+          naziv: string
+          opis: string | null
+        }
+        Insert: {
+          id_prioriteta?: number
+          naziv: string
+          opis?: string | null
+        }
+        Update: {
+          id_prioriteta?: number
+          naziv?: string
+          opis?: string | null
+        }
+        Relationships: []
+      }
+      status: {
+        Row: {
+          id_statusa: number
+          naziv: string
+          opis: string | null
+          tip_statusa: string | null
+        }
+        Insert: {
+          id_statusa?: number
+          naziv: string
+          opis?: string | null
+          tip_statusa?: string | null
+        }
+        Update: {
+          id_statusa?: number
+          naziv?: string
+          opis?: string | null
+          tip_statusa?: string | null
+        }
+        Relationships: []
+      }
+      uloga: {
+        Row: {
+          id_uloge: number
+          naziv: string
+          opis: string | null
+        }
+        Insert: {
+          id_uloge?: number
+          naziv: string
+          opis?: string | null
+        }
+        Update: {
+          id_uloge?: number
+          naziv?: string
+          opis?: string | null
+        }
+        Relationships: []
+      }
+      uposlenici: {
+        Row: {
+          adresa: string | null
+          broj_telefona: string | null
+          email: string | null
+          id_uloge: number | null
+          id_uposlenika: string
+          ime: string
+          jmbg: string | null
+          lozinka_hash: string | null
+          prezime: string
+        }
+        Insert: {
+          adresa?: string | null
+          broj_telefona?: string | null
+          email?: string | null
+          id_uloge?: number | null
+          id_uposlenika: string
+          ime: string
+          jmbg?: string | null
+          lozinka_hash?: string | null
+          prezime: string
+        }
+        Update: {
+          adresa?: string | null
+          broj_telefona?: string | null
+          email?: string | null
+          id_uloge?: number | null
+          id_uposlenika?: string
+          ime?: string
+          jmbg?: string | null
+          lozinka_hash?: string | null
+          prezime?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "uposlenici_id_uloge_fkey"
+            columns: ["id_uloge"]
+            isOneToOne: false
+            referencedRelation: "uloga"
+            referencedColumns: ["id_uloge"]
+          },
+        ]
+      }
+      zahtjev: {
+        Row: {
+          adresa: string | null
+          datum: string | null
+          id_kategorije_kvara: number | null
+          id_korisnika_usluge: string | null
+          id_lokacije: number | null
+          id_statusa: number | null
+          id_zahtjeva: number
+          je_otkazan: boolean | null
+          opis_kvara: string | null
+          razlog_otkazivanja: string | null
+          vrijeme: string | null
+        }
+        Insert: {
+          adresa?: string | null
+          datum?: string | null
+          id_kategorije_kvara?: number | null
+          id_korisnika_usluge?: string | null
+          id_lokacije?: number | null
+          id_statusa?: number | null
+          id_zahtjeva?: number
+          je_otkazan?: boolean | null
+          opis_kvara?: string | null
+          razlog_otkazivanja?: string | null
+          vrijeme?: string | null
+        }
+        Update: {
+          adresa?: string | null
+          datum?: string | null
+          id_kategorije_kvara?: number | null
+          id_korisnika_usluge?: string | null
+          id_lokacije?: number | null
+          id_statusa?: number | null
+          id_zahtjeva?: number
+          je_otkazan?: boolean | null
+          opis_kvara?: string | null
+          razlog_otkazivanja?: string | null
+          vrijeme?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "zahtjev_id_kategorije_kvara_fkey"
+            columns: ["id_kategorije_kvara"]
+            isOneToOne: false
+            referencedRelation: "kategorija_kvara"
+            referencedColumns: ["id_kategorije_kvara"]
+          },
+          {
+            foreignKeyName: "zahtjev_id_korisnika_usluge_fkey"
+            columns: ["id_korisnika_usluge"]
+            isOneToOne: false
+            referencedRelation: "korisnik_usluge"
+            referencedColumns: ["id_korisnika_usluge"]
+          },
+          {
+            foreignKeyName: "zahtjev_id_lokacije_fkey"
+            columns: ["id_lokacije"]
+            isOneToOne: false
+            referencedRelation: "lokacija"
+            referencedColumns: ["id_lokacije"]
+          },
+          {
+            foreignKeyName: "zahtjev_id_statusa_fkey"
+            columns: ["id_statusa"]
+            isOneToOne: false
+            referencedRelation: "status"
+            referencedColumns: ["id_statusa"]
+          },
+        ]
+      }
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      [_ in never]: never
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
+}
+
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
+
+export type Tables<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R
+    }
+    ? R
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R
+      }
+      ? R
+      : never
+    : never
+
+export type TablesInsert<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I
+    }
+    ? I
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I
+      }
+      ? I
+      : never
+    : never
+
+export type TablesUpdate<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U
+    }
+    ? U
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Update: infer U
+      }
+      ? U
+      : never
+    : never
+
+export type Enums<
+  DefaultSchemaEnumNameOrOptions extends
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    : never = never,
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never,
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never
+
+export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
+  public: {
+    Enums: {},
+  },
+} as const
