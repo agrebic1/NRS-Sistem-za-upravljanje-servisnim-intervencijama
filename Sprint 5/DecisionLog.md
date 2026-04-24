@@ -5,6 +5,6 @@
 
 
 Mogući statusi: 
-aktivna,
-izmijenjena
-zamijenjena
+- aktivna
+- izmijenjena
+- zamijenjena
