@@ -53,14 +53,46 @@ export async function registrujKorisnika(podaci: {
 
 // Detekcija uloga 
 
+function mapirajNazivUloge(naziv: string | null | undefined): UserRole | null {
+  const normalizovanNaziv = naziv?.toLowerCase();
+
+  switch (normalizovanNaziv) {
+    case 'klijent':
+    case 'korisnik':
+    case 'korisnik usluge':
+      return 'korisnik';
+    case 'serviser':
+      return 'serviser';
+    case 'dispečer':
+    case 'dispecer':
+      return 'dispecer';
+    case 'administrator':
+    case 'admin':
+      return 'admin';
+    default:
+      return null;
+  }
+}
+
 export async function getUlogeKorisnika(idKorisnika: string): Promise<UserRole[]> {
   const supabase = kreirajKlijenta();
   const pronadjeneUloge: UserRole[] = [];
 
+  try {
+    const odgovor = await fetch('/api/auth/uloge', { cache: 'no-store' });
+    const podaci = await odgovor.json();
+
+    if (odgovor.ok && Array.isArray(podaci.uloge)) {
+      return podaci.uloge;
+    }
+  } catch {
+    // Ako server ruta nije dostupna, nastavi sa direktnom provjerom ispod.
+  }
+
   // Provjera korisnik_usluge tabele
   const { data: korisnikUsluge } = await supabase
     .from('korisnik_usluge')
-    .select('id_korisnika_usluge')
+    .select('id_korisnika_usluge, id_uloge')
     .eq('id_korisnika_usluge', idKorisnika)
     .maybeSingle();
 
@@ -80,11 +112,11 @@ export async function getUlogeKorisnika(idKorisnika: string): Promise<UserRole[]
       .eq('id_uloge', uposlenik.id_uloge)
       .single();
 
-    const nazivUloge = ulogaPodaci?.naziv as UserRole | undefined;
+    const uloga = mapirajNazivUloge(ulogaPodaci?.naziv);
     const INTERNE_ULOGE: UserRole[] = ['serviser', 'dispecer', 'admin'];
 
-    if (nazivUloge && INTERNE_ULOGE.includes(nazivUloge)) {
-      pronadjeneUloge.push(nazivUloge);
+    if (uloga && INTERNE_ULOGE.includes(uloga)) {
+      pronadjeneUloge.push(uloga);
     }
   }
 

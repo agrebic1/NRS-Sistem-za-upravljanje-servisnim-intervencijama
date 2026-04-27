@@ -13,27 +13,27 @@ interface AlertConfig {
 const ALERT_CONFIG: Record<AlertVariant, AlertConfig> = {
   info: {
     icon: <Info className="h-4 w-4 flex-shrink-0" />,
-    bg: 'rgba(90, 124, 131, 0.08)',
-    border: '#5A7C83',
-    text: '#2C444D',
+    bg: 'rgb(var(--rgb-celestial-teal) / 0.08)',
+    border: 'var(--color-celestial-teal)',
+    text: 'var(--color-deep-teal)',
   },
   warning: {
     icon: <AlertTriangle className="h-4 w-4 flex-shrink-0" />,
-    bg: 'rgba(212, 178, 127, 0.15)',
-    border: '#D4B27F',
-    text: '#1F2A30',
+    bg: 'rgb(var(--rgb-herbal-gold) / 0.15)',
+    border: 'var(--color-herbal-gold)',
+    text: 'var(--color-text-main)',
   },
   error: {
     icon: <XCircle className="h-4 w-4 flex-shrink-0" />,
-    bg: 'rgba(139, 74, 43, 0.08)',
-    border: '#8B4A2B',
-    text: '#8B4A2B',
+    bg: 'rgb(var(--rgb-mystic-ember) / 0.08)',
+    border: 'var(--color-mystic-ember)',
+    text: 'var(--color-mystic-ember)',
   },
   success: {
     icon: <CheckCircle className="h-4 w-4 flex-shrink-0" />,
-    bg: 'rgba(212, 178, 127, 0.15)',
-    border: '#D4B27F',
-    text: '#1F2A30',
+    bg: 'rgb(var(--rgb-herbal-gold) / 0.15)',
+    border: 'var(--color-herbal-gold)',
+    text: 'var(--color-text-main)',
   },
 };
 

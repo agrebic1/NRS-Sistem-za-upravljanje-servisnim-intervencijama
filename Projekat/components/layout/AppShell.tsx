@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   Settings,
   LayoutDashboard,
@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import type { ReactNode } from 'react';
 import type { UserRole } from '@/domain/types';
+import { odjaviSe } from '@/services/auth/authService';
 
 // Konfiguracija navigacije po ulozi 
 
@@ -69,8 +70,8 @@ function VezaNavigacije({ stavka, onKlik }: { stavka: StavkaNavigacije; onKlik?:
       onClick={onKlik}
       className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors duration-200"
       style={{
-        backgroundColor: jeAktivna ? 'rgba(44, 68, 77, 0.1)' : 'transparent',
-        color:           jeAktivna ? '#2C444D' : '#6B7C82',
+        backgroundColor: jeAktivna ? 'rgb(var(--rgb-deep-teal) / 0.1)' : 'transparent',
+        color:           jeAktivna ? 'var(--color-deep-teal)' : 'var(--color-text-muted)',
       }}
     >
       <stavka.Ikona className="h-4 w-4 flex-shrink-0" />
@@ -89,24 +90,32 @@ interface AppShellProps {
 
 export function AppShell({ children, uloga, imeKorisnika }: AppShellProps) {
   const [jeMenuOtvoren, setJeMenuOtvoren] = useState(false);
+  const [jeOdjavaUToku, setJeOdjavaUToku] = useState(false);
+  const router = useRouter();
   const stavkeNavigacije = NAVIGACIJA_PO_ULOZI[uloga] ?? [];
 
+  async function odjaviKorisnika() {
+    setJeOdjavaUToku(true);
+    await odjaviSe();
+    router.replace('/auth/login');
+  }
+
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#F2E6D8' }}>
+    <div className="min-h-screen" style={{ backgroundColor: 'var(--color-warm-cream)' }}>
       {/* Gornja traka */}
       <header
         className="sticky top-0 z-40 flex h-14 items-center justify-between px-4 md:px-6"
         style={{
-          backgroundColor: 'rgba(242, 230, 216, 0.92)',
+          backgroundColor: 'rgb(var(--rgb-warm-cream) / 0.92)',
           backdropFilter:  'blur(12px)',
-          borderBottom:    '1px solid rgba(204, 182, 142, 0.35)',
+          borderBottom:    '1px solid rgb(var(--rgb-soft-beige) / 0.35)',
         }}
       >
         <Link href={`/${uloga}`} className="flex items-center gap-2">
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg" style={{ backgroundColor: '#2C444D' }}>
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg" style={{ backgroundColor: 'var(--color-deep-teal)' }}>
             <Settings className="h-4 w-4 text-white" />
           </div>
-          <span className="hidden font-bold tracking-tight sm:block" style={{ color: '#1F2A30' }}>
+          <span className="hidden font-bold tracking-tight sm:block" style={{ color: 'var(--color-text-main)' }}>
             InterServ
           </span>
         </Link>
@@ -119,8 +128,8 @@ export function AppShell({ children, uloga, imeKorisnika }: AppShellProps) {
 
         <div className="flex items-center gap-2">
           <button
-            className="flex h-8 w-8 items-center justify-center rounded-lg transition-colors hover:bg-[#CCB68E]/30"
-            style={{ color: '#6B7C82' }}
+            className="flex h-8 w-8 items-center justify-center rounded-lg transition-colors hover:bg-soft-beige/30"
+            style={{ color: 'var(--color-text-muted)' }}
             aria-label="Obavještenja"
           >
             <Bell className="h-4 w-4" />
@@ -128,18 +137,18 @@ export function AppShell({ children, uloga, imeKorisnika }: AppShellProps) {
 
           <div className="hidden items-center gap-2 md:flex">
             <div className="text-right">
-              <p className="text-xs font-semibold leading-none" style={{ color: '#1F2A30' }}>
+              <p className="text-xs font-semibold leading-none" style={{ color: 'var(--color-text-main)' }}>
                 {imeKorisnika ?? 'Korisnik'}
               </p>
-              <p className="text-xs" style={{ color: '#6B7C82' }}>
+              <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
                 {OZNAKA_ULOGE[uloga]}
               </p>
             </div>
           </div>
 
           <button
-            className="flex h-8 w-8 items-center justify-center rounded-lg transition-colors hover:bg-[#CCB68E]/30 md:hidden"
-            style={{ color: '#1F2A30' }}
+            className="flex h-8 w-8 items-center justify-center rounded-lg transition-colors hover:bg-soft-beige/30 md:hidden"
+            style={{ color: 'var(--color-text-main)' }}
             onClick={() => setJeMenuOtvoren(true)}
             aria-label="Otvori meni"
           >
@@ -157,28 +166,28 @@ export function AppShell({ children, uloga, imeKorisnika }: AppShellProps) {
           />
           <div
             className="fixed inset-y-0 left-0 z-50 flex w-72 flex-col p-5 md:hidden"
-            style={{ backgroundColor: '#F2E6D8' }}
+            style={{ backgroundColor: 'var(--color-warm-cream)' }}
           >
             <div className="mb-6 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="flex h-7 w-7 items-center justify-center rounded-lg" style={{ backgroundColor: '#2C444D' }}>
+                <div className="flex h-7 w-7 items-center justify-center rounded-lg" style={{ backgroundColor: 'var(--color-deep-teal)' }}>
                   <Settings className="h-4 w-4 text-white" />
                 </div>
-                <span className="font-bold tracking-tight" style={{ color: '#1F2A30' }}>InterServ</span>
+                <span className="font-bold tracking-tight" style={{ color: 'var(--color-text-main)' }}>InterServ</span>
               </div>
               <button
                 onClick={() => setJeMenuOtvoren(false)}
-                className="rounded-lg p-1.5 hover:bg-[#CCB68E]/30"
-                style={{ color: '#6B7C82' }}
+                className="rounded-lg p-1.5 hover:bg-soft-beige/30"
+                style={{ color: 'var(--color-text-muted)' }}
                 aria-label="Zatvori meni"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
 
-            <div className="mb-5 rounded-xl px-4 py-3" style={{ backgroundColor: 'rgba(204, 182, 142, 0.2)' }}>
-              <p className="font-semibold" style={{ color: '#1F2A30' }}>{imeKorisnika ?? 'Korisnik'}</p>
-              <p className="text-sm" style={{ color: '#6B7C82' }}>{OZNAKA_ULOGE[uloga]}</p>
+            <div className="mb-5 rounded-xl px-4 py-3" style={{ backgroundColor: 'rgb(var(--rgb-soft-beige) / 0.2)' }}>
+              <p className="font-semibold" style={{ color: 'var(--color-text-main)' }}>{imeKorisnika ?? 'Korisnik'}</p>
+              <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>{OZNAKA_ULOGE[uloga]}</p>
             </div>
 
             <nav className="flex flex-col gap-1">
@@ -187,18 +196,20 @@ export function AppShell({ children, uloga, imeKorisnika }: AppShellProps) {
               ))}
             </nav>
 
-            <div className="mt-auto border-t pt-4" style={{ borderColor: 'rgba(204,182,142,0.4)' }}>
-              <Link
-                href="/auth/login"
-                className="flex items-center justify-between rounded-xl px-3 py-2.5 text-sm font-medium transition-colors"
-                style={{ color: '#8B4A2B' }}
+            <div className="mt-auto border-t pt-4" style={{ borderColor: 'rgb(var(--rgb-soft-beige) / 0.4)' }}>
+              <button
+                type="button"
+                onClick={odjaviKorisnika}
+                disabled={jeOdjavaUToku}
+                className="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60"
+                style={{ color: 'var(--color-mystic-ember)' }}
               >
                 <span className="flex items-center gap-3">
                   <LogOut className="h-4 w-4" />
-                  Odjava
+                  {jeOdjavaUToku ? 'Odjavljivanje...' : 'Odjava'}
                 </span>
                 <ChevronRight className="h-4 w-4 opacity-50" />
-              </Link>
+              </button>
             </div>
           </div>
         </>

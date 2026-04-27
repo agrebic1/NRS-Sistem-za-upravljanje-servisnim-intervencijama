@@ -26,7 +26,7 @@ function NaslovSekcije({ children }: { children: string }) {
   return (
     <h2
       className="pb-2 text-xs font-semibold uppercase tracking-widest"
-      style={{ color: '#6B7C82', borderBottom: '1px solid rgba(204, 182, 142, 0.4)' }}
+      style={{ color: 'var(--color-text-muted)', borderBottom: '1px solid rgb(var(--rgb-soft-beige) / 0.4)' }}
     >
       {children}
     </h2>
@@ -151,7 +151,7 @@ export function ServiceRequestForm({ idKorisnika }: ServiceRequestFormProps) {
           <NaslovSekcije>Dodatne informacije</NaslovSekcije>
           <span
             className="mb-2 rounded-full px-2 py-0.5 text-xs"
-            style={{ backgroundColor: 'rgba(212,178,127,0.2)', color: '#8B4A2B' }}
+            style={{ backgroundColor: 'rgb(var(--rgb-herbal-gold) / 0.2)', color: 'var(--color-mystic-ember)' }}
           >
             Opciono
           </span>
@@ -177,9 +177,9 @@ export function ServiceRequestForm({ idKorisnika }: ServiceRequestFormProps) {
 
         <div
           className="flex items-start gap-2 rounded-xl px-4 py-3 text-xs"
-          style={{ backgroundColor: 'rgba(90, 124, 131, 0.08)', color: '#6B7C82' }}
+          style={{ backgroundColor: 'rgb(var(--rgb-celestial-teal) / 0.08)', color: 'var(--color-text-muted)' }}
         >
-          <Info className="mt-0.5 h-3.5 w-3.5 flex-shrink-0" style={{ color: '#5A7C83' }} />
+          <Info className="mt-0.5 h-3.5 w-3.5 flex-shrink-0" style={{ color: 'var(--color-celestial-teal)' }} />
           <span>
             Nakon slanja zahtjeva, dispečer će pregledati situaciju i dodijeliti servisera.
             Biti ćete obaviješteni putem email adrese.

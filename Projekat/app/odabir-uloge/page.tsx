@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Settings, User, Wrench, Shield, Crown, ChevronRight } from 'lucide-react';
+import { Settings, User, Wrench, Shield, Crown, ChevronRight, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { AlertMessage } from '@/components/ui/AlertMessage';
-import { getTrenutnogKorisnika, getUlogeKorisnika } from '@/services/auth/authService';
+import { getTrenutnogKorisnika, getUlogeKorisnika, odjaviSe } from '@/services/auth/authService';
 import { PREUSMJERANJE_PO_ULOZI, type UserRole } from '@/domain/types';
 
 // ─── Konfiguracija kartica uloga ──────────────────────────────────────────────
@@ -95,10 +95,16 @@ export default function OdabirUlogePage() {
     router.push(PREUSMJERANJE_PO_ULOZI[odabranaUloga]);
   }
 
+  async function odjaviKorisnika() {
+    setJeNavigacija(true);
+    await odjaviSe();
+    router.replace('/auth/login');
+  }
+
   if (jeUcitavanje) {
     return (
-      <div className="flex min-h-screen items-center justify-center" style={{ backgroundColor: '#F2E6D8' }}>
-        <p className="text-sm" style={{ color: '#6B7C82' }}>Učitavanje...</p>
+      <div className="flex min-h-screen items-center justify-center" style={{ backgroundColor: 'var(--color-warm-cream)' }}>
+        <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>Učitavanje...</p>
       </div>
     );
   }
@@ -106,12 +112,12 @@ export default function OdabirUlogePage() {
   const vidljiveKartice = KARTICE_ULOGA.filter((k) => dostupneUloge.includes(k.uloga));
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center px-4 py-12" style={{ backgroundColor: '#F2E6D8' }}>
+    <div className="flex min-h-screen flex-col items-center justify-center px-4 py-12" style={{ backgroundColor: 'var(--color-warm-cream)' }}>
       <div className="mb-8 flex items-center gap-2.5">
-        <div className="flex h-9 w-9 items-center justify-center rounded-xl" style={{ backgroundColor: '#2C444D' }}>
+        <div className="flex h-9 w-9 items-center justify-center rounded-xl" style={{ backgroundColor: 'var(--color-deep-teal)' }}>
           <Settings className="h-5 w-5 text-white" />
         </div>
-        <span className="text-lg font-bold tracking-tight" style={{ color: '#1F2A30' }}>
+        <span className="text-lg font-bold tracking-tight" style={{ color: 'var(--color-text-main)' }}>
           InterServ
         </span>
       </div>
@@ -120,16 +126,16 @@ export default function OdabirUlogePage() {
         <div
           className="rounded-2xl p-7 shadow-card-lg sm:p-8"
           style={{
-            backgroundColor: 'rgba(199, 184, 164, 0.22)',
-            border: '1px solid rgba(204, 182, 142, 0.4)',
+            backgroundColor: 'rgb(var(--rgb-muted-sand) / 0.22)',
+            border: '1px solid rgb(var(--rgb-soft-beige) / 0.4)',
             backdropFilter: 'blur(12px)',
           }}
         >
           <div className="mb-6">
-            <h1 className="text-xl font-bold tracking-tight sm:text-2xl" style={{ color: '#1F2A30' }}>
+            <h1 className="text-xl font-bold tracking-tight sm:text-2xl" style={{ color: 'var(--color-text-main)' }}>
               Odaberite način korištenja sistema
             </h1>
-            <p className="mt-2 text-sm" style={{ color: '#6B7C82' }}>
+            <p className="mt-2 text-sm" style={{ color: 'var(--color-text-muted)' }}>
               Vaš nalog ima više uloga. Odaberite u kojoj ulozi želite nastaviti.
             </p>
           </div>
@@ -148,28 +154,28 @@ export default function OdabirUlogePage() {
                   key={uloga}
                   type="button"
                   onClick={() => { setOdabranaUloga(uloga); setGreska(null); }}
-                  className="flex items-center gap-4 rounded-xl border p-4 text-left transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#5A7C83]/40 focus:ring-offset-2"
+                  className="flex items-center gap-4 rounded-xl border p-4 text-left transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-celestial-teal/40 focus:ring-offset-2"
                   style={{
-                    borderColor:     jeOdabrana ? '#2C444D' : '#CCB68E',
-                    backgroundColor: jeOdabrana ? 'rgba(44, 68, 77, 0.07)' : 'rgba(255, 255, 255, 0.45)',
+                    borderColor:     jeOdabrana ? 'var(--color-deep-teal)' : 'var(--color-soft-beige)',
+                    backgroundColor: jeOdabrana ? 'rgb(var(--rgb-deep-teal) / 0.07)' : 'rgb(255 255 255 / 0.45)',
                   }}
                   aria-pressed={jeOdabrana}
                 >
                   <div
                     className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full transition-colors duration-200"
                     style={{
-                      backgroundColor: jeOdabrana ? '#2C444D' : 'rgba(199, 184, 164, 0.45)',
-                      color:           jeOdabrana ? '#F2E6D8' : '#6B7C82',
+                      backgroundColor: jeOdabrana ? 'var(--color-deep-teal)' : 'rgb(var(--rgb-muted-sand) / 0.45)',
+                      color:           jeOdabrana ? 'var(--color-warm-cream)' : 'var(--color-text-muted)',
                     }}
                   >
                     <Ikona className="h-5 w-5" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-semibold" style={{ color: '#1F2A30' }}>{oznaka}</p>
-                    <p className="mt-0.5 text-sm leading-snug" style={{ color: '#6B7C82' }}>{opis}</p>
+                    <p className="font-semibold" style={{ color: 'var(--color-text-main)' }}>{oznaka}</p>
+                    <p className="mt-0.5 text-sm leading-snug" style={{ color: 'var(--color-text-muted)' }}>{opis}</p>
                   </div>
                   {jeOdabrana && (
-                    <div className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full" style={{ backgroundColor: '#2C444D' }}>
+                    <div className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full" style={{ backgroundColor: 'var(--color-deep-teal)' }}>
                       <svg className="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                       </svg>
@@ -191,6 +197,21 @@ export default function OdabirUlogePage() {
             Nastavi
             <ChevronRight className="h-4 w-4" />
           </Button>
+
+          {greska && dostupneUloge.length === 0 && (
+            <Button
+              type="button"
+              variant="ghost"
+              className="mt-3 w-full"
+              size="md"
+              onClick={odjaviKorisnika}
+              isLoading={jeNavigacija}
+              loadingText="Odjavljivanje..."
+            >
+              <LogOut className="h-4 w-4" />
+              Odjavi se
+            </Button>
+          )}
         </div>
       </div>
     </div>

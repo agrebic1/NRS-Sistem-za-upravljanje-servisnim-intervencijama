@@ -34,7 +34,7 @@ export function LoadingOverlay({ isVisible, message }: LoadingOverlayProps) {
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm"
-      style={{ backgroundColor: 'rgba(242, 230, 216, 0.93)' }}
+      style={{ backgroundColor: 'rgb(var(--rgb-warm-cream) / 0.93)' }}
       aria-live="assertive"
       aria-label="Učitavanje"
     >
@@ -42,19 +42,19 @@ export function LoadingOverlay({ isVisible, message }: LoadingOverlayProps) {
         <div className="relative flex h-20 w-20 items-center justify-center">
           <Settings
             className="absolute h-20 w-20 animate-spin-gear"
-            style={{ color: '#2C444D' }}
+            style={{ color: 'var(--color-deep-teal)' }}
             strokeWidth={1.2}
           />
           <Settings
             className="absolute h-9 w-9 animate-spin-gear-reverse"
-            style={{ color: '#5A7C83' }}
+            style={{ color: 'var(--color-celestial-teal)' }}
             strokeWidth={1.5}
           />
         </div>
         <p
           key={messageIndex}
           className="animate-fade-up text-sm font-medium tracking-wide"
-          style={{ color: '#1F2A30' }}
+          style={{ color: 'var(--color-text-main)' }}
         >
           {message ?? LOADING_MESSAGES[messageIndex]}
         </p>

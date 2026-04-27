@@ -8,12 +8,12 @@ function StatCard({ value, label, color }: { value: string; label: string; color
   return (
     <div
       className="flex flex-col gap-0.5 rounded-xl p-4"
-      style={{ backgroundColor: 'rgba(255,255,255,0.08)' }}
+      style={{ backgroundColor: 'rgb(255 255 255 / 0.08)' }}
     >
       <span className="text-2xl font-bold" style={{ color }}>
         {value}
       </span>
-      <span className="text-xs" style={{ color: 'rgba(242,230,216,0.6)' }}>
+      <span className="text-xs" style={{ color: 'rgb(var(--rgb-warm-cream) / 0.6)' }}>
         {label}
       </span>
     </div>
@@ -23,9 +23,9 @@ function StatCard({ value, label, color }: { value: string; label: string; color
 type JobStatus = 'hitno' | 'u_toku' | 'zavrseno';
 
 const STATUS_CONFIG: Record<JobStatus, { label: string; color: string; Icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }> }> = {
-  hitno:    { label: 'Hitno',    color: '#8B4A2B', Icon: AlertTriangle },
-  u_toku:   { label: 'U toku',   color: '#5A7C83', Icon: Clock },
-  zavrseno: { label: 'Završeno', color: '#D4B27F', Icon: CheckCircle },
+  hitno:    { label: 'Hitno',    color: 'var(--color-mystic-ember)', Icon: AlertTriangle },
+  u_toku:   { label: 'U toku',   color: 'var(--color-celestial-teal)', Icon: Clock },
+  zavrseno: { label: 'Završeno', color: 'var(--color-herbal-gold)', Icon: CheckCircle },
 };
 
 function JobRow({ title, time, status }: { title: string; time: string; status: JobStatus }) {
@@ -33,15 +33,15 @@ function JobRow({ title, time, status }: { title: string; time: string; status: 
   return (
     <div
       className="flex items-center justify-between border-b py-2.5 last:border-0"
-      style={{ borderColor: 'rgba(255,255,255,0.08)' }}
+      style={{ borderColor: 'rgb(255 255 255 / 0.08)' }}
     >
       <div className="flex items-center gap-2.5 min-w-0">
         <Icon className="h-3.5 w-3.5 flex-shrink-0" style={{ color }} />
-        <span className="truncate text-xs leading-snug" style={{ color: 'rgba(242,230,216,0.85)' }}>
+        <span className="truncate text-xs leading-snug" style={{ color: 'rgb(var(--rgb-warm-cream) / 0.85)' }}>
           {title}
         </span>
       </div>
-      <span className="ml-3 flex-shrink-0 text-xs" style={{ color: 'rgba(242,230,216,0.4)' }}>
+      <span className="ml-3 flex-shrink-0 text-xs" style={{ color: 'rgb(var(--rgb-warm-cream) / 0.4)' }}>
         {time}
       </span>
     </div>
@@ -52,14 +52,14 @@ function DashboardVisualPanel() {
   return (
     <div
       className="relative flex h-full flex-col overflow-hidden"
-      style={{ backgroundColor: '#2C444D' }}
+      style={{ backgroundColor: 'var(--color-deep-teal)' }}
     >
       {/* Background decoration */}
       <div className="pointer-events-none absolute -right-16 -top-16 opacity-[0.06]" aria-hidden>
-        <Settings className="h-80 w-80" strokeWidth={0.8} style={{ color: '#F2E6D8' }} />
+        <Settings className="h-80 w-80" strokeWidth={0.8} style={{ color: 'var(--color-warm-cream)' }} />
       </div>
       <div className="pointer-events-none absolute -bottom-20 -left-12 opacity-[0.05]" aria-hidden>
-        <Wrench className="h-64 w-64" strokeWidth={0.8} style={{ color: '#F2E6D8' }} />
+        <Wrench className="h-64 w-64" strokeWidth={0.8} style={{ color: 'var(--color-warm-cream)' }} />
       </div>
 
       <div className="relative flex flex-col gap-8 p-10 xl:p-14">
@@ -67,40 +67,40 @@ function DashboardVisualPanel() {
         <div className="flex items-center gap-3">
           <div
             className="flex h-9 w-9 items-center justify-center rounded-xl"
-            style={{ backgroundColor: 'rgba(212, 178, 127, 0.2)' }}
+            style={{ backgroundColor: 'rgb(var(--rgb-herbal-gold) / 0.2)' }}
           >
-            <Settings className="h-5 w-5" style={{ color: '#D4B27F' }} />
+            <Settings className="h-5 w-5" style={{ color: 'var(--color-herbal-gold)' }} />
           </div>
-          <span className="text-lg font-bold tracking-tight" style={{ color: '#F2E6D8' }}>
+          <span className="text-lg font-bold tracking-tight" style={{ color: 'var(--color-warm-cream)' }}>
             InterServ
           </span>
         </div>
 
         {/* Headline */}
         <div>
-          <h2 className="text-3xl font-bold leading-tight xl:text-4xl" style={{ color: '#F2E6D8' }}>
+          <h2 className="text-3xl font-bold leading-tight xl:text-4xl" style={{ color: 'var(--color-warm-cream)' }}>
             Servisni menadžment sistem
           </h2>
-          <p className="mt-3 text-sm leading-relaxed" style={{ color: 'rgba(204,182,142,0.75)' }}>
+          <p className="mt-3 text-sm leading-relaxed" style={{ color: 'rgb(var(--rgb-soft-beige) / 0.75)' }}>
             Upravljanje intervencijama, serviseri na terenu i kompletna historija rada — sve na jednom mjestu.
           </p>
         </div>
 
         {/* Stats */}
         <div className="grid grid-cols-3 gap-3">
-          <StatCard value="24"  label="Aktivnih"    color="#D4B27F" />
-          <StatCard value="12"  label="Servisera"   color="#5A7C83" />
-          <StatCard value="189" label="Završeno"    color="#CCB68E" />
+          <StatCard value="24"  label="Aktivnih"    color="var(--color-herbal-gold)" />
+          <StatCard value="12"  label="Servisera"   color="var(--color-celestial-teal)" />
+          <StatCard value="189" label="Završeno"    color="var(--color-soft-beige)" />
         </div>
 
         {/* Recent interventions */}
         <div
           className="flex-1 rounded-2xl p-5"
-          style={{ backgroundColor: 'rgba(255,255,255,0.07)' }}
+          style={{ backgroundColor: 'rgb(255 255 255 / 0.07)' }}
         >
           <p
             className="mb-3 text-xs font-semibold uppercase tracking-widest"
-            style={{ color: 'rgba(204,182,142,0.7)' }}
+            style={{ color: 'rgb(var(--rgb-soft-beige) / 0.7)' }}
           >
             Nedavne intervencije
           </p>
@@ -111,9 +111,9 @@ function DashboardVisualPanel() {
         </div>
 
         {/* Trust signal */}
-        <p className="text-xs" style={{ color: 'rgba(242,230,216,0.35)' }}>
+        <p className="text-xs" style={{ color: 'rgb(var(--rgb-warm-cream) / 0.35)' }}>
           Koristi ga{' '}
-          <span style={{ color: '#D4B27F' }}>1.200+ servisnih kompanija</span>{' '}
+          <span style={{ color: 'var(--color-herbal-gold)' }}>1.200+ servisnih kompanija</span>{' '}
           u regionu
         </p>
       </div>
@@ -125,7 +125,7 @@ function DashboardVisualPanel() {
 
 export default function LoginPage() {
   return (
-    <div className="flex min-h-screen" style={{ backgroundColor: '#F2E6D8' }}>
+    <div className="flex min-h-screen" style={{ backgroundColor: 'var(--color-warm-cream)' }}>
       {/* Left — visual panel (hidden below lg) */}
       <div className="hidden w-[58%] lg:block xl:w-[60%]">
         <DashboardVisualPanel />
@@ -134,14 +134,14 @@ export default function LoginPage() {
       {/* Right — form */}
       <div
         className="flex w-full flex-col items-center justify-center px-5 py-12 sm:px-8 lg:w-[42%] xl:w-[40%]"
-        style={{ backgroundColor: '#F2E6D8' }}
+        style={{ backgroundColor: 'var(--color-warm-cream)' }}
       >
         {/* Mobile brand */}
         <div className="mb-8 flex items-center gap-2 lg:hidden">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg" style={{ backgroundColor: '#2C444D' }}>
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg" style={{ backgroundColor: 'var(--color-deep-teal)' }}>
             <Settings className="h-4 w-4 text-white" />
           </div>
-          <span className="font-bold" style={{ color: '#1F2A30' }}>InterServ</span>
+          <span className="font-bold" style={{ color: 'var(--color-text-main)' }}>InterServ</span>
         </div>
 
         {/* Card */}
@@ -149,16 +149,16 @@ export default function LoginPage() {
           <div
             className="rounded-2xl p-7 shadow-card-lg sm:p-8"
             style={{
-              backgroundColor: 'rgba(199, 184, 164, 0.22)',
-              border: '1px solid rgba(204, 182, 142, 0.4)',
+              backgroundColor: 'rgb(var(--rgb-muted-sand) / 0.22)',
+              border: '1px solid rgb(var(--rgb-soft-beige) / 0.4)',
               backdropFilter: 'blur(12px)',
             }}
           >
             <div className="mb-6">
-              <h1 className="text-2xl font-bold tracking-tight" style={{ color: '#1F2A30' }}>
+              <h1 className="text-2xl font-bold tracking-tight" style={{ color: 'var(--color-text-main)' }}>
                 Prijava u sistem
               </h1>
-              <p className="mt-1.5 text-sm" style={{ color: '#6B7C82' }}>
+              <p className="mt-1.5 text-sm" style={{ color: 'var(--color-text-muted)' }}>
                 Prijavite se kao korisnik usluge ili kao uposlenik sistema, u zavisnosti od naloga koji koristite.
               </p>
             </div>
@@ -167,14 +167,14 @@ export default function LoginPage() {
 
             <div
               className="mt-6 border-t pt-5"
-              style={{ borderColor: 'rgba(204, 182, 142, 0.4)' }}
+              style={{ borderColor: 'rgb(var(--rgb-soft-beige) / 0.4)' }}
             >
-              <p className="text-center text-sm" style={{ color: '#6B7C82' }}>
+              <p className="text-center text-sm" style={{ color: 'var(--color-text-muted)' }}>
                 Nemate korisnički nalog?{' '}
                 <Link
                   href="/auth/registracija"
                   className="font-semibold transition-opacity duration-200 hover:opacity-70"
-                  style={{ color: '#2C444D' }}
+                  style={{ color: 'var(--color-deep-teal)' }}
                 >
                   Kreirajte korisnički nalog
                 </Link>

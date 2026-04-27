@@ -1,164 +1,298 @@
 'use client';
 
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { Users, UserCheck, UserX, ShieldOff, ChevronRight, PlusCircle } from 'lucide-react';
+import {
+  Users,
+  UserCheck,
+  UserX,
+  ShieldOff,
+  ChevronRight,
+  PlusCircle,
+  RefreshCw,
+} from 'lucide-react';
 import { AppShell } from '@/components/layout/AppShell';
 import { Button } from '@/components/ui/Button';
 
-// ─── Mock podaci ──────────────────────────────────────────────────────────────
-
 type StatusKorisnika = 'aktivan' | 'neaktivan' | 'suspendovan';
 
-interface MockKorisnik {
+interface KorisnikSistema {
   id: string;
   imeIPrezime: string;
   email: string;
   uloga: string;
   status: StatusKorisnika;
   datumRegistracije: string;
+  tip: 'korisnik' | 'uposlenik';
 }
 
-const MOCK_KORISNICI: MockKorisnik[] = [
-  { id: '1', imeIPrezime: 'Amina Hodžić',  email: 'amina@email.com',  uloga: 'Korisnik usluge', status: 'aktivan',     datumRegistracije: '01.04.2026.' },
-  { id: '2', imeIPrezime: 'Marko Jovanović',email: 'marko@email.com',  uloga: 'Serviser',        status: 'aktivan',     datumRegistracije: '15.03.2026.' },
-  { id: '3', imeIPrezime: 'Elma Karić',    email: 'elma@email.com',   uloga: 'Korisnik usluge', status: 'neaktivan',   datumRegistracije: '10.02.2026.' },
-  { id: '4', imeIPrezime: 'Sanel Mujić',   email: 'sanel@email.com',  uloga: 'Dispečer',        status: 'aktivan',     datumRegistracije: '05.01.2026.' },
-  { id: '5', imeIPrezime: 'Adnan Čolić',   email: 'adnan@email.com',  uloga: 'Korisnik usluge', status: 'suspendovan', datumRegistracije: '20.12.2025.' },
-];
-
-const KPI_KARTICE = [
-  { oznaka: 'Ukupno korisnika',   vrijednost: 5, boja: '#2C444D', Ikona: Users },
-  { oznaka: 'Aktivni',            vrijednost: 3, boja: '#5A7C83', Ikona: UserCheck },
-  { oznaka: 'Neaktivni',          vrijednost: 1, boja: '#D4B27F', Ikona: UserX },
-  { oznaka: 'Suspendovani',       vrijednost: 1, boja: '#8B4A2B', Ikona: ShieldOff },
-];
-
 const BADGE_STATUSA: Record<StatusKorisnika, { oznaka: string; pozadina: string; boja: string }> = {
-  aktivan:     { oznaka: 'Aktivan',     pozadina: 'rgba(90,124,131,0.15)',  boja: '#5A7C83' },
-  neaktivan:   { oznaka: 'Neaktivan',   pozadina: 'rgba(212,178,127,0.2)', boja: '#D4B27F' },
-  suspendovan: { oznaka: 'Suspendovan', pozadina: 'rgba(139,74,43,0.12)',  boja: '#8B4A2B' },
+  aktivan: { oznaka: 'Aktivan', pozadina: 'rgb(var(--rgb-celestial-teal) / 0.15)', boja: 'var(--color-celestial-teal)' },
+  neaktivan: { oznaka: 'Neaktivan', pozadina: 'rgb(var(--rgb-herbal-gold) / 0.2)', boja: 'var(--color-herbal-gold)' },
+  suspendovan: { oznaka: 'Suspendovan', pozadina: 'rgb(var(--rgb-mystic-ember) / 0.12)', boja: 'var(--color-mystic-ember)' },
 };
 
-// ─── Stranica ─────────────────────────────────────────────────────────────────
-
 export default function AdminPage() {
+  const [korisnici, setKorisnici] = useState<KorisnikSistema[]>([]);
+  const [greska, setGreska] = useState<string | null>(null);
+  const [ucitava, setUcitava] = useState(true);
+
+  async function ucitajKorisnike() {
+    setUcitava(true);
+    setGreska(null);
+
+    try {
+      const odgovor = await fetch('/api/admin/users', { cache: 'no-store' });
+      const podaci = await odgovor.json();
+
+      if (!odgovor.ok) {
+        throw new Error(podaci.error ?? 'Nije moguce ucitati korisnike.');
+      }
+
+      setKorisnici(podaci.users ?? []);
+    } catch (error) {
+      setGreska(error instanceof Error ? error.message : 'Nije moguce ucitati korisnike.');
+    } finally {
+      setUcitava(false);
+    }
+  }
+
+  useEffect(() => {
+    ucitajKorisnike();
+  }, []);
+
+  const kpiKartice = useMemo(
+    () => [
+      { oznaka: 'Ukupno korisnika', vrijednost: korisnici.length, boja: 'var(--color-deep-teal)', Ikona: Users },
+      {
+        oznaka: 'Aktivni',
+        vrijednost: korisnici.filter((korisnik) => korisnik.status === 'aktivan').length,
+        boja: 'var(--color-celestial-teal)',
+        Ikona: UserCheck,
+      },
+      {
+        oznaka: 'Neaktivni',
+        vrijednost: korisnici.filter((korisnik) => korisnik.status === 'neaktivan').length,
+        boja: 'var(--color-herbal-gold)',
+        Ikona: UserX,
+      },
+      {
+        oznaka: 'Suspendovani',
+        vrijednost: korisnici.filter((korisnik) => korisnik.status === 'suspendovan').length,
+        boja: 'var(--color-mystic-ember)',
+        Ikona: ShieldOff,
+      },
+    ],
+    [korisnici]
+  );
+
   return (
     <AppShell uloga="admin" imeKorisnika="Administrator">
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight" style={{ color: '#1F2A30' }}>Pregled sistema</h1>
-          <p className="mt-1 text-sm" style={{ color: '#6B7C82' }}>
-            Upravljanje korisnicima i podešavanjima sistema.
+          <h1 className="text-2xl font-bold tracking-tight" style={{ color: 'var(--color-text-main)' }}>
+            Pregled sistema
+          </h1>
+          <p className="mt-1 text-sm" style={{ color: 'var(--color-text-muted)' }}>
+            Upravljanje korisnicima i podesavanjima sistema.
           </p>
         </div>
-        <Link href="/admin/korisnici/novi">
-          <Button size="md" className="w-full sm:w-auto">
-            <PlusCircle className="h-4 w-4" />
-            Dodaj korisnika
+
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <Button
+            type="button"
+            variant="secondary"
+            size="md"
+            onClick={ucitajKorisnike}
+            isLoading={ucitava}
+            loadingText="Ucitavanje..."
+          >
+            <RefreshCw className="h-4 w-4" />
+            Osvjezi
           </Button>
-        </Link>
+          <Link href="/admin/korisnici/novi">
+            <Button size="md" className="w-full sm:w-auto">
+              <PlusCircle className="h-4 w-4" />
+              Dodaj korisnika
+            </Button>
+          </Link>
+        </div>
       </div>
 
-      {/* KPI kartice — 4 u redu */}
       <div className="mb-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
-        {KPI_KARTICE.map(({ oznaka, vrijednost, boja, Ikona }) => (
+        {kpiKartice.map(({ oznaka, vrijednost, boja, Ikona }) => (
           <div
             key={oznaka}
             className="flex flex-col gap-3 rounded-2xl p-5 shadow-card"
-            style={{ backgroundColor: 'rgba(199, 184, 164, 0.22)', border: '1px solid rgba(204, 182, 142, 0.35)' }}
+            style={{
+              backgroundColor: 'rgb(var(--rgb-muted-sand) / 0.22)',
+              border: '1px solid rgb(var(--rgb-soft-beige) / 0.35)',
+            }}
           >
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl" style={{ backgroundColor: `${boja}18` }}>
+            <div
+              className="flex h-10 w-10 items-center justify-center rounded-xl"
+              style={{ backgroundColor: `color-mix(in srgb, ${boja} 10%, transparent)` }}
+            >
               <Ikona className="h-5 w-5" style={{ color: boja }} />
             </div>
             <div>
-              <p className="text-2xl font-bold" style={{ color: boja }}>{vrijednost}</p>
-              <p className="text-xs" style={{ color: '#6B7C82' }}>{oznaka}</p>
+              <p className="text-2xl font-bold" style={{ color: boja }}>
+                {vrijednost}
+              </p>
+              <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
+                {oznaka}
+              </p>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Tabela korisnika */}
       <div
         className="rounded-2xl shadow-card"
-        style={{ backgroundColor: 'rgba(199, 184, 164, 0.22)', border: '1px solid rgba(204, 182, 142, 0.35)' }}
+        style={{
+          backgroundColor: 'rgb(var(--rgb-muted-sand) / 0.22)',
+          border: '1px solid rgb(var(--rgb-soft-beige) / 0.35)',
+        }}
       >
         <div
           className="flex items-center justify-between px-5 py-4"
-          style={{ borderBottom: '1px solid rgba(204, 182, 142, 0.3)' }}
+          style={{ borderBottom: '1px solid rgb(var(--rgb-soft-beige) / 0.3)' }}
         >
-          <h2 className="font-semibold" style={{ color: '#1F2A30' }}>Korisnici sistema</h2>
+          <h2 className="font-semibold" style={{ color: 'var(--color-text-main)' }}>
+            Korisnici sistema
+          </h2>
           <Link
             href="/admin/korisnici"
             className="flex items-center gap-1 text-sm font-medium transition-opacity hover:opacity-70"
-            style={{ color: '#5A7C83' }}
+            style={{ color: 'var(--color-celestial-teal)' }}
           >
             Svi korisnici <ChevronRight className="h-4 w-4" />
           </Link>
         </div>
 
-        {/* Desktop tabela */}
-        <div className="hidden sm:block overflow-x-auto">
+        {greska && (
+          <div
+            className="mx-5 mt-4 rounded-xl border px-4 py-3 text-sm"
+            style={{
+              borderColor: 'rgb(var(--rgb-mystic-ember) / 0.25)',
+              backgroundColor: 'rgb(var(--rgb-mystic-ember) / 0.06)',
+              color: 'var(--color-mystic-ember)',
+            }}
+          >
+            {greska}
+          </div>
+        )}
+
+        <div className="hidden overflow-x-auto sm:block">
           <table className="w-full text-sm">
             <thead>
-              <tr style={{ borderBottom: '1px solid rgba(204, 182, 142, 0.25)' }}>
+              <tr style={{ borderBottom: '1px solid rgb(var(--rgb-soft-beige) / 0.25)' }}>
                 {['Ime i prezime', 'Email', 'Uloga', 'Status', 'Registrovan', ''].map((zaglavlje) => (
                   <th
                     key={zaglavlje}
                     className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider"
-                    style={{ color: '#6B7C82' }}
+                    style={{ color: 'var(--color-text-muted)' }}
                   >
                     {zaglavlje}
                   </th>
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y" style={{ borderColor: 'rgba(204, 182, 142, 0.2)' }}>
-              {MOCK_KORISNICI.map((korisnik) => {
-                const badge = BADGE_STATUSA[korisnik.status];
-                return (
-                  <tr key={korisnik.id} className="transition-colors hover:bg-[#CCB68E]/10">
-                    <td className="px-5 py-3.5 font-medium" style={{ color: '#1F2A30' }}>{korisnik.imeIPrezime}</td>
-                    <td className="px-5 py-3.5" style={{ color: '#6B7C82' }}>{korisnik.email}</td>
-                    <td className="px-5 py-3.5" style={{ color: '#6B7C82' }}>{korisnik.uloga}</td>
-                    <td className="px-5 py-3.5">
-                      <span className="rounded-full px-2.5 py-0.5 text-xs font-semibold" style={{ backgroundColor: badge.pozadina, color: badge.boja }}>
-                        {badge.oznaka}
-                      </span>
-                    </td>
-                    <td className="px-5 py-3.5" style={{ color: '#6B7C82' }}>{korisnik.datumRegistracije}</td>
-                    <td className="px-5 py-3.5 text-right">
-                      <Link
-                        href={`/admin/korisnici/${korisnik.id}`}
-                        className="text-xs font-medium transition-opacity hover:opacity-70"
-                        style={{ color: '#5A7C83' }}
-                      >
-                        Uredi
-                      </Link>
-                    </td>
-                  </tr>
-                );
-              })}
+            <tbody className="divide-y" style={{ borderColor: 'rgb(var(--rgb-soft-beige) / 0.2)' }}>
+              {ucitava && (
+                <tr>
+                  <td colSpan={6} className="px-5 py-8 text-center" style={{ color: 'var(--color-text-muted)' }}>
+                    Ucitavanje korisnika...
+                  </td>
+                </tr>
+              )}
+
+              {!ucitava && korisnici.length === 0 && !greska && (
+                <tr>
+                  <td colSpan={6} className="px-5 py-8 text-center" style={{ color: 'var(--color-text-muted)' }}>
+                    Nema korisnika za prikaz.
+                  </td>
+                </tr>
+              )}
+
+              {!ucitava &&
+                korisnici.map((korisnik) => {
+                  const badge = BADGE_STATUSA[korisnik.status];
+
+                  return (
+                    <tr key={korisnik.id} className="transition-colors hover:bg-soft-beige/10">
+                      <td className="px-5 py-3.5 font-medium" style={{ color: 'var(--color-text-main)' }}>
+                        {korisnik.imeIPrezime}
+                      </td>
+                      <td className="px-5 py-3.5" style={{ color: 'var(--color-text-muted)' }}>
+                        {korisnik.email}
+                      </td>
+                      <td className="px-5 py-3.5" style={{ color: 'var(--color-text-muted)' }}>
+                        {korisnik.uloga}
+                      </td>
+                      <td className="px-5 py-3.5">
+                        <span
+                          className="rounded-full px-2.5 py-0.5 text-xs font-semibold"
+                          style={{ backgroundColor: badge.pozadina, color: badge.boja }}
+                        >
+                          {badge.oznaka}
+                        </span>
+                      </td>
+                      <td className="px-5 py-3.5" style={{ color: 'var(--color-text-muted)' }}>
+                        {korisnik.datumRegistracije}
+                      </td>
+                      <td className="px-5 py-3.5 text-right">
+                        <Link
+                          href={`/admin/korisnici/${korisnik.id}`}
+                          className="text-xs font-medium transition-opacity hover:opacity-70"
+                          style={{ color: 'var(--color-celestial-teal)' }}
+                        >
+                          Uredi
+                        </Link>
+                      </td>
+                    </tr>
+                  );
+                })}
             </tbody>
           </table>
         </div>
 
-        {/* Mobilna lista */}
-        <ul className="divide-y sm:hidden" style={{ borderColor: 'rgba(204, 182, 142, 0.25)' }}>
-          {MOCK_KORISNICI.map((korisnik) => {
-            const badge = BADGE_STATUSA[korisnik.status];
-            return (
-              <li key={korisnik.id} className="flex items-center justify-between px-5 py-4">
-                <div>
-                  <p className="font-medium" style={{ color: '#1F2A30' }}>{korisnik.imeIPrezime}</p>
-                  <p className="text-xs" style={{ color: '#6B7C82' }}>{korisnik.uloga}</p>
-                </div>
-                <span className="rounded-full px-2.5 py-0.5 text-xs font-semibold" style={{ backgroundColor: badge.pozadina, color: badge.boja }}>
-                  {badge.oznaka}
-                </span>
-              </li>
-            );
-          })}
+        <ul className="divide-y sm:hidden" style={{ borderColor: 'rgb(var(--rgb-soft-beige) / 0.25)' }}>
+          {ucitava && (
+            <li className="px-5 py-6 text-center text-sm" style={{ color: 'var(--color-text-muted)' }}>
+              Ucitavanje korisnika...
+            </li>
+          )}
+
+          {!ucitava && korisnici.length === 0 && !greska && (
+            <li className="px-5 py-6 text-center text-sm" style={{ color: 'var(--color-text-muted)' }}>
+              Nema korisnika za prikaz.
+            </li>
+          )}
+
+          {!ucitava &&
+            korisnici.map((korisnik) => {
+              const badge = BADGE_STATUSA[korisnik.status];
+
+              return (
+                <li key={korisnik.id} className="flex items-center justify-between px-5 py-4">
+                  <div>
+                    <p className="font-medium" style={{ color: 'var(--color-text-main)' }}>
+                      {korisnik.imeIPrezime}
+                    </p>
+                    <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
+                      {korisnik.email}
+                    </p>
+                  </div>
+                  <span
+                    className="rounded-full px-2.5 py-0.5 text-xs font-semibold"
+                    style={{ backgroundColor: badge.pozadina, color: badge.boja }}
+                  >
+                    {badge.oznaka}
+                  </span>
+                </li>
+              );
+            })}
         </ul>
       </div>
     </AppShell>
