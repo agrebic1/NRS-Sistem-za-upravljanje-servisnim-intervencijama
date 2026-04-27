@@ -1,4 +1,4 @@
-//Modeli sistema 
+
 
 const Korisnik = {
   id: null,
