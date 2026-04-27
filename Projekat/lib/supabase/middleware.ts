@@ -1,33 +1,40 @@
-import { createServerClient, type CookieOptions } from '@supabase/ssr'
-import { type NextRequest, NextResponse } from 'next/server'
-import type { Database } from '@/domain/types/supabase'
+import { createServerClient, type CookieOptions } from '@supabase/ssr';
+import { type NextRequest, NextResponse } from 'next/server';
 
-export async function updateSession(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({ request })
+export async function updateSession(zahtjev: NextRequest) {
+  let supabaseOdgovor = NextResponse.next({ request: zahtjev });
 
-  const supabase = createServerClient<Database>(
+  const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
         getAll() {
-          return request.cookies.getAll()
+          return zahtjev.cookies.getAll();
         },
-        setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
-          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
-          supabaseResponse = NextResponse.next({ request })
-          cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
-          )
+        setAll(
+          kolaciciZaPostavljanje: {
+            name: string;
+            value: string;
+            options: CookieOptions;
+          }[]
+        ) {
+          kolaciciZaPostavljanje.forEach(({ name, value }) =>
+            zahtjev.cookies.set(name, value)
+          );
+          supabaseOdgovor = NextResponse.next({ request: zahtjev });
+          kolaciciZaPostavljanje.forEach(({ name, value, options }) =>
+            supabaseOdgovor.cookies.set(name, value, options)
+          );
         },
       },
     }
-  )
+  );
 
-  // Must use getUser() (not getSession()) to prevent CSRF token spoofing
+  // Koristiti getUser() umjesto getSession() radi zaštite od CSRF lažiranja tokena
   const {
-    data: { user },
-  } = await supabase.auth.getUser()
+    data: { user: korisnik },
+  } = await supabase.auth.getUser();
 
-  return { supabaseResponse, user }
+  return { supabaseResponse: supabaseOdgovor, user: korisnik };
 }

@@ -1,36 +1,46 @@
-import { type NextRequest, NextResponse } from 'next/server'
-import { updateSession } from '@/lib/supabase/middleware'
+import { type NextRequest, NextResponse } from 'next/server';
+import { updateSession } from '@/lib/supabase/middleware';
 
-const JAVNE_RUTE = ['/login', '/register', '/registracija', '/auth'] as const
-const ADMIN_PREFIX = '/admin'
+const JAVNE_PUTANJE = [
+  '/',
+  '/auth/login',
+  '/auth/registracija',
+  '/auth/zaboravljena-lozinka',
+] as const;
 
-export async function middleware(request: NextRequest) {
-  const { supabaseResponse, user } = await updateSession(request)
-  const { pathname } = request.nextUrl
+// Mapiranje putanje na uloge koje SMIJU pristupiti
+const ULOGE_PO_PUTANJI: Record<string, string[]> = {
+  '/admin':    ['admin'],
+  '/dispecer': ['dispecer'],
+  '/serviser': ['serviser'],
+  '/korisnik': ['korisnik', 'admin'],
+};
 
-  const jeJavnaRuta = JAVNE_RUTE.some(
-    (ruta) => pathname === ruta || pathname.startsWith(ruta + '/')
-  )
+export async function middleware(zahtjev: NextRequest) {
+  const { supabaseResponse, user: prijavljeniKorisnik } = await updateSession(zahtjev);
+  const { pathname } = zahtjev.nextUrl;
 
-  if (!user && !jeJavnaRuta) {
-    const loginUrl = new URL('/login', request.url)
-    loginUrl.searchParams.set('redirectTo', pathname)
-    return NextResponse.redirect(loginUrl)
+  const jeJavnaPutanja = JAVNE_PUTANJE.some(
+    (putanja) => pathname === putanja || pathname.startsWith(putanja + '/')
+  );
+
+  // Neautoriziran korisnik ne smije pristupiti zaštićenim rutama
+  if (!prijavljeniKorisnik && !jeJavnaPutanja) {
+    const stranicaZaPrijavu = new URL('/auth/login', zahtjev.url);
+    stranicaZaPrijavu.searchParams.set('preusmjereno_sa', pathname);
+    return NextResponse.redirect(stranicaZaPrijavu);
   }
 
-  if (user && pathname.startsWith(ADMIN_PREFIX)) {
-    const uloga = user.user_metadata?.uloga as string | undefined
-    const jeAdministrator = uloga === 'Administrator'
-    if (!jeAdministrator) {
-      return NextResponse.redirect(new URL('/', request.url))
-    }
+  // Autoriziran korisnik ne treba vidjeti login/registraciju
+  if (prijavljeniKorisnik && (pathname === '/auth/login' || pathname === '/auth/registracija')) {
+    return NextResponse.redirect(new URL('/odabir-uloge', zahtjev.url));
   }
 
-  return supabaseResponse
+  return supabaseResponse;
 }
 
 export const config = {
   matcher: [
     '/((?!_next/static|_next/image|favicon\\.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
-}
+};
