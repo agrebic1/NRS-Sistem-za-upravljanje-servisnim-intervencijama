@@ -16,7 +16,7 @@ const ULOGE_PO_PUTANJI: Record<string, string[]> = {
   '/korisnik': ['korisnik', 'admin'],
 };
 
-export async function middleware(zahtjev: NextRequest) {
+/*export async function middleware(zahtjev: NextRequest) {
   const { supabaseResponse, user: prijavljeniKorisnik } = await updateSession(zahtjev);
   const { pathname } = zahtjev.nextUrl;
 
@@ -25,7 +25,7 @@ export async function middleware(zahtjev: NextRequest) {
   );
 
   // Neautoriziran korisnik ne smije pristupiti zaštićenim rutama
-  if (!prijavljeniKorisnik && !jeJavnaPutanja) {
+ /* if (!prijavljeniKorisnik && !jeJavnaPutanja) {
     const stranicaZaPrijavu = new URL('/auth/login', zahtjev.url);
     stranicaZaPrijavu.searchParams.set('preusmjereno_sa', pathname);
     return NextResponse.redirect(stranicaZaPrijavu);
@@ -36,6 +36,14 @@ export async function middleware(zahtjev: NextRequest) {
     return NextResponse.redirect(new URL('/odabir-uloge', zahtjev.url));
   }
 
+  return supabaseResponse;
+}*/
+
+export async function middleware(zahtjev: NextRequest) {
+  // Pozivamo updateSession samo da vidimo prolazi li veza
+  const { supabaseResponse } = await updateSession(zahtjev);
+  
+  // Vratimo odgovor odmah - bez ikakvih provjera uloga ili redirecta
   return supabaseResponse;
 }
 
