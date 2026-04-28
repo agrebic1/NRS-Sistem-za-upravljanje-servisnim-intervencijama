@@ -2,7 +2,7 @@
 
 | Polje | Opis |
 |-------|------|
-| Datum | 28.04.2026.|
+| Datum | 28.04.2026|
 | Sprint broj | |
 | Alat koji je korišten | |
 | Svrha korištenja | |
