@@ -40,7 +40,7 @@ export async function middleware(zahtjev: NextRequest) {
 }
 
 export const config = {
-  runtime: 'nodejs', // OBAVEZNO ZA VERCEL
+  
   matcher: [
     '/((?!_next/static|_next/image|favicon\\.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
