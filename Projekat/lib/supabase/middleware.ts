@@ -11,7 +11,7 @@ export async function updateSession(zahtjev: NextRequest) {
   // Ako varijable fale, middleware će pasti sa 500 greškom. 
   // Ovo osigurava da imamo vrijednosti prije nego pokrenemo klijenta.
   if (!url || !key) {
-    return supabaseOdgovor; 
+     return { supabaseResponse: supabaseOdgovor, user: null }; 
   }
   
   const supabase = createServerClient(
