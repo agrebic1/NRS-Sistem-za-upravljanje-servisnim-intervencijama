@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from 'next/server';
-import { updateSession } from '@/lib/supabase/middleware';
+import { updateSession } from './lib/supabase/middleware';
 
 const JAVNE_PUTANJE = [
   '/',
@@ -40,8 +40,8 @@ export async function middleware(zahtjev: NextRequest) {
 }
 
 export const config = {
-  
+  runtime: 'nodejs', // Vratit ćemo ovo, ali uz dodatak ispod
   matcher: [
-    '/((?!_next/static|_next/image|favicon\\.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 };
