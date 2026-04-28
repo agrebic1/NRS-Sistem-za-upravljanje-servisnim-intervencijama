@@ -1,6 +1,7 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { type NextRequest, NextResponse } from 'next/server';
 
+// Mora se zvati updateSession i imati export
 export async function updateSession(zahtjev: NextRequest) {
   let supabaseOdgovor = NextResponse.next({ request: zahtjev });
 
@@ -12,13 +13,7 @@ export async function updateSession(zahtjev: NextRequest) {
         getAll() {
           return zahtjev.cookies.getAll();
         },
-        setAll(
-          kolaciciZaPostavljanje: {
-            name: string;
-            value: string;
-            options: CookieOptions;
-          }[]
-        ) {
+        setAll(kolaciciZaPostavljanje) {
           kolaciciZaPostavljanje.forEach(({ name, value }) =>
             zahtjev.cookies.set(name, value)
           );
@@ -31,10 +26,8 @@ export async function updateSession(zahtjev: NextRequest) {
     }
   );
 
-  // Koristiti getUser() umjesto getSession() radi zaštite od CSRF lažiranja tokena
-  const {
-    data: { user: korisnik },
-  } = await supabase.auth.getUser();
+  // Dobijamo korisnika da bi ga root middleware mogao provjeriti
+  const { data: { user } } = await supabase.auth.getUser();
 
-  return { supabaseResponse: supabaseOdgovor, user: korisnik };
+  return { supabaseResponse: supabaseOdgovor, user };
 }
