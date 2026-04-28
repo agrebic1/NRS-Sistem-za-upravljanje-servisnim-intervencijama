@@ -1,7 +1,20 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { type NextRequest, NextResponse } from 'next/server';
 
-export async function updateSession(zahtjev: NextRequest) {
+export const config = {
+  runtime: 'nodejs',
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     */
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+  ],
+};
+
+export default async function middleware(zahtjev: NextRequest) {
   let supabaseOdgovor = NextResponse.next({ request: zahtjev });
 
   const supabase = createServerClient(
@@ -31,10 +44,8 @@ export async function updateSession(zahtjev: NextRequest) {
     }
   );
 
-  // Koristiti getUser() umjesto getSession() radi zaštite od CSRF lažiranja tokena
-  const {
-    data: { user: korisnik },
-  } = await supabase.auth.getUser();
+  // Provjera korisnika (bitno za sigurnost i RLS)
+  await supabase.auth.getUser();
 
-  return { supabaseResponse: supabaseOdgovor, user: korisnik };
+  return supabaseOdgovor;
 }
