@@ -5,6 +5,15 @@ import { type NextRequest, NextResponse } from 'next/server';
 export async function updateSession(zahtjev: NextRequest) {
   let supabaseOdgovor = NextResponse.next({ request: zahtjev });
 
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  // Ako varijable fale, middleware će pasti sa 500 greškom. 
+  // Ovo osigurava da imamo vrijednosti prije nego pokrenemo klijenta.
+  if (!url || !key) {
+    return supabaseOdgovor; 
+  }
+  
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
