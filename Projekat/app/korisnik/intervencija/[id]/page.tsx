@@ -43,10 +43,10 @@ const MOCK_INTERVENCIJA = {
 type IntervencijaStatus = 'novi' | 'u_toku' | 'zavrsen' | 'hitno';
 
 const STATUS_CONFIG: Record<string, { label: string; bg: string; color: string; Icon: React.ComponentType<{ className?: string }> }> = {
-  novi:    { label: 'Novi',    bg: 'rgba(204,182,142,0.2)',  color: '#6B7C82', Icon: Clock },
-  u_toku:  { label: 'U toku', bg: 'rgba(90,124,131,0.15)',  color: '#5A7C83', Icon: Clock },
-  zavrsen: { label: 'Završen',bg: 'rgba(212,178,127,0.2)',  color: '#D4B27F', Icon: CheckCircle },
-  hitno:   { label: 'Hitno',  bg: 'rgba(139,74,43,0.12)',   color: '#8B4A2B', Icon: AlertTriangle },
+  novi:    { label: 'Novi',    bg: 'rgb(var(--rgb-soft-beige) / 0.2)',  color: 'var(--color-text-muted)', Icon: Clock },
+  u_toku:  { label: 'U toku', bg: 'rgb(var(--rgb-celestial-teal) / 0.15)',  color: 'var(--color-celestial-teal)', Icon: Clock },
+  zavrsen: { label: 'Završen',bg: 'rgb(var(--rgb-herbal-gold) / 0.2)',  color: 'var(--color-herbal-gold)', Icon: CheckCircle },
+  hitno:   { label: 'Hitno',  bg: 'rgb(var(--rgb-mystic-ember) / 0.12)',   color: 'var(--color-mystic-ember)', Icon: AlertTriangle },
 };
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
@@ -65,7 +65,7 @@ export default function IntervencijaDetaljePage({
       <Link
         href="/korisnik/dashboard"
         className="mb-5 flex items-center gap-1.5 text-sm font-medium transition-opacity hover:opacity-70"
-        style={{ color: '#5A7C83' }}
+        style={{ color: 'var(--color-celestial-teal)' }}
       >
         <ChevronLeft className="h-4 w-4" />
         Nazad na pregled
@@ -78,12 +78,12 @@ export default function IntervencijaDetaljePage({
           <div
             className="rounded-2xl p-6 shadow-card"
             style={{
-              backgroundColor: 'rgba(199, 184, 164, 0.22)',
-              border: '1px solid rgba(204, 182, 142, 0.35)',
+              backgroundColor: 'rgb(var(--rgb-muted-sand) / 0.22)',
+              border: '1px solid rgb(var(--rgb-soft-beige) / 0.35)',
             }}
           >
             <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
-              <h1 className="text-xl font-bold" style={{ color: '#1F2A30' }}>
+              <h1 className="text-xl font-bold" style={{ color: 'var(--color-text-main)' }}>
                 {intervencija.naslov}
               </h1>
               <span
@@ -95,17 +95,17 @@ export default function IntervencijaDetaljePage({
               </span>
             </div>
 
-            <p className="mb-4 text-sm leading-relaxed" style={{ color: '#6B7C82' }}>
+            <p className="mb-4 text-sm leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>
               {intervencija.opisProblema}
             </p>
 
-            <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm" style={{ color: '#6B7C82' }}>
+            <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm" style={{ color: 'var(--color-text-muted)' }}>
               <span className="flex items-center gap-1.5">
-                <MapPin className="h-3.5 w-3.5" style={{ color: '#5A7C83' }} />
+                <MapPin className="h-3.5 w-3.5" style={{ color: 'var(--color-celestial-teal)' }} />
                 {intervencija.lokacija}
               </span>
               <span className="flex items-center gap-1.5">
-                <Clock className="h-3.5 w-3.5" style={{ color: '#5A7C83' }} />
+                <Clock className="h-3.5 w-3.5" style={{ color: 'var(--color-celestial-teal)' }} />
                 Kreiran: {intervencija.datumKreiranja}
               </span>
             </div>
@@ -115,11 +115,11 @@ export default function IntervencijaDetaljePage({
           <div
             className="rounded-2xl p-6 shadow-card"
             style={{
-              backgroundColor: 'rgba(199, 184, 164, 0.22)',
-              border: '1px solid rgba(204, 182, 142, 0.35)',
+              backgroundColor: 'rgb(var(--rgb-muted-sand) / 0.22)',
+              border: '1px solid rgb(var(--rgb-soft-beige) / 0.35)',
             }}
           >
-            <h2 className="mb-5 font-semibold" style={{ color: '#1F2A30' }}>
+            <h2 className="mb-5 font-semibold" style={{ color: 'var(--color-text-main)' }}>
               Historija zahtjeva
             </h2>
             <ol className="relative flex flex-col gap-0">
@@ -131,15 +131,15 @@ export default function IntervencijaDetaljePage({
                     {!isLast && (
                       <div
                         className="absolute left-[9px] top-5 h-full w-px"
-                        style={{ backgroundColor: 'rgba(204, 182, 142, 0.5)' }}
+                        style={{ backgroundColor: 'rgb(var(--rgb-soft-beige) / 0.5)' }}
                       />
                     )}
                     {/* Dot */}
                     <div
                       className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full border-2"
                       style={{
-                        borderColor: isLast ? '#2C444D' : '#CCB68E',
-                        backgroundColor: isLast ? '#2C444D' : '#F2E6D8',
+                        borderColor: isLast ? 'var(--color-deep-teal)' : 'var(--color-soft-beige)',
+                        backgroundColor: isLast ? 'var(--color-deep-teal)' : 'var(--color-warm-cream)',
                       }}
                     >
                       {isLast && (
@@ -147,14 +147,14 @@ export default function IntervencijaDetaljePage({
                       )}
                     </div>
                     <div>
-                      <p className="font-medium text-sm" style={{ color: '#1F2A30' }}>
+                      <p className="font-medium text-sm" style={{ color: 'var(--color-text-main)' }}>
                         {event.naziv}
                       </p>
-                      <p className="text-xs" style={{ color: '#6B7C82' }}>
+                      <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
                         {event.datum}
                       </p>
                       {event.napomena && (
-                        <p className="mt-1 text-xs" style={{ color: '#6B7C82' }}>
+                        <p className="mt-1 text-xs" style={{ color: 'var(--color-text-muted)' }}>
                           {event.napomena}
                         </p>
                       )}
@@ -169,13 +169,13 @@ export default function IntervencijaDetaljePage({
           <div
             className="rounded-2xl p-6 shadow-card"
             style={{
-              backgroundColor: 'rgba(199, 184, 164, 0.22)',
-              border: '1px solid rgba(204, 182, 142, 0.35)',
+              backgroundColor: 'rgb(var(--rgb-muted-sand) / 0.22)',
+              border: '1px solid rgb(var(--rgb-soft-beige) / 0.35)',
             }}
           >
             <div className="mb-4 flex items-center gap-2">
-              <MessageSquare className="h-4 w-4" style={{ color: '#5A7C83' }} />
-              <h2 className="font-semibold" style={{ color: '#1F2A30' }}>
+              <MessageSquare className="h-4 w-4" style={{ color: 'var(--color-celestial-teal)' }} />
+              <h2 className="font-semibold" style={{ color: 'var(--color-text-main)' }}>
                 Napomene
               </h2>
             </div>
@@ -184,9 +184,9 @@ export default function IntervencijaDetaljePage({
               rows={3}
               placeholder="Dodajte napomenu ili poruku serviseru..."
               style={{
-                borderColor: '#CCB68E',
-                backgroundColor: 'rgba(255,255,255,0.5)',
-                color: '#1F2A30',
+                borderColor: 'var(--color-soft-beige)',
+                backgroundColor: 'rgb(255 255 255 / 0.5)',
+                color: 'var(--color-text-main)',
               }}
             />
             <div className="mt-3 flex justify-end">
@@ -204,31 +204,31 @@ export default function IntervencijaDetaljePage({
             <div
               className="rounded-2xl p-5 shadow-card"
               style={{
-                backgroundColor: 'rgba(199, 184, 164, 0.22)',
-                border: '1px solid rgba(204, 182, 142, 0.35)',
+                backgroundColor: 'rgb(var(--rgb-muted-sand) / 0.22)',
+                border: '1px solid rgb(var(--rgb-soft-beige) / 0.35)',
               }}
             >
               <h3
                 className="mb-4 text-xs font-semibold uppercase tracking-widest"
-                style={{ color: '#6B7C82' }}
+                style={{ color: 'var(--color-text-muted)' }}
               >
                 Dodijeljeni serviser
               </h3>
               <div className="flex items-center gap-3">
                 <div
                   className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full"
-                  style={{ backgroundColor: 'rgba(44,68,77,0.1)' }}
+                  style={{ backgroundColor: 'rgb(var(--rgb-deep-teal) / 0.1)' }}
                 >
-                  <User className="h-5 w-5" style={{ color: '#2C444D' }} />
+                  <User className="h-5 w-5" style={{ color: 'var(--color-deep-teal)' }} />
                 </div>
                 <div>
-                  <p className="font-semibold text-sm" style={{ color: '#1F2A30' }}>
+                  <p className="font-semibold text-sm" style={{ color: 'var(--color-text-main)' }}>
                     {intervencija.serviser.ime} {intervencija.serviser.prezime}
                   </p>
                   <a
                     href={`tel:${intervencija.serviser.telefon}`}
                     className="flex items-center gap-1 text-xs transition-opacity hover:opacity-70"
-                    style={{ color: '#5A7C83' }}
+                    style={{ color: 'var(--color-celestial-teal)' }}
                   >
                     <Phone className="h-3 w-3" />
                     {intervencija.serviser.telefon}
@@ -242,13 +242,13 @@ export default function IntervencijaDetaljePage({
           <div
             className="rounded-2xl p-5 shadow-card"
             style={{
-              backgroundColor: 'rgba(199, 184, 164, 0.22)',
-              border: '1px solid rgba(204, 182, 142, 0.35)',
+              backgroundColor: 'rgb(var(--rgb-muted-sand) / 0.22)',
+              border: '1px solid rgb(var(--rgb-soft-beige) / 0.35)',
             }}
           >
             <h3
               className="mb-4 text-xs font-semibold uppercase tracking-widest"
-              style={{ color: '#6B7C82' }}
+              style={{ color: 'var(--color-text-muted)' }}
             >
               Informacije
             </h3>
@@ -260,8 +260,8 @@ export default function IntervencijaDetaljePage({
                 { label: 'Kontakt telefon',   value: intervencija.kontaktTelefon },
               ].map(({ label, value }) => (
                 <div key={label} className="flex justify-between gap-2">
-                  <dt style={{ color: '#6B7C82' }}>{label}</dt>
-                  <dd className="text-right font-medium" style={{ color: '#1F2A30' }}>{value}</dd>
+                  <dt style={{ color: 'var(--color-text-muted)' }}>{label}</dt>
+                  <dd className="text-right font-medium" style={{ color: 'var(--color-text-main)' }}>{value}</dd>
                 </div>
               ))}
             </dl>
@@ -271,13 +271,13 @@ export default function IntervencijaDetaljePage({
           <div
             className="rounded-2xl p-5 shadow-card"
             style={{
-              backgroundColor: 'rgba(199, 184, 164, 0.22)',
-              border: '1px solid rgba(204, 182, 142, 0.35)',
+              backgroundColor: 'rgb(var(--rgb-muted-sand) / 0.22)',
+              border: '1px solid rgb(var(--rgb-soft-beige) / 0.35)',
             }}
           >
             <h3
               className="mb-4 text-xs font-semibold uppercase tracking-widest"
-              style={{ color: '#6B7C82' }}
+              style={{ color: 'var(--color-text-muted)' }}
             >
               Akcije
             </h3>

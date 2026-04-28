@@ -10,9 +10,9 @@ interface NivoSnage {
 }
 
 const NIVOI_SNAGE: NivoSnage[] = [
-  { oznaka: 'Slaba lozinka',   boja: '#8B4A2B', minimalniBroj: 0 },
-  { oznaka: 'Srednja lozinka', boja: '#D4B27F', minimalniBroj: 3 },
-  { oznaka: 'Jaka lozinka',    boja: '#2C444D', minimalniBroj: 5 },
+  { oznaka: 'Slaba lozinka',   boja: 'var(--color-mystic-ember)', minimalniBroj: 0 },
+  { oznaka: 'Srednja lozinka', boja: 'var(--color-herbal-gold)', minimalniBroj: 3 },
+  { oznaka: 'Jaka lozinka',    boja: 'var(--color-deep-teal)', minimalniBroj: 5 },
 ];
 
 const UKUPAN_BROJ_TRAKA = 5;
@@ -51,13 +51,13 @@ export function PasswordStrengthIndicator({
               key={i}
               className="h-1 flex-1 rounded-full transition-all duration-300"
               style={{
-                backgroundColor: i < brojIspunjenih ? nivo.boja : '#C7B8A4',
+                backgroundColor: i < brojIspunjenih ? nivo.boja : 'var(--color-muted-sand)',
                 opacity: i < brojIspunjenih ? 1 : 0.35,
               }}
             />
           ))}
         </div>
-        <p className="text-xs" style={{ color: '#6B7C82' }}>
+        <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
           Jačina lozinke:{' '}
           <span className="font-semibold" style={{ color: nivo.boja }}>
             {nivo.oznaka}
@@ -73,13 +73,13 @@ export function PasswordStrengthIndicator({
             return (
               <div key={zahtjev.id} className="flex items-center gap-1.5">
                 {jeIspunjen ? (
-                  <Check className="h-3.5 w-3.5 flex-shrink-0" style={{ color: '#5A7C83' }} />
+                  <Check className="h-3.5 w-3.5 flex-shrink-0" style={{ color: 'var(--color-celestial-teal)' }} />
                 ) : (
-                  <X className="h-3.5 w-3.5 flex-shrink-0" style={{ color: '#8B4A2B' }} />
+                  <X className="h-3.5 w-3.5 flex-shrink-0" style={{ color: 'var(--color-mystic-ember)' }} />
                 )}
                 <span
                   className="text-xs transition-colors duration-200"
-                  style={{ color: jeIspunjen ? '#5A7C83' : '#8B4A2B' }}
+                  style={{ color: jeIspunjen ? 'var(--color-celestial-teal)' : 'var(--color-mystic-ember)' }}
                 >
                   {zahtjev.oznaka}
                 </span>

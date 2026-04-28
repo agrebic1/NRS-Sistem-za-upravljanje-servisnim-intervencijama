@@ -16,33 +16,33 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 // All hover states handled via Tailwind — no JS event handlers needed.
 const VARIANT_CLASSES: Record<ButtonVariant, string> = {
   primary: [
-    'bg-[#2C444D] text-white',
-    'hover:bg-[#5A7C83]',
-    'disabled:opacity-50 disabled:hover:bg-[#2C444D]',
+    'bg-deep-teal text-white',
+    'hover:bg-celestial-teal',
+    'disabled:opacity-50 disabled:hover:bg-deep-teal',
     'transition-colors duration-200',
   ].join(' '),
   secondary: [
-    'bg-transparent text-[#2C444D]',
-    'border border-[#CCB68E]',
-    'hover:border-[#5A7C83] hover:bg-[#5A7C83]/5',
+    'bg-transparent text-deep-teal',
+    'border border-soft-beige',
+    'hover:border-celestial-teal hover:bg-celestial-teal/5',
     'disabled:opacity-50',
     'transition-colors duration-200',
   ].join(' '),
   danger: [
-    'bg-[#8B4A2B] text-white',
-    'hover:bg-[#8B4A2B]/80',
+    'bg-mystic-ember text-white',
+    'hover:bg-mystic-ember/80',
     'disabled:opacity-50',
     'transition-colors duration-200',
   ].join(' '),
   ghost: [
-    'bg-transparent text-[#6B7C82]',
-    'hover:bg-[#C7B8A4]/30 hover:text-[#1F2A30]',
+    'bg-transparent text-text-muted',
+    'hover:bg-muted-sand/30 hover:text-text-main',
     'disabled:opacity-50',
     'transition-colors duration-200',
   ].join(' '),
   outline: [
-    'bg-transparent border-2 border-[#2C444D] text-[#2C444D]',
-    'hover:bg-[#2C444D] hover:text-white',
+    'bg-transparent border-2 border-deep-teal text-deep-teal',
+    'hover:bg-deep-teal hover:text-white',
     'disabled:opacity-50',
     'transition-colors duration-200',
   ].join(' '),
@@ -70,7 +70,7 @@ export function Button({
       disabled={isLoading || disabled}
       className={[
         'inline-flex items-center justify-center gap-2 font-semibold',
-        'focus:outline-none focus:ring-2 focus:ring-[#5A7C83]/40 focus:ring-offset-2',
+        'focus:outline-none focus:ring-2 focus:ring-celestial-teal/40 focus:ring-offset-2',
         'disabled:cursor-not-allowed',
         VARIANT_CLASSES[variant],
         SIZE_CLASSES[size],

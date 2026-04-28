@@ -18,7 +18,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         <label
           htmlFor={inputId}
           className="text-sm font-medium"
-          style={{ color: '#1F2A30' }}
+          style={{ color: 'var(--color-text-main)' }}
         >
           {label}
         </label>
@@ -29,18 +29,18 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             {...props}
             className={[
               'w-full rounded-xl border px-4 py-2.5 text-sm transition-all duration-200',
-              'placeholder:text-[#6B7C82]/60',
+              'placeholder:text-text-muted/60',
               'focus:outline-none focus:ring-2',
               'disabled:cursor-not-allowed disabled:opacity-50',
               endAdornment ? 'pr-11' : '',
               error
-                ? 'border-[#8B4A2B] bg-[#8B4A2B]/5 focus:ring-[#8B4A2B]/25 focus:border-[#8B4A2B]'
-                : 'border-[#CCB68E] bg-white/60 hover:border-[#5A7C83] focus:border-[#5A7C83] focus:ring-[#5A7C83]/20',
+                ? 'border-mystic-ember bg-mystic-ember/5 focus:ring-mystic-ember/25 focus:border-mystic-ember'
+                : 'border-soft-beige bg-white/60 hover:border-celestial-teal focus:border-celestial-teal focus:ring-celestial-teal/20',
               className,
             ]
               .filter(Boolean)
               .join(' ')}
-            style={{ color: '#1F2A30' }}
+            style={{ color: 'var(--color-text-main)' }}
           />
           {endAdornment && (
             <div className="absolute right-3.5 top-1/2 -translate-y-1/2">

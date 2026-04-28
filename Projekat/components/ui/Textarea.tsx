@@ -32,7 +32,7 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
         <label
           htmlFor={textareaId}
           className="text-sm font-medium"
-          style={{ color: '#1F2A30' }}
+          style={{ color: 'var(--color-text-main)' }}
         >
           {label}
         </label>
@@ -42,23 +42,23 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           {...props}
           className={[
             'w-full resize-none rounded-xl border px-4 py-2.5 text-sm transition-all duration-200',
-            'placeholder:text-[#6B7C82]/60',
+            'placeholder:text-text-muted/60',
             'focus:outline-none focus:ring-2',
             'disabled:cursor-not-allowed disabled:opacity-50',
             error
-              ? 'border-[#8B4A2B] bg-[#8B4A2B]/5 focus:ring-[#8B4A2B]/25 focus:border-[#8B4A2B]'
-              : 'border-[#CCB68E] bg-white/60 hover:border-[#5A7C83] focus:border-[#5A7C83] focus:ring-[#5A7C83]/20',
+              ? 'border-mystic-ember bg-mystic-ember/5 focus:ring-mystic-ember/25 focus:border-mystic-ember'
+              : 'border-soft-beige bg-white/60 hover:border-celestial-teal focus:border-celestial-teal focus:ring-celestial-teal/20',
           ]
             .filter(Boolean)
             .join(' ')}
-          style={{ color: '#1F2A30' }}
+          style={{ color: 'var(--color-text-main)' }}
         />
         <div className="flex items-center justify-between">
           {error ? <ErrorMessage message={error} /> : <span />}
           {showCharacterCount && maxCharacters !== undefined && (
             <span
               className="text-xs font-medium"
-              style={{ color: isOverLimit ? '#8B4A2B' : '#6B7C82' }}
+              style={{ color: isOverLimit ? 'var(--color-mystic-ember)' : 'var(--color-text-muted)' }}
             >
               {currentLength}/{maxCharacters}
             </span>

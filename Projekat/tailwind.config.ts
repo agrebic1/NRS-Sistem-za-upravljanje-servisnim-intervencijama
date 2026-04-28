@@ -8,15 +8,15 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        'deep-teal':      '#2C444D',
-        'celestial-teal': '#5A7C83',
-        'warm-cream':     '#F2E6D8',
-        'soft-beige':     '#CCB68E',
-        'muted-sand':     '#C7B8A4',
-        'mystic-ember':   '#8B4A2B',
-        'herbal-gold':    '#D4B27F',
-        'text-main':      '#1F2A30',
-        'text-muted':     '#6B7C82',
+        'deep-teal':      'rgb(var(--rgb-deep-teal) / <alpha-value>)',
+        'celestial-teal': 'rgb(var(--rgb-celestial-teal) / <alpha-value>)',
+        'warm-cream':     'rgb(var(--rgb-warm-cream) / <alpha-value>)',
+        'soft-beige':     'rgb(var(--rgb-soft-beige) / <alpha-value>)',
+        'muted-sand':     'rgb(var(--rgb-muted-sand) / <alpha-value>)',
+        'mystic-ember':   'rgb(var(--rgb-mystic-ember) / <alpha-value>)',
+        'herbal-gold':    'rgb(var(--rgb-herbal-gold) / <alpha-value>)',
+        'text-main':      'rgb(var(--rgb-text-main) / <alpha-value>)',
+        'text-muted':     'rgb(var(--rgb-text-muted) / <alpha-value>)',
       },
       keyframes: {
         'spin-gear': {
@@ -48,9 +48,9 @@ const config: Config = {
         'slide-right':       'slide-right 0.35s ease-out both',
       },
       boxShadow: {
-        card:    '0 4px 24px rgba(44, 68, 77, 0.10)',
-        'card-lg': '0 8px 40px rgba(44, 68, 77, 0.14)',
-        glow:    '0 0 0 3px rgba(90, 124, 131, 0.20)',
+        card:    '0 4px 24px rgb(var(--rgb-deep-teal) / 0.10)',
+        'card-lg': '0 8px 40px rgb(var(--rgb-deep-teal) / 0.14)',
+        glow:    '0 0 0 3px rgb(var(--rgb-celestial-teal) / 0.20)',
       },
     },
   },

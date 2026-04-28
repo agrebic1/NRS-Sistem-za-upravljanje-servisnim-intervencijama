@@ -36,17 +36,17 @@ const MOCK_ZADACI: Zadatak[] = [
 ];
 
 const STATS = [
-  { label: 'Ukupno zadataka',   value: 4, color: '#5A7C83', Icon: ClipboardCheck },
-  { label: 'Danas',             value: 3, color: '#D4B27F', Icon: Calendar },
-  { label: 'Završeno ovaj mj.', value: 12, color: '#2C444D', Icon: CheckCircle },
+  { label: 'Ukupno zadataka',   value: 4, color: 'var(--color-celestial-teal)', Icon: ClipboardCheck },
+  { label: 'Danas',             value: 3, color: 'var(--color-herbal-gold)', Icon: Calendar },
+  { label: 'Završeno ovaj mj.', value: 12, color: 'var(--color-deep-teal)', Icon: CheckCircle },
 ];
 
 // ─── Status/priority pieces ───────────────────────────────────────────────────
 
 const STATUS_CONFIG: Record<TaskStatus, { label: string; bg: string; color: string }> = {
-  dodijeljen: { label: 'Dodijeljen', bg: 'rgba(204,182,142,0.2)',   color: '#6B7C82' },
-  u_toku:     { label: 'U toku',    bg: 'rgba(90,124,131,0.15)',   color: '#5A7C83' },
-  zavrsen:    { label: 'Završen',   bg: 'rgba(212,178,127,0.2)',   color: '#D4B27F' },
+  dodijeljen: { label: 'Dodijeljen', bg: 'rgb(var(--rgb-soft-beige) / 0.2)',   color: 'var(--color-text-muted)' },
+  u_toku:     { label: 'U toku',    bg: 'rgb(var(--rgb-celestial-teal) / 0.15)',   color: 'var(--color-celestial-teal)' },
+  zavrsen:    { label: 'Završen',   bg: 'rgb(var(--rgb-herbal-gold) / 0.2)',   color: 'var(--color-herbal-gold)' },
 };
 
 function TaskRow({ zadatak }: { zadatak: Zadatak }) {
@@ -55,20 +55,20 @@ function TaskRow({ zadatak }: { zadatak: Zadatak }) {
     <li>
       <Link
         href={`/serviser/intervencija/${zadatak.id}`}
-        className="flex items-start gap-4 px-5 py-4 transition-colors duration-150 hover:bg-[#CCB68E]/10"
+        className="flex items-start gap-4 px-5 py-4 transition-colors duration-150 hover:bg-soft-beige/10"
       >
         {/* Priority indicator */}
         <div className="mt-1 flex-shrink-0">
           {zadatak.prioritet === 'hitno' ? (
-            <AlertTriangle className="h-4 w-4" style={{ color: '#8B4A2B' }} />
+            <AlertTriangle className="h-4 w-4" style={{ color: 'var(--color-mystic-ember)' }} />
           ) : (
-            <Clock className="h-4 w-4" style={{ color: '#C7B8A4' }} />
+            <Clock className="h-4 w-4" style={{ color: 'var(--color-muted-sand)' }} />
           )}
         </div>
 
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <p className="font-medium" style={{ color: '#1F2A30' }}>
+            <p className="font-medium" style={{ color: 'var(--color-text-main)' }}>
               {zadatak.naslov}
             </p>
             <span
@@ -80,7 +80,7 @@ function TaskRow({ zadatak }: { zadatak: Zadatak }) {
             {zadatak.prioritet === 'hitno' && (
               <span
                 className="rounded-full px-2.5 py-0.5 text-xs font-semibold"
-                style={{ backgroundColor: 'rgba(139,74,43,0.12)', color: '#8B4A2B' }}
+                style={{ backgroundColor: 'rgb(var(--rgb-mystic-ember) / 0.12)', color: 'var(--color-mystic-ember)' }}
               >
                 Hitno
               </span>
@@ -88,7 +88,7 @@ function TaskRow({ zadatak }: { zadatak: Zadatak }) {
           </div>
           <div
             className="mt-1.5 flex flex-wrap gap-x-4 gap-y-0.5 text-xs"
-            style={{ color: '#6B7C82' }}
+            style={{ color: 'var(--color-text-muted)' }}
           >
             <span className="flex items-center gap-1">
               <Clock className="h-3 w-3" />
@@ -99,12 +99,12 @@ function TaskRow({ zadatak }: { zadatak: Zadatak }) {
               {zadatak.lokacija}
             </span>
           </div>
-          <p className="mt-0.5 text-xs" style={{ color: '#C7B8A4' }}>
+          <p className="mt-0.5 text-xs" style={{ color: 'var(--color-muted-sand)' }}>
             Korisnik: {zadatak.korisnik}
           </p>
         </div>
 
-        <ChevronRight className="mt-1 h-4 w-4 flex-shrink-0" style={{ color: '#C7B8A4' }} />
+        <ChevronRight className="mt-1 h-4 w-4 flex-shrink-0" style={{ color: 'var(--color-muted-sand)' }} />
       </Link>
     </li>
   );
@@ -121,10 +121,10 @@ export default function ServiserDashboardPage() {
     <AppShell uloga="serviser" imeKorisnika="Marko J.">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-2xl font-bold tracking-tight" style={{ color: '#1F2A30' }}>
+        <h1 className="text-2xl font-bold tracking-tight" style={{ color: 'var(--color-text-main)' }}>
           Dobro jutro, Marko!
         </h1>
-        <p className="mt-1 text-sm capitalize" style={{ color: '#6B7C82' }}>
+        <p className="mt-1 text-sm capitalize" style={{ color: 'var(--color-text-muted)' }}>
           {danas} — imate {MOCK_ZADACI.filter((z) => z.status !== 'zavrsen').length} aktivnih zadataka
         </p>
       </div>
@@ -136,13 +136,13 @@ export default function ServiserDashboardPage() {
             key={label}
             className="flex items-center gap-4 rounded-2xl p-5 shadow-card"
             style={{
-              backgroundColor: 'rgba(199, 184, 164, 0.22)',
-              border: '1px solid rgba(204, 182, 142, 0.35)',
+              backgroundColor: 'rgb(var(--rgb-muted-sand) / 0.22)',
+              border: '1px solid rgb(var(--rgb-soft-beige) / 0.35)',
             }}
           >
             <div
               className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl"
-              style={{ backgroundColor: `${color}18` }}
+              style={{ backgroundColor: `color-mix(in srgb, ${color} 10%, transparent)` }}
             >
               <Icon className="h-5 w-5" style={{ color }} />
             </div>
@@ -150,7 +150,7 @@ export default function ServiserDashboardPage() {
               <p className="text-2xl font-bold" style={{ color }}>
                 {value}
               </p>
-              <p className="text-xs" style={{ color: '#6B7C82' }}>
+              <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
                 {label}
               </p>
             </div>
@@ -162,27 +162,27 @@ export default function ServiserDashboardPage() {
       <div
         className="rounded-2xl shadow-card"
         style={{
-          backgroundColor: 'rgba(199, 184, 164, 0.22)',
-          border: '1px solid rgba(204, 182, 142, 0.35)',
+          backgroundColor: 'rgb(var(--rgb-muted-sand) / 0.22)',
+          border: '1px solid rgb(var(--rgb-soft-beige) / 0.35)',
         }}
       >
         <div
           className="flex items-center justify-between px-5 py-4"
-          style={{ borderBottom: '1px solid rgba(204, 182, 142, 0.3)' }}
+          style={{ borderBottom: '1px solid rgb(var(--rgb-soft-beige) / 0.3)' }}
         >
-          <h2 className="font-semibold" style={{ color: '#1F2A30' }}>
+          <h2 className="font-semibold" style={{ color: 'var(--color-text-main)' }}>
             Zadaci za danas
           </h2>
           <Link
             href="/serviser/zadaci"
             className="flex items-center gap-1 text-sm font-medium transition-opacity hover:opacity-70"
-            style={{ color: '#5A7C83' }}
+            style={{ color: 'var(--color-celestial-teal)' }}
           >
             Svi zadaci <ChevronRight className="h-4 w-4" />
           </Link>
         </div>
 
-        <ul className="divide-y" style={{ borderColor: 'rgba(204, 182, 142, 0.25)' }}>
+        <ul className="divide-y" style={{ borderColor: 'rgb(var(--rgb-soft-beige) / 0.25)' }}>
           {MOCK_ZADACI.map((zadatak) => (
             <TaskRow key={zadatak.id} zadatak={zadatak} />
           ))}

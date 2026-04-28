@@ -1,3 +1,46 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --rgb-deep-teal: 44 68 77;
+  --rgb-celestial-teal: 90 124 131;
+  --rgb-warm-cream: 242 230 216;
+  --rgb-soft-beige: 204 182 142;
+  --rgb-muted-sand: 199 184 164;
+  --rgb-mystic-ember: 139 74 43;
+  --rgb-herbal-gold: 212 178 127;
+  --rgb-text-main: 31 42 48;
+  --rgb-text-muted: 107 124 130;
+
+  --color-deep-teal: rgb(var(--rgb-deep-teal));
+  --color-celestial-teal: rgb(var(--rgb-celestial-teal));
+  --color-warm-cream: rgb(var(--rgb-warm-cream));
+  --color-soft-beige: rgb(var(--rgb-soft-beige));
+  --color-muted-sand: rgb(var(--rgb-muted-sand));
+  --color-mystic-ember: rgb(var(--rgb-mystic-ember));
+  --color-herbal-gold: rgb(var(--rgb-herbal-gold));
+  --color-text-main: rgb(var(--rgb-text-main));
+  --color-text-muted: rgb(var(--rgb-text-muted));
+  --color-white: #fff;
+
+  --surface-page: var(--color-warm-cream);
+  --surface-card: rgb(var(--rgb-muted-sand) / 0.22);
+  --surface-card-strong: rgb(var(--rgb-muted-sand) / 0.45);
+  --surface-panel: rgb(255 255 255 / 0.45);
+  --surface-info: rgb(var(--rgb-celestial-teal) / 0.08);
+  --surface-warning: rgb(var(--rgb-mystic-ember) / 0.06);
+  --surface-success: rgb(var(--rgb-herbal-gold) / 0.15);
+
+  --border-soft: rgb(var(--rgb-soft-beige) / 0.35);
+  --border-soft-strong: rgb(var(--rgb-soft-beige) / 0.4);
+  --border-warning: rgb(var(--rgb-mystic-ember) / 0.25);
+  --border-info: rgb(var(--rgb-celestial-teal) / 0.2);
+
+  --text-primary: var(--color-text-main);
+  --text-secondary: var(--color-text-muted);
+  --brand-primary: var(--color-deep-teal);
+  --brand-secondary: var(--color-celestial-teal);
+  --brand-accent: var(--color-herbal-gold);
+  --brand-danger: var(--color-mystic-ember);
+}
