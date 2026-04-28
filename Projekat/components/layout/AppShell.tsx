@@ -144,6 +144,19 @@ export function AppShell({ children, uloga, imeKorisnika }: AppShellProps) {
                 {OZNAKA_ULOGE[uloga]}
               </p>
             </div>
+            <button
+              type="button"
+              onClick={odjaviKorisnika}
+              disabled={jeOdjavaUToku}
+              className="inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60"
+              style={{
+                color: 'var(--first-senary)',
+                backgroundColor: 'rgb(var(--first-senary-rgb) / 0.08)',
+              }}
+            >
+              <LogOut className="h-4 w-4" />
+              {jeOdjavaUToku ? 'Odjavljivanje...' : 'Odjava'}
+            </button>
           </div>
 
           <button
