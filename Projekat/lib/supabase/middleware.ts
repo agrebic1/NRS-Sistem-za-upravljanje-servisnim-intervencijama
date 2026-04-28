@@ -1,23 +1,18 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { type NextRequest, NextResponse } from 'next/server';
 
-// Mora se zvati updateSession i imati export
 export async function updateSession(zahtjev: NextRequest) {
-  let supabaseOdgovor = NextResponse.next({ request: zahtjev });
+  try {
+    let supabaseOdgovor = NextResponse.next({ request: zahtjev });
 
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-  // Ako varijable fale, middleware će pasti sa 500 greškom. 
-  // Ovo osigurava da imamo vrijednosti prije nego pokrenemo klijenta.
-  if (!url || !key) {
-     return { supabaseResponse: supabaseOdgovor, user: null }; 
-  }
-  
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
+    if (!url || !key) {
+      return { supabaseResponse: supabaseOdgovor, user: null };
+    }
+
+    const supabase = createServerClient(url, key, {
       cookies: {
         getAll() {
           return zahtjev.cookies.getAll();
@@ -32,11 +27,17 @@ export async function updateSession(zahtjev: NextRequest) {
           );
         },
       },
-    }
-  );
+    });
 
-  // Dobijamo korisnika da bi ga root middleware mogao provjeriti
-  const { data: { user } } = await supabase.auth.getUser();
+    // Koristimo getUser() - ovo je sigurno
+    const { data: { user } } = await supabase.auth.getUser();
 
-  return { supabaseResponse: supabaseOdgovor, user };
+    return { supabaseResponse: supabaseOdgovor, user };
+  } catch (e) {
+    // AKO SVE PUKNE, VRATI SAMO ODGOVOR DA STRANICA NE BUDE 500
+    return { 
+      supabaseResponse: NextResponse.next({ request: zahtjev }), 
+      user: null 
+    };
+  }
 }
