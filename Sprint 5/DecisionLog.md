@@ -98,3 +98,18 @@ Sistem za upravljanje servisnim intervencijama obuhvata različite tipove korisn
 - prijava interesa za pružanje usluga (za korisnike koji žele postati serviseri, tj. da ponude svoje usluge na stranici)
 
 Ovim pristupom sistem postaje intuitivniji i pristupačniji, jer korisnik odmah na početku može izabrati tok koji odgovara njegovoj namjeri. Također, ovaj model omogućava veću fleksibilnost i inkluzivnost sistema, jer podržava različite tipove korisnika i njihove potrebe bez komplikovane navigacije. Ova odluka direktno utiče na strukturu frontend-a, jer definiše landing stranicu kao centralni UX element i polaznu tačku svih korisničkih tokova u aplikaciji.
+
+
+## Odluka #05 - Naziv odluke
+
+| Polje | Opis |
+|-------|------|
+| ID odluke | |
+| Datum | |
+| Kratak naziv odluke | |
+| Opis problema ili pitanja | |
+| Razmatrane opcije | |
+| Odabrana opcija | |
+| Razlog izbora | |
+| Posljedice odluke | |
+| Status odluke | |
