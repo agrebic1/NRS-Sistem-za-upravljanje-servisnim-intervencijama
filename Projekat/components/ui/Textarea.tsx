@@ -32,7 +32,7 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
         <label
           htmlFor={textareaId}
           className="text-sm font-medium"
-          style={{ color: 'var(--color-text-main)' }}
+          style={{ color: 'var(--first-octonary)' }}
         >
           {label}
         </label>
@@ -51,14 +51,14 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           ]
             .filter(Boolean)
             .join(' ')}
-          style={{ color: 'var(--color-text-main)' }}
+          style={{ color: 'var(--first-octonary)' }}
         />
         <div className="flex items-center justify-between">
           {error ? <ErrorMessage message={error} /> : <span />}
           {showCharacterCount && maxCharacters !== undefined && (
             <span
               className="text-xs font-medium"
-              style={{ color: isOverLimit ? 'var(--color-mystic-ember)' : 'var(--color-text-muted)' }}
+              style={{ color: isOverLimit ? 'var(--first-senary)' : 'var(--first-nonary)' }}
             >
               {currentLength}/{maxCharacters}
             </span>

@@ -27,9 +27,9 @@ interface KorisnikSistema {
 }
 
 const BADGE_STATUSA: Record<StatusKorisnika, { oznaka: string; pozadina: string; boja: string }> = {
-  aktivan: { oznaka: 'Aktivan', pozadina: 'rgb(var(--rgb-celestial-teal) / 0.15)', boja: 'var(--color-celestial-teal)' },
-  neaktivan: { oznaka: 'Neaktivan', pozadina: 'rgb(var(--rgb-herbal-gold) / 0.2)', boja: 'var(--color-herbal-gold)' },
-  suspendovan: { oznaka: 'Suspendovan', pozadina: 'rgb(var(--rgb-mystic-ember) / 0.12)', boja: 'var(--color-mystic-ember)' },
+  aktivan: { oznaka: 'Aktivan', pozadina: 'rgb(var(--first-secondary-rgb) / 0.15)', boja: 'var(--first-secondary)' },
+  neaktivan: { oznaka: 'Neaktivan', pozadina: 'rgb(var(--first-septenary-rgb) / 0.2)', boja: 'var(--first-septenary)' },
+  suspendovan: { oznaka: 'Suspendovan', pozadina: 'rgb(var(--first-senary-rgb) / 0.12)', boja: 'var(--first-senary)' },
 };
 
 export default function AdminPage() {
@@ -63,23 +63,23 @@ export default function AdminPage() {
 
   const kpiKartice = useMemo(
     () => [
-      { oznaka: 'Ukupno korisnika', vrijednost: korisnici.length, boja: 'var(--color-deep-teal)', Ikona: Users },
+      { oznaka: 'Ukupno korisnika', vrijednost: korisnici.length, boja: 'var(--first-primary)', Ikona: Users },
       {
         oznaka: 'Aktivni',
         vrijednost: korisnici.filter((korisnik) => korisnik.status === 'aktivan').length,
-        boja: 'var(--color-celestial-teal)',
+        boja: 'var(--first-secondary)',
         Ikona: UserCheck,
       },
       {
         oznaka: 'Neaktivni',
         vrijednost: korisnici.filter((korisnik) => korisnik.status === 'neaktivan').length,
-        boja: 'var(--color-herbal-gold)',
+        boja: 'var(--first-septenary)',
         Ikona: UserX,
       },
       {
         oznaka: 'Suspendovani',
         vrijednost: korisnici.filter((korisnik) => korisnik.status === 'suspendovan').length,
-        boja: 'var(--color-mystic-ember)',
+        boja: 'var(--first-senary)',
         Ikona: ShieldOff,
       },
     ],
@@ -90,10 +90,10 @@ export default function AdminPage() {
     <AppShell uloga="admin" imeKorisnika="Administrator">
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight" style={{ color: 'var(--color-text-main)' }}>
+          <h1 className="text-2xl font-bold tracking-tight" style={{ color: 'var(--first-octonary)' }}>
             Pregled sistema
           </h1>
-          <p className="mt-1 text-sm" style={{ color: 'var(--color-text-muted)' }}>
+          <p className="mt-1 text-sm" style={{ color: 'var(--first-nonary)' }}>
             Upravljanje korisnicima i podesavanjima sistema.
           </p>
         </div>
@@ -125,8 +125,8 @@ export default function AdminPage() {
             key={oznaka}
             className="flex flex-col gap-3 rounded-2xl p-5 shadow-card"
             style={{
-              backgroundColor: 'rgb(var(--rgb-muted-sand) / 0.22)',
-              border: '1px solid rgb(var(--rgb-soft-beige) / 0.35)',
+              backgroundColor: 'rgb(var(--first-quinary-rgb) / 0.22)',
+              border: '1px solid rgb(var(--first-quaternary-rgb) / 0.35)',
             }}
           >
             <div
@@ -139,7 +139,7 @@ export default function AdminPage() {
               <p className="text-2xl font-bold" style={{ color: boja }}>
                 {vrijednost}
               </p>
-              <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
+              <p className="text-xs" style={{ color: 'var(--first-nonary)' }}>
                 {oznaka}
               </p>
             </div>
@@ -150,21 +150,21 @@ export default function AdminPage() {
       <div
         className="rounded-2xl shadow-card"
         style={{
-          backgroundColor: 'rgb(var(--rgb-muted-sand) / 0.22)',
-          border: '1px solid rgb(var(--rgb-soft-beige) / 0.35)',
+          backgroundColor: 'rgb(var(--first-quinary-rgb) / 0.22)',
+          border: '1px solid rgb(var(--first-quaternary-rgb) / 0.35)',
         }}
       >
         <div
           className="flex items-center justify-between px-5 py-4"
-          style={{ borderBottom: '1px solid rgb(var(--rgb-soft-beige) / 0.3)' }}
+          style={{ borderBottom: '1px solid rgb(var(--first-quaternary-rgb) / 0.3)' }}
         >
-          <h2 className="font-semibold" style={{ color: 'var(--color-text-main)' }}>
+          <h2 className="font-semibold" style={{ color: 'var(--first-octonary)' }}>
             Korisnici sistema
           </h2>
           <Link
             href="/admin/korisnici"
             className="flex items-center gap-1 text-sm font-medium transition-opacity hover:opacity-70"
-            style={{ color: 'var(--color-celestial-teal)' }}
+            style={{ color: 'var(--first-secondary)' }}
           >
             Svi korisnici <ChevronRight className="h-4 w-4" />
           </Link>
@@ -174,9 +174,9 @@ export default function AdminPage() {
           <div
             className="mx-5 mt-4 rounded-xl border px-4 py-3 text-sm"
             style={{
-              borderColor: 'rgb(var(--rgb-mystic-ember) / 0.25)',
-              backgroundColor: 'rgb(var(--rgb-mystic-ember) / 0.06)',
-              color: 'var(--color-mystic-ember)',
+              borderColor: 'rgb(var(--first-senary-rgb) / 0.25)',
+              backgroundColor: 'rgb(var(--first-senary-rgb) / 0.06)',
+              color: 'var(--first-senary)',
             }}
           >
             {greska}
@@ -186,22 +186,22 @@ export default function AdminPage() {
         <div className="hidden overflow-x-auto sm:block">
           <table className="w-full text-sm">
             <thead>
-              <tr style={{ borderBottom: '1px solid rgb(var(--rgb-soft-beige) / 0.25)' }}>
+              <tr style={{ borderBottom: '1px solid rgb(var(--first-quaternary-rgb) / 0.25)' }}>
                 {['Ime i prezime', 'Email', 'Uloga', 'Status', 'Registrovan', ''].map((zaglavlje) => (
                   <th
                     key={zaglavlje}
                     className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider"
-                    style={{ color: 'var(--color-text-muted)' }}
+                    style={{ color: 'var(--first-nonary)' }}
                   >
                     {zaglavlje}
                   </th>
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y" style={{ borderColor: 'rgb(var(--rgb-soft-beige) / 0.2)' }}>
+            <tbody className="divide-y" style={{ borderColor: 'rgb(var(--first-quaternary-rgb) / 0.2)' }}>
               {ucitava && (
                 <tr>
-                  <td colSpan={6} className="px-5 py-8 text-center" style={{ color: 'var(--color-text-muted)' }}>
+                  <td colSpan={6} className="px-5 py-8 text-center" style={{ color: 'var(--first-nonary)' }}>
                     Ucitavanje korisnika...
                   </td>
                 </tr>
@@ -209,7 +209,7 @@ export default function AdminPage() {
 
               {!ucitava && korisnici.length === 0 && !greska && (
                 <tr>
-                  <td colSpan={6} className="px-5 py-8 text-center" style={{ color: 'var(--color-text-muted)' }}>
+                  <td colSpan={6} className="px-5 py-8 text-center" style={{ color: 'var(--first-nonary)' }}>
                     Nema korisnika za prikaz.
                   </td>
                 </tr>
@@ -221,13 +221,13 @@ export default function AdminPage() {
 
                   return (
                     <tr key={korisnik.id} className="transition-colors hover:bg-soft-beige/10">
-                      <td className="px-5 py-3.5 font-medium" style={{ color: 'var(--color-text-main)' }}>
+                      <td className="px-5 py-3.5 font-medium" style={{ color: 'var(--first-octonary)' }}>
                         {korisnik.imeIPrezime}
                       </td>
-                      <td className="px-5 py-3.5" style={{ color: 'var(--color-text-muted)' }}>
+                      <td className="px-5 py-3.5" style={{ color: 'var(--first-nonary)' }}>
                         {korisnik.email}
                       </td>
-                      <td className="px-5 py-3.5" style={{ color: 'var(--color-text-muted)' }}>
+                      <td className="px-5 py-3.5" style={{ color: 'var(--first-nonary)' }}>
                         {korisnik.uloga}
                       </td>
                       <td className="px-5 py-3.5">
@@ -238,14 +238,14 @@ export default function AdminPage() {
                           {badge.oznaka}
                         </span>
                       </td>
-                      <td className="px-5 py-3.5" style={{ color: 'var(--color-text-muted)' }}>
+                      <td className="px-5 py-3.5" style={{ color: 'var(--first-nonary)' }}>
                         {korisnik.datumRegistracije}
                       </td>
                       <td className="px-5 py-3.5 text-right">
                         <Link
                           href={`/admin/korisnici/${korisnik.id}`}
                           className="text-xs font-medium transition-opacity hover:opacity-70"
-                          style={{ color: 'var(--color-celestial-teal)' }}
+                          style={{ color: 'var(--first-secondary)' }}
                         >
                           Uredi
                         </Link>
@@ -257,15 +257,15 @@ export default function AdminPage() {
           </table>
         </div>
 
-        <ul className="divide-y sm:hidden" style={{ borderColor: 'rgb(var(--rgb-soft-beige) / 0.25)' }}>
+        <ul className="divide-y sm:hidden" style={{ borderColor: 'rgb(var(--first-quaternary-rgb) / 0.25)' }}>
           {ucitava && (
-            <li className="px-5 py-6 text-center text-sm" style={{ color: 'var(--color-text-muted)' }}>
+            <li className="px-5 py-6 text-center text-sm" style={{ color: 'var(--first-nonary)' }}>
               Ucitavanje korisnika...
             </li>
           )}
 
           {!ucitava && korisnici.length === 0 && !greska && (
-            <li className="px-5 py-6 text-center text-sm" style={{ color: 'var(--color-text-muted)' }}>
+            <li className="px-5 py-6 text-center text-sm" style={{ color: 'var(--first-nonary)' }}>
               Nema korisnika za prikaz.
             </li>
           )}
@@ -277,10 +277,10 @@ export default function AdminPage() {
               return (
                 <li key={korisnik.id} className="flex items-center justify-between px-5 py-4">
                   <div>
-                    <p className="font-medium" style={{ color: 'var(--color-text-main)' }}>
+                    <p className="font-medium" style={{ color: 'var(--first-octonary)' }}>
                       {korisnik.imeIPrezime}
                     </p>
-                    <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
+                    <p className="text-xs" style={{ color: 'var(--first-nonary)' }}>
                       {korisnik.email}
                     </p>
                   </div>

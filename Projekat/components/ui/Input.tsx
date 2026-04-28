@@ -18,7 +18,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         <label
           htmlFor={inputId}
           className="text-sm font-medium"
-          style={{ color: 'var(--color-text-main)' }}
+          style={{ color: 'var(--first-octonary)' }}
         >
           {label}
         </label>
@@ -40,7 +40,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             ]
               .filter(Boolean)
               .join(' ')}
-            style={{ color: 'var(--color-text-main)' }}
+            style={{ color: 'var(--first-octonary)' }}
           />
           {endAdornment && (
             <div className="absolute right-3.5 top-1/2 -translate-y-1/2">

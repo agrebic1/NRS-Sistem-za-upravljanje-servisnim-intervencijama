@@ -13,27 +13,27 @@ interface AlertConfig {
 const ALERT_CONFIG: Record<AlertVariant, AlertConfig> = {
   info: {
     icon: <Info className="h-4 w-4 flex-shrink-0" />,
-    bg: 'rgb(var(--rgb-celestial-teal) / 0.08)',
-    border: 'var(--color-celestial-teal)',
-    text: 'var(--color-deep-teal)',
+    bg: 'rgb(var(--first-secondary-rgb) / 0.08)',
+    border: 'var(--first-secondary)',
+    text: 'var(--first-primary)',
   },
   warning: {
     icon: <AlertTriangle className="h-4 w-4 flex-shrink-0" />,
-    bg: 'rgb(var(--rgb-herbal-gold) / 0.15)',
-    border: 'var(--color-herbal-gold)',
-    text: 'var(--color-text-main)',
+    bg: 'rgb(var(--first-septenary-rgb) / 0.15)',
+    border: 'var(--first-septenary)',
+    text: 'var(--first-octonary)',
   },
   error: {
     icon: <XCircle className="h-4 w-4 flex-shrink-0" />,
-    bg: 'rgb(var(--rgb-mystic-ember) / 0.08)',
-    border: 'var(--color-mystic-ember)',
-    text: 'var(--color-mystic-ember)',
+    bg: 'rgb(var(--first-senary-rgb) / 0.08)',
+    border: 'var(--first-senary)',
+    text: 'var(--first-senary)',
   },
   success: {
     icon: <CheckCircle className="h-4 w-4 flex-shrink-0" />,
-    bg: 'rgb(var(--rgb-herbal-gold) / 0.15)',
-    border: 'var(--color-herbal-gold)',
-    text: 'var(--color-text-main)',
+    bg: 'rgb(var(--first-septenary-rgb) / 0.15)',
+    border: 'var(--first-septenary)',
+    text: 'var(--first-octonary)',
   },
 };
 

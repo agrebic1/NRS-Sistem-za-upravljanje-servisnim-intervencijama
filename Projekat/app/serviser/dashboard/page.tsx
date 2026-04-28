@@ -36,17 +36,17 @@ const MOCK_ZADACI: Zadatak[] = [
 ];
 
 const STATS = [
-  { label: 'Ukupno zadataka',   value: 4, color: 'var(--color-celestial-teal)', Icon: ClipboardCheck },
-  { label: 'Danas',             value: 3, color: 'var(--color-herbal-gold)', Icon: Calendar },
-  { label: 'Završeno ovaj mj.', value: 12, color: 'var(--color-deep-teal)', Icon: CheckCircle },
+  { label: 'Ukupno zadataka',   value: 4, color: 'var(--first-secondary)', Icon: ClipboardCheck },
+  { label: 'Danas',             value: 3, color: 'var(--first-septenary)', Icon: Calendar },
+  { label: 'Završeno ovaj mj.', value: 12, color: 'var(--first-primary)', Icon: CheckCircle },
 ];
 
 // ─── Status/priority pieces ───────────────────────────────────────────────────
 
 const STATUS_CONFIG: Record<TaskStatus, { label: string; bg: string; color: string }> = {
-  dodijeljen: { label: 'Dodijeljen', bg: 'rgb(var(--rgb-soft-beige) / 0.2)',   color: 'var(--color-text-muted)' },
-  u_toku:     { label: 'U toku',    bg: 'rgb(var(--rgb-celestial-teal) / 0.15)',   color: 'var(--color-celestial-teal)' },
-  zavrsen:    { label: 'Završen',   bg: 'rgb(var(--rgb-herbal-gold) / 0.2)',   color: 'var(--color-herbal-gold)' },
+  dodijeljen: { label: 'Dodijeljen', bg: 'rgb(var(--first-quaternary-rgb) / 0.2)',   color: 'var(--first-nonary)' },
+  u_toku:     { label: 'U toku',    bg: 'rgb(var(--first-secondary-rgb) / 0.15)',   color: 'var(--first-secondary)' },
+  zavrsen:    { label: 'Završen',   bg: 'rgb(var(--first-septenary-rgb) / 0.2)',   color: 'var(--first-septenary)' },
 };
 
 function TaskRow({ zadatak }: { zadatak: Zadatak }) {
@@ -60,15 +60,15 @@ function TaskRow({ zadatak }: { zadatak: Zadatak }) {
         {/* Priority indicator */}
         <div className="mt-1 flex-shrink-0">
           {zadatak.prioritet === 'hitno' ? (
-            <AlertTriangle className="h-4 w-4" style={{ color: 'var(--color-mystic-ember)' }} />
+            <AlertTriangle className="h-4 w-4" style={{ color: 'var(--first-senary)' }} />
           ) : (
-            <Clock className="h-4 w-4" style={{ color: 'var(--color-muted-sand)' }} />
+            <Clock className="h-4 w-4" style={{ color: 'var(--first-quinary)' }} />
           )}
         </div>
 
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <p className="font-medium" style={{ color: 'var(--color-text-main)' }}>
+            <p className="font-medium" style={{ color: 'var(--first-octonary)' }}>
               {zadatak.naslov}
             </p>
             <span
@@ -80,7 +80,7 @@ function TaskRow({ zadatak }: { zadatak: Zadatak }) {
             {zadatak.prioritet === 'hitno' && (
               <span
                 className="rounded-full px-2.5 py-0.5 text-xs font-semibold"
-                style={{ backgroundColor: 'rgb(var(--rgb-mystic-ember) / 0.12)', color: 'var(--color-mystic-ember)' }}
+                style={{ backgroundColor: 'rgb(var(--first-senary-rgb) / 0.12)', color: 'var(--first-senary)' }}
               >
                 Hitno
               </span>
@@ -88,7 +88,7 @@ function TaskRow({ zadatak }: { zadatak: Zadatak }) {
           </div>
           <div
             className="mt-1.5 flex flex-wrap gap-x-4 gap-y-0.5 text-xs"
-            style={{ color: 'var(--color-text-muted)' }}
+            style={{ color: 'var(--first-nonary)' }}
           >
             <span className="flex items-center gap-1">
               <Clock className="h-3 w-3" />
@@ -99,12 +99,12 @@ function TaskRow({ zadatak }: { zadatak: Zadatak }) {
               {zadatak.lokacija}
             </span>
           </div>
-          <p className="mt-0.5 text-xs" style={{ color: 'var(--color-muted-sand)' }}>
+          <p className="mt-0.5 text-xs" style={{ color: 'var(--first-quinary)' }}>
             Korisnik: {zadatak.korisnik}
           </p>
         </div>
 
-        <ChevronRight className="mt-1 h-4 w-4 flex-shrink-0" style={{ color: 'var(--color-muted-sand)' }} />
+        <ChevronRight className="mt-1 h-4 w-4 flex-shrink-0" style={{ color: 'var(--first-quinary)' }} />
       </Link>
     </li>
   );
@@ -121,10 +121,10 @@ export default function ServiserDashboardPage() {
     <AppShell uloga="serviser" imeKorisnika="Marko J.">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-2xl font-bold tracking-tight" style={{ color: 'var(--color-text-main)' }}>
+        <h1 className="text-2xl font-bold tracking-tight" style={{ color: 'var(--first-octonary)' }}>
           Dobro jutro, Marko!
         </h1>
-        <p className="mt-1 text-sm capitalize" style={{ color: 'var(--color-text-muted)' }}>
+        <p className="mt-1 text-sm capitalize" style={{ color: 'var(--first-nonary)' }}>
           {danas} — imate {MOCK_ZADACI.filter((z) => z.status !== 'zavrsen').length} aktivnih zadataka
         </p>
       </div>
@@ -136,8 +136,8 @@ export default function ServiserDashboardPage() {
             key={label}
             className="flex items-center gap-4 rounded-2xl p-5 shadow-card"
             style={{
-              backgroundColor: 'rgb(var(--rgb-muted-sand) / 0.22)',
-              border: '1px solid rgb(var(--rgb-soft-beige) / 0.35)',
+              backgroundColor: 'rgb(var(--first-quinary-rgb) / 0.22)',
+              border: '1px solid rgb(var(--first-quaternary-rgb) / 0.35)',
             }}
           >
             <div
@@ -150,7 +150,7 @@ export default function ServiserDashboardPage() {
               <p className="text-2xl font-bold" style={{ color }}>
                 {value}
               </p>
-              <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
+              <p className="text-xs" style={{ color: 'var(--first-nonary)' }}>
                 {label}
               </p>
             </div>
@@ -162,27 +162,27 @@ export default function ServiserDashboardPage() {
       <div
         className="rounded-2xl shadow-card"
         style={{
-          backgroundColor: 'rgb(var(--rgb-muted-sand) / 0.22)',
-          border: '1px solid rgb(var(--rgb-soft-beige) / 0.35)',
+          backgroundColor: 'rgb(var(--first-quinary-rgb) / 0.22)',
+          border: '1px solid rgb(var(--first-quaternary-rgb) / 0.35)',
         }}
       >
         <div
           className="flex items-center justify-between px-5 py-4"
-          style={{ borderBottom: '1px solid rgb(var(--rgb-soft-beige) / 0.3)' }}
+          style={{ borderBottom: '1px solid rgb(var(--first-quaternary-rgb) / 0.3)' }}
         >
-          <h2 className="font-semibold" style={{ color: 'var(--color-text-main)' }}>
+          <h2 className="font-semibold" style={{ color: 'var(--first-octonary)' }}>
             Zadaci za danas
           </h2>
           <Link
             href="/serviser/zadaci"
             className="flex items-center gap-1 text-sm font-medium transition-opacity hover:opacity-70"
-            style={{ color: 'var(--color-celestial-teal)' }}
+            style={{ color: 'var(--first-secondary)' }}
           >
             Svi zadaci <ChevronRight className="h-4 w-4" />
           </Link>
         </div>
 
-        <ul className="divide-y" style={{ borderColor: 'rgb(var(--rgb-soft-beige) / 0.25)' }}>
+        <ul className="divide-y" style={{ borderColor: 'rgb(var(--first-quaternary-rgb) / 0.25)' }}>
           {MOCK_ZADACI.map((zadatak) => (
             <TaskRow key={zadatak.id} zadatak={zadatak} />
           ))}

@@ -33,18 +33,18 @@ const MOCK_ZAHTJEVI: Zahtjev[] = [
 ];
 
 const STATS = [
-  { label: 'Aktivnih zahtjeva',   value: 2, color: 'var(--color-celestial-teal)', Icon: Clock },
-  { label: 'Hitnih zahtjeva',     value: 1, color: 'var(--color-mystic-ember)', Icon: AlertTriangle },
-  { label: 'Završenih intervenc.', value: 5, color: 'var(--color-herbal-gold)', Icon: CheckCircle },
+  { label: 'Aktivnih zahtjeva',   value: 2, color: 'var(--first-secondary)', Icon: Clock },
+  { label: 'Hitnih zahtjeva',     value: 1, color: 'var(--first-senary)', Icon: AlertTriangle },
+  { label: 'Završenih intervenc.', value: 5, color: 'var(--first-septenary)', Icon: CheckCircle },
 ];
 
 // ─── Status badge ─────────────────────────────────────────────────────────────
 
 const STATUS_BADGE: Record<ZahtjevStatus, { label: string; bg: string; color: string }> = {
-  novi:    { label: 'Novi',    bg: 'rgb(var(--rgb-soft-beige) / 0.2)',   color: 'var(--color-text-muted)' },
-  u_toku:  { label: 'U toku', bg: 'rgb(var(--rgb-celestial-teal) / 0.15)',   color: 'var(--color-celestial-teal)' },
-  zavrsen: { label: 'Završen',bg: 'rgb(var(--rgb-herbal-gold) / 0.2)',   color: 'var(--color-herbal-gold)' },
-  hitno:   { label: 'Hitno',  bg: 'rgb(var(--rgb-mystic-ember) / 0.12)',    color: 'var(--color-mystic-ember)' },
+  novi:    { label: 'Novi',    bg: 'rgb(var(--first-quaternary-rgb) / 0.2)',   color: 'var(--first-nonary)' },
+  u_toku:  { label: 'U toku', bg: 'rgb(var(--first-secondary-rgb) / 0.15)',   color: 'var(--first-secondary)' },
+  zavrsen: { label: 'Završen',bg: 'rgb(var(--first-septenary-rgb) / 0.2)',   color: 'var(--first-septenary)' },
+  hitno:   { label: 'Hitno',  bg: 'rgb(var(--first-senary-rgb) / 0.12)',    color: 'var(--first-senary)' },
 };
 
 function ZahtjevStatusBadge({ status }: { status: ZahtjevStatus }) {
@@ -67,10 +67,10 @@ export default function KorisnikDashboardPage() {
       {/* Page header */}
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight" style={{ color: 'var(--color-text-main)' }}>
+          <h1 className="text-2xl font-bold tracking-tight" style={{ color: 'var(--first-octonary)' }}>
             Dobrodošli, Amina!
           </h1>
-          <p className="mt-1 text-sm" style={{ color: 'var(--color-text-muted)' }}>
+          <p className="mt-1 text-sm" style={{ color: 'var(--first-nonary)' }}>
             Pregled vaših servisnih zahtjeva i intervencija.
           </p>
         </div>
@@ -89,8 +89,8 @@ export default function KorisnikDashboardPage() {
             key={label}
             className="flex items-center gap-4 rounded-2xl p-5 shadow-card"
             style={{
-              backgroundColor: 'rgb(var(--rgb-muted-sand) / 0.22)',
-              border: '1px solid rgb(var(--rgb-soft-beige) / 0.35)',
+              backgroundColor: 'rgb(var(--first-quinary-rgb) / 0.22)',
+              border: '1px solid rgb(var(--first-quaternary-rgb) / 0.35)',
             }}
           >
             <div
@@ -103,7 +103,7 @@ export default function KorisnikDashboardPage() {
               <p className="text-2xl font-bold" style={{ color }}>
                 {value}
               </p>
-              <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
+              <p className="text-xs" style={{ color: 'var(--first-nonary)' }}>
                 {label}
               </p>
             </div>
@@ -115,21 +115,21 @@ export default function KorisnikDashboardPage() {
       <div
         className="rounded-2xl shadow-card"
         style={{
-          backgroundColor: 'rgb(var(--rgb-muted-sand) / 0.22)',
-          border: '1px solid rgb(var(--rgb-soft-beige) / 0.35)',
+          backgroundColor: 'rgb(var(--first-quinary-rgb) / 0.22)',
+          border: '1px solid rgb(var(--first-quaternary-rgb) / 0.35)',
         }}
       >
         <div
           className="flex items-center justify-between px-5 py-4"
-          style={{ borderBottom: '1px solid rgb(var(--rgb-soft-beige) / 0.3)' }}
+          style={{ borderBottom: '1px solid rgb(var(--first-quaternary-rgb) / 0.3)' }}
         >
-          <h2 className="font-semibold" style={{ color: 'var(--color-text-main)' }}>
+          <h2 className="font-semibold" style={{ color: 'var(--first-octonary)' }}>
             Moji zahtjevi
           </h2>
           <Link
             href="/korisnik/intervencije"
             className="flex items-center gap-1 text-sm font-medium transition-opacity hover:opacity-70"
-            style={{ color: 'var(--color-celestial-teal)' }}
+            style={{ color: 'var(--first-secondary)' }}
           >
             Svi zahtjevi <ChevronRight className="h-4 w-4" />
           </Link>
@@ -137,8 +137,8 @@ export default function KorisnikDashboardPage() {
 
         {MOCK_ZAHTJEVI.length === 0 ? (
           <div className="flex flex-col items-center gap-3 py-12 text-center">
-            <FileText className="h-10 w-10" style={{ color: 'var(--color-muted-sand)' }} />
-            <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
+            <FileText className="h-10 w-10" style={{ color: 'var(--first-quinary)' }} />
+            <p className="text-sm" style={{ color: 'var(--first-nonary)' }}>
               Nemate još nijednog zahtjeva.
             </p>
             <Link href="/korisnik/novi_zahtjev">
@@ -146,7 +146,7 @@ export default function KorisnikDashboardPage() {
             </Link>
           </div>
         ) : (
-          <ul className="divide-y" style={{ borderColor: 'rgb(var(--rgb-soft-beige) / 0.25)' }}>
+          <ul className="divide-y" style={{ borderColor: 'rgb(var(--first-quaternary-rgb) / 0.25)' }}>
             {MOCK_ZAHTJEVI.map((zahtjev) => (
               <li key={zahtjev.id}>
                 <Link
@@ -155,17 +155,17 @@ export default function KorisnikDashboardPage() {
                 >
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <p className="truncate font-medium" style={{ color: 'var(--color-text-main)' }}>
+                      <p className="truncate font-medium" style={{ color: 'var(--first-octonary)' }}>
                         {zahtjev.naslov}
                       </p>
                       <ZahtjevStatusBadge status={zahtjev.status} />
                     </div>
-                    <div className="mt-1 flex flex-wrap gap-x-4 gap-y-0.5 text-xs" style={{ color: 'var(--color-text-muted)' }}>
+                    <div className="mt-1 flex flex-wrap gap-x-4 gap-y-0.5 text-xs" style={{ color: 'var(--first-nonary)' }}>
                       <span>{zahtjev.datum}</span>
                       {zahtjev.serviser && <span>Serviser: {zahtjev.serviser}</span>}
                     </div>
                   </div>
-                  <ChevronRight className="h-4 w-4 flex-shrink-0" style={{ color: 'var(--color-muted-sand)' }} />
+                  <ChevronRight className="h-4 w-4 flex-shrink-0" style={{ color: 'var(--first-quinary)' }} />
                 </Link>
               </li>
             ))}
