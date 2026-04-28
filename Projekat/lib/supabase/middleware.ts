@@ -13,7 +13,7 @@ export async function updateSession(zahtjev: NextRequest) {
         getAll() {
           return zahtjev.cookies.getAll();
         },
-        setAll(kolaciciZaPostavljanje) {
+        setAll(kolaciciZaPostavljanje: { name: string; value: string; options: CookieOptions }[]) {
           kolaciciZaPostavljanje.forEach(({ name, value }) =>
             zahtjev.cookies.set(name, value)
           );
