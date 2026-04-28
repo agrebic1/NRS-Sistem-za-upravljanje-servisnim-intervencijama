@@ -30,9 +30,9 @@ export async function updateSession(zahtjev: NextRequest) {
     });
 
     // Koristimo getUser() - ovo je sigurno
-    const { data: { user } } = await supabase.auth.getUser();
+    // const { data: { user } } = await supabase.auth.getUser();
 
-    return { supabaseResponse: supabaseOdgovor, user };
+    return { supabaseResponse: supabaseOdgovor, user: null };
   } catch (e) {
     // AKO SVE PUKNE, VRATI SAMO ODGOVOR DA STRANICA NE BUDE 500
     return { 
