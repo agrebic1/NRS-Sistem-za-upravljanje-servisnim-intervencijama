@@ -80,7 +80,7 @@ Sistem uključuje više različitih tipova korisnika, od kojih svaki ima specifi
 | Polje | Opis |
 |-------|------|
 | ID odluke | DL-010 |
-| Datum | 2026-04-28 |
+| Datum | 28.04.2026. |
 | Kratak naziv odluke | Landing page kao centralna ulazna tačka |
 | Opis problema ili pitanja | Kako organizovati ulaz u sistem za različite tipove korisnika? |
 | Razmatrane opcije | 1. Direktan pristup login/registraciji  2. Više odvojenih ulaznih stranica  3. Jedna centralna landing stranica sa izborom |
