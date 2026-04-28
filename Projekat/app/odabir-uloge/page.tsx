@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Settings, User, Wrench, Shield, Crown, ChevronRight, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
@@ -48,6 +48,7 @@ const KARTICE_ULOGA: KarticaUloge[] = [
 
 export default function OdabirUlogePage() {
   const router = useRouter();
+  const odjavaLockRef = useRef(false);
 
   const [dostupneUloge,  setDostupneUloge]  = useState<UserRole[]>([]);
   const [odabranaUloga,  setOdabranaUloga]  = useState<UserRole | null>(null);
@@ -96,9 +97,17 @@ export default function OdabirUlogePage() {
   }
 
   async function odjaviKorisnika() {
+    if (odjavaLockRef.current) return;
+
+    odjavaLockRef.current = true;
     setJeNavigacija(true);
-    await odjaviSe();
-    router.replace('/auth/login');
+    try {
+      await odjaviSe();
+      router.replace('/auth/login');
+    } finally {
+      odjavaLockRef.current = false;
+      setJeNavigacija(false);
+    }
   }
 
   if (jeUcitavanje) {

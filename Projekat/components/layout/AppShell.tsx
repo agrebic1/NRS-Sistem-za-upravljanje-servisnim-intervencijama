@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
@@ -91,13 +91,23 @@ interface AppShellProps {
 export function AppShell({ children, uloga, imeKorisnika }: AppShellProps) {
   const [jeMenuOtvoren, setJeMenuOtvoren] = useState(false);
   const [jeOdjavaUToku, setJeOdjavaUToku] = useState(false);
+  const odjavaLockRef = useRef(false);
   const router = useRouter();
   const stavkeNavigacije = NAVIGACIJA_PO_ULOZI[uloga] ?? [];
 
   async function odjaviKorisnika() {
+    if (odjavaLockRef.current) return;
+
+    odjavaLockRef.current = true;
     setJeOdjavaUToku(true);
-    await odjaviSe();
-    router.replace('/auth/login');
+
+    try {
+      await odjaviSe();
+      router.replace('/auth/login');
+    } finally {
+      odjavaLockRef.current = false;
+      setJeOdjavaUToku(false);
+    }
   }
 
   return (
@@ -127,18 +137,6 @@ export function AppShell({ children, uloga, imeKorisnika }: AppShellProps) {
         </nav>
 
         <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={odjaviKorisnika}
-            disabled={jeOdjavaUToku}
-            className="hidden items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors hover:bg-soft-beige/30 disabled:cursor-not-allowed disabled:opacity-60 md:inline-flex"
-            style={{ color: 'var(--color-mystic-ember)' }}
-            aria-label="Odjava"
-          >
-            <LogOut className="h-4 w-4" />
-            {jeOdjavaUToku ? 'Odjavljivanje...' : 'Odjava'}
-          </button>
-
           <button
             className="flex h-8 w-8 items-center justify-center rounded-lg transition-colors hover:bg-soft-beige/30"
             style={{ color: 'var(--first-nonary)' }}
