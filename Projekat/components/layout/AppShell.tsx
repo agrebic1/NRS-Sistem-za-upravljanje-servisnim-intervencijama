@@ -128,6 +128,18 @@ export function AppShell({ children, uloga, imeKorisnika }: AppShellProps) {
 
         <div className="flex items-center gap-2">
           <button
+            type="button"
+            onClick={odjaviKorisnika}
+            disabled={jeOdjavaUToku}
+            className="hidden items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors hover:bg-soft-beige/30 disabled:cursor-not-allowed disabled:opacity-60 md:inline-flex"
+            style={{ color: 'var(--color-mystic-ember)' }}
+            aria-label="Odjava"
+          >
+            <LogOut className="h-4 w-4" />
+            {jeOdjavaUToku ? 'Odjavljivanje...' : 'Odjava'}
+          </button>
+
+          <button
             className="flex h-8 w-8 items-center justify-center rounded-lg transition-colors hover:bg-soft-beige/30"
             style={{ color: 'var(--color-text-muted)' }}
             aria-label="Obavještenja"

@@ -1,5 +1,9 @@
 import { createClient } from '@/lib/supabase/server'
 
+function normalizujEmail(email: string) {
+  return email.trim().replace(/^["']+|["']+$/g, '').toLowerCase()
+}
+
 export type RegistracijaParams = {
   email: string
   lozinka: string
@@ -17,8 +21,9 @@ export interface IAuthRepozitorij {
 export class SupabaseAuthRepozitorij implements IAuthRepozitorij {
   async prijaviKorisnika(email: string, lozinka: string) {
     const supabase = createClient()
+    const normalizovanEmail = normalizujEmail(email)
     const { error } = await supabase.auth.signInWithPassword({
-      email,
+      email: normalizovanEmail,
       password: lozinka,
     })
     return { greska: error?.message }
@@ -26,8 +31,9 @@ export class SupabaseAuthRepozitorij implements IAuthRepozitorij {
 
   async registrujKorisnika({ email, lozinka, ime, prezime, uloga }: RegistracijaParams) {
     const supabase = createClient()
+    const normalizovanEmail = normalizujEmail(email)
     const { error } = await supabase.auth.signUp({
-      email,
+      email: normalizovanEmail,
       password: lozinka,
       options: { data: { ime, prezime, uloga } },
     })

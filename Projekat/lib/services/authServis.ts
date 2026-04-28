@@ -1,13 +1,17 @@
 import { z } from 'zod'
 import { type IAuthRepozitorij, type RegistracijaParams, SupabaseAuthRepozitorij } from '@/lib/repositories/authRepozitorij'
 
+function normalizujEmail(email: string) {
+  return email.trim().replace(/^["']+|["']+$/g, '').toLowerCase()
+}
+
 export const prijavaSchema = z.object({
-  email: z.string().email('Neispravna email adresa.'),
+  email: z.string().transform(normalizujEmail).pipe(z.string().email('Neispravna email adresa.')),
   lozinka: z.string().min(6, 'Lozinka mora imati najmanje 6 znakova.'),
 })
 
 export const registracijaSchema = z.object({
-  email: z.string().email('Neispravna email adresa.'),
+  email: z.string().transform(normalizujEmail).pipe(z.string().email('Neispravna email adresa.')),
   lozinka: z.string().min(6, 'Lozinka mora imati najmanje 6 znakova.'),
   ime: z.string().min(1, 'Ime je obavezno.'),
   prezime: z.string().min(1, 'Prezime je obavezno.'),

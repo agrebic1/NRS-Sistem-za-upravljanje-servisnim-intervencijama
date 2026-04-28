@@ -6,6 +6,16 @@ function normalizujEmail(email: string) {
   return email.trim().replace(/^["']|["']$/g, '').toLowerCase();
 }
 
+function mapirajAuthGresku(greska: { message: string; status?: number; code?: string }) {
+  const poruka = greska.message?.toLowerCase() ?? '';
+
+  if (greska.status === 429 || poruka.includes('too many requests') || poruka.includes('rate limit')) {
+    return 'Previše pokušaja registracije. Sačekajte 1-2 minute i pokušajte ponovo.';
+  }
+
+  return greska.message;
+}
+
 // Prijava 
 
 export async function prijaviSeEmailom(podaci: { email: string; lozinka: string }) {
@@ -41,7 +51,7 @@ export async function registrujKorisnika(podaci: {
     password: podaci.lozinka,
   });
 
-  if (greskaAuth) throw new Error(greskaAuth.message);
+  if (greskaAuth) throw new Error(mapirajAuthGresku(greskaAuth));
   if (!authPodaci.user) throw new Error('Kreiranje naloga nije uspjelo');
 
   const { error: greska } = await supabase.from('korisnik_usluge').insert({

@@ -1,5 +1,9 @@
 import { z } from 'zod';
 
+function normalizujEmail(email: string) {
+  return email.trim().replace(/^["']+|["']+$/g, '').toLowerCase();
+}
+
 // ─── Zahtjevi za lozinku (dijele forma i indikator snage) ─────────────────────
 
 export const ZAHTJEVI_LOZINKE = [
@@ -21,7 +25,7 @@ const shemaLozinke = z
 // ─── Shema za prijavu ─────────────────────────────────────────────────────────
 
 export const prijavnaShema = z.object({
-  email:   z.string().min(1, 'Email adresa je obavezna').email('Unesite ispravnu email adresu'),
+  email:   z.string().transform(normalizujEmail).pipe(z.string().min(1, 'Email adresa je obavezna').email('Unesite ispravnu email adresu')),
   lozinka: z.string().min(1, 'Lozinka je obavezna'),
 });
 
@@ -31,7 +35,7 @@ export const registracijskaShema = z
   .object({
     ime:     z.string().min(2, 'Ime mora imati najmanje 2 karaktera').max(50),
     prezime: z.string().min(2, 'Prezime mora imati najmanje 2 karaktera').max(50),
-    email:   z.string().min(1, 'Email adresa je obavezna').email('Unesite ispravnu email adresu'),
+    email:   z.string().transform(normalizujEmail).pipe(z.string().min(1, 'Email adresa je obavezna').email('Unesite ispravnu email adresu')),
     telefon: z
       .string()
       .min(9, 'Unesite ispravan broj telefona')
