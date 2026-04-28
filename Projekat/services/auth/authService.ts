@@ -15,6 +15,16 @@ function jeEmailValidan(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
+function mapirajAuthGresku(greska: { message: string; status?: number; code?: string }) {
+  const poruka = greska.message?.toLowerCase() ?? '';
+
+  if (greska.status === 429 || poruka.includes('too many requests') || poruka.includes('rate limit')) {
+    return 'Previše pokušaja registracije. Sačekajte 1-2 minute i pokušajte ponovo.';
+  }
+
+  return greska.message;
+}
+
 // Prijava 
 
 export async function prijaviSeEmailom(podaci: { email: string; lozinka: string }) {
@@ -78,7 +88,7 @@ export async function registrujKorisnika(podaci: {
     },
   });
 
-  if (greskaAuth) throw new Error(greskaAuth.message);
+  if (greskaAuth) throw new Error(mapirajAuthGresku(greskaAuth));
   if (!authPodaci.user) throw new Error('Kreiranje naloga nije uspjelo');
 
   // Trigger creates the row — only update the phone field which trigger doesn't handle
