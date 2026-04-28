@@ -39,20 +39,20 @@ export async function registrujKorisnika(podaci: {
   const { data: authPodaci, error: greskaAuth } = await supabase.auth.signUp({
     email,
     password: podaci.lozinka,
+    options: {
+      // DB trigger reads these from raw_user_meta_data and inserts into korisnik_usluge
+      data: { ime: podaci.ime, prezime: podaci.prezime, uloga: 'Klijent' },
+    },
   });
 
   if (greskaAuth) throw new Error(greskaAuth.message);
   if (!authPodaci.user) throw new Error('Kreiranje naloga nije uspjelo');
 
-  const { error: greska } = await supabase.from('korisnik_usluge').insert({
-    id_korisnika_usluge: authPodaci.user.id,
-    ime:          podaci.ime,
-    prezime:      podaci.prezime,
-    email,
-    broj_telefona: podaci.telefon,
-  });
-
-  if (greska) throw new Error('Greška pri kreiranju korisničkog profila');
+  // Trigger creates the row — only update the phone field which trigger doesn't handle
+  await supabase
+    .from('korisnik_usluge')
+    .update({ broj_telefona: podaci.telefon })
+    .eq('id_korisnika_usluge', authPodaci.user.id);
 
   return authPodaci;
 }
