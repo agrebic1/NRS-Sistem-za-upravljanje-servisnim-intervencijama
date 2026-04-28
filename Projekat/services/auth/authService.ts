@@ -2,12 +2,17 @@ import { kreirajKlijenta } from '@/lib/supabase/klijent';
 import type { UserRole } from '@/domain/types';
 import { PREUSMJERANJE_PO_ULOZI } from '@/domain/types';
 
+function normalizujEmail(email: string) {
+  return email.trim().replace(/^["']|["']$/g, '').toLowerCase();
+}
+
 // Prijava 
 
 export async function prijaviSeEmailom(podaci: { email: string; lozinka: string }) {
   const supabase = kreirajKlijenta();
+  const email = normalizujEmail(podaci.email);
   const { data, error } = await supabase.auth.signInWithPassword({
-    email:    podaci.email,
+    email,
     password: podaci.lozinka,
   });
 
@@ -29,9 +34,10 @@ export async function registrujKorisnika(podaci: {
   lozinka: string;
 }) {
   const supabase = kreirajKlijenta();
+  const email = normalizujEmail(podaci.email);
 
   const { data: authPodaci, error: greskaAuth } = await supabase.auth.signUp({
-    email:    podaci.email,
+    email,
     password: podaci.lozinka,
   });
 
@@ -42,7 +48,7 @@ export async function registrujKorisnika(podaci: {
     id_korisnika_usluge: authPodaci.user.id,
     ime:          podaci.ime,
     prezime:      podaci.prezime,
-    email:        podaci.email,
+    email,
     broj_telefona: podaci.telefon,
   });
 
