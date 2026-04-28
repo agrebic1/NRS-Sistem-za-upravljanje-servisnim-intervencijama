@@ -70,8 +70,8 @@ function VezaNavigacije({ stavka, onKlik }: { stavka: StavkaNavigacije; onKlik?:
       onClick={onKlik}
       className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors duration-200"
       style={{
-        backgroundColor: jeAktivna ? 'rgb(var(--rgb-deep-teal) / 0.1)' : 'transparent',
-        color:           jeAktivna ? 'var(--color-deep-teal)' : 'var(--color-text-muted)',
+        backgroundColor: jeAktivna ? 'rgb(var(--first-primary-rgb) / 0.1)' : 'transparent',
+        color:           jeAktivna ? 'var(--first-primary)' : 'var(--first-nonary)',
       }}
     >
       <stavka.Ikona className="h-4 w-4 flex-shrink-0" />
@@ -101,21 +101,21 @@ export function AppShell({ children, uloga, imeKorisnika }: AppShellProps) {
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: 'var(--color-warm-cream)' }}>
+    <div className="min-h-screen" style={{ backgroundColor: 'var(--first-tertiary)' }}>
       {/* Gornja traka */}
       <header
         className="sticky top-0 z-40 flex h-14 items-center justify-between px-4 md:px-6"
         style={{
-          backgroundColor: 'rgb(var(--rgb-warm-cream) / 0.92)',
+          backgroundColor: 'rgb(var(--first-tertiary-rgb) / 0.92)',
           backdropFilter:  'blur(12px)',
-          borderBottom:    '1px solid rgb(var(--rgb-soft-beige) / 0.35)',
+          borderBottom:    '1px solid rgb(var(--first-quaternary-rgb) / 0.35)',
         }}
       >
         <Link href={`/${uloga}`} className="flex items-center gap-2">
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg" style={{ backgroundColor: 'var(--color-deep-teal)' }}>
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg" style={{ backgroundColor: 'var(--first-primary)' }}>
             <Settings className="h-4 w-4 text-white" />
           </div>
-          <span className="hidden font-bold tracking-tight sm:block" style={{ color: 'var(--color-text-main)' }}>
+          <span className="hidden font-bold tracking-tight sm:block" style={{ color: 'var(--first-octonary)' }}>
             InterServ
           </span>
         </Link>
@@ -129,7 +129,7 @@ export function AppShell({ children, uloga, imeKorisnika }: AppShellProps) {
         <div className="flex items-center gap-2">
           <button
             className="flex h-8 w-8 items-center justify-center rounded-lg transition-colors hover:bg-soft-beige/30"
-            style={{ color: 'var(--color-text-muted)' }}
+            style={{ color: 'var(--first-nonary)' }}
             aria-label="Obavještenja"
           >
             <Bell className="h-4 w-4" />
@@ -137,10 +137,10 @@ export function AppShell({ children, uloga, imeKorisnika }: AppShellProps) {
 
           <div className="hidden items-center gap-2 md:flex">
             <div className="text-right">
-              <p className="text-xs font-semibold leading-none" style={{ color: 'var(--color-text-main)' }}>
+              <p className="text-xs font-semibold leading-none" style={{ color: 'var(--first-octonary)' }}>
                 {imeKorisnika ?? 'Korisnik'}
               </p>
-              <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
+              <p className="text-xs" style={{ color: 'var(--first-nonary)' }}>
                 {OZNAKA_ULOGE[uloga]}
               </p>
             </div>
@@ -148,7 +148,7 @@ export function AppShell({ children, uloga, imeKorisnika }: AppShellProps) {
 
           <button
             className="flex h-8 w-8 items-center justify-center rounded-lg transition-colors hover:bg-soft-beige/30 md:hidden"
-            style={{ color: 'var(--color-text-main)' }}
+            style={{ color: 'var(--first-octonary)' }}
             onClick={() => setJeMenuOtvoren(true)}
             aria-label="Otvori meni"
           >
@@ -166,28 +166,28 @@ export function AppShell({ children, uloga, imeKorisnika }: AppShellProps) {
           />
           <div
             className="fixed inset-y-0 left-0 z-50 flex w-72 flex-col p-5 md:hidden"
-            style={{ backgroundColor: 'var(--color-warm-cream)' }}
+            style={{ backgroundColor: 'var(--first-tertiary)' }}
           >
             <div className="mb-6 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="flex h-7 w-7 items-center justify-center rounded-lg" style={{ backgroundColor: 'var(--color-deep-teal)' }}>
+                <div className="flex h-7 w-7 items-center justify-center rounded-lg" style={{ backgroundColor: 'var(--first-primary)' }}>
                   <Settings className="h-4 w-4 text-white" />
                 </div>
-                <span className="font-bold tracking-tight" style={{ color: 'var(--color-text-main)' }}>InterServ</span>
+                <span className="font-bold tracking-tight" style={{ color: 'var(--first-octonary)' }}>InterServ</span>
               </div>
               <button
                 onClick={() => setJeMenuOtvoren(false)}
                 className="rounded-lg p-1.5 hover:bg-soft-beige/30"
-                style={{ color: 'var(--color-text-muted)' }}
+                style={{ color: 'var(--first-nonary)' }}
                 aria-label="Zatvori meni"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
 
-            <div className="mb-5 rounded-xl px-4 py-3" style={{ backgroundColor: 'rgb(var(--rgb-soft-beige) / 0.2)' }}>
-              <p className="font-semibold" style={{ color: 'var(--color-text-main)' }}>{imeKorisnika ?? 'Korisnik'}</p>
-              <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>{OZNAKA_ULOGE[uloga]}</p>
+            <div className="mb-5 rounded-xl px-4 py-3" style={{ backgroundColor: 'rgb(var(--first-quaternary-rgb) / 0.2)' }}>
+              <p className="font-semibold" style={{ color: 'var(--first-octonary)' }}>{imeKorisnika ?? 'Korisnik'}</p>
+              <p className="text-sm" style={{ color: 'var(--first-nonary)' }}>{OZNAKA_ULOGE[uloga]}</p>
             </div>
 
             <nav className="flex flex-col gap-1">
@@ -196,13 +196,13 @@ export function AppShell({ children, uloga, imeKorisnika }: AppShellProps) {
               ))}
             </nav>
 
-            <div className="mt-auto border-t pt-4" style={{ borderColor: 'rgb(var(--rgb-soft-beige) / 0.4)' }}>
+            <div className="mt-auto border-t pt-4" style={{ borderColor: 'rgb(var(--first-quaternary-rgb) / 0.4)' }}>
               <button
                 type="button"
                 onClick={odjaviKorisnika}
                 disabled={jeOdjavaUToku}
                 className="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60"
-                style={{ color: 'var(--color-mystic-ember)' }}
+                style={{ color: 'var(--first-senary)' }}
               >
                 <span className="flex items-center gap-3">
                   <LogOut className="h-4 w-4" />

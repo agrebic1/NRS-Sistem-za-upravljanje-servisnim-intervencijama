@@ -26,15 +26,15 @@ const MOCK_ZAHTJEVI: MockPristiglihZahtjev[] = [
 ];
 
 const KPI_KARTICE = [
-  { oznaka: 'Novi zahtjevi', vrijednost: 2, boja: 'var(--color-mystic-ember)', Ikona: ClipboardList },
-  { oznaka: 'U obradi',      vrijednost: 1, boja: 'var(--color-celestial-teal)', Ikona: Clock },
-  { oznaka: 'Aktivnih',      vrijednost: 1, boja: 'var(--color-herbal-gold)', Ikona: Wrench },
+  { oznaka: 'Novi zahtjevi', vrijednost: 2, boja: 'var(--first-senary)', Ikona: ClipboardList },
+  { oznaka: 'U obradi',      vrijednost: 1, boja: 'var(--first-secondary)', Ikona: Clock },
+  { oznaka: 'Aktivnih',      vrijednost: 1, boja: 'var(--first-septenary)', Ikona: Wrench },
 ];
 
 const BADGE_STATUSA: Record<StatusZahtjeva, { oznaka: string; pozadina: string; boja: string }> = {
-  novi:     { oznaka: 'Novi',     pozadina: 'rgb(var(--rgb-mystic-ember) / 0.12)',   boja: 'var(--color-mystic-ember)' },
-  u_obradi: { oznaka: 'U obradi', pozadina: 'rgb(var(--rgb-celestial-teal) / 0.15)', boja: 'var(--color-celestial-teal)' },
-  aktivan:  { oznaka: 'Aktivan',  pozadina: 'rgb(var(--rgb-herbal-gold) / 0.2)', boja: 'var(--color-herbal-gold)' },
+  novi:     { oznaka: 'Novi',     pozadina: 'rgb(var(--first-senary-rgb) / 0.12)',   boja: 'var(--first-senary)' },
+  u_obradi: { oznaka: 'U obradi', pozadina: 'rgb(var(--first-secondary-rgb) / 0.15)', boja: 'var(--first-secondary)' },
+  aktivan:  { oznaka: 'Aktivan',  pozadina: 'rgb(var(--first-septenary-rgb) / 0.2)', boja: 'var(--first-septenary)' },
 };
 
 // ─── Stranica ─────────────────────────────────────────────────────────────────
@@ -44,8 +44,8 @@ export default function DispecerPage() {
     <AppShell uloga="dispecer" imeKorisnika="Dispečer">
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight" style={{ color: 'var(--color-text-main)' }}>Pregled zahtjeva</h1>
-          <p className="mt-1 text-sm" style={{ color: 'var(--color-text-muted)' }}>Upravljanje pristiglim servisnim zahtjevima.</p>
+          <h1 className="text-2xl font-bold tracking-tight" style={{ color: 'var(--first-octonary)' }}>Pregled zahtjeva</h1>
+          <p className="mt-1 text-sm" style={{ color: 'var(--first-nonary)' }}>Upravljanje pristiglim servisnim zahtjevima.</p>
         </div>
       </div>
 
@@ -55,14 +55,14 @@ export default function DispecerPage() {
           <div
             key={oznaka}
             className="flex items-center gap-4 rounded-2xl p-5 shadow-card"
-            style={{ backgroundColor: 'rgb(var(--rgb-muted-sand) / 0.22)', border: '1px solid rgb(var(--rgb-soft-beige) / 0.35)' }}
+            style={{ backgroundColor: 'rgb(var(--first-quinary-rgb) / 0.22)', border: '1px solid rgb(var(--first-quaternary-rgb) / 0.35)' }}
           >
             <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl" style={{ backgroundColor: `color-mix(in srgb, ${boja} 10%, transparent)` }}>
               <Ikona className="h-5 w-5" style={{ color: boja }} />
             </div>
             <div>
               <p className="text-2xl font-bold" style={{ color: boja }}>{vrijednost}</p>
-              <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{oznaka}</p>
+              <p className="text-xs" style={{ color: 'var(--first-nonary)' }}>{oznaka}</p>
             </div>
           </div>
         ))}
@@ -71,23 +71,23 @@ export default function DispecerPage() {
       {/* Pristigli zahtjevi */}
       <div
         className="rounded-2xl shadow-card"
-        style={{ backgroundColor: 'rgb(var(--rgb-muted-sand) / 0.22)', border: '1px solid rgb(var(--rgb-soft-beige) / 0.35)' }}
+        style={{ backgroundColor: 'rgb(var(--first-quinary-rgb) / 0.22)', border: '1px solid rgb(var(--first-quaternary-rgb) / 0.35)' }}
       >
         <div
           className="flex items-center justify-between px-5 py-4"
-          style={{ borderBottom: '1px solid rgb(var(--rgb-soft-beige) / 0.3)' }}
+          style={{ borderBottom: '1px solid rgb(var(--first-quaternary-rgb) / 0.3)' }}
         >
-          <h2 className="font-semibold" style={{ color: 'var(--color-text-main)' }}>Pristigli zahtjevi</h2>
+          <h2 className="font-semibold" style={{ color: 'var(--first-octonary)' }}>Pristigli zahtjevi</h2>
           <Link
             href="/dispecer/zahtjevi"
             className="flex items-center gap-1 text-sm font-medium transition-opacity hover:opacity-70"
-            style={{ color: 'var(--color-celestial-teal)' }}
+            style={{ color: 'var(--first-secondary)' }}
           >
             Svi zahtjevi <ChevronRight className="h-4 w-4" />
           </Link>
         </div>
 
-        <ul className="divide-y" style={{ borderColor: 'rgb(var(--rgb-soft-beige) / 0.25)' }}>
+        <ul className="divide-y" style={{ borderColor: 'rgb(var(--first-quaternary-rgb) / 0.25)' }}>
           {MOCK_ZAHTJEVI.map((zahtjev) => {
             const badge = BADGE_STATUSA[zahtjev.status];
             return (
@@ -95,22 +95,22 @@ export default function DispecerPage() {
                 <div className="flex items-center gap-4 px-5 py-4">
                   <div className="flex-shrink-0">
                     {zahtjev.jeHitno
-                      ? <AlertTriangle className="h-4 w-4" style={{ color: 'var(--color-mystic-ember)' }} />
-                      : <User className="h-4 w-4" style={{ color: 'var(--color-muted-sand)' }} />}
+                      ? <AlertTriangle className="h-4 w-4" style={{ color: 'var(--first-senary)' }} />
+                      : <User className="h-4 w-4" style={{ color: 'var(--first-quinary)' }} />}
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <p className="font-medium" style={{ color: 'var(--color-text-main)' }}>{zahtjev.naslov}</p>
+                      <p className="font-medium" style={{ color: 'var(--first-octonary)' }}>{zahtjev.naslov}</p>
                       <span className="rounded-full px-2.5 py-0.5 text-xs font-semibold" style={{ backgroundColor: badge.pozadina, color: badge.boja }}>
                         {badge.oznaka}
                       </span>
                       {zahtjev.jeHitno && (
-                        <span className="rounded-full px-2.5 py-0.5 text-xs font-semibold" style={{ backgroundColor: 'rgb(var(--rgb-mystic-ember) / 0.12)', color: 'var(--color-mystic-ember)' }}>
+                        <span className="rounded-full px-2.5 py-0.5 text-xs font-semibold" style={{ backgroundColor: 'rgb(var(--first-senary-rgb) / 0.12)', color: 'var(--first-senary)' }}>
                           Hitno
                         </span>
                       )}
                     </div>
-                    <div className="mt-1 flex flex-wrap gap-x-4 text-xs" style={{ color: 'var(--color-text-muted)' }}>
+                    <div className="mt-1 flex flex-wrap gap-x-4 text-xs" style={{ color: 'var(--first-nonary)' }}>
                       <span>{zahtjev.korisnik}</span>
                       <span>{zahtjev.vrijemeSlanja}</span>
                     </div>

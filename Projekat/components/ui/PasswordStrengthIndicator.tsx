@@ -10,9 +10,9 @@ interface NivoSnage {
 }
 
 const NIVOI_SNAGE: NivoSnage[] = [
-  { oznaka: 'Slaba lozinka',   boja: 'var(--color-mystic-ember)', minimalniBroj: 0 },
-  { oznaka: 'Srednja lozinka', boja: 'var(--color-herbal-gold)', minimalniBroj: 3 },
-  { oznaka: 'Jaka lozinka',    boja: 'var(--color-deep-teal)', minimalniBroj: 5 },
+  { oznaka: 'Slaba lozinka',   boja: 'var(--first-senary)', minimalniBroj: 0 },
+  { oznaka: 'Srednja lozinka', boja: 'var(--first-septenary)', minimalniBroj: 3 },
+  { oznaka: 'Jaka lozinka',    boja: 'var(--first-primary)', minimalniBroj: 5 },
 ];
 
 const UKUPAN_BROJ_TRAKA = 5;
@@ -51,13 +51,13 @@ export function PasswordStrengthIndicator({
               key={i}
               className="h-1 flex-1 rounded-full transition-all duration-300"
               style={{
-                backgroundColor: i < brojIspunjenih ? nivo.boja : 'var(--color-muted-sand)',
+                backgroundColor: i < brojIspunjenih ? nivo.boja : 'var(--first-quinary)',
                 opacity: i < brojIspunjenih ? 1 : 0.35,
               }}
             />
           ))}
         </div>
-        <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
+        <p className="text-xs" style={{ color: 'var(--first-nonary)' }}>
           Jačina lozinke:{' '}
           <span className="font-semibold" style={{ color: nivo.boja }}>
             {nivo.oznaka}
@@ -73,13 +73,13 @@ export function PasswordStrengthIndicator({
             return (
               <div key={zahtjev.id} className="flex items-center gap-1.5">
                 {jeIspunjen ? (
-                  <Check className="h-3.5 w-3.5 flex-shrink-0" style={{ color: 'var(--color-celestial-teal)' }} />
+                  <Check className="h-3.5 w-3.5 flex-shrink-0" style={{ color: 'var(--first-secondary)' }} />
                 ) : (
-                  <X className="h-3.5 w-3.5 flex-shrink-0" style={{ color: 'var(--color-mystic-ember)' }} />
+                  <X className="h-3.5 w-3.5 flex-shrink-0" style={{ color: 'var(--first-senary)' }} />
                 )}
                 <span
                   className="text-xs transition-colors duration-200"
-                  style={{ color: jeIspunjen ? 'var(--color-celestial-teal)' : 'var(--color-mystic-ember)' }}
+                  style={{ color: jeIspunjen ? 'var(--first-secondary)' : 'var(--first-senary)' }}
                 >
                   {zahtjev.oznaka}
                 </span>

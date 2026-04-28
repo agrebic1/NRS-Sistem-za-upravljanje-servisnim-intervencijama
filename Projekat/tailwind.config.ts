@@ -8,15 +8,15 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        'deep-teal':      'rgb(var(--rgb-deep-teal) / <alpha-value>)',
-        'celestial-teal': 'rgb(var(--rgb-celestial-teal) / <alpha-value>)',
-        'warm-cream':     'rgb(var(--rgb-warm-cream) / <alpha-value>)',
-        'soft-beige':     'rgb(var(--rgb-soft-beige) / <alpha-value>)',
-        'muted-sand':     'rgb(var(--rgb-muted-sand) / <alpha-value>)',
-        'mystic-ember':   'rgb(var(--rgb-mystic-ember) / <alpha-value>)',
-        'herbal-gold':    'rgb(var(--rgb-herbal-gold) / <alpha-value>)',
-        'text-main':      'rgb(var(--rgb-text-main) / <alpha-value>)',
-        'text-muted':     'rgb(var(--rgb-text-muted) / <alpha-value>)',
+        'deep-teal':      'rgb(var(--first-primary-rgb) / <alpha-value>)',
+        'celestial-teal': 'rgb(var(--first-secondary-rgb) / <alpha-value>)',
+        'warm-cream':     'rgb(var(--first-tertiary-rgb) / <alpha-value>)',
+        'soft-beige':     'rgb(var(--first-quaternary-rgb) / <alpha-value>)',
+        'muted-sand':     'rgb(var(--first-quinary-rgb) / <alpha-value>)',
+        'mystic-ember':   'rgb(var(--first-senary-rgb) / <alpha-value>)',
+        'herbal-gold':    'rgb(var(--first-septenary-rgb) / <alpha-value>)',
+        'text-main':      'rgb(var(--first-octonary-rgb) / <alpha-value>)',
+        'text-muted':     'rgb(var(--first-nonary-rgb) / <alpha-value>)',
       },
       keyframes: {
         'spin-gear': {
@@ -48,9 +48,9 @@ const config: Config = {
         'slide-right':       'slide-right 0.35s ease-out both',
       },
       boxShadow: {
-        card:    '0 4px 24px rgb(var(--rgb-deep-teal) / 0.10)',
-        'card-lg': '0 8px 40px rgb(var(--rgb-deep-teal) / 0.14)',
-        glow:    '0 0 0 3px rgb(var(--rgb-celestial-teal) / 0.20)',
+        card:    '0 4px 24px rgb(var(--first-primary-rgb) / 0.10)',
+        'card-lg': '0 8px 40px rgb(var(--first-primary-rgb) / 0.14)',
+        glow:    '0 0 0 3px rgb(var(--first-secondary-rgb) / 0.20)',
       },
     },
   },

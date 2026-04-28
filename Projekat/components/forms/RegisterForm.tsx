@@ -42,33 +42,33 @@ function TrakaNapretka({ trenutniKorak }: { trenutniKorak: number }) {
                   className="flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold transition-all duration-300"
                   style={{
                     backgroundColor: jeZavrsen
-                      ? 'var(--color-deep-teal)'
+                      ? 'var(--first-primary)'
                       : jeTrenutni
-                      ? 'var(--color-herbal-gold)'
-                      : 'rgb(var(--rgb-muted-sand) / 0.5)',
-                    color: jeZavrsen ? 'var(--color-white)' : jeTrenutni ? 'var(--color-text-main)' : 'var(--color-text-muted)',
+                      ? 'var(--first-septenary)'
+                      : 'rgb(var(--first-quinary-rgb) / 0.5)',
+                    color: jeZavrsen ? 'var(--first-white)' : jeTrenutni ? 'var(--first-octonary)' : 'var(--first-nonary)',
                   }}
                 >
                   {jeZavrsen ? <Check className="h-3.5 w-3.5" /> : brojKoraka}
                 </div>
-                <span className="text-xs font-medium" style={{ color: jeTrenutni ? 'var(--color-text-main)' : 'var(--color-text-muted)' }}>
+                <span className="text-xs font-medium" style={{ color: jeTrenutni ? 'var(--first-octonary)' : 'var(--first-nonary)' }}>
                   {oznaka}
                 </span>
               </div>
               {i < OZNAKE_KORAKA.length - 1 && (
                 <div
                   className="mx-2 mb-4 h-px flex-1 transition-all duration-500"
-                  style={{ backgroundColor: trenutniKorak > i + 1 ? 'var(--color-deep-teal)' : 'var(--color-soft-beige)', opacity: 0.5 }}
+                  style={{ backgroundColor: trenutniKorak > i + 1 ? 'var(--first-primary)' : 'var(--first-quaternary)', opacity: 0.5 }}
                 />
               )}
             </div>
           );
         })}
       </div>
-      <div className="h-1 overflow-hidden rounded-full" style={{ backgroundColor: 'rgb(var(--rgb-soft-beige) / 0.35)' }}>
+      <div className="h-1 overflow-hidden rounded-full" style={{ backgroundColor: 'rgb(var(--first-quaternary-rgb) / 0.35)' }}>
         <div
           className="h-full rounded-full transition-all duration-500"
-          style={{ width: `${((trenutniKorak - 1) / (UKUPNO_KORAKA - 1)) * 100}%`, backgroundColor: 'var(--color-herbal-gold)' }}
+          style={{ width: `${((trenutniKorak - 1) / (UKUPNO_KORAKA - 1)) * 100}%`, backgroundColor: 'var(--first-septenary)' }}
         />
       </div>
     </div>
@@ -190,7 +190,7 @@ export function RegisterForm() {
                     type="button"
                     onClick={() => setJeLozinkaVidljiva((v) => !v)}
                     className="transition-opacity hover:opacity-70"
-                    style={{ color: 'var(--color-text-muted)' }}
+                    style={{ color: 'var(--first-nonary)' }}
                     aria-label={jeLozinkaVidljiva ? 'Sakrij lozinku' : 'Prikaži lozinku'}
                   >
                     {jeLozinkaVidljiva ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -210,7 +210,7 @@ export function RegisterForm() {
                   type="button"
                   onClick={() => setJePotvrdaVidljiva((v) => !v)}
                   className="transition-opacity hover:opacity-70"
-                  style={{ color: 'var(--color-text-muted)' }}
+                  style={{ color: 'var(--first-nonary)' }}
                   aria-label={jePotvrdaVidljiva ? 'Sakrij lozinku' : 'Prikaži lozinku'}
                 >
                   {jePotvrdaVidljiva ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}

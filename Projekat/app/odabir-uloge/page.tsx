@@ -103,8 +103,8 @@ export default function OdabirUlogePage() {
 
   if (jeUcitavanje) {
     return (
-      <div className="flex min-h-screen items-center justify-center" style={{ backgroundColor: 'var(--color-warm-cream)' }}>
-        <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>Učitavanje...</p>
+      <div className="flex min-h-screen items-center justify-center" style={{ backgroundColor: 'var(--first-tertiary)' }}>
+        <p className="text-sm" style={{ color: 'var(--first-nonary)' }}>Učitavanje...</p>
       </div>
     );
   }
@@ -112,12 +112,12 @@ export default function OdabirUlogePage() {
   const vidljiveKartice = KARTICE_ULOGA.filter((k) => dostupneUloge.includes(k.uloga));
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center px-4 py-12" style={{ backgroundColor: 'var(--color-warm-cream)' }}>
+    <div className="flex min-h-screen flex-col items-center justify-center px-4 py-12" style={{ backgroundColor: 'var(--first-tertiary)' }}>
       <div className="mb-8 flex items-center gap-2.5">
-        <div className="flex h-9 w-9 items-center justify-center rounded-xl" style={{ backgroundColor: 'var(--color-deep-teal)' }}>
+        <div className="flex h-9 w-9 items-center justify-center rounded-xl" style={{ backgroundColor: 'var(--first-primary)' }}>
           <Settings className="h-5 w-5 text-white" />
         </div>
-        <span className="text-lg font-bold tracking-tight" style={{ color: 'var(--color-text-main)' }}>
+        <span className="text-lg font-bold tracking-tight" style={{ color: 'var(--first-octonary)' }}>
           InterServ
         </span>
       </div>
@@ -126,16 +126,16 @@ export default function OdabirUlogePage() {
         <div
           className="rounded-2xl p-7 shadow-card-lg sm:p-8"
           style={{
-            backgroundColor: 'rgb(var(--rgb-muted-sand) / 0.22)',
-            border: '1px solid rgb(var(--rgb-soft-beige) / 0.4)',
+            backgroundColor: 'rgb(var(--first-quinary-rgb) / 0.22)',
+            border: '1px solid rgb(var(--first-quaternary-rgb) / 0.4)',
             backdropFilter: 'blur(12px)',
           }}
         >
           <div className="mb-6">
-            <h1 className="text-xl font-bold tracking-tight sm:text-2xl" style={{ color: 'var(--color-text-main)' }}>
+            <h1 className="text-xl font-bold tracking-tight sm:text-2xl" style={{ color: 'var(--first-octonary)' }}>
               Odaberite način korištenja sistema
             </h1>
-            <p className="mt-2 text-sm" style={{ color: 'var(--color-text-muted)' }}>
+            <p className="mt-2 text-sm" style={{ color: 'var(--first-nonary)' }}>
               Vaš nalog ima više uloga. Odaberite u kojoj ulozi želite nastaviti.
             </p>
           </div>
@@ -156,26 +156,26 @@ export default function OdabirUlogePage() {
                   onClick={() => { setOdabranaUloga(uloga); setGreska(null); }}
                   className="flex items-center gap-4 rounded-xl border p-4 text-left transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-celestial-teal/40 focus:ring-offset-2"
                   style={{
-                    borderColor:     jeOdabrana ? 'var(--color-deep-teal)' : 'var(--color-soft-beige)',
-                    backgroundColor: jeOdabrana ? 'rgb(var(--rgb-deep-teal) / 0.07)' : 'rgb(255 255 255 / 0.45)',
+                    borderColor:     jeOdabrana ? 'var(--first-primary)' : 'var(--first-quaternary)',
+                    backgroundColor: jeOdabrana ? 'rgb(var(--first-primary-rgb) / 0.07)' : 'rgb(255 255 255 / 0.45)',
                   }}
                   aria-pressed={jeOdabrana}
                 >
                   <div
                     className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full transition-colors duration-200"
                     style={{
-                      backgroundColor: jeOdabrana ? 'var(--color-deep-teal)' : 'rgb(var(--rgb-muted-sand) / 0.45)',
-                      color:           jeOdabrana ? 'var(--color-warm-cream)' : 'var(--color-text-muted)',
+                      backgroundColor: jeOdabrana ? 'var(--first-primary)' : 'rgb(var(--first-quinary-rgb) / 0.45)',
+                      color:           jeOdabrana ? 'var(--first-tertiary)' : 'var(--first-nonary)',
                     }}
                   >
                     <Ikona className="h-5 w-5" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-semibold" style={{ color: 'var(--color-text-main)' }}>{oznaka}</p>
-                    <p className="mt-0.5 text-sm leading-snug" style={{ color: 'var(--color-text-muted)' }}>{opis}</p>
+                    <p className="font-semibold" style={{ color: 'var(--first-octonary)' }}>{oznaka}</p>
+                    <p className="mt-0.5 text-sm leading-snug" style={{ color: 'var(--first-nonary)' }}>{opis}</p>
                   </div>
                   {jeOdabrana && (
-                    <div className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full" style={{ backgroundColor: 'var(--color-deep-teal)' }}>
+                    <div className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full" style={{ backgroundColor: 'var(--first-primary)' }}>
                       <svg className="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                       </svg>

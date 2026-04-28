@@ -48,7 +48,7 @@ export function LoginForm() {
       type="button"
       onClick={() => setJeLozinkaVidljiva((v) => !v)}
       className="transition-opacity duration-200 hover:opacity-70"
-      style={{ color: 'var(--color-text-muted)' }}
+      style={{ color: 'var(--first-nonary)' }}
       aria-label={jeLozinkaVidljiva ? 'Sakrij lozinku' : 'Prikaži lozinku'}
     >
       {jeLozinkaVidljiva ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -85,16 +85,16 @@ export function LoginForm() {
             <input
               type="checkbox"
               className="h-4 w-4 cursor-pointer rounded"
-              style={{ accentColor: 'var(--color-deep-teal)' }}
+              style={{ accentColor: 'var(--first-primary)' }}
             />
-            <span className="select-none text-sm" style={{ color: 'var(--color-text-muted)' }}>
+            <span className="select-none text-sm" style={{ color: 'var(--first-nonary)' }}>
               Zapamti me
             </span>
           </label>
           <Link
             href="/auth/zaboravljena-lozinka"
             className="text-sm font-medium transition-opacity duration-200 hover:opacity-70"
-            style={{ color: 'var(--color-celestial-teal)' }}
+            style={{ color: 'var(--first-secondary)' }}
           >
             Zaboravili ste lozinku?
           </Link>
@@ -114,12 +114,12 @@ export function LoginForm() {
         <div
           className="flex items-start gap-2 rounded-xl px-4 py-3 text-xs"
           style={{
-            backgroundColor: 'rgb(var(--rgb-celestial-teal) / 0.08)',
-            border: '1px solid rgb(var(--rgb-celestial-teal) / 0.2)',
-            color: 'var(--color-text-muted)',
+            backgroundColor: 'rgb(var(--first-secondary-rgb) / 0.08)',
+            border: '1px solid rgb(var(--first-secondary-rgb) / 0.2)',
+            color: 'var(--first-nonary)',
           }}
         >
-          <Info className="mt-0.5 h-3.5 w-3.5 flex-shrink-0" style={{ color: 'var(--color-celestial-teal)' }} />
+          <Info className="mt-0.5 h-3.5 w-3.5 flex-shrink-0" style={{ color: 'var(--first-secondary)' }} />
           <span>
             Ako ste serviser ili uposlenik sistema, koristite nalog koji vam je dodijelio administrator.
           </span>

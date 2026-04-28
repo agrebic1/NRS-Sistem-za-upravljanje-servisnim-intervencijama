@@ -25,7 +25,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
         <label
           htmlFor={selectId}
           className="text-sm font-medium"
-          style={{ color: 'var(--color-text-main)' }}
+          style={{ color: 'var(--first-octonary)' }}
         >
           {label}
         </label>
@@ -44,7 +44,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
             ]
               .filter(Boolean)
               .join(' ')}
-            style={{ color: 'var(--color-text-main)' }}
+            style={{ color: 'var(--first-octonary)' }}
           >
             {placeholder && <option value="">{placeholder}</option>}
             {options.map((option) => (
@@ -55,7 +55,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
           </select>
           <ChevronDown
             className="pointer-events-none absolute right-3.5 top-1/2 h-4 w-4 -translate-y-1/2"
-            style={{ color: 'var(--color-text-muted)' }}
+            style={{ color: 'var(--first-nonary)' }}
           />
         </div>
         {error && <ErrorMessage message={error} />}
