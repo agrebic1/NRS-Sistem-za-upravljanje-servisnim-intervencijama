@@ -46,15 +46,23 @@ function odrediStatus(user: { banned_until?: string | null; email_confirmed_at?:
 }
 
 async function provjeriAdminPristup(supabase: ReturnType<typeof createAdminClient>, idKorisnika: string) {
-  const { data, error } = await supabase
+  const { data: uposlenik, error } = await supabase
     .from('uposlenici')
-    .select('uloga(naziv)')
+    .select('id_uloge')
     .eq('id_uposlenika', idKorisnika)
     .maybeSingle();
 
-  if (error) return false;
+  if (error || !uposlenik?.id_uloge) return false;
 
-  const nazivUloge = procitajNazivUloge(data?.uloga, '');
+  const { data: ulogaPodaci, error: ulogaError } = await supabase
+    .from('uloga')
+    .select('naziv')
+    .eq('id_uloge', uposlenik.id_uloge)
+    .maybeSingle();
+
+  if (ulogaError) return false;
+
+  const nazivUloge = procitajNazivUloge(ulogaPodaci, '');
   return nazivUloge === 'Administrator' || nazivUloge === 'admin';
 }
 

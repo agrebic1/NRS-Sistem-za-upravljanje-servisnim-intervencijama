@@ -14,6 +14,7 @@ const ADMIN_PREFIX = '/admin';
 
 export async function middleware(zahtjev: NextRequest) {
   let supabaseResponse = NextResponse.next({ request: zahtjev });
+  const { pathname } = zahtjev.nextUrl;
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -23,27 +24,39 @@ export async function middleware(zahtjev: NextRequest) {
     return supabaseResponse;
   }
 
-  const supabase = createServerClient<Database>(supabaseUrl, supabaseKey, {
-    cookies: {
-      getAll() {
-        return zahtjev.cookies.getAll();
+  let user: { id: string } | null = null;
+  let jeAdministrator = false;
+  try {
+    const supabase = createServerClient<Database>(supabaseUrl, supabaseKey, {
+      cookies: {
+        getAll() {
+          return zahtjev.cookies.getAll();
+        },
+        setAll(kolacici: { name: string; value: string; options: CookieOptions }[]) {
+          kolacici.forEach(({ name, value }) => zahtjev.cookies.set(name, value));
+          supabaseResponse = NextResponse.next({ request: zahtjev });
+          kolacici.forEach(({ name, value, options }) =>
+            supabaseResponse.cookies.set(name, value, options)
+          );
+        },
       },
-      setAll(kolacici: { name: string; value: string; options: CookieOptions }[]) {
-        kolacici.forEach(({ name, value }) => zahtjev.cookies.set(name, value));
-        supabaseResponse = NextResponse.next({ request: zahtjev });
-        kolacici.forEach(({ name, value, options }) =>
-          supabaseResponse.cookies.set(name, value, options)
-        );
-      },
-    },
-  });
+    });
 
-  // Must use getUser(), not getSession() — prevents CSRF token spoofing
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    // Must use getUser(), not getSession() — prevents CSRF token spoofing
+    const {
+      data: { user: authUser },
+    } = await supabase.auth.getUser();
+    user = authUser;
 
-  const { pathname } = zahtjev.nextUrl;
+    if (authUser && pathname.startsWith(ADMIN_PREFIX)) {
+      const { data: adminIzBaze } = await (supabase as any).rpc('is_admin', {
+        p_user_id: authUser.id,
+      });
+      jeAdministrator = adminIzBaze === true;
+    }
+  } catch (error) {
+    console.error('Middleware auth provjera nije uspjela:', error);
+  }
 
   const jeJavnaRuta = JAVNE_RUTE.some(
     (ruta) => pathname === ruta || pathname.startsWith(ruta + '/')
@@ -56,7 +69,6 @@ export async function middleware(zahtjev: NextRequest) {
   }
 
   if (user && pathname.startsWith(ADMIN_PREFIX)) {
-    const jeAdministrator = (user.user_metadata?.uloga as string | undefined) === 'Administrator';
     if (!jeAdministrator) {
       return NextResponse.redirect(new URL('/', zahtjev.url));
     }

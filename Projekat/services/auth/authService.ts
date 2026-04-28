@@ -3,7 +3,16 @@ import type { UserRole } from '@/domain/types';
 import { PREUSMJERANJE_PO_ULOZI } from '@/domain/types';
 
 function normalizujEmail(email: string) {
-  return email.trim().replace(/^["']|["']$/g, '').toLowerCase();
+  return email
+    .trim()
+    .toLowerCase()
+    .replace(/[\u200B-\u200D\uFEFF]/g, '') // Remove zero-width characters copied from rich text.
+    .replace(/[“”„‟"']/g, '') // Remove straight and smart quotes anywhere in the value.
+    .replace(/\s+/g, ''); // Remove accidental spaces inside/outside email.
+}
+
+function jeEmailValidan(email: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
 // Prijava 
@@ -35,6 +44,9 @@ export async function registrujKorisnika(podaci: {
 }) {
   const supabase = kreirajKlijenta();
   const email = normalizujEmail(podaci.email);
+  if (!jeEmailValidan(email)) {
+    throw new Error('Unesite ispravnu email adresu.');
+  }
 
   const { data: authPodaci, error: greskaAuth } = await supabase.auth.signUp({
     email,
