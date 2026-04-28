@@ -25,6 +25,16 @@ function mapirajAuthGresku(greska: { message: string; status?: number; code?: st
   return greska.message;
 }
 
+function mapirajAuthGresku(greska: { message: string; status?: number; code?: string }) {
+  const poruka = greska.message?.toLowerCase() ?? '';
+
+  if (greska.status === 429 || poruka.includes('too many requests') || poruka.includes('rate limit')) {
+    return 'Previše pokušaja registracije. Sačekajte 1-2 minute i pokušajte ponovo.';
+  }
+
+  return greska.message;
+}
+
 // Prijava 
 
 export async function prijaviSeEmailom(podaci: { email: string; lozinka: string }) {
