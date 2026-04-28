@@ -26,11 +26,32 @@ export async function prijaviSeEmailom(podaci: { email: string; lozinka: string 
   });
 
   if (error) {
+    if (error.message.toLowerCase().includes('email not confirmed')) {
+      throw new Error('Email adresa nije potvrđena. Provjerite inbox i potvrdite nalog.');
+    }
     // Namjerno generička poruka radi zaštite od otkrivanja korisničkih emailova
     throw new Error('Pogrešna email adresa ili lozinka');
   }
 
   return data;
+}
+
+export async function posaljiPonovoVerifikacijskiEmail(emailAdresa: string) {
+  const supabase = kreirajKlijenta();
+  const email = normalizujEmail(emailAdresa);
+
+  if (!jeEmailValidan(email)) {
+    throw new Error('Unesite ispravnu email adresu.');
+  }
+
+  const { error } = await supabase.auth.resend({
+    type: 'signup',
+    email,
+  });
+
+  if (error) {
+    throw new Error('Slanje verifikacijskog emaila nije uspjelo. Pokušajte ponovo.');
+  }
 }
 
 // Registracija (samo Korisnik usluge)
