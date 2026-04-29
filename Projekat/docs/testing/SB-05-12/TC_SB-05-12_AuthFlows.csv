@@ -1,17 +1,16 @@
-UPUTA,Pročitati redove TC-01 do TC-15 i izvršavati ih redom. Rezultate ne upisivati ovdje nego u EXEC_SB-05-12_AuthFlows.csv,,,,,,,,,
-ID_testa,Tip_testa,Funkcionalnost_modul,Preduslovi,Test_koraci,Očekivani_rezultat,Prioritet,Obavezno_za_signoff,Povezani_story,Status_dizajna
-TC-01,Pozitivan,Registracija,"Nema aktivne sesije; email nije registrovan","Otvoriti registraciju; unijeti validne podatke; potvrditi registraciju","Korisnik kreiran kao korisnik_usluge; uspjesna poruka; bez tehnickih detalja greske",Visok,DA,US-01/PBI-001,Spremno
-TC-02,Negativan,Registracija,"Nema aktivne sesije; email vec postoji","Pokusati registraciju sa postojecim emailom","Registracija odbijena neutralnom porukom; ne kreira se dupli korisnik",Visok,DA,US-01/PBI-001,Spremno
-TC-03,Negativan,Registracija,"Nema aktivne sesije","Unijeti neispravan email format i poslati formu","Klijentska validacija blokira slanje i prikazuje razumljivu poruku",Srednji,DA,US-01/PBI-001,Spremno
-TC-04,Pozitivan,Login,"Postoji aktiviran korisnik_usluge nalog","Otvoriti login; unijeti validne kredencijale; poslati formu","Uspjesna prijava; sesija kreirana; redirect na odgovarajuci dashboard",Visok,DA,US-02/PBI-001,Spremno
-TC-05,Negativan,Login,"Postoji korisnik","Pokusati login sa pogresnom sifrom","Prijava odbijena neutralnom porukom; bez otkrivanja da li je email validan",Visok,DA,US-02/PBI-001,Spremno
-TC-06,Negativan,Login,"Nema aktivne sesije","Pokusati login sa praznim obaveznim poljima","Forma ne salje zahtjev dok obavezna polja nisu popunjena",Srednji,DA,US-02/PBI-001,Spremno
-TC-07,Pozitivan,Odjava,"Korisnik prijavljen","Kliknuti odjava; nakon toga otvoriti prethodno zasticenu rutu","Sesija prekinuta; korisnik vracen na login/landing; zasticena ruta nije dostupna",Visok,DA,US-03/PBI-001,Spremno
-TC-08,Pozitivan,Sesija,"Korisnik prijavljen","Refresovati browser na dashboard ruti","Korisnik ostaje prijavljen; aktivna uloga i ruta ostaju uskladjene",Visok,DA,SB-05-11,Spremno
-TC-09,Negativan,Sesija,"Korisnik odjavljen","Nakon odjave pokusati direktno otvoriti /korisnik","Redirect na login; nema prikaza zasticenog sadrzaja",Visok,DA,SB-05-11,Spremno
-TC-10,Pozitivan,Role redirect,"Korisnik ima jednu ulogu","Prijaviti korisnika sa jednom ulogom","Automatski redirect na dashboard te uloge bez ekrana za odabir",Visok,DA,SB-05-08,Spremno
-TC-11,Pozitivan,Odabir aktivne uloge,"Korisnik ima vise uloga","Prijava; odabrati ulogu A pa odjaviti; prijava i odabrati ulogu B","Prikaz odabira uloge; dashboard prati izabranu aktivnu ulogu",Visok,DA,SB-05-07,Spremno
-TC-12,Negativan,Zastita ruta,"Korisnik prijavljen kao serviser","Rucno otvoriti /admin i /dispecer","Pristup tuđim dashboard rutama odbijen redirectom ili deny stranicom",Kritičan,DA,SB-05-09,Spremno
-TC-13,Negativan,Zastita ruta API,"Korisnik prijavljen kao ne-admin","Pozvati admin-only API endpoint","API vraća 401/403 bez osjetljivih podataka",Kritičan,DA,SB-05-09,Spremno
-TC-14,Pozitivan,Dashboard po ulozi,"Postoje korisnici za sve 4 uloge","Prijaviti se redom kao korisnik_usluge, serviser, dispecer, administrator","Za svaku ulogu ucitan odgovarajuci osnovni dashboard bez greske",Visok,DA,SB-05-10,Spremno
-TC-15,Edge,Session state client/server,"Korisnik prijavljen u jednom tabu","U drugom tabu odjaviti korisnika pa se vratiti u prvi tab i uraditi akciju","Prvi tab prepoznaje nevalidnu sesiju i trazi ponovnu prijavu",Visok,DA,SB-05-11,Spremno
+ID_testa,Tip_testa,Funkcionalnost_modul,Preduslovi,Test_koraci,Ocekivani_rezultat,Prioritet,Obavezno_za_signoff,Povezani_story,Status_dizajna
+TC-01,Pozitivan,Registracija,Nema aktivne sesije; email nije registrovan,Otvoriti registraciju; unijeti validne podatke; potvrditi registraciju,Korisnik kreiran kao korisnik_usluge; uspjesna poruka; bez tehnickih detalja greske,Visok,DA,US-01/PBI-001,Spremno
+TC-02,Negativan,Registracija,Nema aktivne sesije; email vec postoji,Pokusati registraciju sa postojecim emailom,Registracija odbijena neutralnom porukom; ne kreira se dupli korisnik,Visok,DA,US-01/PBI-001,Spremno
+TC-03,Negativan,Registracija,Nema aktivne sesije,Unijeti neispravan email format i poslati formu,Klijentska validacija blokira slanje i prikazuje razumljivu poruku,Srednji,DA,US-01/PBI-001,Spremno
+TC-04,Pozitivan,Login,Postoji aktiviran korisnik_usluge nalog,Otvoriti login; unijeti validne kredencijale; poslati formu,Uspjesna prijava; sesija kreirana; redirect na odgovarajuci dashboard,Visok,DA,US-02/PBI-001,Spremno
+TC-05,Negativan,Login,Postoji korisnik,Pokusati login sa pogresnom sifrom,Prijava odbijena neutralnom porukom; bez otkrivanja da li je email validan,Visok,DA,US-02/PBI-001,Spremno
+TC-06,Negativan,Login,Nema aktivne sesije,Pokusati login sa praznim obaveznim poljima,Forma ne salje zahtjev dok obavezna polja nisu popunjena,Srednji,DA,US-02/PBI-001,Spremno
+TC-07,Pozitivan,Odjava,Korisnik prijavljen,Kliknuti odjava; nakon toga otvoriti prethodno zasticenu rutu,Sesija prekinuta; korisnik vracen na login/landing; zasticena ruta nije dostupna,Visok,DA,US-03/PBI-001,Spremno
+TC-08,Pozitivan,Sesija,Korisnik prijavljen,Refresovati browser na dashboard ruti,Korisnik ostaje prijavljen; aktivna uloga i ruta ostaju uskladjene,Visok,DA,SB-05-11,Spremno
+TC-09,Negativan,Sesija,Korisnik odjavljen,Nakon odjave pokusati direktno otvoriti /korisnik,Redirect na login; nema prikaza zasticenog sadrzaja,Visok,DA,SB-05-11,Spremno
+TC-10,Pozitivan,Role redirect,Korisnik ima jednu ulogu,Prijaviti korisnika sa jednom ulogom,Automatski redirect na dashboard te uloge bez ekrana za odabir,Visok,DA,SB-05-08,Spremno
+TC-11,Pozitivan,Odabir aktivne uloge,Korisnik ima vise uloga,Prijava; odabrati ulogu A pa odjaviti; prijava i odabrati ulogu B,Prikaz odabira uloge; dashboard prati izabranu aktivnu ulogu,Visok,DA,SB-05-07,Spremno
+TC-12,Negativan,Zastita ruta,Korisnik prijavljen kao serviser,Rucno otvoriti /admin i /dispecer,Pristup tudjim dashboard rutama odbijen redirectom ili deny stranicom,Kritican,DA,SB-05-09,Spremno
+TC-13,Negativan,Zastita ruta API,Korisnik prijavljen kao ne-admin,Pozvati admin-only API endpoint,API vraca 401/403 bez osjetljivih podataka,Kritican,DA,SB-05-09,Spremno
+TC-14,Pozitivan,Dashboard po ulozi,Postoje korisnici za sve 4 uloge,Prijaviti se redom kao korisnik_usluge, serviser, dispecer, administrator,Za svaku ulogu ucitan odgovarajuci osnovni dashboard bez greske,Visok,DA,SB-05-10,Spremno
+TC-15,Edge,Session state client/server,Korisnik prijavljen u jednom tabu,U drugom tabu odjaviti korisnika pa se vratiti u prvi tab i uraditi akciju,Prvi tab prepoznaje nevalidnu sesiju i trazi ponovnu prijavu,Visok,DA,SB-05-11,Spremno
