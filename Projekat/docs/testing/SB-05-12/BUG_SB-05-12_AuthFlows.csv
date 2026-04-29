@@ -1,0 +1,3 @@
+UPUTA,Upisati samo stvarne greške iz SB-05-12 i SB-05-13 testova. Koristiti jedinstven format ID: B-01 B-02... Prioritet: Nizak/Srednji/Visok/Kritičan. Status: Otvorena/U obradi/Ispravljena/Zatvorena.,,,,,,,
+ID_greske,Povezani_ID_testa_ili_scenarija,Funkcionalnost_modul,Opis_greske,Prioritet_greske,Status_greske,Sprint_faza,Dokaz_putanja,Napomena
+PRIMJER_B-XX_NE_UNOSITI_U_REZULTATE,TC-12,Zastita ruta,PRIMJER: Serviser može otvoriti /admin umjesto redirecta,Visok,Otvorena,SB-05,evidence/SB-05-13/PRIMJER_SEC-03.png,PRIMJER reda - obrisati prije finalnog sign-offa
