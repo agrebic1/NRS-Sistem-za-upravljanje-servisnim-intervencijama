@@ -1,30 +1,51 @@
-# Testing paket - Sprint 5
+# Testing dokumentacija
 
-Ovaj folder sadrži kompletan QA paket za početak testiranja stavki `SB-05-12` i `SB-05-13`.
+Ovaj dokument opisuje kako se pokrecu automatski testovi i sta je trenutno pokriveno.
 
-## Cilj testiranja
+## Lokalne komande
 
-Potvrditi da autentifikacija, sesija i kontrola pristupa rade sigurno i stabilno:
-- registracija, prijava, odjava
-- upravljanje sesijom
-- role-based redirect i zaštita ruta
-- validacija pristupa po ulozi
+- `npm run test` - pokrece unit + integration testove
+- `npm run test:coverage` - pokrece coverage izvjestaj za kriticne module
+- `npm run test:e2e` - pokrece Playwright e2e smoke testove
 
-## Šta QA radi redom
+## Sta se mockuje, a sta ide ka backendu
 
-1. U `SB-05-12/TC...csv` pročita test slučajeve i pripremi podatke.
-   Početni podaci i preduvjeti su u `TEST_DATA_SB-05_Common.md`.
-2. Svaki pokrenuti test upiše u `SB-05-12/EXEC...csv`.
-3. Svaki fail ili partial upise u `SB-05-12/BUG...csv`.
-4. Za role/access validaciju popuni `SB-05-13/ACCESS...csv` i `SB-05-13/SEC...csv`.
-5. Kada su kriteriji ispunjeni, popuni i potpiše `SB-05-13/SIGNOFF...md`.
-6. Dokaze (slike/video/log) čuva u `evidence/SB-05-12/` ili `evidence/SB-05-13/`.
+- **Unit testovi** koriste mockove za:
+  - Supabase klijenta i auth pozive
+  - `next/navigation` router
+  - servisne funkcije za forme
+- **Integration testovi** testiraju API route logiku kroz simulirane request/response tokove.
+- **E2E testovi** pokrecu aplikaciju kroz browser i provjeravaju kljucne korisnicke tokove i redirecte.
 
-## Pravila evidencije
+## Pokriveni tokovi u Sprint 1
 
-- Ovaj paket je očišćen od dummy rezultata; unositi samo stvarne rezultate.
-- Dozvoljeni statusi testa: `Prošao`, `Nije prošao`, `Djelimično prošao`, `Nije testirano`.
-- Prioritet greške: `Nizak`, `Srednji`, `Visok`, `Kritičan`.
-- Status greške: `Otvorena`, `U obradi`, `Ispravljena`, `Zatvorena`.
-- Svaki `Nije prošao` ili `Djelimično prošao` mora imati `ID_greske`.
-- Sprint se smatra QA spremnim tek kada su obavezni testovi prošli i sign-off završen.
+- middleware: redirect neprijavljenih i role-based pristup (`/admin`, `/serviser`, `/dispecer`, `/korisnik`)
+- forme:
+  - `LoginForm` (happy path, error, resend verifikacije)
+  - `RegisterForm` (step navigacija, valid submit, error submit)
+  - `ServiceRequestForm` (uspjesan submit, error submit, loading kategorija)
+- e2e smoke:
+  - auth stranice
+  - redirect sa privatnih ruta na login
+
+## Security controls
+
+- Login rate limiting je aktivan za prijavu:
+  - maksimalno 5 neuspjesnih pokusaja
+  - unutar 5 minuta
+  - nakon toga blokada prijave 5 minuta
+- Korisnik nakon limita dobija poruku: `Previše pokušaja prijave. Sačekajte 5 minuta i pokušajte ponovo.`
+
+### QA reprodukcija brute-force zastite
+
+1. Otvoriti `/auth/login`.
+2. Unijeti validan format email adrese i pogresnu lozinku.
+3. Ponoviti neuspjesnu prijavu 5 puta.
+4. Pokusati prijavu 6. put i potvrditi poruku o blokadi.
+5. Verifikacija automatski kroz e2e test: `tests/e2e/auth.smoke.spec.ts` (test `blocks brute-force login attempts after repeated failures`).
+
+## Troubleshooting (flaky testovi)
+
+- Ako e2e padnu zbog zauzetog porta, ugasiti lokalni dev server i ponovo pokrenuti `npm run test:e2e`.
+- Ako se pojavi spor startup u Playwright-u, ponoviti test (`npm run test:e2e`) jer se Next cache stabilizuje nakon prvog pokretanja.
+- Ako testovi zavise od cache fajlova, ne commitati artefakte (`coverage`, `test-results`, `playwright-report`, `.next`).

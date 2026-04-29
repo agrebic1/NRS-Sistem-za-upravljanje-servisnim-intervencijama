@@ -1,5 +1,10 @@
 import { z } from 'zod'
 import { type IAuthRepozitorij, type RegistracijaParams, SupabaseAuthRepozitorij } from '@/lib/repositories/authRepozitorij'
+import {
+  clearLoginRateLimit,
+  isLoginBlocked,
+  recordFailedLoginAttempt,
+} from '@/lib/security/loginRateLimiter'
 
 function normalizujEmail(email: string) {
   return email.trim().replace(/^["']+|["']+$/g, '').toLowerCase()
@@ -34,7 +39,20 @@ export class AuthServis {
     if (!rezultat.success) {
       return { greska: rezultat.error.errors[0].message }
     }
-    return this.repozitorij.prijaviKorisnika(rezultat.data.email, rezultat.data.lozinka)
+
+    const email = rezultat.data.email
+    if (isLoginBlocked(email)) {
+      return { greska: 'Previše pokušaja prijave. Sačekajte 5 minuta i pokušajte ponovo.' }
+    }
+
+    const response = await this.repozitorij.prijaviKorisnika(email, rezultat.data.lozinka)
+    if (response.greska) {
+      recordFailedLoginAttempt(email)
+      return response
+    }
+
+    clearLoginRateLimit(email)
+    return response
   }
 
   async registracija(params: RegistracijaParams): Promise<RezultatOperacije> {
