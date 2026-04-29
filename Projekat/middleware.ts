@@ -1,6 +1,7 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { type NextRequest, NextResponse } from 'next/server';
 import type { Database } from './domain/types/supabase';
+import type { UserRole } from './domain/types';
 
 const JAVNE_RUTE = [
   '/',
@@ -14,6 +15,27 @@ const ADMIN_PREFIX = '/admin';
 const SERVISER_PREFIX = '/serviser';
 const DISPECER_PREFIX = '/dispecer';
 const KORISNIK_PREFIX = '/korisnik';
+
+function mapirajNazivUloge(naziv: string | null | undefined): UserRole | null {
+  const normalizovanNaziv = naziv?.toLowerCase();
+
+  switch (normalizovanNaziv) {
+    case 'klijent':
+    case 'korisnik':
+    case 'korisnik usluge':
+      return 'korisnik';
+    case 'serviser':
+      return 'serviser';
+    case 'dispecer':
+    case 'dispečer':
+      return 'dispecer';
+    case 'administrator':
+    case 'admin':
+      return 'admin';
+    default:
+      return null;
+  }
+}
 
 export async function middleware(zahtjev: NextRequest) {
   let supabaseResponse = NextResponse.next({ request: zahtjev });
@@ -55,24 +77,54 @@ export async function middleware(zahtjev: NextRequest) {
     user = authUser;
 
     if (authUser) {
-      // Provjeri samo zonu kojoj korisnik trenutno pristupa.
-      if (pathname.startsWith(ADMIN_PREFIX)) {
-        const { data: adminIzBaze, error } = await supabase.rpc('is_admin');
-        jeAdministrator = !error && adminIzBaze === true;
-      } else if (pathname.startsWith(SERVISER_PREFIX)) {
-        const { data: serviserIzBaze, error } = await supabase.rpc('is_serviser');
-        jeServiser = !error && serviserIzBaze === true;
-      } else if (pathname.startsWith(DISPECER_PREFIX)) {
-        const { data: dispecerIzBaze, error } = await supabase.rpc('is_dispecer');
-        jeDispecer = !error && dispecerIzBaze === true;
-      } else if (pathname.startsWith(KORISNIK_PREFIX)) {
-        const { data: korisnikUsluge, error } = await supabase
-          .from('korisnik_usluge')
-          .select('id_korisnika_usluge')
-          .eq('id_korisnika_usluge', authUser.id)
+      const { data: korisnikUsluge, error: greskaKorisnikaUsluge } = await supabase
+        .from('korisnik_usluge')
+        .select('id_korisnika_usluge')
+        .eq('id_korisnika_usluge', authUser.id)
+        .maybeSingle();
+
+      const { data: uposlenik, error: greskaUposlenika } = await supabase
+        .from('uposlenici' as any)
+        .select('id_uloge')
+        .eq('id_uposlenika', authUser.id)
+        .maybeSingle();
+
+      let uposlenikUloga: UserRole | null = null;
+      const idUloge = (uposlenik as { id_uloge?: number | null } | null)?.id_uloge;
+      if (!greskaUposlenika && idUloge) {
+        const { data: ulogaPodaci, error: greskaUloge } = await supabase
+          .from('uloga' as any)
+          .select('naziv')
+          .eq('id_uloge', idUloge)
           .maybeSingle();
-        jeKorisnik = !error && !!korisnikUsluge;
+
+        if (!greskaUloge) {
+          uposlenikUloga = mapirajNazivUloge(
+            (ulogaPodaci as { naziv?: string | null } | null)?.naziv
+          );
+        }
       }
+
+      // Fallback na postojece RPC funkcije ako relacijski upit ne vrati ulogu.
+      if (!uposlenikUloga && (pathname.startsWith(ADMIN_PREFIX) || pathname.startsWith(SERVISER_PREFIX) || pathname.startsWith(DISPECER_PREFIX))) {
+        if (pathname.startsWith(ADMIN_PREFIX)) {
+          const { data: adminIzBaze, error } = await supabase.rpc('is_admin');
+          jeAdministrator = !error && adminIzBaze === true;
+        } else if (pathname.startsWith(SERVISER_PREFIX)) {
+          const { data: serviserIzBaze, error } = await supabase.rpc('is_serviser');
+          jeServiser = !error && serviserIzBaze === true;
+        } else if (pathname.startsWith(DISPECER_PREFIX)) {
+          const { data: dispecerIzBaze, error } = await supabase.rpc('is_dispecer');
+          jeDispecer = !error && dispecerIzBaze === true;
+        }
+      } else {
+        jeAdministrator = uposlenikUloga === 'admin';
+        jeServiser = uposlenikUloga === 'serviser';
+        jeDispecer = uposlenikUloga === 'dispecer';
+      }
+
+      const jeInternaUloga = uposlenikUloga === 'admin' || uposlenikUloga === 'serviser' || uposlenikUloga === 'dispecer';
+      jeKorisnik = !greskaKorisnikaUsluge && !!korisnikUsluge && !jeInternaUloga;
     }
   } catch (error) {
     console.error('Middleware auth provjera nije uspjela:', error);

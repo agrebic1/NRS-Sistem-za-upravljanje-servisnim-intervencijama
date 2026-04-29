@@ -27,6 +27,15 @@ function mapirajAuthGresku(greska: { message: string; status?: number; code?: st
     return 'Previše pokušaja registracije. Sačekajte 1-2 minute i pokušajte ponovo.';
   }
 
+  if (
+    poruka.includes('already registered') ||
+    poruka.includes('already exists') ||
+    poruka.includes('user already') ||
+    poruka.includes('email address is already')
+  ) {
+    return 'Nalog sa ovom email adresom već postoji. Koristite prijavu ili reset lozinke.';
+  }
+
   return greska.message;
 }
 
@@ -102,6 +111,18 @@ export async function registrujKorisnika(podaci: {
 
   if (greskaAuth) throw new Error(mapirajAuthGresku(greskaAuth));
   if (!authPodaci.user) throw new Error('Kreiranje naloga nije uspjelo');
+
+  const identities = authPodaci.user.identities ?? [];
+  const jeMaskiraniDuplikat =
+    authPodaci.session == null &&
+    authPodaci.user.email?.toLowerCase() === email &&
+    Array.isArray(identities) &&
+    identities.length === 0;
+
+  // Supabase za postojeći email može vratiti "uspjeh" bez error-a (anti-enumeration).
+  if (jeMaskiraniDuplikat) {
+    throw new Error('Nalog sa ovom email adresom već postoji. Koristite prijavu ili reset lozinke.');
+  }
 
   // Trigger kreira osobu; broj telefona se sada cuva u tabeli osoba.
   await supabase

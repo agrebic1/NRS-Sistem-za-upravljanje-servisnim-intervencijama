@@ -129,6 +129,20 @@ describe('auth service role logic and auth flows', () => {
     ).rejects.toThrow('Unexpected auth error');
 
     mockSignUp.mockResolvedValueOnce({
+      data: null,
+      error: { message: 'User already registered', status: 422 },
+    });
+    await expect(
+      registrujKorisnika({
+        ime: 'A',
+        prezime: 'B',
+        email: 'user@example.com',
+        telefon: '061111222',
+        lozinka: 'Abcd123!',
+      })
+    ).rejects.toThrow('Nalog sa ovom email adresom već postoji');
+
+    mockSignUp.mockResolvedValueOnce({
       data: {},
       error: null,
     });
@@ -141,6 +155,23 @@ describe('auth service role logic and auth flows', () => {
         lozinka: 'Abcd123!',
       })
     ).rejects.toThrow('Kreiranje naloga nije uspjelo');
+
+    mockSignUp.mockResolvedValueOnce({
+      data: {
+        user: { id: 'id-existing', email: 'user@example.com', identities: [] },
+        session: null,
+      },
+      error: null,
+    });
+    await expect(
+      registrujKorisnika({
+        ime: 'A',
+        prezime: 'B',
+        email: 'user@example.com',
+        telefon: '061111222',
+        lozinka: 'Abcd123!',
+      })
+    ).rejects.toThrow('Nalog sa ovom email adresom već postoji');
 
     const osobaUpdate = builder({ data: null });
     mockFrom.mockImplementation((table) => {
