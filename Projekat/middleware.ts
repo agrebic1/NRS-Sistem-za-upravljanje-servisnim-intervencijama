@@ -55,34 +55,23 @@ export async function middleware(zahtjev: NextRequest) {
     user = authUser;
 
     if (authUser) {
+      // Provjeri samo zonu kojoj korisnik trenutno pristupa.
       if (pathname.startsWith(ADMIN_PREFIX)) {
-        const { data: adminIzBaze } = await supabase.rpc('is_admin', {
-          p_user_id: authUser.id,
-        });
-        jeAdministrator = adminIzBaze === true;
-      }
-
-      if (pathname.startsWith(SERVISER_PREFIX)) {
-        const { data: serviserIzBaze } = await supabase.rpc('is_serviser', {
-          p_user_id: authUser.id,
-        });
-        jeServiser = serviserIzBaze === true;
-      }
-
-      if (pathname.startsWith(DISPECER_PREFIX)) {
-        const { data: dispecerIzBaze } = await supabase.rpc('is_dispecer', {
-          p_user_id: authUser.id,
-        });
-        jeDispecer = dispecerIzBaze === true;
-      }
-
-      if (pathname.startsWith(KORISNIK_PREFIX)) {
-        const { data: korisnikUsluge } = await supabase
+        const { data: adminIzBaze, error } = await supabase.rpc('is_admin');
+        jeAdministrator = !error && adminIzBaze === true;
+      } else if (pathname.startsWith(SERVISER_PREFIX)) {
+        const { data: serviserIzBaze, error } = await supabase.rpc('is_serviser');
+        jeServiser = !error && serviserIzBaze === true;
+      } else if (pathname.startsWith(DISPECER_PREFIX)) {
+        const { data: dispecerIzBaze, error } = await supabase.rpc('is_dispecer');
+        jeDispecer = !error && dispecerIzBaze === true;
+      } else if (pathname.startsWith(KORISNIK_PREFIX)) {
+        const { data: korisnikUsluge, error } = await supabase
           .from('korisnik_usluge')
           .select('id_korisnika_usluge')
           .eq('id_korisnika_usluge', authUser.id)
           .maybeSingle();
-        jeKorisnik = !!korisnikUsluge;
+        jeKorisnik = !error && !!korisnikUsluge;
       }
     }
   } catch (error) {
