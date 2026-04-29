@@ -50,7 +50,7 @@ Zavisnosti:
 | ID | Naziv zadatka ili storyja | Odgovorna osoba ili osobe | Status | Napomena |
 |----|----------------------------|----------------------------|--------|----------|
 | SB-05-01 | Definisanje poslovnih pravila za registraciju, login, uloge i pristup sistemu | Solution architect | Done | Obuhvata decision log odluke: javna registracija samo za korisnika usluge, više uloga po korisniku, aktivna uloga, role-based redirect, odjava i osnovni dashboard po ulozi. |
-| SB-05-02 | Povezivanje aplikacije sa Supabase okruženjem | Backend / baza | To Do | Podesiti Supabase projekat, env varijable i osnovnu auth konfiguraciju. |
+| SB-05-02 | Povezivanje aplikacije sa Supabase okruženjem | Backend / baza | Done | Podesiti Supabase projekat, env varijable i osnovnu auth konfiguraciju. |
 | SB-05-03 | Implementacija registracije korisnika usluge (US-01, PBI-001) | Frontend + backend | Done | Korisnik se javno registruje samo kao korisnik usluge. Potrebne validacije i poruke grešaka. |
 | SB-05-04 | Implementacija prijave korisnika u sistem (US-02, PBI-001) | Frontend + backend | Done | Login forma, autentifikacija, neutralna poruka greške i povezivanje sa Supabase Auth. |
 | SB-05-05 | Implementacija odjave korisnika iz sistema (US-03, PBI-001) | Backend / frontend | Done | Odjava prekida sesiju i korisnika vraća na login ili landing stranicu. |
