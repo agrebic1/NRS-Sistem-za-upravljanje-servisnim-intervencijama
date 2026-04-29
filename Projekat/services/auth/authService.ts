@@ -1,6 +1,11 @@
 import { kreirajKlijenta } from '@/lib/supabase/klijent';
 import type { UserRole } from '@/domain/types';
 import { PREUSMJERANJE_PO_ULOZI } from '@/domain/types';
+import {
+  clearLoginRateLimit,
+  isLoginBlocked,
+  recordFailedLoginAttempt,
+} from '@/lib/security/loginRateLimiter';
 
 function normalizujEmail(email: string) {
   return email
@@ -30,12 +35,18 @@ function mapirajAuthGresku(greska: { message: string; status?: number; code?: st
 export async function prijaviSeEmailom(podaci: { email: string; lozinka: string }) {
   const supabase = kreirajKlijenta();
   const email = normalizujEmail(podaci.email);
+
+  if (isLoginBlocked(email)) {
+    throw new Error('Previše pokušaja prijave. Sačekajte 5 minuta i pokušajte ponovo.');
+  }
+
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password: podaci.lozinka,
   });
 
   if (error) {
+    recordFailedLoginAttempt(email);
     if (error.message.toLowerCase().includes('email not confirmed')) {
       throw new Error('Email adresa nije potvrđena. Provjerite inbox i potvrdite nalog.');
     }
@@ -43,6 +54,7 @@ export async function prijaviSeEmailom(podaci: { email: string; lozinka: string 
     throw new Error('Pogrešna email adresa ili lozinka');
   }
 
+  clearLoginRateLimit(email);
   return data;
 }
 
