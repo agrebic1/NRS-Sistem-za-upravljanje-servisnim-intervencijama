@@ -40,6 +40,3 @@
 - QA potpis: Eldin Begić
 - Datum: 29.04.2026
 
-- Solution Architect ime i prezime:
-- Solution Architect potpis:
-- Datum:
