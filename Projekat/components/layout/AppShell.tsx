@@ -138,6 +138,7 @@ export function AppShell({ children, uloga, imeKorisnika }: AppShellProps) {
 
         <div className="flex items-center gap-2">
           <button
+            type="button"
             className="flex h-8 w-8 items-center justify-center rounded-lg transition-colors hover:bg-soft-beige/30"
             style={{ color: 'var(--first-nonary)' }}
             aria-label="Obavještenja"
@@ -170,6 +171,7 @@ export function AppShell({ children, uloga, imeKorisnika }: AppShellProps) {
           </div>
 
           <button
+            type="button"
             className="flex h-8 w-8 items-center justify-center rounded-lg transition-colors hover:bg-soft-beige/30 md:hidden"
             style={{ color: 'var(--first-octonary)' }}
             onClick={() => setJeMenuOtvoren(true)}
@@ -186,10 +188,13 @@ export function AppShell({ children, uloga, imeKorisnika }: AppShellProps) {
           <div
             className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm md:hidden"
             onClick={() => setJeMenuOtvoren(false)}
+            aria-label="Zatvori meni klikom van drawer-a"
+            data-testid="mobile-menu-overlay"
           />
           <div
             className="fixed inset-y-0 left-0 z-50 flex w-72 flex-col p-5 md:hidden"
             style={{ backgroundColor: 'var(--first-tertiary)' }}
+            data-testid="mobile-menu-drawer"
           >
             <div className="mb-6 flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -199,6 +204,7 @@ export function AppShell({ children, uloga, imeKorisnika }: AppShellProps) {
                 <span className="font-bold tracking-tight" style={{ color: 'var(--first-octonary)' }}>InterServ</span>
               </div>
               <button
+                type="button"
                 onClick={() => setJeMenuOtvoren(false)}
                 className="rounded-lg p-1.5 hover:bg-soft-beige/30"
                 style={{ color: 'var(--first-nonary)' }}

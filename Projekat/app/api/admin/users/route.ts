@@ -84,15 +84,23 @@ export async function GET() {
       return NextResponse.json({ error: 'Nemate dozvolu za pregled korisnika.' }, { status: 403 });
     }
 
-    const [{ data: authPodaci, error: authGreska }, { data: korisnici, error: korisniciGreska }, { data: uposlenici, error: uposleniciGreska }] =
+    const [
+      { data: authPodaci, error: authGreska },
+      { data: korisnici, error: korisniciGreska },
+      { data: uposlenici, error: uposleniciGreska },
+      { data: uloge, error: ulogeGreska },
+    ] =
       await Promise.all([
         supabase.auth.admin.listUsers({ page: 1, perPage: 1000 }),
         supabase
-          .from('korisnik_usluge')
-          .select('id_korisnika_usluge, ime, prezime, email, uloga(naziv)'),
+          .from('v_korisnik_usluge')
+          .select('id_korisnika_usluge, ime, prezime, email'),
         supabase
-          .from('uposlenici')
-          .select('id_uposlenika, ime, prezime, email, uloga(naziv)'),
+          .from('v_uposlenici')
+          .select('id_uposlenika, id_uloge, ime, prezime, email'),
+        supabase
+          .from('uloga')
+          .select('id_uloge, naziv'),
       ]);
 
     if (authGreska) {
@@ -107,6 +115,15 @@ export async function GET() {
       return NextResponse.json({ error: uposleniciGreska.message }, { status: 500 });
     }
 
+    if (ulogeGreska) {
+      return NextResponse.json({ error: ulogeGreska.message }, { status: 500 });
+    }
+
+    const nazivUlogePoId = new Map<number, string>();
+    for (const uloga of uloge ?? []) {
+      nazivUlogePoId.set(uloga.id_uloge, uloga.naziv);
+    }
+
     const profili = new Map<string, ProfilKorisnika>();
 
     for (const korisnik of korisnici ?? []) {
@@ -115,7 +132,7 @@ export async function GET() {
         ime: korisnik.ime,
         prezime: korisnik.prezime,
         email: korisnik.email,
-        uloga: procitajNazivUloge(korisnik.uloga, 'Korisnik usluge'),
+        uloga: 'Korisnik usluge',
         tip: 'korisnik',
       });
     }
@@ -126,7 +143,7 @@ export async function GET() {
         ime: uposlenik.ime,
         prezime: uposlenik.prezime,
         email: uposlenik.email,
-        uloga: procitajNazivUloge(uposlenik.uloga, 'Uposlenik'),
+        uloga: nazivUlogePoId.get(uposlenik.id_uloge) ?? 'Uposlenik',
         tip: 'uposlenik',
       });
     }

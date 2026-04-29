@@ -83,7 +83,7 @@ export async function registrujKorisnika(podaci: {
     email,
     password: podaci.lozinka,
     options: {
-      // DB trigger reads these from raw_user_meta_data and inserts into korisnik_usluge
+      // DB trigger reads these from raw_user_meta_data and inserts into osoba + odgovarajuci subtype
       data: { ime: podaci.ime, prezime: podaci.prezime, uloga: 'Klijent' },
     },
   });
@@ -91,11 +91,11 @@ export async function registrujKorisnika(podaci: {
   if (greskaAuth) throw new Error(mapirajAuthGresku(greskaAuth));
   if (!authPodaci.user) throw new Error('Kreiranje naloga nije uspjelo');
 
-  // Trigger creates the row — only update the phone field which trigger doesn't handle
+  // Trigger kreira osobu; broj telefona se sada cuva u tabeli osoba.
   await supabase
-    .from('korisnik_usluge')
+    .from('osoba')
     .update({ broj_telefona: podaci.telefon })
-    .eq('id_korisnika_usluge', authPodaci.user.id);
+    .eq('id_osobe', authPodaci.user.id);
 
   return authPodaci;
 }
@@ -141,7 +141,7 @@ export async function getUlogeKorisnika(idKorisnika: string): Promise<UserRole[]
   // Provjera korisnik_usluge tabele
   const { data: korisnikUsluge } = await supabase
     .from('korisnik_usluge')
-    .select('id_korisnika_usluge, id_uloge')
+    .select('id_korisnika_usluge')
     .eq('id_korisnika_usluge', idKorisnika)
     .maybeSingle();
 
