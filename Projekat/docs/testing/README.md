@@ -17,7 +17,7 @@ Ovaj dokument opisuje kako se pokrecu automatski testovi i sta je trenutno pokri
 - **Integration testovi** testiraju API route logiku kroz simulirane request/response tokove.
 - **E2E testovi** pokrecu aplikaciju kroz browser i provjeravaju kljucne korisnicke tokove i redirecte.
 
-## Pokriveni tokovi u Sprint 1
+## Pokriveni tokovi u Sprint 5
 
 - middleware: redirect neprijavljenih i role-based pristup (`/admin`, `/serviser`, `/dispecer`, `/korisnik`)
 - forme:
