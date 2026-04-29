@@ -30,7 +30,7 @@ Mogući statusi:
 | Datum | 25.04.2026. |
 | Kratak naziv odluke | Landing page kao centralna ulazna tačka |
 | Opis problema ili pitanja | Kako organizovati ulaz u sistem za različite tipove korisnika? |
-| Razmatrane opcije | 1. Direktan pristup login/registraciji  2. Više odvojenih ulaznih stranica  3. Jedna centralna landing stranica sa izborom |
+| Razmatrane opcije | 1. Direktan pristup login/registraciji <br> 2. Više odvojenih ulaznih stranica <br> 3. Jedna centralna landing stranica sa izborom |
 | Odabrana opcija | Centralna landing stranica sa više opcija |
 | Razlog izbora | Jednostavnije korisničko iskustvo i jasna struktura ulaza u sistem |
 | Posljedice odluke | Potrebno definisati više korisničkih tokova sa jedne početne stranice |
@@ -56,7 +56,7 @@ Ovim pristupom sistem postaje intuitivniji i pristupačniji, jer korisnik odmah 
 | Datum | 28.04.2026. |
 | Kratak naziv odluke | Ograničenje registracije |
 | Opis problema ili pitanja | Da li omogućiti slobodnu registraciju za sve uloge u sistemu? |
-| Razmatrane opcije | 1. Slobodna registracija za sve uloge  2. Registracija samo za korisnike usluge  3. Potpuno zatvoren sistem |
+| Razmatrane opcije | 1. Slobodna registracija za sve uloge <br> 2. Registracija samo za korisnike usluge <br> 3. Potpuno zatvoren sistem |
 | Odabrana opcija | Javna registracija samo za korisnike usluge |
 | Razlog izbora | Balans između dostupnosti sistema i sigurnosnog perimetra |
 | Posljedice odluke | Operativne uloge se dodjeljuju kroz kontrolisan proces |
@@ -76,7 +76,7 @@ U kontekstu ovog sistema, krajnji korisnici često pristupaju platformi u stanju
 | Datum | 26.04.2026. |
 | Kratak naziv odluke | Serviser onboarding |
 | Opis problema | Kako omogućiti pristup ulozi servisera? |
-| Razmatrane opcije | 1. Slobodna registracija  2. Prijava i administrativno odobrenje |
+| Razmatrane opcije | 1. Slobodna registracija <br> 2. Prijava i administrativno odobrenje |
 | Odabrana opcija | Prijava i administrativno odobrenje |
 | Razlog izbora | Kontrola kvaliteta i pravna usklađenost |
 | Posljedice odluke | Uveden onboarding proces |
@@ -106,7 +106,7 @@ Ovim pristupom osiguravamo da platforma ne bude samo tehnički posrednik, već s
 | Datum | 24.04.2026. |
 | Kratak naziv odluke | Više uloga po korisniku |
 | Opis problema ili pitanja | Da li korisnik treba imati jednu ili više uloga u sistemu? |
-| Razmatrane opcije | 1. Jedna uloga po korisniku  2. Više naloga po korisniku  3. Više uloga po jednom nalogu |
+| Razmatrane opcije | 1. Jedna uloga po korisniku <br> 2. Više naloga po korisniku <br> 3. Više uloga po jednom nalogu |
 | Odabrana opcija | Više uloga po jednom korisniku |
 | Razlog izbora | Omogućavanje fleksibilnosti i pokrivanje realnih scenarija korištenja sistema |
 | Posljedice odluke | Potrebna implementacija odabira aktivne uloge i role-based pristupa, povećana kompleksnost autentifikacije |
@@ -126,7 +126,7 @@ Sistem za upravljanje servisnim intervencijama obuhvata različite tipove korisn
 | Datum | 28.04.2026. |
 | Kratak naziv odluke | Aktivna uloga kao kontekst rada |
 | Opis problema ili pitanja | Kako organizovati rad korisnika koji posjeduje više uloga unutar jedne sesije? |
-| Razmatrane opcije | 1. Istovremeno korištenje svih uloga 2. Rad kroz jednu eksplicitno odabranu aktivnu ulogu |
+| Razmatrane opcije | 1. Istovremeno korištenje svih uloga <br> 2. Rad kroz jednu eksplicitno odabranu aktivnu ulogu |
 | Odabrana opcija | Jedna aktivna uloga u datom trenutku |
 | Razlog izbora | Jasnoća interfejsa, smanjenje kognitivnog opterećenja i očuvanje integriteta sesije |
 | Posljedice odluke | Potrebna implementacija mehanizma za odabir i promjenu uloge (role switcher) |
@@ -158,7 +158,7 @@ Ovakav dizajn osigurava visoku skalabilnost jer omogućava dodavanje novih, komp
 | Datum | 27.04.2026. |
 | Kratak naziv odluke | Role-based navigacija i preusmjeravanje |
 | Opis problema ili pitanja | Kako usmjeriti korisnika kroz sistem nakon registracije i prijave, na način koji je u skladu s njegovom ulogom i odgovornostima, uz očuvanje efikasnosti i jasnoće korisničkog toka? |
-| Razmatrane opcije | 1. Jedinstven (univerzalni) dashboard za sve korisnike 2. Ručni odabir stranica bez kontrole 3. Automatsko preusmjeravanje prema ulozi uz mogućnost izbora |
+| Razmatrane opcije | 1. Jedinstven (univerzalni) dashboard za sve korisnike <br> 2. Ručni odabir stranica bez kontrole <br> 3. Automatsko preusmjeravanje prema ulozi uz mogućnost izbora |
 | Odabrana opcija | Automatsko preusmjeravanje prema ulozi s mogućnošću izbora aktivne uloge |
 | Razlog izbora | Osigurava jasnoću u korisničkom toku, povećava efikasnost i pruža personalizovano iskustvo rada unutar sistema |
 | Posljedice odluke | Potrebna implementacija role-based navigacije, zaštite ruta i modularne arhitekture dashboarda |
@@ -190,7 +190,7 @@ Takva arhitektura omogućava sljedeće:
 | Datum | 28.04.2026. |
 | Kratak naziv odluke | Neutralne poruke greške pri autentifikaciji |
 | Opis problema ili pitanja | Kako komunicirati neuspješnu prijavu bez otkrivanja osjetljivih sistemskih informacija? |
-| Razmatrane opcije | 1. Specifične poruke (npr. "Korisnik ne postoji") 2. Neutralne poruke (npr. "Neispravni podaci") |
+| Razmatrane opcije | 1. Specifične poruke (npr. "Korisnik ne postoji") <br> 2. Neutralne poruke (npr. "Neispravni podaci") |
 | Odabrana opcija | Neutralne poruke |
 | Razlog izbora | Prevencija eksploatacije korisničkih podataka i povećanje nivoa sigurnosti |
 | Posljedice odluke | Manja preciznost u povratnoj informaciji za legitimnog korisnika |
@@ -210,7 +210,7 @@ Odluka o korištenju neutralnih poruka direktno sprečava **User Enumeration** n
 | Datum | 28.04.2026. |
 | Kratak naziv odluke | Hibridni pristup upravljanju sesijom |
 | Opis problema | Kako efikasno upravljati autentifikacijom i stanjem korisnika kroz cijeli sistem? |
-| Razmatrane opcije | 1. Isključivo client-side (Stateless - npr. JWT) 2. Isključivo server-side (Stateful - npr. Session Cookies) 3. Hibridni pristup |
+| Razmatrane opcije | 1. Isključivo client-side (Stateless - npr. JWT) <br> 2. Isključivo server-side (Stateful - npr. Session Cookies) 3. Hibridni pristup |
 | Odabrana opcija | Hibridni pristup |
 | Razlog izbora | Optimalan balans između sigurnosne kontrole i sistemskih performansi |
 | Posljedice odluke | Implementirana kompleksnija logika koja zahtijeva sinhronizaciju servera i klijenta |
@@ -230,7 +230,7 @@ Hibridni pristup upravljanju sesijom odabran je kako bi se eliminisali nedostaci
 | Datum | 28.04.2026. |
 | Kratak naziv odluke | Višeslojna zaštita ruta |
 | Opis problema | Kako spriječiti neovlašten pristup privatnim dijelovima sistema i osjetljivim podacima? |
-| Razmatrane opcije | 1. Osnovna zaštita (samo autentifikacija) 2. Napredna Role-based zaštita sa više slojeva |
+| Razmatrane opcije | 1. Osnovna zaštita (samo autentifikacija) <br> 2. Napredna Role-based zaštita sa više slojeva |
 | Odabrana opcija | Role-based zaštita sa više slojeva |
 | Razlog izbora | Maksimalna sigurnost podataka i precizna kontrola pristupa |
 | Posljedice odluke | Obavezna implementacija Middleware slojeva na klijentskoj i serverskoj strani |
@@ -256,7 +256,7 @@ Jedan od ključnih argumenata za ovu odluku je prevencija **Broken Access Contro
 | Datum | 28.04.2026. |
 | Kratak naziv odluke | Potpuna invalidacija sesije pri odjavi |
 | Opis problema | Kako osigurati da sesija postane trajno neupotrebljiva nakon što korisnik zatraži odjavu? |
-| Razmatrane opcije | 1. Client-side odjava (samo brisanje lokalnih podataka) 2. Potpuna invalidacija sesije na serveru i klijentu |
+| Razmatrane opcije | 1. Client-side odjava (samo brisanje lokalnih podataka) <br> 2. Potpuna invalidacija sesije na serveru i klijentu |
 | Odabrana opcija | Potpuna invalidacija sesije |
 | Razlog izbora | Sigurnost i sprječavanje zloupotrebe aktivnih tokena |
 | Posljedice odluke | Potrebna implementacija serverskog mehanizma za uništavanje sesijskih podataka |
@@ -276,7 +276,7 @@ Jednostavno brisanje lokalnih podataka na klijentskoj strani (npr. uklanjanje to
 | Datum | 25.04.2026. |
 | Kratak naziv odluke | Namjenski dashboard prema aktivnoj ulozi |
 | Opis problema | Kako korisniku prikazati kritične informacije bez preopterećenja interfejsa nebitnim podacima? |
-| Razmatrane opcije | 1. Jedinstveni (univerzalni) dashboard za sve 2. Specifični dashboard za svaku pojedinačnu ulogu |
+| Razmatrane opcije | 1. Jedinstveni (univerzalni) dashboard za sve <br> 2. Specifični dashboard za svaku pojedinačnu ulogu |
 | Odabrana opcija | Role-based dashboard |
 | Razlog izbora | Povećanje operativne efikasnosti i drastično smanjenje kognitivnog opterećenja |
 | Posljedice odluke | Potreban razvoj modularnih UI komponenti za različite tipove prikaza |
@@ -288,23 +288,80 @@ Različite korisničke uloge unutar sistema zahtijevaju radikalno različite set
 
 ---
 
-## Odluka #012 - Korisnik ne određuje prioritet zahtjeva
+## Odluka #012 - Middleware kao centralni "Traffic Controller"
 
 | Polje | Opis |
 |-------|------|
 | ID odluke | DLI-012 |
 | Datum | 27.04.2026. |
-| Kratak naziv odluke | Ograničenje određivanja prioriteta |
-| Opis problema ili pitanja | Da li korisniku omogućiti da prilikom prijave zahtjeva sam odredi prioritet? |
-| Razmatrane opcije | 1. Korisnik određuje prioritet  2. Sistem automatski određuje  3. Prioritet se određuje u kasnijoj fazi obrade |
-| Odabrana opcija | Korisnik ne određuje prioritet |
-| Razlog izbora | Očuvanje tačnosti i konzistentnosti podataka |
-| Posljedice odluke | Prioritet se uklanja iz korisničke forme i ostavlja za kasniju obradu |
+| Kratak naziv odluke | Middleware-level session management |
+| Opis problema ili pitanja | Kako osigurati da je sesija uvijek validna prije nego što zahtjev dođe do stranice ili API-ja? |
+| Razmatrane opcije | 1. Provjera unutar svake komponente (client-side) <br> 2. Centralizovani middleware na nivou zahtjeva |
+| Odabrana opcija | Centralizovani middleware za presretanje zahtjeva |
+| Razlog izbora | Veća sigurnost, centralizacija logike i smanjenje mogućnosti greške |
+| Posljedice odluke | Potrebno pažljivo upravljanje sesijom i kolačićima |
 | Status odluke | aktivna |
 
 ### Detaljno obrazloženje
 
-Korisnici koji prijavljuju zahtjeve za servisnu intervenciju u pravilu nemaju dovoljno informacija niti stručnog znanja da bi mogli realno procijeniti hitnost problema. Omogućavanje korisniku da sam određuje prioritet dovelo bi do čestog precjenjivanja važnosti vlastitog zahtjeva, što bi rezultiralo nepouzdanim podacima i otežalo organizaciju rada sistema. Zbog toga je donesena odluka da se korisniku ne omogući određivanje prioriteta prilikom unosa zahtjeva. Time se izbjegava unošenje subjektivnih i nepouzdanih informacija u sistem. Prioritet se u ovom modelu ostavlja kao dio poslovne logike koja se obrađuje u kasnijoj fazi, na osnovu dodatnih informacija i šireg konteksta sistema. Ovaj pristup doprinosi većoj konzistentnosti podataka, boljoj organizaciji procesa i pouzdanijem donošenju odluka unutar sistema.
+Kod aplikacija koje imaju zaštićene dijelove sistema nije dovoljno osloniti se na provjeru unutar pojedinačnih komponenti. Ako se autentifikacija provjerava tek nakon učitavanja stranice, može doći do situacije da korisnik na trenutak vidi sadržaj kojem ne bi smio pristupiti. Takvo ponašanje nije prihvatljivo ni sa sigurnosne strane, ali ni iz ugla korisničkog iskustva. Zbog toga smo odlučili da provjeru sesije pomjerimo na middleware nivo. Middleware presreće svaki zahtjev prije nego što on dođe do stranice i na osnovu toga odlučuje da li korisnik ima pravo pristupa ili treba biti preusmjeren na login. Ova odluka je u skladu sa višeslojnom arhitekturom sistema jer razdvaja odgovornosti: UI sloj je zadužen za prikaz, dok middleware i auth sloj upravljaju sigurnošću i pristupom. Na taj način se izbjegava ponavljanje iste logike na više mjesta i smanjuje mogućnost da neka ruta ostane nezaštićena. Iako middleware uvodi dodatnu složenost u upravljanju sesijom, dugoročno donosi stabilniji i sigurniji sistem.
 
+---
 
+## Odluka #013 - Razdvajanje auth naloga od operativnih profila
 
+| Polje | Opis |
+|-------|------|
+| ID odluke | DLI-013 |
+| Datum | 28.04.2026. |
+| Kratak naziv odluke | Razdvajanje autentifikacije od uloga |
+| Opis problema ili pitanja | Kako omogućiti registraciju korisnika bez automatskog pristupa osjetljivim funkcionalnostima sistema? |
+| Razmatrane opcije | 1. Sve informacije u jednoj tabeli <br> 2. Razdvajanje auth naloga i aplikativnih profila |
+| Odabrana opcija | Razdvajanje auth naloga od aplikativnih tabela |
+| Razlog izbora | Veća sigurnost i fleksibilnost sistema |
+| Posljedice odluke | Potrebno povezivanje podataka kroz jedinstveni identifikator korisnika |
+| Status odluke | aktivna |
+
+### Detaljno obrazloženje
+
+Važno je razlikovati identitet korisnika od njegovih stvarnih prava u sistemu. To što korisnik ima nalog ne znači automatski da ima pristup svim funkcionalnostima. Ako bi sve bilo smješteno u jednoj tabeli, postojala bi veća mogućnost da korisnik dobije pristup koji mu ne pripada. Zbog toga smo odlučili da `auth.users` koristimo samo za identitet korisnika, dok se njegove uloge i prava definišu kroz odvojene aplikativne tabele. Na taj način korisnik može postojati u sistemu, ali nema operativna prava dok mu se ona eksplicitno ne dodijele. Ova odluka povećava sigurnost sistema jer sprječava da bilo ko samom registracijom dobije pristup osjetljivim funkcijama. Također omogućava fleksibilnost, gdje jedan korisnik može imati više uloga bez potrebe za kreiranjem više naloga. Iako zahtijeva dodatno povezivanje podataka, ovaj pristup čini sistem jasnijim, sigurnijim i lakšim za održavanje.
+
+---
+
+## Odluka #014 - Automatska prijava nakon uspješne registracije
+
+| Polje | Opis |
+|-------|------|
+| ID odluke | DLI-014 |
+| Datum | 25.04.2026. |
+| Kratak naziv odluke | Automatska prijava nakon registracije |
+| Opis problema ili pitanja | Da li korisnik nakon registracije treba ponovo prolaziti kroz login proces? |
+| Razmatrane opcije | 1. Preusmjeravanje na login <br> 2. Automatska prijava |
+| Odabrana opcija | Automatska prijava i preusmjeravanje na početni ekran |
+| Razlog izbora | Bolje korisničko iskustvo i smanjenje nepotrebnih koraka |
+| Posljedice odluke | Potrebno odmah kreirati validnu sesiju |
+| Status odluke | aktivna |
+
+### Detaljno obrazloženje
+
+Korisnik koji se registruje želi što prije početi koristiti sistem. Ako ga nakon registracije vratimo na login formu, tražimo od njega da ponovo unosi iste podatke, što je nepotreban korak. Zbog toga smo odlučili da korisnika automatski prijavimo nakon registracije. Time se registracija i ulazak u sistem spajaju u jedan prirodan tok bez prekida. Ovaj pristup je posebno važan u kontekstu servisnih intervencija, gdje korisnik često dolazi sa konkretnim problemom koji želi brzo riješiti. Svaki dodatni korak može usporiti proces i povećati frustraciju. Iako ova odluka zahtijeva da se sesija odmah pravilno postavi, prednost u korisničkom iskustvu je značajna.
+
+---
+
+## Odluka #015 - Fail-fast validacija pomoću Zod shema
+
+| Polje | Opis |
+|-------|------|
+| ID odluke | DLI-015 |
+| Datum | 25.04.2026. |
+| Kratak naziv odluke | Validacija podataka u formama |
+| Opis problema ili pitanja | Kako spriječiti unos neispravnih podataka i korisniku dati jasnu povratnu informaciju? |
+| Razmatrane opcije | 1. Validacija samo na serveru <br> 2. Validacija na frontend i backend strani |
+| Odabrana opcija | Korištenje Zod validacije na frontend strani uz backend provjeru |
+| Razlog izbora | Brža povratna informacija i smanjenje nepotrebnih zahtjeva |
+| Posljedice odluke | Potrebno održavanje validacionih pravila |
+| Status odluke | aktivna |
+
+### Detaljno obrazloženje
+
+Kada korisnik unosi podatke, važno je da odmah dobije informaciju ako je nešto pogrešno. Ako grešku vidi tek nakon slanja forme, proces postaje sporiji i manje intuitivan. Zbog toga smo odlučili koristiti Zod validaciju na frontend strani. Na taj način korisnik odmah vidi šta treba ispraviti, bez čekanja odgovora servera. Ovaj pristup također smanjuje broj neispravnih zahtjeva koji dolaze na backend, što rasterećuje sistem. Ipak, backend validacija i dalje ostaje obavezna, jer je ona konačna sigurnosna provjera. Odluka je u skladu sa višeslojnom arhitekturom jer frontend brine o korisničkom iskustvu, dok backend osigurava integritet sistema. Time se postiže optimalan balans između responzivnog korisničkog interfejsa i robusne serverske sigurnosti, čime sistem postaje otporniji na greške, brži u radu i lakši za održavanje kroz strogo definisana pravila validacije.
