@@ -5,11 +5,43 @@ import { RegisterForm } from '@/components/forms/RegisterForm';
 export default function RegistracijaPage() {
   return (
     <div
-      className="flex min-h-screen flex-col items-center justify-center px-4 py-12"
+      className="relative isolate flex min-h-screen flex-col items-center justify-center overflow-hidden px-4 py-12"
       style={{ backgroundColor: 'var(--first-tertiary)' }}
     >
+      <div
+        className="pointer-events-none absolute inset-0 z-0 hidden sm:block"
+        style={{
+          background:
+            'radial-gradient(circle at 52% 35%, rgb(var(--first-septenary-rgb) / 0.11), transparent 44%), radial-gradient(circle at 82% 68%, rgb(var(--first-secondary-rgb) / 0.07), transparent 42%)',
+        }}
+        aria-hidden
+      />
+      <div
+        className="pointer-events-none absolute inset-0 z-0 hidden sm:block opacity-35"
+        style={{
+          backgroundImage:
+            'linear-gradient(rgb(var(--first-secondary-rgb) / 0.06) 1px, transparent 1px), linear-gradient(90deg, rgb(var(--first-secondary-rgb) / 0.06) 1px, transparent 1px)',
+          backgroundSize: '30px 30px',
+          maskImage: 'radial-gradient(circle at center, black 38%, transparent 85%)',
+          WebkitMaskImage: 'radial-gradient(circle at center, black 38%, transparent 85%)',
+        }}
+        aria-hidden
+      />
+      <div
+        className="pointer-events-none absolute inset-0 z-0 hidden sm:block"
+        style={{
+          background:
+            'linear-gradient(180deg, rgb(var(--first-tertiary-rgb) / 0.15) 0%, rgb(var(--first-tertiary-rgb) / 0.3) 100%)',
+        }}
+        aria-hidden
+      />
+
       {/* Brand */}
-      <div className="mb-7 flex items-center gap-2.5">
+      <Link
+        href="/#hero"
+        className="relative z-10 mb-7 flex w-fit items-center gap-2.5 rounded-xl p-1 -m-1 outline-none transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-[rgb(var(--first-septenary-rgb)/0.45)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--first-tertiary)]"
+        aria-label="InterServ — povratak na početnu stranicu"
+      >
         <div
           className="flex h-9 w-9 items-center justify-center rounded-xl"
           style={{ backgroundColor: 'var(--first-primary)' }}
@@ -19,16 +51,17 @@ export default function RegistracijaPage() {
         <span className="text-lg font-bold tracking-tight" style={{ color: 'var(--first-octonary)' }}>
           InterServ
         </span>
-      </div>
+      </Link>
 
       {/* Card */}
-      <div className="w-full max-w-md">
+      <div className="relative z-10 w-full max-w-md">
         <div
           className="rounded-2xl p-7 shadow-card-lg sm:p-8"
           style={{
-            backgroundColor: 'rgb(var(--first-quinary-rgb) / 0.22)',
-            border: '1px solid rgb(var(--first-quaternary-rgb) / 0.4)',
-            backdropFilter: 'blur(12px)',
+            backgroundColor: 'rgb(var(--first-quinary-rgb) / 0.4)',
+            border: '1px solid rgb(var(--first-quaternary-rgb) / 0.55)',
+            boxShadow: '0 18px 42px rgb(var(--first-primary-rgb) / 0.1)',
+            backdropFilter: 'blur(14px)',
           }}
         >
           <div className="mb-6">

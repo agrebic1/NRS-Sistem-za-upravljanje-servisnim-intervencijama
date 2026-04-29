@@ -4,11 +4,11 @@ import {
   Wrench,
   CheckCircle,
   Clock,
-  AlertTriangle,
+  ClipboardList,
+  ClipboardCheck,
+  FileText,
   MapPin,
-  BarChart3,
   ArrowRight,
-  Shield,
   Zap,
 } from 'lucide-react';
 
@@ -78,10 +78,10 @@ function DashboardIllustration() {
   ];
 
   return (
-    <div className="relative w-full max-w-[520px]">
+    <div className="relative w-full max-w-[575px]">
       <div
         className="pointer-events-none absolute inset-0 -z-10 rounded-3xl opacity-25 blur-3xl"
-        style={{ backgroundColor: 'var(--first-secondary)' }}
+        style={{ backgroundImage: 'radial-gradient(circle at 70% 35%, rgba(45, 156, 178, 0.22), transparent 45%)' }}
         aria-hidden
       />
       <div className="overflow-hidden rounded-2xl shadow-card-lg">
@@ -159,65 +159,121 @@ function DashboardIllustration() {
 
 function HeroSection() {
   return (
-    <section className="container mx-auto flex flex-col items-center gap-12 px-5 py-16 sm:px-8 sm:py-24 lg:flex-row lg:gap-12">
-      <div className="flex max-w-xl flex-col gap-6 lg:flex-1">
-        <div
-          className="w-fit rounded-full px-4 py-1.5 text-xs font-semibold uppercase tracking-wide"
-          style={{ backgroundColor: 'rgb(var(--first-septenary-rgb) / 0.2)', color: 'var(--first-senary)', border: '1px solid rgb(var(--first-septenary-rgb) / 0.4)' }}
-        >
-          Platforma za upravljanje servisnim intervencijama
-        </div>
-        <h1 className="text-4xl font-bold leading-[1.1] tracking-tight sm:text-5xl" style={{ color: 'var(--first-octonary)' }}>
-          Upravljajte servisnim intervencijama{' '}
-          <span style={{ color: 'var(--first-secondary)' }}>bez haosa</span>
-        </h1>
-        <p className="text-lg leading-relaxed" style={{ color: 'var(--first-nonary)' }}>
-          Dodjeljujte zadatke, pratite servisere na terenu i završite svaki posao na vrijeme.
-          Jedno mjesto — potpun uvid.
-        </p>
-        <div className="flex flex-wrap gap-3">
-          <Link
-            href="/auth/registracija"
-            className="inline-flex items-center gap-2 rounded-xl bg-deep-teal px-7 py-3.5 text-base font-semibold text-white shadow-card transition-colors duration-200 hover:bg-celestial-teal hover:shadow-card-lg"
+    <section id="hero" className="relative isolate scroll-mt-16 overflow-hidden">
+      <div
+        className="pointer-events-none absolute inset-0 z-0 bg-cover bg-[right_center] opacity-100"
+        style={{
+          backgroundImage: "url('/hero-servis-bg.png')",
+          filter: 'brightness(1) saturate(1.03) contrast(1.02)',
+        }}
+        aria-hidden
+      />
+      <div
+        className="pointer-events-none absolute inset-0 z-0"
+        style={{
+          background:
+            'linear-gradient(90deg, rgb(var(--first-tertiary-rgb) / 0.91) 8%, rgb(var(--first-tertiary-rgb) / 0.6) 45%, rgb(var(--first-tertiary-rgb) / 0.81) 100%)',
+        }}
+        aria-hidden
+      />
+      <div className="relative z-10 container mx-auto flex flex-col items-center gap-12 px-5 py-16 sm:px-8 sm:py-24 lg:flex-row lg:gap-12">
+        <div className="flex max-w-xl flex-col gap-6 lg:flex-1">
+          <div
+            className="w-fit rounded-full px-4 py-1.5 text-xs font-semibold uppercase tracking-wide"
+            style={{ backgroundColor: 'rgb(var(--first-septenary-rgb) / 0.2)', color: 'var(--first-senary)', border: '1px solid rgb(var(--first-septenary-rgb) / 0.4)' }}
           >
-            Počnite odmah
-            <ArrowRight className="h-4 w-4" />
-          </Link>
-          <Link
-            href="#funkcionalnosti"
-            className="inline-flex items-center gap-2 rounded-xl border px-7 py-3.5 text-base font-semibold transition-colors duration-200 hover:border-celestial-teal"
-            style={{ borderColor: 'var(--first-quaternary)', color: 'var(--first-primary)' }}
-          >
-            Pogledajte demo
-          </Link>
-        </div>
-        <div className="flex items-center gap-4 pt-2">
-          <div className="flex -space-x-2">
-            {(['var(--first-septenary)', 'var(--first-secondary)', 'var(--first-senary)', 'var(--first-quaternary)'] as const).map((bg, i) => (
-              <div key={i} className="h-8 w-8 rounded-full border-2 border-warm-cream" style={{ backgroundColor: bg }} />
-            ))}
+            Servisni operativni centar
           </div>
-          <p className="text-sm" style={{ color: 'var(--first-nonary)' }}>
-            <span className="font-semibold" style={{ color: 'var(--first-octonary)' }}>1.200+</span>{' '}
-            kompanija nam vjeruje
+          <h1 className="text-4xl font-bold leading-[1.1] tracking-tight sm:text-5xl" style={{ color: 'var(--first-octonary)' }}>
+            Servisne intervencije pod kontrolom, od prijave do izvještaja.
+          </h1>
+          <p className="text-lg leading-relaxed" style={{ color: 'var(--first-nonary)' }}>
+            Od prijave kvara do gotovog izvještaja — bez izgubljenih poziva i ručnih tabela.
           </p>
+          <div className="flex flex-wrap gap-3">
+            <Link
+              href="/auth/registracija"
+              className="inline-flex items-center gap-2 rounded-xl bg-deep-teal px-7 py-3.5 text-base font-semibold text-white shadow-card transition-colors duration-200 hover:bg-celestial-teal hover:shadow-card-lg"
+            >
+              Počnite odmah
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+            <Link
+              href="#funkcionalnosti"
+              className="inline-flex items-center gap-2 rounded-xl border px-7 py-3.5 text-base font-semibold transition-colors duration-200 hover:border-celestial-teal"
+              style={{
+                backgroundColor: 'rgb(var(--first-primary-rgb) / 0.04)',
+                borderColor: 'rgb(var(--first-secondary-rgb) / 0.45)',
+                color: 'var(--first-octonary)',
+              }}
+            >
+              Pogledajte demo
+            </Link>
+          </div>
+          <div className="flex items-center gap-4 pt-2">
+            <div className="flex -space-x-2">
+              {(['var(--first-septenary)', 'var(--first-secondary)', 'var(--first-senary)', 'var(--first-quaternary)'] as const).map((bg, i) => (
+                <div key={i} className="h-8 w-8 rounded-full border-2 border-warm-cream" style={{ backgroundColor: bg }} />
+              ))}
+            </div>
+            <p className="text-sm" style={{ color: 'var(--first-nonary)' }}>
+              <span className="font-semibold" style={{ color: 'var(--first-octonary)' }}>1.200+</span>{' '}
+              kompanija nam vjeruje
+            </p>
+          </div>
         </div>
-      </div>
-      <div className="flex w-full justify-center lg:flex-1">
-        <DashboardIllustration />
+        <div className="flex w-full justify-center lg:flex-1">
+          <DashboardIllustration />
+        </div>
       </div>
     </section>
   );
 }
 
 function FeaturesSection() {
-  const features = [
-    { Icon: Zap,      title: 'Brza dodjela',             body: 'Dodijelite intervenciju najbližem slobodnom serviseru za nekoliko sekundi.', color: 'var(--first-septenary)' },
-    { Icon: MapPin,   title: 'Praćenje na terenu',       body: 'Pratite svakog servisera na karti u realnom vremenu. Bez telefonskih provjera.', color: 'var(--first-secondary)' },
-    { Icon: BarChart3,title: 'Kompletan audit trag',     body: 'Svaka promjena statusa, napomena i materijal — automatski evidentirano.', color: 'var(--first-primary)' },
-    { Icon: Shield,   title: 'Pristup po ulogama',       body: 'Prikazi za dispečera, servisera i korisnika — svaki prilagođen potrebama.', color: 'var(--first-senary)' },
-    { Icon: Clock,    title: 'Praćenje SLA',             body: 'Dobijte upozorenje prije nego što istekne rok. Uvijek korak ispred.', color: 'var(--first-septenary)' },
-    { Icon: Wrench,   title: 'Radni nalozi',             body: 'Strukturirani checklisti i evidencija materijala za svaku intervenciju.', color: 'var(--first-secondary)' },
+  const workflow = [
+    {
+      step: '01',
+      label: 'Prijava zahtjeva',
+      Icon: ClipboardList,
+      color: 'var(--first-secondary)',
+      body: 'Unesite kvar, lokaciju, prioritet i rok. InterServ odmah kreira servisni nalog spreman za dodjelu.',
+    },
+    {
+      step: '02',
+      label: 'Pametna dodjela',
+      Icon: Zap,
+      color: 'var(--first-septenary)',
+      body: 'Dodijelite posao najbližem dostupnom serviseru prema lokaciji, vještini i trenutnom opterećenju.',
+    },
+    {
+      step: '03',
+      label: 'Terenski statusi',
+      Icon: MapPin,
+      color: 'var(--first-secondary)',
+      body: 'Pratite faze rada u realnom vremenu: prihvaćeno, na putu, na lokaciji, u toku i završeno.',
+    },
+    {
+      step: '04',
+      label: 'SLA kontrola',
+      Icon: Clock,
+      color: 'var(--first-senary)',
+      body: 'Vidite koji nalozi kasne, koji su u riziku i gdje treba reagovati prije isteka roka.',
+    },
+    {
+      step: '05',
+      label: 'Radni nalozi i checklist-e',
+      Icon: ClipboardCheck,
+      color: 'var(--first-secondary)',
+      body: 'Serviser dobija jasne korake, evidentira materijal, dodaje slike i završava intervenciju bez papirologije.',
+    },
+    {
+      step: '06',
+      label: 'Audit trag i izvještaji',
+      Icon: FileText,
+      color: 'var(--first-septenary)',
+      body: 'Svaka promjena, napomena, slika i potpis ostaju sačuvani u historiji i dostupni u završnom izvještaju.',
+    },
   ];
 
   return (
@@ -225,24 +281,88 @@ function FeaturesSection() {
       <div className="container mx-auto px-5 sm:px-8">
         <div className="mb-12 text-center">
           <h2 className="text-3xl font-bold tracking-tight" style={{ color: 'var(--first-octonary)' }}>
-            Sve što vam treba za upravljanje servisnim operacijama
+            Kompletan workflow servisne intervencije
           </h2>
           <p className="mt-3 text-base" style={{ color: 'var(--first-nonary)' }}>
-            Napravljeno posebno za servisne kompanije — ne generički alat za projekte.
+            Od prijave kvara do završnog izvještaja - InterServ vodi svaki korak operacije.
           </p>
         </div>
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {features.map(({ Icon, title, body, color }) => (
-            <div
-              key={title}
-              className="rounded-2xl p-6 transition-shadow duration-200 hover:shadow-card"
-              style={{ backgroundColor: 'rgb(var(--first-tertiary-rgb) / 0.6)', border: '1px solid rgb(var(--first-quaternary-rgb) / 0.35)' }}
-            >
-              <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl" style={{ backgroundColor: `color-mix(in srgb, ${color} 10%, transparent)` }}>
-                <Icon className="h-5 w-5" style={{ color }} />
+
+        <div
+          className="mb-8 hidden items-center justify-center gap-3 lg:flex"
+          aria-hidden
+        >
+          {workflow.map((item, index) => (
+            <div key={item.step} className="flex items-center gap-3">
+              <div
+                className="rounded-full border px-3 py-1 text-xs font-semibold"
+                style={{
+                  borderColor: 'rgb(var(--first-septenary-rgb) / 0.4)',
+                  backgroundColor: 'rgb(var(--first-septenary-rgb) / 0.1)',
+                  color: 'var(--first-secondary)',
+                }}
+              >
+                {item.step}
               </div>
-              <h3 className="mb-2 font-semibold" style={{ color: 'var(--first-octonary)' }}>{title}</h3>
-              <p className="text-sm leading-relaxed" style={{ color: 'var(--first-nonary)' }}>{body}</p>
+              <span className="text-xs font-medium uppercase tracking-wide" style={{ color: 'var(--first-nonary)' }}>
+                {item.label}
+              </span>
+              {index < workflow.length - 1 && (
+                <div className="h-px w-8" style={{ backgroundColor: 'rgb(var(--first-quaternary-rgb) / 0.9)' }} />
+              )}
+            </div>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {workflow.map(({ step, Icon, label, body, color }) => (
+            <div
+              key={label}
+              className="group relative overflow-hidden rounded-3xl p-6 transition-all duration-300 hover:-translate-y-1"
+              style={{
+                backgroundColor: 'rgb(var(--first-quinary-rgb) / 0.84)',
+                border: '1px solid rgb(var(--first-quaternary-rgb) / 0.55)',
+                boxShadow: '0 10px 26px rgb(var(--first-primary-rgb) / 0.06)',
+              }}
+            >
+              <div
+                className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                style={{ backgroundImage: `radial-gradient(circle at 12% 0%, color-mix(in srgb, ${color} 12%, transparent), transparent 46%)` }}
+                aria-hidden
+              />
+              <div className="relative z-10 mb-4 flex items-start justify-between gap-4">
+                <div
+                  className="rounded-full border px-2.5 py-1 text-xs font-semibold tracking-wide"
+                  style={{
+                    borderColor: `color-mix(in srgb, ${color} 38%, rgb(var(--first-quaternary-rgb) / 0.8))`,
+                    backgroundColor: `color-mix(in srgb, ${color} 10%, white)`,
+                    color: 'var(--first-octonary)',
+                  }}
+                >
+                  {step}
+                </div>
+                <div
+                  className="flex h-11 w-11 items-center justify-center rounded-xl border transition-colors duration-300 group-hover:border-transparent"
+                  style={{
+                    backgroundColor: `color-mix(in srgb, ${color} 12%, transparent)`,
+                    borderColor: `color-mix(in srgb, ${color} 30%, rgb(var(--first-quaternary-rgb) / 0.9))`,
+                  }}
+                >
+                  <Icon className="h-5 w-5" style={{ color }} />
+                </div>
+              </div>
+              <h3 className="relative z-10 mb-2 text-lg font-semibold" style={{ color: 'var(--first-octonary)' }}>{label}</h3>
+              <p className="relative z-10 text-sm leading-relaxed" style={{ color: 'var(--first-nonary)' }}>{body}</p>
+              <div
+                className="pointer-events-none absolute inset-0 rounded-3xl border opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                style={{ borderColor: `color-mix(in srgb, ${color} 45%, rgb(var(--first-quaternary-rgb) / 0.9))` }}
+                aria-hidden
+              />
+              <div
+                className="pointer-events-none absolute inset-0 rounded-3xl opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                style={{ boxShadow: '0 16px 36px rgb(var(--first-primary-rgb) / 0.12)' }}
+                aria-hidden
+              />
             </div>
           ))}
         </div>
@@ -250,7 +370,6 @@ function FeaturesSection() {
     </section>
   );
 }
-
 function StatsStrip() {
   const stats = [
     { value: '98%',    label: 'Intervencija završenih na vrijeme' },

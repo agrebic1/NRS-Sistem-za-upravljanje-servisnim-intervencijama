@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Settings, Wrench, CheckCircle, Clock, AlertTriangle } from 'lucide-react';
+import { Settings, Wrench, CheckCircle, Clock, AlertTriangle, ShieldCheck } from 'lucide-react';
 import { LoginForm } from '@/components/forms/LoginForm';
 
 // ─── Left panel pieces ───────────────────────────────────────────────────────
@@ -64,7 +64,11 @@ function DashboardVisualPanel() {
 
       <div className="relative flex flex-col gap-8 p-10 xl:p-14">
         {/* Brand */}
-        <div className="flex items-center gap-3">
+        <Link
+          href="/#hero"
+          className="group flex w-fit items-center gap-3 rounded-xl p-1 -m-1 outline-none transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-[rgb(var(--first-septenary-rgb)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--first-primary)]"
+          aria-label="InterServ — povratak na početnu stranicu"
+        >
           <div
             className="flex h-9 w-9 items-center justify-center rounded-xl"
             style={{ backgroundColor: 'rgb(var(--first-septenary-rgb) / 0.2)' }}
@@ -74,7 +78,7 @@ function DashboardVisualPanel() {
           <span className="text-lg font-bold tracking-tight" style={{ color: 'var(--first-tertiary)' }}>
             InterServ
           </span>
-        </div>
+        </Link>
 
         {/* Headline */}
         <div>
@@ -88,9 +92,9 @@ function DashboardVisualPanel() {
 
         {/* Stats */}
         <div className="grid grid-cols-3 gap-3">
-          <StatCard value="24"  label="Aktivnih"    color="var(--first-septenary)" />
-          <StatCard value="12"  label="Servisera"   color="var(--first-secondary)" />
-          <StatCard value="189" label="Završeno"    color="var(--first-quaternary)" />
+          <StatCard value="24"  label="Aktivna naloga"         color="var(--first-septenary)" />
+          <StatCard value="12"  label="Servisera na terenu"    color="var(--first-secondary)" />
+          <StatCard value="189" label="Završenih intervencija" color="var(--first-quaternary)" />
         </div>
 
         {/* Recent interventions */}
@@ -133,33 +137,75 @@ export default function LoginPage() {
 
       {/* Right — form */}
       <div
-        className="flex w-full flex-col items-center justify-center px-5 py-12 sm:px-8 lg:w-[42%] xl:w-[40%]"
+        className="relative isolate flex w-full flex-col items-center justify-center overflow-hidden px-5 py-12 sm:px-8 lg:w-[42%] xl:w-[40%]"
         style={{ backgroundColor: 'var(--first-tertiary)' }}
       >
+        <div
+          className="pointer-events-none absolute inset-0 z-0"
+          style={{
+            background:
+              'radial-gradient(circle at 52% 34%, rgb(var(--first-septenary-rgb) / 0.13), transparent 46%), radial-gradient(circle at 78% 68%, rgb(var(--first-secondary-rgb) / 0.08), transparent 44%)',
+          }}
+          aria-hidden
+        />
+        <div
+          className="pointer-events-none absolute inset-0 z-0 opacity-40"
+          style={{
+            backgroundImage:
+              'linear-gradient(rgb(var(--first-secondary-rgb) / 0.06) 1px, transparent 1px), linear-gradient(90deg, rgb(var(--first-secondary-rgb) / 0.06) 1px, transparent 1px)',
+            backgroundSize: '28px 28px',
+            maskImage: 'radial-gradient(circle at center, black 35%, transparent 85%)',
+            WebkitMaskImage: 'radial-gradient(circle at center, black 35%, transparent 85%)',
+          }}
+          aria-hidden
+        />
+
         {/* Mobile brand */}
-        <div className="mb-8 flex items-center gap-2 lg:hidden">
+        <Link
+          href="/#hero"
+          className="relative z-10 mb-8 flex w-fit items-center gap-2 rounded-xl p-1 -m-1 outline-none transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-[rgb(var(--first-septenary-rgb)/0.45)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--first-tertiary)] lg:hidden"
+          aria-label="InterServ — povratak na početnu stranicu"
+        >
           <div className="flex h-8 w-8 items-center justify-center rounded-lg" style={{ backgroundColor: 'var(--first-primary)' }}>
             <Settings className="h-4 w-4 text-white" />
           </div>
           <span className="font-bold" style={{ color: 'var(--first-octonary)' }}>InterServ</span>
+        </Link>
+
+        <div
+          className="pointer-events-none absolute right-6 top-16 z-10 hidden rounded-xl border px-3.5 py-2 shadow-card sm:flex lg:right-5 lg:top-14 xl:right-10"
+          style={{
+            backgroundColor: 'rgb(var(--first-quinary-rgb) / 0.78)',
+            borderColor: 'rgb(var(--first-septenary-rgb) / 0.25)',
+            backdropFilter: 'blur(8px)',
+          }}
+          aria-hidden
+        >
+          <div className="flex items-center gap-2">
+            <ShieldCheck className="h-4 w-4" style={{ color: 'var(--first-septenary)' }} />
+            <span className="text-xs font-semibold" style={{ color: 'var(--first-octonary)' }}>
+              Siguran pristup
+            </span>
+          </div>
         </div>
 
         {/* Card */}
-        <div className="w-full max-w-sm">
+        <div className="relative z-10 w-full max-w-sm">
           <div
             className="rounded-2xl p-7 shadow-card-lg sm:p-8"
             style={{
-              backgroundColor: 'rgb(var(--first-quinary-rgb) / 0.22)',
-              border: '1px solid rgb(var(--first-quaternary-rgb) / 0.4)',
-              backdropFilter: 'blur(12px)',
+              backgroundColor: 'rgb(var(--first-quinary-rgb) / 0.44)',
+              border: '1px solid rgb(var(--first-quaternary-rgb) / 0.56)',
+              boxShadow: '0 18px 42px rgb(var(--first-primary-rgb) / 0.12)',
+              backdropFilter: 'blur(14px)',
             }}
           >
             <div className="mb-6">
               <h1 className="text-2xl font-bold tracking-tight" style={{ color: 'var(--first-octonary)' }}>
-                Prijava u sistem
+                Dobrodošli nazad
               </h1>
               <p className="mt-1.5 text-sm" style={{ color: 'var(--first-nonary)' }}>
-                Prijavite se kao korisnik usluge ili kao uposlenik sistema, u zavisnosti od naloga koji koristite.
+                Prijavite se za pristup servisnom operativnom sistemu i aktivnim nalozima vaše firme.
               </p>
             </div>
 

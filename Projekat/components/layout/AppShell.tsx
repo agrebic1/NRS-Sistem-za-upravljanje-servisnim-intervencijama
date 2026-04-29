@@ -159,10 +159,12 @@ export function AppShell({ children, uloga, imeKorisnika }: AppShellProps) {
               type="button"
               onClick={odjaviKorisnika}
               disabled={jeOdjavaUToku}
-              className="inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex items-center gap-2 rounded-xl border px-3.5 py-2 text-sm font-semibold transition-all duration-200 hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
               style={{
                 color: 'var(--first-senary)',
-                backgroundColor: 'rgb(var(--first-senary-rgb) / 0.08)',
+                backgroundColor: 'rgb(var(--first-senary-rgb) / 0.09)',
+                borderColor: 'rgb(var(--first-senary-rgb) / 0.28)',
+                boxShadow: '0 8px 16px rgb(var(--first-senary-rgb) / 0.1)',
               }}
             >
               <LogOut className="h-4 w-4" />
@@ -230,8 +232,13 @@ export function AppShell({ children, uloga, imeKorisnika }: AppShellProps) {
                 type="button"
                 onClick={odjaviKorisnika}
                 disabled={jeOdjavaUToku}
-                className="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60"
-                style={{ color: 'var(--first-senary)' }}
+                className="flex w-full items-center justify-between rounded-xl border px-3.5 py-2.5 text-sm font-semibold transition-all duration-200 hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
+                style={{
+                  color: 'var(--first-senary)',
+                  backgroundColor: 'rgb(var(--first-senary-rgb) / 0.09)',
+                  borderColor: 'rgb(var(--first-senary-rgb) / 0.3)',
+                  boxShadow: '0 10px 20px rgb(var(--first-senary-rgb) / 0.12)',
+                }}
               >
                 <span className="flex items-center gap-3">
                   <LogOut className="h-4 w-4" />
