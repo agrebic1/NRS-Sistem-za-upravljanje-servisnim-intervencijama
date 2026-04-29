@@ -11,6 +11,9 @@ const JAVNE_RUTE = [
 ] as const;
 
 const ADMIN_PREFIX = '/admin';
+const SERVISER_PREFIX = '/serviser';
+const DISPECER_PREFIX = '/dispecer';
+const KORISNIK_PREFIX = '/korisnik';
 
 export async function middleware(zahtjev: NextRequest) {
   let supabaseResponse = NextResponse.next({ request: zahtjev });
@@ -26,6 +29,9 @@ export async function middleware(zahtjev: NextRequest) {
 
   let user: { id: string } | null = null;
   let jeAdministrator = false;
+  let jeServiser = false;
+  let jeDispecer = false;
+  let jeKorisnik = false;
   try {
     const supabase = createServerClient<Database>(supabaseUrl, supabaseKey, {
       cookies: {
@@ -48,11 +54,36 @@ export async function middleware(zahtjev: NextRequest) {
     } = await supabase.auth.getUser();
     user = authUser;
 
-    if (authUser && pathname.startsWith(ADMIN_PREFIX)) {
-      const { data: adminIzBaze } = await (supabase as any).rpc('is_admin', {
-        p_user_id: authUser.id,
-      });
-      jeAdministrator = adminIzBaze === true;
+    if (authUser) {
+      if (pathname.startsWith(ADMIN_PREFIX)) {
+        const { data: adminIzBaze } = await supabase.rpc('is_admin', {
+          p_user_id: authUser.id,
+        });
+        jeAdministrator = adminIzBaze === true;
+      }
+
+      if (pathname.startsWith(SERVISER_PREFIX)) {
+        const { data: serviserIzBaze } = await supabase.rpc('is_serviser', {
+          p_user_id: authUser.id,
+        });
+        jeServiser = serviserIzBaze === true;
+      }
+
+      if (pathname.startsWith(DISPECER_PREFIX)) {
+        const { data: dispecerIzBaze } = await supabase.rpc('is_dispecer', {
+          p_user_id: authUser.id,
+        });
+        jeDispecer = dispecerIzBaze === true;
+      }
+
+      if (pathname.startsWith(KORISNIK_PREFIX)) {
+        const { data: korisnikUsluge } = await supabase
+          .from('korisnik_usluge')
+          .select('id_korisnika_usluge')
+          .eq('id_korisnika_usluge', authUser.id)
+          .maybeSingle();
+        jeKorisnik = !!korisnikUsluge;
+      }
     }
   } catch (error) {
     console.error('Middleware auth provjera nije uspjela:', error);
@@ -70,6 +101,24 @@ export async function middleware(zahtjev: NextRequest) {
 
   if (user && pathname.startsWith(ADMIN_PREFIX)) {
     if (!jeAdministrator) {
+      return NextResponse.redirect(new URL('/', zahtjev.url));
+    }
+  }
+
+  if (user && pathname.startsWith(SERVISER_PREFIX)) {
+    if (!jeServiser) {
+      return NextResponse.redirect(new URL('/', zahtjev.url));
+    }
+  }
+
+  if (user && pathname.startsWith(DISPECER_PREFIX)) {
+    if (!jeDispecer) {
+      return NextResponse.redirect(new URL('/', zahtjev.url));
+    }
+  }
+
+  if (user && pathname.startsWith(KORISNIK_PREFIX)) {
+    if (!jeKorisnik) {
       return NextResponse.redirect(new URL('/', zahtjev.url));
     }
   }
