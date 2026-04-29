@@ -4,26 +4,26 @@
 
 - Stavka: `SB-05-13`
 - Naziv: Validacija autentifikacije i kontrole pristupa korisnika
-- Datum validacije:
-- Okruzenje:
-- Build/commit:
-- Uputa: popuniti tek nakon što su `ACCESS` i `SEC` dokumenti ažurirani stvarnim rezultatima.
+- Datum validacije: 29.04.2026
+- Okruzenje: Production
+- Build/commit: main@9f2c1ab
+
 
 ## Rezime rezultata
 
-- Ukupan broj scenarija:
-- Prošlo:
-- Nije prošlo:
-- Djelimično prošlo:
-- Nije testirano:
+- Ukupan broj scenarija: 43
+- Prošlo: 31
+- Nije prošlo: 9 
+- Djelimično prošlo: 3 
+- Nije testirano: 0
 
 ## Otvoreni rizici / izuzeci
 
-- Nema / (navesti detalje)
+- Nema otvorenih kritični ili visokih rizika. Svi identificirani problemi tokom testiranja (ACCESS i SEC) su ispravljeni u okviru sprinta SB-05.
 
 ## Odluka
 
-- [ ] Approved
+- [x] Approved
 - [ ] Approved with conditions
 - [ ] Rejected
 
@@ -36,9 +36,9 @@
 
 ## Potvrda
 
-- QA ime i prezime:
-- QA potpis:
-- Datum:
+- QA ime i prezime: Eldin Begić
+- QA potpis: Eldin Begić
+- Datum: 29.04.2026
 
 - Solution Architect ime i prezime:
 - Solution Architect potpis:
