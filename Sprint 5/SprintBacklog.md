@@ -6,8 +6,6 @@
 
 Uspostaviti stabilan i siguran ulazak korisnika u sistem kroz registraciju i prijavu, omogućiti upravljanje sesijom, osnovnu kontrolu pristupa prema korisničkim ulogama i preusmjeravanje korisnika na odgovarajući početni dashboard.
 
----
-
 ## Ključne stavke koje tim želi završiti
 
 - povezivanje aplikacije sa Supabase platformom  
@@ -21,8 +19,6 @@ Uspostaviti stabilan i siguran ulazak korisnika u sistem kroz registraciju i pri
 - zaštita ruta prema ulozi korisnika  
 - osnovni dashboard prikaz po ulozi (bez poslovne logike)  
 - testiranje autentifikacije i pristupa  
-
----
 
 ## Rizici i zavisnosti
 
@@ -62,3 +58,63 @@ Zavisnosti:
 | SBI-05-11 | Upravljanje korisničkom sesijom | Backend / frontend | Done | Provjera sesije nakon refresh-a, održavanje prijavljenog stanja i usklađivanje server/client logike. |
 | SBI-05-12 | Testiranje registracije, prijave, odjave, sesije i preusmjeravanja | Testeri | Done | Testirati pozitivne, negativne i edge case scenarije prema acceptance kriterijima i decision log pravilima. |
 | SBI-05-13 | Validacija autentifikacije i kontrole pristupa korisnika | QA / Solution architect | Done | Validacija poslovnih pravila i logike sistema | 
+
+
+# Velocity analiza – Sprint 5
+
+**Trajanje sprinta:** 23.04 – 30.04  
+**Ukupan planirani obim:** 36 story pointa  
+
+Sprint 5 fokusiran je na implementaciju autentifikacije, upravljanje korisničkim ulogama i kontrolu pristupa sistemu.
+
+### Raspodjela story pointsa
+
+| Funkcionalnost | Tip | Kompleksnost | SP |
+|---------------|-----|--------------|----|
+| Registracija korisnika (US-01) | Feature | Visoka | 5 |
+| Prijava korisnika (US-02) | Feature | Visoka | 5 |
+| Definisanje uloga i permisija | Feature | Visoka | 5 |
+| Supabase integracija (auth) | Feature | Visoka | 5 |
+| Upravljanje sesijom | Feature | Srednja | 4 |
+| Osnovni dashboard (redirect + layout) | Feature | Srednja | 4 |
+| Odabir aktivne uloge | Feature | Srednja | 3 |
+| Role-based redirect | Feature | Srednja | 3 |
+| Zaštita ruta | Feature | Srednja | 3 |
+| Odjava korisnika | Feature | Niska | 2 |
+| Funkcionalno testiranje autentifikacije | Testiranje | Srednja | 4 |
+| Validacija poslovne logike | Testiranje | Srednja | 3 |
+
+### Realizacija po danima
+
+| Datum | Aktivnosti | Završeni SP |
+|------|-----------|-------------|
+| 23.04 | Planiranje sprinta | 0 |
+| 24.04 | Definisanje uloga, upravljanje sesijom | 9 |
+| 25.04 | Frontend registracija i prijava | 10 |
+| 26.04 | Backend registracija i prijava | 10 |
+| 27.04 | Dashboard, role-based redirect, zaštita ruta | 7 |
+| 28.04 | Stabilizacija i dorade | 0 |
+| 29.04 | Testiranje i validacija | 7 |
+| 30.04 | Ažuriranje i finalizacija sprint dokumentacije | 0 |
+
+### Burndown analiza
+
+| Dan | Datum | Preostali SP |
+|-----|-------|-------------|
+| 1 | 23.04 | 36 |
+| 2 | 24.04 | 27 |
+| 3 | 25.04 | 17 |
+| 4 | 26.04 | 7 |
+| 5 | 27.04 | 7 |
+| 6 | 28.04 | 7 |
+| 7 | 29.04 | 0 |
+| 8 | 30.04 | 0 |
+
+### Burndown graf
+
+```mermaid
+xychart-beta
+    title "Sprint 5 Burndown (Realni)"
+    x-axis ["23","24","25","26","27","28","29","30"]
+    y-axis "Story Points" 0 --> 36
+    line "Remaining" [36,27,17,7,7,7,0,0]
