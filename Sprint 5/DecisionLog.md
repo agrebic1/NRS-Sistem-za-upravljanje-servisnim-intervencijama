@@ -62,6 +62,8 @@ U kontekstu ovog sistema, krajnji korisnici često pristupaju platformi u stanju
 
 ## Trade-off analiza (Decision Matrix)
 
+Kriteriji su ponderisani u skladu sa potrebom za fleksibilnošću, skalabilnošću i kvalitetom korisničkog iskustva.
+
 ### Težine kriterija
 
 | Kriterij | Težina |
@@ -77,11 +79,12 @@ U kontekstu ovog sistema, krajnji korisnici često pristupaju platformi u stanju
 | Opcija | Sigurnost | Skalabilnost | Brzina | Trošak | UX | Ukupno |
 |--------|----------|--------------|--------|--------|-----|--------|
 | Slobodna registracija | 1 | 5 | 5 | 5 | 5 | 66 |
-| Prijava + odobrenje | 5 | 4 | 3 | 3 | 3 | **77** |
+| Prijava i administrativno odobrenje | 5 | 4 | 3 | 3 | 3 | **77** |
 | Ručni unos | 5 | 1 | 2 | 1 | 2 | 49 |
 
 ### Sažetak odluke
 
+Krajnja odluka: Prijava i administrativno odobrenje 
 | Stavka | Objašnjenje |
 |--------|------------|
 | Razlog izbora | Najbolji balans sigurnosti, skalabilnosti i operativne kontrole |
@@ -119,6 +122,39 @@ Ovim pristupom osiguravamo da platforma ne bude samo tehnički posrednik, već s
 | Razlog izbora | Omogućavanje fleksibilnosti i pokrivanje realnih scenarija korištenja sistema |
 | Posljedice odluke | Potrebna implementacija odabira aktivne uloge i role-based pristupa, povećana kompleksnost autentifikacije |
 | Status odluke | aktivna |
+
+## Trade-off analiza (Decision Matrix)
+
+Kriteriji su ponderisani u skladu sa potrebom za fleksibilnošću, skalabilnošću i kvalitetom korisničkog iskustva.
+
+### Težine kriterija
+
+| Kriterij | Težina |
+|----------|--------|
+| Fleksibilnost (realni scenariji) | 5 |
+| UX / jednostavnost | 4 |
+| Skalabilnost | 4 |
+| Sigurnost / kontrola pristupa | 4 |
+| Operativna kompleksnost | 3 |
+
+
+### Ocjenjivanje i rezultat
+
+| Opcija | Fleksibilnost | UX | Skalabilnost | Sigurnost | Kompleksnost | Ukupno |
+|--------|--------------|----|--------------|-----------|--------------|--------|
+| Jedna uloga po korisniku | 1 | 4 | 4 | 5 | 5 | 62 |
+| Više naloga po korisniku | 3 | 2 | 2 | 4 | 2 | 43 |
+| Više uloga po jednom nalogu | 5 | 4 | 4 | 4 | 3 | **75** |
+
+## Sažetak odluke
+
+| Stavka | Objašnjenje |
+|--------|------------|
+| Razlog izbora | Najbolji balans fleksibilnosti, UX-a i skalabilnosti |
+| Prednosti | Prirodno modeliranje realnih scenarija, bolji UX, nema fragmentacije podataka |
+| Nedostaci | Veća kompleksnost implementacije i kontrole pristupa |
+| Napomena | Potrebno jasno definisati aktivnu ulogu i RBAC pravila |
+| Implementacija | Sistem omogućava više uloga po korisniku uz izbor jedne aktivne uloge po sesiji |
 
 ### Detaljno obrazloženje
 
