@@ -153,7 +153,7 @@ export function ServiceRequestForm({ idKorisnika }: ServiceRequestFormProps) {
             className="mb-2 rounded-full px-2 py-0.5 text-xs"
             style={{ backgroundColor: 'rgb(var(--first-septenary-rgb) / 0.2)', color: 'var(--first-senary)' }}
           >
-            Opciono
+            Neobavezno
           </span>
         </div>
 
@@ -181,8 +181,8 @@ export function ServiceRequestForm({ idKorisnika }: ServiceRequestFormProps) {
         >
           <Info className="mt-0.5 h-3.5 w-3.5 flex-shrink-0" style={{ color: 'var(--first-secondary)' }} />
           <span>
-            Nakon slanja zahtjeva, dispečer će pregledati situaciju i dodijeliti servisera.
-            Biti ćete obaviješteni putem email adrese.
+            Nakon slanja, dispečer će pregledati vaš zahtjev i dodijeliti odgovarajućeg servisera.
+            Obavijest o statusu dobit ćete putem email adrese.
           </span>
         </div>
       </section>
