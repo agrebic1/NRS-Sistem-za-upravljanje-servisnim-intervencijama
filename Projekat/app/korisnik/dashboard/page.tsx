@@ -1,12 +1,1 @@
-'use client';
-
-import { AppShell } from '@/components/layout/AppShell';
-import { KorisnikPregledDashboard } from '@/components/korisnik/KorisnikPregledDashboard';
-
-export default function KorisnikDashboardPage() {
-  return (
-    <AppShell uloga="korisnik" imeKorisnika="Amina H.">
-      <KorisnikPregledDashboard />
-    </AppShell>
-  );
-}
+export { default } from '@/app/korisnik/page';

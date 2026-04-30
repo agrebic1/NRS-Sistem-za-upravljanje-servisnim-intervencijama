@@ -123,8 +123,9 @@ export async function middleware(zahtjev: NextRequest) {
         jeDispecer = uposlenikUloga === 'dispecer';
       }
 
-      const jeInternaUloga = uposlenikUloga === 'admin' || uposlenikUloga === 'serviser' || uposlenikUloga === 'dispecer';
-      jeKorisnik = !greskaKorisnikaUsluge && !!korisnikUsluge && !jeInternaUloga;
+      // Korisnicka zona treba biti dostupna svim nalozima koji imaju korisnik_usluge profil,
+      // cak i kada isti nalog ima i internu (uposlenik) ulogu.
+      jeKorisnik = !greskaKorisnikaUsluge && !!korisnikUsluge;
     }
   } catch (error) {
     console.error('Middleware auth provjera nije uspjela:', error);

@@ -133,7 +133,7 @@ describe('middleware auth and role checks', () => {
     expect(response.type).toBe('next');
   });
 
-  test('denies serviserski korisnik route even if korisnik_usluge exists', async () => {
+  test('allows korisnik route when korisnik_usluge exists even with serviser role', async () => {
     mockGetUser.mockResolvedValue({ data: { user: { id: 'u1' } } });
     setTableResponse('korisnik_usluge', { data: { id_korisnika_usluge: 'u1' }, error: null });
     setTableResponse('uposlenici', { data: { id_uloge: 2 }, error: null });
@@ -141,8 +141,7 @@ describe('middleware auth and role checks', () => {
 
     const response = await middleware(req('/korisnik/dashboard'));
 
-    expect(response.type).toBe('redirect');
-    expect(response.url).toBe('http://localhost:3000/');
+    expect(response.type).toBe('next');
   });
 
   test('denies dispecer route for serviser role', async () => {
@@ -156,7 +155,7 @@ describe('middleware auth and role checks', () => {
     expect(response.url).toBe('http://localhost:3000/');
   });
 
-  test('denies korisnik and serviser routes for dispecer role', async () => {
+  test('allows korisnik route and denies serviser route for dispecer role with korisnik_usluge', async () => {
     mockGetUser.mockResolvedValue({ data: { user: { id: 'u1' } } });
     setTableResponse('korisnik_usluge', { data: { id_korisnika_usluge: 'u1' }, error: null });
     setTableResponse('uposlenici', { data: { id_uloge: 3 }, error: null });
@@ -165,9 +164,8 @@ describe('middleware auth and role checks', () => {
     const korisnikResponse = await middleware(req('/korisnik/dashboard'));
     const serviserResponse = await middleware(req('/serviser/dashboard'));
 
-    expect(korisnikResponse.type).toBe('redirect');
+    expect(korisnikResponse.type).toBe('next');
     expect(serviserResponse.type).toBe('redirect');
-    expect(korisnikResponse.url).toBe('http://localhost:3000/');
     expect(serviserResponse.url).toBe('http://localhost:3000/');
   });
 
