@@ -114,7 +114,7 @@ Sprint 5 fokusiran je na implementaciju autentifikacije, upravljanje korisnički
 
 ```mermaid
 xychart-beta
-    title "Sprint 5 Burndown (Realni)"
+    title "Sprint 5 Burndown"
     x-axis ["23","24","25","26","27","28","29","30"]
     y-axis "Story Points" 0 --> 36
     line "Remaining" [36,27,17,7,7,7,0,0]
