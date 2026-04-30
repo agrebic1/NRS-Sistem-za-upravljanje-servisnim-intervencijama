@@ -1,20 +1,5 @@
 # AI Usage Log
 
-| Polje | Opis |
-|-------|------|
-| Datum | 28.04.2026|
-| Sprint broj | |
-| Alat koji je korišten | |
-| Svrha korištenja | |
-| Kratak opis zadatka ili upita | |
-| Šta je AI predložio ili generisao | |
-| Šta je tim prihvatio | |
-| Šta je tim izmijenio | |
-| Šta je tim odbacio | |
-| Rizici, problemi ili greške koje su uočene | |
-| Ko je koristio alat | |
-
-
 ## AI Usage Log #1: Arhitektura i core backend logika
 **Faza:** Inicijalna postavka projekta i autentifikacijski servisi
 
@@ -66,25 +51,41 @@
 | **Rizici, problemi ili greške** | Nedostajući `encoding` paket u produkciji uzrokovao pucanje build-a; dodat ručno u dependencies |
 | **Ko je koristio alat** | Ajna Ičić i Amina Grebić |
 
-
-## AI Usage Log #4: 
-**Faza:** 
+## AI Usage Log #4: Authorization Hardening & RLS politike
+**Faza:** Sigurnost aplikacije i autorizacijska logika
 
 | Polje | Opis |
-|------|------|
-| Datum | 28.04.2026 |
-| Sprint broj | 5 |
-| Alat koji je korišten | ChatGPT |
-| Svrha korištenja | Poboljšanje sigurnosti aplikacije, implementacija autorizacije i RLS politika, te refaktorisanje middleware logike |
-| Kratak opis zadatka ili upita | Ispravljanje greške `500 MIDDLEWARE_INVOCATION_FAILED`, unapređenje autorizacije (prebacivanje na DB logiku), uvođenje RLS politika i role-based pristupa, te validacija korisničkih uloga kroz sistem |
-| Šta je AI predložio ili generisao | Predložio hardening middleware-a (try/catch + fallback), korištenje `is_admin` iz baze umjesto `user_metadata`, strukturu RLS politika, helper funkcije za role (`is_admin`, `is_dispecer`, itd.), te organizaciju authorization flow-a |
-| Šta je tim prihvatio | Middleware hardening, DB-based autorizaciju, RLS migracije, helper funkcije i jedinstveni authorization flow za admin rute |
-| Šta je tim izmijenio | Prilagodio RLS politike konkretnim tabelama i poslovnoj logici (zahtjev, intervencija, evidencije itd.), te optimizirao role mapiranje i test naloge |
-| Šta je tim odbacio | Oslanjanje na `user_metadata` za autorizaciju (zbog sigurnosnih rizika) |
-| Rizici, problemi ili greške koje su uočene | Početna 500 greška u middleware-u, potencijalne sigurnosne ranjivosti pri oslanjanju na client-side metadata, potreba za pažljivim definisanjem RLS politika da ne blokiraju validne upite |
-| Ko je koristio alat | Ajla Ćesir |
+|-------|------|
+| **Datum** | 28.04.2026. |
+| **Sprint broj** | 5 |
+| **Alat koji je korišten** | ChatGPT |
+| **Svrha korištenja** | Poboljšanje sigurnosti aplikacije, implementacija autorizacije i RLS politika, te refaktorisanje middleware logike |
+| **Kratak opis zadatka** | Ispravljanje greške `500 MIDDLEWARE_INVOCATION_FAILED`, unapređenje autorizacije prebacivanjem na DB logiku, uvođenje RLS politika i role-based pristupa, te validacija korisničkih uloga kroz sistem |
+| **Šta je AI predložio ili generisao** | Predložio hardening middleware-a kroz `try/catch` i fallback, korištenje `is_admin` iz baze umjesto `user_metadata`, strukturu RLS politika, helper funkcije za role (`is_admin`, `is_dispecer` itd.) i organizaciju authorization flow-a |
+| **Šta je tim prihvatio** | Middleware hardening, DB-based autorizaciju, RLS migracije, helper funkcije i jedinstveni authorization flow za admin rute |
+| **Šta je tim izmijenio** | Prilagodio RLS politike konkretnim tabelama i poslovnoj logici, uključujući zahtjev, intervenciju i evidencije, te optimizirao role mapiranje i test naloge |
+| **Šta je tim odbacio** | Oslanjanje na `user_metadata` za autorizaciju zbog sigurnosnih rizika |
+| **Rizici, problemi ili greške** | Početna 500 greška u middleware-u, potencijalne sigurnosne ranjivosti pri oslanjanju na client-side metadata i potreba za pažljivim definisanjem RLS politika da ne blokiraju validne upite |
+| **Ko je koristio alat** | Ajla Ćesir |
 
-## AI Usage Log #5: Logic Flow & RBAC (Role Selection)
+## AI Usage Log #5: CSS Theme Refactoring & Centralized Color System
+**Faza:** UI dizajn i održavanje stilova
+
+| Polje | Opis |
+|-------|------|
+| **Datum** | 28.04.2026. |
+| **Sprint broj** | 5 |
+| **Alat koji je korišten** | Cursor |
+| **Svrha korištenja** | Refaktorisanje CSS strukture i centralizacija boja aplikacije |
+| **Kratak opis zadatka** | Uređivanje CSS stranice izvlačenjem svih korištenih boja iz pojedinačnih stilova i prebacivanjem u centralizovani sistem CSS varijabli |
+| **Šta je AI generisao** | Prijedlog centralizovanog color system-a kroz osnovne RGB tokene, solid color varijable, surface varijable, border varijable i semantičke alias-e |
+| **Šta je tim prihvatio** | Korištenje centralizovanog `:root` sistema, semantičkih CSS varijabli i zamjenu hardkodiranih boja kroz aplikaciju odgovarajućim varijablama |
+| **Šta je tim izmijenio** | Vrijednosti i nazive pojedinih varijabli tim je prilagodio postojećem vizuelnom identitetu aplikacije i strukturi projekta |
+| **Šta je tim odbacio** | Potpunu promjenu vizuelnog identiteta aplikacije; zadržan je postojeći stil, a unaprijeđena je samo organizacija boja |
+| **Rizici, problemi ili greške** | Postojao je rizik da neke hardkodirane boje ostanu nezamijenjene, što bi moglo dovesti do nekonzistentnog izgleda. Također je bilo potrebno provjeriti kontrast, čitljivost i responsive prikaz nakon izmjena |
+| **Ko je koristio alat** | Ajla Ćesir |
+
+## AI Usage Log #6: Logic Flow & RBAC (Role Selection)
 **Faza:** Poslovna logika usmjeravanja korisnika
 
 | Polje | Opis |
@@ -96,8 +97,41 @@
 | **Kratak opis zadatka** | Razvoj logike koja prepoznaje korisnike sa više uloga i nudi im izbor pri prijavi |
 | **Šta je AI generisao** | Funkciju `odrediRedirectNakonPrijave` i `odabir-uloge/page.tsx` sa dinamičkim karticama |
 | **Šta je tim prihvatio** | Vizuelni stil kartica (glass-morphism) i automatski redirect za korisnike sa samo jednom ulogom |
-| **Šta je tim izmijenio** | Tekstove opisa uloga (npr. precizniji opis zaduženja servisera na bosanskom jeziku) |
-| **Šta je tim odbacio** | Mogućnost promjene uloge unutar dashboarda bez ponovnog logina (radi jednostavnosti MVP-a) |
+| **Šta je tim izmijenio** | Tekstove opisa uloga, npr. precizniji opis zaduženja servisera na bosanskom jeziku |
+| **Šta je tim odbacio** | Mogućnost promjene uloge unutar dashboarda bez ponovnog logina radi jednostavnosti MVP-a |
 | **Rizici, problemi ili greške** | Session mismatch pri brzom prebacivanju uloga, riješeno čišćenjem cache-a routera |
 | **Ko je koristio alat** | Amina Grebić |
 
+## AI Usage Log #7: Preporuka načina testiranja
+**Faza:** QA planiranje i verifikacija funkcionalnosti
+
+| Polje | Opis |
+|-------|------|
+| **Datum** | 29.04.2026. |
+| **Sprint broj** | 5 |
+| **Alat koji je korišten** | Cursor |
+| **Svrha korištenja** | Definisanje preporučenog pristupa testiranju funkcionalnosti prije merge-a i deploya |
+| **Kratak opis zadatka** | Traženje preporuke za redoslijed i tipove testiranja, uključujući lokalni build, lint, funkcionalni smoke test i provjeru PR/CI uslova u skladu s pravilima rada tima |
+| **Šta je AI generisao** | AI je predložio jasan test flow: `npm ci` → `npm run build` → osnovni ručni smoke test ključnih stranica i formi → provjera grane u odnosu na `main` → PR checklista, uključujući prolazak CI provjera, odsustvo konflikata i review |
+| **Šta je tim prihvatio** | Tim je prihvatio preporučeni redoslijed testiranja i korištenje build/CI provjere kao minimalnog uslova prije push-a |
+| **Šta je tim izmijenio** | Opseg ručnih testova je prilagođen trenutnim izmjenama u sprintu |
+| **Šta je tim odbacio** | Uvođenje dodatnih alata ili frameworka za testiranje u ovoj fazi; zadržane su postojeće provjere |
+| **Rizici, problemi ili greške** | Uočen je rizik prevelikog oslanjanja na build bez detaljnog funkcionalnog testiranja, zbog čega je potrebno ručno potvrditi kritične korisničke tokove i UI tekstove |
+| **Ko je koristio alat** | Ajla Ćesir |
+
+## AI Usage Log #8: Refaktorisanje bez promjene ponašanja
+**Faza:** Održavanje koda i tehničko unapređenje
+
+| Polje | Opis |
+|-------|------|
+| **Datum** | 30.04.2026. |
+| **Sprint broj** | 5 |
+| **Alat koji je korišten** | Cursor |
+| **Svrha korištenja** | Refaktorisanje postojećeg koda radi bolje čitljivosti, tipne sigurnosti i održavanja, bez izmjene funkcionalnog ponašanja aplikacije |
+| **Kratak opis zadatka** | Reorganizacija dijela logike na korisničkoj stranici, stabilizacija TypeScript tipizacije i čišćenje tekstualnih elemenata u formi, uz očuvanje postojećeg toka rada korisnika |
+| **Šta je AI generisao** | AI je predložio sigurnije rukovanje podacima iz upita, izdvajanje pomoćne logike u zasebne funkcije i zamjenu nejasnih ili nekonzistentnih UI tekstova jasnijim formulacijama |
+| **Šta je tim prihvatio** | Tim je prihvatio refaktorisanu strukturu koda, poboljšanu tipizaciju i jezički usklađene tekstove u korisničkom interfejsu |
+| **Šta je tim izmijenio** | Nazivi i detalji pojedinih pomoćnih dijelova prilagođeni su postojećoj arhitekturi i naming konvencijama projekta |
+| **Šta je tim odbacio** | Veće arhitekturne izmjene i promjene koje bi mogle uticati na postojeće poslovno ponašanje ili korisnički tok |
+| **Rizici, problemi ili greške** | Rizik regresije pri refaktoru ublažen je lokalnim build provjerama i dodatnom ručnom validacijom ključnih ekrana |
+| **Ko je koristio alat** | Ajla Ćesir |
