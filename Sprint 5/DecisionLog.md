@@ -1,27 +1,5 @@
 # Decision Log
 
-## Odluka # - Naziv odluke
-
-| Polje | Opis |
-|-------|------|
-| ID odluke | |
-| Datum | |
-| Kratak naziv odluke | |
-| Opis problema ili pitanja | |
-| Razmatrane opcije | |
-| Odabrana opcija | |
-| Razlog izbora | |
-| Posljedice odluke | |
-| Status odluke | |
-
-Mogući statusi: 
-- aktivna
-- izmijenjena
-- zamijenjena
-
-
-
-
 ## Odluka #001 - Centralizovana landing stranica sa više ulaznih tokova
 
 | Polje | Opis |
@@ -38,7 +16,7 @@ Mogući statusi:
 
 ### Detaljno obrazloženje
 
-Sistem za upravljanje servisnim intervencijama obuhvata različite tipove korisnika koji dolaze u sistem sa različitim ciljevima. Neki korisnici žele koristiti usluge, neki već imaju nalog i žele se prijaviti, dok drugi žele postati pružaoci usluga na platformi. Ako bi se svi ovi tokovi razdvojili na različite ulazne stranice, korisnici bi morali unaprijed znati gdje trebaju ići, što bi povećalo konfuziju i otežalo korištenje sistema. Zbog toga je donesena odluka da se implementira centralna landing stranica kao jedinstvena ulazna tačka u sistem. Na toj stranici korisniku se jasno nude tri osnovne opcije:
+Sistem za upravljanje servisnim intervencijama obuhvata različite tipove korisnika koji dolaze u sistem sa različitim ciljevima. Neki korisnici žele koristiti usluge, neki već imaju nalog i žele se prijaviti, dok drugi žele postati pružatelji usluga na platformi. Ako bi se svi ovi tokovi razdvojili na različite ulazne stranice, korisnici bi morali unaprijed znati gdje trebaju ići, što bi povećalo konfuziju i otežalo korištenje sistema. Zbog toga je donesena odluka da se implementira centralna landing stranica kao jedinstvena ulazna tačka u sistem. Na toj stranici korisniku se jasno nude tri osnovne opcije:
 
 - registracija (za korisnike koji žele koristiti usluge)
 - prijava u sistem (za postojeće korisnike)
@@ -53,18 +31,18 @@ Ovim pristupom sistem postaje intuitivniji i pristupačniji, jer korisnik odmah 
 | Polje | Opis |
 |-------|------|
 | ID odluke | DLI-002 |
-| Datum | 28.04.2026. |
+| Datum | 26.04.2026. |
 | Kratak naziv odluke | Ograničenje registracije |
 | Opis problema ili pitanja | Da li omogućiti slobodnu registraciju za sve uloge u sistemu? |
 | Razmatrane opcije | 1. Slobodna registracija za sve uloge <br> 2. Registracija samo za korisnike usluge <br> 3. Potpuno zatvoren sistem |
 | Odabrana opcija | Javna registracija samo za korisnike usluge |
-| Razlog izbora | Balans između dostupnosti sistema i sigurnosnog perimetra |
+| Razlog izbora | Balans između dostupnosti sistema i sigurnosnog okvira |
 | Posljedice odluke | Operativne uloge se dodjeljuju kroz kontrolisan proces |
 | Status odluke | aktivna |
 
 ### Detaljno obrazloženje
 
-U kontekstu ovog sistema, krajnji korisnici često pristupaju platformi u stanju povećanog stresa, sa jasnom potrebom za hitnim rješavanjem problema. Uvođenje dodatnih koraka verifikacije u procesu registracije bi značajno povećalo barijeru ulaska i direktno uticalo na stopu odustajanja. Svaki dodatni korak između korisnika i funkcionalnosti sistema predstavlja potencijalni gubitak korisnika. Zbog toga je omogućena brza i jednostavna javna registracija za korisnike usluge, čime se obezbjeđuje instant pristup sistemu u kritičnom trenutku. Istovremeno, operativne uloge poput servisera, dispečera i administratora imaju pristup osjetljivim podacima, uključujući lične informacije korisnika i interne operativne resurse. Omogućavanje javne registracije za ove uloge bi otvorilo prostor za zloupotrebe, kreiranje lažnih naloga i potencijalno curenje podataka. Uveden je jasan sigurnosni perimetar kojim se razdvaja javni dio sistema od kontrolisanog operativnog sloja. Na taj način se postiže optimalan balans između dostupnosti sistema i zaštite njegovih ključnih funkcionalnosti.
+U kontekstu ovog sistema, krajnji korisnici često pristupaju platformi u stanju povećanog stresa, sa jasnom potrebom za hitnim rješavanjem problema. Uvođenje dodatnih koraka verifikacije u procesu registracije bi značajno povećalo barijeru ulaska i direktno uticalo na stopu odustajanja. Svaki dodatni korak između korisnika i funkcionalnosti sistema predstavlja potencijalni gubitak korisnika. Zbog toga je omogućena brza i jednostavna javna registracija za korisnike usluge, čime se obezbjeđuje instant pristup sistemu u kritičnom trenutku. Istovremeno, operativne uloge poput servisera, dispečera i administratora imaju pristup osjetljivim podacima, uključujući lične informacije korisnika i interne operativne resurse. Omogućavanje javne registracije za ove uloge bi otvorilo prostor za zloupotrebe, kreiranje lažnih naloga i potencijalno curenje podataka. Uveden je jasan sigurnosni okvir kojim se razdvaja javni dio sistema od kontrolisanog operativnog sloja. Na taj način se postiže optimalan balans između dostupnosti sistema i zaštite njegovih ključnih funkcionalnosti.
 
 ---
 
@@ -76,11 +54,41 @@ U kontekstu ovog sistema, krajnji korisnici često pristupaju platformi u stanju
 | Datum | 26.04.2026. |
 | Kratak naziv odluke | Serviser onboarding |
 | Opis problema | Kako omogućiti pristup ulozi servisera? |
-| Razmatrane opcije | 1. Slobodna registracija <br> 2. Prijava i administrativno odobrenje |
+| Razmatrane opcije | 1. Slobodna registracija <br> 2. Prijava i administrativno odobrenje <br> 3. Administrativno kreiranje naloga (ručni onboarding od strane sistema)|
 | Odabrana opcija | Prijava i administrativno odobrenje |
 | Razlog izbora | Kontrola kvaliteta i pravna usklađenost |
-| Posljedice odluke | Uveden onboarding proces |
+| Posljedice odluke | Uveden kontrolisani onboarding proces sa administracivnom verifikacijom i staging zonom prijave aktivacije |
 | Status odluke | aktivna |
+
+## Trade-off analiza (Decision Matrix)
+
+### Težine kriterija
+
+| Kriterij | Težina |
+|----------|--------|
+| Sigurnost i kontrola kvaliteta | 5 |
+| Skalabilnost | 4 |
+| Brzina onboardinga | 3 |
+| Operativni trošak | 3 |
+| UX | 3 |
+
+### Ocjenjivanje i rezultat
+
+| Opcija | Sigurnost | Skalabilnost | Brzina | Trošak | UX | Ukupno |
+|--------|----------|--------------|--------|--------|-----|--------|
+| Slobodna registracija | 1 | 5 | 5 | 5 | 5 | 66 |
+| Prijava + odobrenje | 5 | 4 | 3 | 3 | 3 | **77** |
+| Ručni unos | 5 | 1 | 2 | 1 | 2 | 49 |
+
+### Sažetak odluke
+
+| Stavka | Objašnjenje |
+|--------|------------|
+| Razlog izbora | Najbolji balans sigurnosti, skalabilnosti i operativne kontrole |
+| Prednosti | Visoka kontrola kvaliteta, zaštita sistema, audit trail |
+| Nedostaci | Sporiji onboarding, potreban administrativni rad |
+| Napomena | Ručni unos koristiti samo kao izuzetak (partneri, hitni slučajevi) |
+| Implementacija | Sistem predviđa staging zonu u kojoj profil čeka validaciju prije aktivacije |
 
 ### Detaljno obrazloženje
 
@@ -88,13 +96,13 @@ Serviseri su ključna karika sistema čiji rad direktno utiče na kredibilitet c
 
 Ova odluka je ključna iz tri strateška razloga:
 
-* **Integritet identiteta (Trust Security):** U sistemu koji spaja digitalnu platformu sa fizičkim prostorom korisnika, identitet servisera je nulti faktor sigurnosti. Implementirana je „staging“ zona unutar baze podataka gdje profil čeka validaciju dokumenata i stručnosti prije aktivacije. Ovim se sprječava kreiranje lažnih profila i manipulacija sistemom preuzimanja poslova.
+* **Integritet identiteta (Trust Security):** U sistemu koji spaja digitalnu platformu sa fizičkim prostorom korisnika, identitet servisera je nulti faktor sigurnosti. Implementacijom „staging“ zone unutar sistema u kojoj profil čeka validaciju dokumenata i stručnosti prije aktivacije, sprječava se kreiranje lažnih profila i manipulacija sistemom preuzimanja poslova.
 
-* **Zaštita privatnosti (Access Control):** Uloga servisera je privilegovana jer omogućava uvid u lične podatke klijenata (PII - adrese i brojevi telefona). Administrativno odobrenje djeluje kao ljudski „firewall“, sprečavajući da se pristup tim informacijama dodjeljuje automatizovano. Time osiguravamo da osjetljivi podaci budu dostupni isključivo provjerenim i potvrđenim osobama.
+* **Zaštita privatnosti (Access Control):** Uloga servisera je privilegovana jer omogućava uvid u lične identifikacione podatke klijenata (adrese i brojevi telefona). Administrativno odobrenje djeluje kao kontrolni mehanizam za pristup osjetljivim podacima, sprečavajući da se pristup tim informacijama dodjeljuje automatizovano. Time osiguravamo da osjetljivi podaci budu dostupni isključivo provjerenim i potvrđenim osobama.
 
 * **Operativna kontrola i skalabilnost:** Sistem je dizajniran da kroz ovaj proces gradi čvrst Audit Trail. U slučaju bilo kakvog incidenta, platforma posjeduje neoboriv digitalni trag o tome ko je i kada odobrio pristup određenom serviseru. Dodatno, Document Management podsistem omogućava da arhitektura prati validnost stručnih potvrda, čime se sistem pozicionira kao profesionalan ekosistem koji garantuje standard usluge.
 
-Ovim pristupom osiguravamo da platforma ne bude samo tehnički posrednik, već siguran i kontrolisan sistem koji štiti i klijente i ugled profesionalnih servisera.
+Ovim pristupom osiguravamo da platforma ne bude samo tehnički posrednik, već siguran i kontrolisan sistem koji štiti i klijente i ugled profesionalnih servisera. Ova odluka predstavlja temelj za skalabilan i siguran rad platforme.
 
 ---
 
