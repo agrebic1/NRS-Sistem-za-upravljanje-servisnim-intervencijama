@@ -5,6 +5,20 @@ import {
   type KorisnikDashboardZahtjev,
 } from '@/components/korisnik/KorisnikPregledDashboard';
 import { createClient } from '@/lib/supabase/server';
+import type { Tables } from '@/domain/types/supabase';
+
+type KorisnikZahtjev = Pick<Tables<'zahtjev'>, 'id_zahtjeva' | 'opis_kvara' | 'adresa' | 'datum' | 'id_statusa'>;
+type StatusOpcija = Pick<Tables<'status'>, 'id_statusa' | 'naziv'>;
+
+function izvuciPunoImeIzProfila(profil: unknown): string {
+  if (!profil || typeof profil !== 'object') return '';
+
+  const zapis = profil as Record<string, unknown>;
+  const ime = typeof zapis.ime === 'string' ? zapis.ime.trim() : '';
+  const prezime = typeof zapis.prezime === 'string' ? zapis.prezime.trim() : '';
+
+  return [ime, prezime].filter(Boolean).join(' ').trim();
+}
 
 function mapirajStatus(vrijednost: string | null | undefined): KorisnikDashboardZahtjev['status'] {
   const normalizovano = (vrijednost ?? '').toLowerCase();
@@ -42,23 +56,25 @@ export default async function KorisnikPage() {
     redirect('/auth/login');
   }
 
-  const [{ data: profil, error: profilGreska }, { data: zahtjeviRaw, error: zahtjeviGreska }] = await Promise.all([
-    supabase
-      .from('osoba')
-      .select('ime, prezime')
-      .eq('id_osobe', user.id)
-      .maybeSingle(),
-    supabase
-      .from('zahtjev')
-      .select('id_zahtjeva, opis_kvara, adresa, datum, id_statusa')
-      .eq('id_korisnika_usluge', user.id)
-      .order('id_zahtjeva', { ascending: false }),
-  ]);
+  const { data: profilRaw, error: profilGreska } = await supabase
+    .from('osoba')
+    .select('ime, prezime')
+    .eq('id_osobe', user.id)
+    .maybeSingle();
+
+  const { data: zahtjeviRaw, error: zahtjeviGreska } = await supabase
+    .from('zahtjev')
+    .select('id_zahtjeva, opis_kvara, adresa, datum, id_statusa')
+    .eq('id_korisnika_usluge', user.id)
+    .order('id_zahtjeva', { ascending: false })
+    .returns<KorisnikZahtjev[]>();
+
+  const zahtjeviPodaci = zahtjeviRaw ?? [];
 
   const statusNazivPoId = new Map<number, string>();
-  if (zahtjeviRaw?.length) {
+  if (zahtjeviPodaci.length) {
     const statusIdSet = new Set<number>();
-    for (const zahtjev of zahtjeviRaw) {
+    for (const zahtjev of zahtjeviPodaci) {
       if (typeof zahtjev.id_statusa === 'number') {
         statusIdSet.add(zahtjev.id_statusa);
       }
@@ -68,7 +84,8 @@ export default async function KorisnikPage() {
       const { data: statusi, error: statusiGreska } = await supabase
         .from('status')
         .select('id_statusa, naziv')
-        .in('id_statusa', Array.from(statusIdSet));
+        .in('id_statusa', Array.from(statusIdSet))
+        .returns<StatusOpcija[]>();
 
       if (!statusiGreska) {
         for (const status of statusi ?? []) {
@@ -83,14 +100,17 @@ export default async function KorisnikPage() {
   if (zahtjeviGreska) {
     console.error('Neuspjelo učitavanje korisničkih zahtjeva:', zahtjeviGreska.message);
   }
+  if (profilGreska) {
+    console.error('Neuspjelo učitavanje korisničkog profila:', profilGreska.message);
+  }
 
   const imeKorisnika =
-    [profil?.ime, profil?.prezime].filter(Boolean).join(' ').trim() ||
+    izvuciPunoImeIzProfila(profilRaw) ||
     user.user_metadata?.ime ||
     user.email ||
     'Korisnik';
 
-  const zahtjevi: KorisnikDashboardZahtjev[] = (zahtjeviRaw ?? []).map((zahtjev) => {
+  const zahtjevi: KorisnikDashboardZahtjev[] = zahtjeviPodaci.map((zahtjev) => {
     return {
       id: String(zahtjev.id_zahtjeva),
       naslov: izvuciNaslov(zahtjev.opis_kvara),
