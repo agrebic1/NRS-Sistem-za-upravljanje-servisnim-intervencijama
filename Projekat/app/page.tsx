@@ -446,6 +446,8 @@ function Footer() {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
+import { PostaniPartnerSection } from '@/components/landing/PostaniPartnerSection';
+
 export default function LandingPage() {
   return (
     <div className="min-h-screen" style={{ backgroundColor: 'var(--first-tertiary)' }}>
@@ -453,6 +455,7 @@ export default function LandingPage() {
       <HeroSection />
       <StatsStrip />
       <FeaturesSection />
+      <PostaniPartnerSection />
       <CtaSection />
       <Footer />
     </div>

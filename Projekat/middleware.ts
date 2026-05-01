@@ -9,6 +9,7 @@ const JAVNE_RUTE = [
   '/auth/registracija',
   '/auth/odabir-uloge',
   '/odabir-uloge',
+  '/postani-partner',
 ] as const;
 
 const ADMIN_PREFIX = '/admin';

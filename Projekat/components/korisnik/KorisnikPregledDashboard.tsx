@@ -106,7 +106,7 @@ export function KorisnikPregledDashboard({
               Ovdje pratite svoje zahtjeve, hitne slučajeve i zakazane dolazake servisera — bez poziva i ručnih tablica.
             </p>
           </div>
-          <Link href="/korisnik/novi_zahtjev" className="shrink-0">
+          <Link href="/korisnik/zahtjevi/novi" className="shrink-0">
             <Button size="md" className="w-full sm:w-auto">
               <PlusCircle className="h-4 w-4" />
               Prijavi novi kvar
