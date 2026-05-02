@@ -1,4 +1,4 @@
-# Testiranje — vodič
+# Testiranje
 
 Ovaj folder sadrži **automatske** testove (pokretanje iz projekta) i **ručne** test planove po sprint stavkama (`SB-05-…`, `SB-06-…`). Za prvo čitanje: prvo pogledaj [Automatski testovi](#automatski-testovi), zatim [Ručno testiranje](#ručno-testiranje) za sprint koji te zanima.
 
