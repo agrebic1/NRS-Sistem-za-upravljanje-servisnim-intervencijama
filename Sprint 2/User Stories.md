@@ -627,7 +627,7 @@ Zavisi od storyja za prijavu zahtjeva za servisnu intervenciju (US-05) i povezan
     - **WHEN** pokuša pristupiti pregledu otvorenih intervencija  
     - **THEN** sistem mu ne dozvoljava pristup toj funkcionalnosti.
  
-  - **AC6: Prikaz adrese u dispečerskoj listi**  
+- **AC6: Prikaz adrese u dispečerskoj listi**  
   - **GIVEN** u sistemu postoji zahtjev koji čeka obradu
   - **WHEN** dispečer pristupi listi otvorenih zahtjeva
   - **THEN** sistem prikazuje adresu kvara kao dio osnovnih informacija zahtjeva
