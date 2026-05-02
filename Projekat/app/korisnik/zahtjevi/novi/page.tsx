@@ -1,9 +1,12 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { AppShell } from '@/components/layout/AppShell';
 import { ServiceRequestWizard } from '@/components/forms/ServiceRequestWizard';
 
 export default function NoviZahtjevWizardPage() {
+  const router = useRouter();
+
   return (
     <AppShell uloga="korisnik">
       <div className="mx-auto max-w-2xl">
@@ -27,7 +30,12 @@ export default function NoviZahtjevWizardPage() {
             backdropFilter:  'blur(12px)',
           }}
         >
-          <ServiceRequestWizard />
+          <ServiceRequestWizard
+            onSubmitted={() => {
+              router.push('/korisnik/zahtjevi');
+              router.refresh();
+            }}
+          />
         </div>
       </div>
     </AppShell>

@@ -14,7 +14,7 @@ import type { ServisniZahtjev } from '@/domain/types/servisirane';
 
 // ─── Prazno stanje ────────────────────────────────────────────────────────────
 
-function PraznoDashboard() {
+function PraznoDashboard({ onZahtjevPoslan }: { onZahtjevPoslan: () => void }) {
   return (
     <div className="flex flex-col items-center gap-8">
       <div className="w-full text-center">
@@ -47,7 +47,7 @@ function PraznoDashboard() {
             Popunite korake i vaš zahtjev će biti evidentiran.
           </p>
         </div>
-        <ServiceRequestWizard />
+        <ServiceRequestWizard onSubmitted={onZahtjevPoslan} />
       </div>
     </div>
   );
@@ -190,7 +190,7 @@ export default function KorisnikZahtjeviPage() {
   return (
     <AppShell uloga="korisnik">
       {zahtjevi.length === 0 ? (
-        <PraznoDashboard />
+        <PraznoDashboard onZahtjevPoslan={ucitajZahtjeve} />
       ) : (
         <ListaDashboard
           zahtjevi={zahtjevi}

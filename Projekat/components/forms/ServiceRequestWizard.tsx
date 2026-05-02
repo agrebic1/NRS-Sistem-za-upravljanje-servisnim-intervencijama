@@ -293,7 +293,11 @@ function kategorijaZaApi(s: WizardState): string {
 
 // ─── Glavni wizard ────────────────────────────────────────────────────────────
 
-export function ServiceRequestWizard() {
+interface ServiceRequestWizardProps {
+  onSubmitted?: () => void | Promise<void>;
+}
+
+export function ServiceRequestWizard({ onSubmitted }: ServiceRequestWizardProps) {
   const [korak,       setKorak]      = useState(1);
   const [state,       setState]      = useState<WizardState>(INITIAL);
   const [greska,      setGreska]     = useState<string | null>(null);
@@ -434,6 +438,7 @@ export function ServiceRequestWizard() {
       const podaci = await odgovor.json();
       if (!odgovor.ok) throw new Error(podaci.error ?? 'Greška pri slanju zahtjeva.');
       setJeUspjelo(true);
+      await onSubmitted?.();
     } catch (err) {
       setGreska(err instanceof Error ? err.message : 'Greška pri slanju zahtjeva.');
     } finally {
