@@ -41,12 +41,15 @@ INSERT INTO storage.buckets (id, name, public)
 VALUES ('partner-documents', 'partner-documents', true)
 ON CONFLICT (id) DO NOTHING;
 
+DROP POLICY IF EXISTS "partner_docs_insert_anon" ON storage.objects;
 -- RLS za Storage bucket
-CREATE POLICY IF NOT EXISTS "partner_docs_insert_anon"
+CREATE POLICY "partner_docs_insert_anon"
   ON storage.objects FOR INSERT
   WITH CHECK (bucket_id = 'partner-documents');
 
-CREATE POLICY IF NOT EXISTS "partner_docs_select_all"
+DROP POLICY IF EXISTS "partner_docs_select_all" ON storage.objects;
+
+CREATE POLICY "partner_docs_select_all"
   ON storage.objects FOR SELECT
   USING (bucket_id = 'partner-documents');
 
