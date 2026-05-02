@@ -198,6 +198,8 @@ function TileMap({
         if (ty < 0 || ty >= n) return null;
         const wx = ((tx % n) + n) % n;
         return (
+          // Dynamic OSM tile URLs are rendered as raw images in the custom map canvas.
+          // eslint-disable-next-line @next/next/no-img-element
           <img
             key={`${tx}-${ty}-${zoom}`}
             src={`https://tile.openstreetmap.org/${zoom}/${wx}/${ty}.png`}

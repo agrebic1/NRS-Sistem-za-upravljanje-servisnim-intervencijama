@@ -219,6 +219,8 @@ export function KorakOpis({
           >
             <div className="flex min-w-0 items-center gap-3">
               {previewUrl && (
+                // Blob preview is client-generated; keep native img for local preview.
+                // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={previewUrl}
                   alt="Pregled fotografije kvara"

@@ -23,10 +23,13 @@ const STATUS_CONFIG: Record<
   { oznaka: string; pozadina: string; boja: string }
 > = {
   na_cekanju:  { oznaka: 'Na čekanju',  pozadina: 'rgb(var(--first-quaternary-rgb) / 0.2)',  boja: 'var(--first-nonary)' },
+  potvrdeno:   { oznaka: 'Potvrđeno',   pozadina: 'rgb(var(--first-secondary-rgb) / 0.12)',  boja: 'var(--first-secondary)' },
   dodijeljeno: { oznaka: 'Dodijeljeno', pozadina: 'rgb(var(--first-secondary-rgb) / 0.12)',  boja: 'var(--first-secondary)' },
   u_radu:      { oznaka: 'U radu',      pozadina: 'rgb(var(--first-septenary-rgb) / 0.2)',   boja: 'var(--first-senary)' },
+  u_izvrsenju: { oznaka: 'U izvršenju', pozadina: 'rgb(var(--first-septenary-rgb) / 0.2)',   boja: 'var(--first-senary)' },
   zavrseno:    { oznaka: 'Završeno',    pozadina: 'rgb(var(--first-secondary-rgb) / 0.15)',  boja: 'var(--first-secondary)' },
   otkazano:    { oznaka: 'Otkazano',    pozadina: 'rgb(var(--first-quinary-rgb) / 0.3)',     boja: 'var(--first-nonary)' },
+  odbijeno:    { oznaka: 'Odbijeno',    pozadina: 'rgb(var(--first-senary-rgb) / 0.2)',      boja: 'var(--first-senary)' },
 };
 
 const RAZLOZI_OTKAZIVANJA = [
