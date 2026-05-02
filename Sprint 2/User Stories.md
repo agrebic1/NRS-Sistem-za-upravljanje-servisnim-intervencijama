@@ -608,6 +608,36 @@ Povezano sa storyjima za pregled vlastitog zahtjeva (US-06), pregled otvorenih i
   - **GIVEN** korisnik pokuša dodati fotografiju u nedozvoljenom formatu ili veću od dozvoljene veličine
   - **WHEN** sistem obradi upload
   - **THEN** sistem ne prihvata fotografiju i prikazuje odgovarajuću poruku o grešci
+ 
+- **AC32: Pregled zahtjeva prije slanja**  
+  - **GIVEN** korisnik je popunio sve obavezne korake prijave zahtjeva
+  - **WHEN** dođe na korak “Pregled zahtjeva”
+  - **THEN** sistem prikazuje sažetak svih unesenih podataka prije finalnog slanja
+
+- **AC33: Izmjena podataka iz pregleda**  
+  - **GIVEN** korisnik se nalazi na pregledu zahtjeva
+  - **WHEN** odabere opciju za uređivanje određene sekcije
+  - **THEN** sistem vraća korisnika na odgovarajući korak forme bez brisanja prethodno unesenih podataka
+
+- **AC34: Finalno slanje zahtjeva**  
+  - **GIVEN** korisnik je pregledao unesene podatke
+  - **WHEN** potvrdi slanje zahtjeva
+  - **THEN** sistem kreira zahtjev u bazi i evidentira ga kao novi zahtjev za servisnu intervenciju
+
+- **AC35: Prikaz potvrde nakon slanja**  
+  - **GIVEN** zahtjev je uspješno kreiran
+  - **WHEN** sistem završi obradu slanja
+  - **THEN** korisniku se prikazuje potvrda da je zahtjev uspješno poslan i evidentiran
+
+- **AC36: Prikaz broja i statusa zahtjeva nakon slanja**  
+  - **GIVEN** zahtjev je uspješno kreiran
+  - **WHEN** korisnik vidi potvrdu ili detalje zahtjeva
+  - **THEN** sistem prikazuje broj zahtjeva i početni status zahtjeva
+
+- **AC37: Preusmjeravanje na pregled vlastitog zahtjeva**  
+  - **GIVEN** zahtjev je uspješno kreiran
+  - **WHEN** korisnik odabere opciju za pregled zahtjeva
+  - **THEN** sistem prikazuje novokreirani zahtjev u korisnikovom pregledu vlastitih zahtjeva
 ---
 
 ## US-06 — Pregled vlastitog zahtjeva
