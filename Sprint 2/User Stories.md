@@ -271,6 +271,26 @@ Povezano sa storyjem za prijavu korisnika u sistem (US-02) , prijavu zahtjeva za
   - **GIVEN** registracija uspješno završena
   - **WHEN** sistem kreira novi korisnički nalog
   - **THEN** korisniku se dodjeljuje osnovna uloga predviđena za korisnika usluge ili senalog označava na dalju obradu, u skladu sa definisanim pravilima sistema
+    
+- **AC7: Kreiranje naloga koji čeka potvrdu email adrese**  
+  - **GIVEN** korisnik uspješno završi registraciju
+  - **WHEN** sistem kreira novi korisnički nalog
+  - **THEN** korisnički nalog dobija status `pending_email_verification` dok email adresa ne bude potvrđena
+
+- **AC8: Ograničen pristup prije potvrde email adrese**  
+  - **GIVEN** korisnik nije potvrdio email adresu
+  - **WHEN** pokuša pristupiti funkcionalnostima za prijavu servisnog zahtjeva
+  - **THEN** sistem ne dozvoljava pristup i prikazuje poruku da je potrebno potvrditi email adresu
+
+- **AC9: Aktivacija naloga nakon potvrde email adrese**  
+  - **GIVEN** korisnik klikne na validan link za potvrdu email adrese
+  - **WHEN** sistem uspješno potvrdi email adresu
+  - **THEN** status korisničkog naloga se mijenja u `active` i korisnik može koristiti funkcionalnosti dostupne korisniku usluge
+
+- **AC10: Ponovno slanje emaila za potvrdu**  
+  - **GIVEN** korisnik je kreirao nalog, ali email adresa još nije potvrđena
+  - **WHEN** korisnik odabere opciju za ponovno slanje emaila za potvrdu
+  - **THEN** sistem šalje novi email za potvrdu na registrovanu email adresu i prikazuje poruku da je email ponovo poslan
 
 ---
 
