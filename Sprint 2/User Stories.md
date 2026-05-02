@@ -454,190 +454,223 @@ Povezano sa storyjima za pregled vlastitog zahtjeva (US-06), pregled otvorenih i
 
 **Acceptance Criteria:**
 
+### A. Osnovno kreiranje zahtjeva
+
 - **AC1: Uspješna prijava zahtjeva**  
-  - **GIVEN** korisnik unese sve obavezne podatke za prijavu zahtjeva  
-  - **WHEN** potvrdi slanje zahtjeva  
+  - **GIVEN** korisnik je prijavljen u sistem, ima aktivnu ulogu korisnika usluge i unio je sve obavezne podatke za prijavu zahtjeva  
+  - **WHEN** korisnik potvrdi slanje zahtjeva  
   - **THEN** sistem kreira novi zahtjev za servisnu intervenciju i evidentira ga u sistemu
 
 - **AC2: Nepotpuni podaci**  
-  - **GIVEN** korisnik nije unio sve obavezne podatke   
+  - **GIVEN** korisnik nije unio jedno ili više obaveznih polja za prijavu zahtjeva  
   - **WHEN** pokuša poslati zahtjev  
-  - **THEN** sistem ne kreira zahtjev i prikazuje poruku o grešci
- 
-- **AC3: Uspješno evidentiranje zahtjeva** 
-  - **GIVEN** zahtjev je uspješno poslan  
+  - **THEN** sistem ne kreira zahtjev i prikazuje validacijsku poruku o grešci
+
+- **AC3: Uspješno evidentiranje zahtjeva u bazi**  
+  - **GIVEN** zahtjev je uspješno poslan sa validnim podacima  
   - **WHEN** sistem obradi unesene podatke  
   - **THEN** zahtjev se sprema u bazu i postaje dostupan za dalju obradu
 
 - **AC4: Dodjeljivanje početnog statusa zahtjevu**  
   - **GIVEN** zahtjev je uspješno evidentiran u sistemu  
   - **WHEN** sistem kreira novi zahtjev  
-  - **THEN** zahtjevu se automatski dodjeljuje početni status
+  - **THEN** zahtjevu se automatski dodjeljuje početni status `pending_review`
 
 - **AC5: Veza zahtjeva sa korisnikom koji ga je prijavio**  
   - **GIVEN** prijavljeni korisnik je uspješno poslao zahtjev  
   - **WHEN** zahtjev bude kreiran  
   - **THEN** sistem zahtjev povezuje sa korisničkim nalogom koji ga je podnio
- 
-- **AC6: Obavezan unos adrese kvara**  
-  - **GIVEN** korisnik se nalazi na koraku “Lokacija”
-  - **WHEN** pokuša nastaviti bez unesene adrese kvara
+
+- **AC6: Zabrana slanja zahtjeva za neprijavljenog korisnika**  
+  - **GIVEN** korisnik nije prijavljen u sistem  
+  - **WHEN** pokuša pristupiti formi za prijavu zahtjeva ili poslati zahtjev  
+  - **THEN** sistem ne dozvoljava kreiranje zahtjeva i preusmjerava korisnika na prijavu
+
+- **AC7: Zabrana slanja zahtjeva prije potvrde email adrese**  
+  - **GIVEN** korisnik ima kreiran nalog, ali email adresa još nije potvrđena  
+  - **WHEN** pokuša poslati zahtjev za servisnu intervenciju  
+  - **THEN** sistem ne kreira zahtjev i prikazuje poruku da je potrebno potvrditi email adresu
+
+- **AC8: Zabrana slanja zahtjeva korisniku bez odgovarajuće uloge**  
+  - **GIVEN** korisnik je prijavljen, ali nema aktivnu ulogu korisnika usluge  
+  - **WHEN** pokuša poslati zahtjev za servisnu intervenciju  
+  - **THEN** sistem ne dozvoljava kreiranje zahtjeva
+
+---
+
+### B. Vrsta kvara
+
+- **AC9: Obavezan odabir vrste kvara**  
+  - **GIVEN** korisnik se nalazi na koraku “Vrsta kvara”  
+  - **WHEN** pokuša nastaviti bez odabrane vrste kvara  
+  - **THEN** sistem ne dozvoljava nastavak i prikazuje poruku da je potrebno odabrati vrstu kvara
+
+- **AC10: Odabir glavne kategorije kvara**  
+  - **GIVEN** korisnik se nalazi na koraku “Vrsta kvara”  
+  - **WHEN** odabere jednu od ponuđenih glavnih kategorija  
+  - **THEN** sistem evidentira odabranu kategoriju kao dio zahtjeva i omogućava nastavak na sljedeći korak
+
+- **AC11: Otvaranje podkategorija za opciju Ostalo**  
+  - **GIVEN** korisnik se nalazi na koraku “Vrsta kvara”  
+  - **WHEN** odabere opciju “Ostalo”  
+  - **THEN** sistem prikazuje modal ili dodatni izbor podkategorije
+
+- **AC12: Obavezan izbor podkategorije za opciju Ostalo**  
+  - **GIVEN** korisnik je odabrao opciju “Ostalo”  
+  - **WHEN** nije odabrao nijednu podkategoriju  
+  - **THEN** sistem ne dozvoljava nastavak na sljedeći korak
+
+- **AC13: Evidentiranje izabrane podkategorije**  
+  - **GIVEN** korisnik je otvorio izbor podkategorije za opciju “Ostalo”  
+  - **WHEN** odabere jednu podkategoriju  
+  - **THEN** sistem evidentira izabranu podkategoriju kao dio zahtjeva
+
+---
+
+### C. Lokacija zahtjeva
+
+- **AC14: Obavezan unos adrese kvara**  
+  - **GIVEN** korisnik se nalazi na koraku “Lokacija”  
+  - **WHEN** pokuša nastaviti bez unesene adrese kvara  
   - **THEN** sistem ne dozvoljava nastavak i prikazuje poruku da je potrebno unijeti adresu kvara
 
-- **AC7: Validna adresa kvara omogućava nastavak**  
-  - **GIVEN** korisnik se nalazi na koraku “Lokacija”
-  - **WHEN** unese validnu adresu kvara
+- **AC15: Validna adresa kvara omogućava nastavak**  
+  - **GIVEN** korisnik se nalazi na koraku “Lokacija”  
+  - **WHEN** unese validnu adresu kvara  
   - **THEN** sistem evidentira adresu i omogućava nastavak na sljedeći korak
 
-- **AC8: GPS kao opcionalno preciziranje lokacije**  
-  - **GIVEN** korisnik se nalazi na koraku “Lokacija”
-  - **WHEN** odabere opciju za korištenje trenutne GPS lokacije i dozvoli pristup lokaciji
-  - **THEN** sistem čuva koordinate kao dodatni podatak uz zahtjev, ali adresa kvara ostaje obavezna
-
-- **AC9: Nedostupna GPS lokacija**  
-  - **GIVEN** korisnik pokuša koristiti GPS lokaciju
-  - **WHEN** lokacija nije dostupna ili korisnik odbije dozvolu za lokaciju
-  - **THEN** sistem prikazuje poruku da lokacija nije dostupna i omogućava korisniku da adresu unese ručno
-
-- **AC10: Mapa kao opcionalno preciziranje lokacije**  
-  - **GIVEN** korisnik želi dodatno precizirati lokaciju kvara
-  - **WHEN** odabere opciju “Preciziraj lokaciju na mapi”
-  - **THEN** sistem prikazuje mapu kao opcionalni alat za označavanje lokacije
-
-- **AC11: Označavanje lokacije na mapi**  
-  - **GIVEN** mapa je prikazana korisniku
-  - **WHEN** korisnik klikne na mapu
-  - **THEN** sistem postavlja marker na odabranu lokaciju i čuva koordinate kao dodatni podatak uz zahtjev
-
-- **AC12: Adresa ostaje obavezna i kada su koordinate unesene**  
-  - **GIVEN** korisnik je označio lokaciju putem GPS-a ili mape, ali nije unio adresu kvara
-  - **WHEN** pokuša nastaviti na sljedeći korak
-  - **THEN** sistem ne dozvoljava nastavak i traži unos adrese kvara
-
-- **AC13: Spremanje adrese i koordinata uz zahtjev**  
-  - **GIVEN** korisnik je unio adresu i dodatno označio lokaciju putem GPS-a ili mape
-  - **WHEN** sistem kreira zahtjev
-  - **THEN** sistem sprema adresu kao obavezni podatak, a koordinate kao opcionalni dodatni podatak
- 
-- **AC14: Korištenje trenutne lokacije kao opcionalne pomoći**  
-  - **GIVEN** korisnik se nalazi na koraku “Lokacija”
-  - **WHEN** odabere opciju “Koristi moju trenutnu lokaciju”
+- **AC16: Korištenje trenutne lokacije kao opcionalne pomoći**  
+  - **GIVEN** korisnik se nalazi na koraku “Lokacija”  
+  - **WHEN** odabere opciju “Koristi moju trenutnu lokaciju”  
   - **THEN** sistem traži dozvolu za pristup trenutnoj lokaciji korisnika
 
-- **AC15: Uspješno određivanje trenutne lokacije**  
-  - **GIVEN** korisnik je dozvolio pristup trenutnoj lokaciji
-  - **WHEN** sistem uspješno odredi lokaciju
+- **AC17: Uspješno određivanje trenutne lokacije**  
+  - **GIVEN** korisnik je dozvolio pristup trenutnoj lokaciji  
+  - **WHEN** sistem uspješno odredi lokaciju  
   - **THEN** sistem čuva geografske koordinate kao dodatni podatak uz zahtjev
 
-- **AC16: Automatsko popunjavanje adrese na osnovu trenutne lokacije**  
-  - **GIVEN** sistem je uspješno odredio trenutnu lokaciju korisnika
-  - **WHEN** sistem može prepoznati adresu na osnovu koordinata
+- **AC18: Automatsko popunjavanje adrese na osnovu trenutne lokacije**  
+  - **GIVEN** sistem je uspješno odredio trenutnu lokaciju korisnika  
+  - **WHEN** sistem može prepoznati adresu na osnovu koordinata  
   - **THEN** sistem automatski popunjava polje adrese i omogućava korisniku da adresu ručno provjeri i izmijeni
 
-- **AC17: Odbijena ili nedostupna trenutna lokacija**  
-  - **GIVEN** korisnik pokuša koristiti trenutnu lokaciju
-  - **WHEN** korisnik odbije dozvolu ili lokacija nije dostupna
+- **AC19: Odbijena ili nedostupna trenutna lokacija**  
+  - **GIVEN** korisnik pokuša koristiti trenutnu lokaciju  
+  - **WHEN** korisnik odbije dozvolu ili lokacija nije dostupna  
   - **THEN** sistem prikazuje poruku da lokacija nije dostupna i omogućava korisniku da adresu unese ručno
 
-- **AC18: Adresa ostaje obavezna nakon korištenja trenutne lokacije**  
-  - **GIVEN** korisnik je koristio opciju trenutne lokacije
-  - **WHEN** adresa kvara nije unesena ili automatski popunjena
+- **AC20: Adresa ostaje obavezna nakon korištenja trenutne lokacije**  
+  - **GIVEN** korisnik je koristio opciju trenutne lokacije  
+  - **WHEN** adresa kvara nije unesena ili automatski popunjena  
   - **THEN** sistem ne dozvoljava nastavak dok korisnik ne unese adresu kvara
 
-- **AC19: Unos preferiranog datuma i vremenskog perioda**  
-  - **GIVEN** korisnik se nalazi na koraku “Termin”
-  - **WHEN** odabere datum i vremenski period koji mu odgovara
+- **AC21: Mapa kao opcionalno preciziranje lokacije**  
+  - **GIVEN** korisnik želi dodatno precizirati lokaciju kvara  
+  - **WHEN** odabere opciju “Preciziraj lokaciju na mapi”  
+  - **THEN** sistem prikazuje mapu kao opcionalni alat za označavanje lokacije
+
+- **AC22: Označavanje lokacije na mapi**  
+  - **GIVEN** mapa je prikazana korisniku  
+  - **WHEN** korisnik klikne na mapu  
+  - **THEN** sistem postavlja marker na odabranu lokaciju i čuva koordinate kao dodatni podatak uz zahtjev
+
+- **AC23: Spremanje adrese i koordinata uz zahtjev**  
+  - **GIVEN** korisnik je unio adresu i dodatno označio lokaciju putem GPS-a ili mape  
+  - **WHEN** sistem kreira zahtjev  
+  - **THEN** sistem sprema adresu kao obavezni podatak, a koordinate kao opcionalni dodatni podatak
+
+---
+
+### D. Preferirani termin
+
+- **AC24: Unos preferiranog datuma i vremenskog perioda**  
+  - **GIVEN** korisnik se nalazi na koraku “Termin”  
+  - **WHEN** odabere datum i vremenski period koji mu odgovara  
   - **THEN** sistem evidentira odabrani datum i vremenski period kao preferirani termin korisnika
 
-- **AC20: Preferirani termin nije potvrđeni termin intervencije**  
-  - **GIVEN** korisnik je odabrao preferirani termin
-  - **WHEN** sistem kreira zahtjev za servisnu intervenciju
+- **AC25: Preferirani termin nije potvrđeni termin intervencije**  
+  - **GIVEN** korisnik je odabrao preferirani termin  
+  - **WHEN** sistem kreira zahtjev za servisnu intervenciju  
   - **THEN** sistem evidentira termin kao korisničku preferencu, bez označavanja intervencije kao zakazane
 
-- **AC21: Opcija bez preferiranog termina**  
-  - **GIVEN** korisnik ne zna koji termin mu odgovara
-  - **WHEN** odabere opciju “Nemam preferirani termin — kontaktirajte me radi dogovora”
+- **AC26: Opcija bez preferiranog termina**  
+  - **GIVEN** korisnik ne zna koji termin mu odgovara  
+  - **WHEN** odabere opciju “Nemam preferirani termin — kontaktirajte me radi dogovora”  
   - **THEN** sistem dozvoljava nastavak prijave zahtjeva bez odabira datuma i vremena
 
-- **AC22: Validacija vremenskog perioda**  
-  - **GIVEN** korisnik je odabrao preferirani datum i vremenski period
-  - **WHEN** vrijeme početka nije prije vremena završetka
+- **AC27: Validacija vremenskog perioda**  
+  - **GIVEN** korisnik je odabrao preferirani datum i vremenski period  
+  - **WHEN** vrijeme početka nije prije vremena završetka  
   - **THEN** sistem ne dozvoljava nastavak i prikazuje poruku o neispravnom vremenskom periodu
 
-- **AC23: Zabrana izbora datuma u prošlosti**  
-  - **GIVEN** korisnik se nalazi na koraku “Termin”
-  - **WHEN** pokuša odabrati datum koji je u prošlosti
+- **AC28: Zabrana izbora datuma u prošlosti**  
+  - **GIVEN** korisnik se nalazi na koraku “Termin”  
+  - **WHEN** pokuša odabrati datum koji je u prošlosti  
   - **THEN** sistem ne dozvoljava izbor tog datuma
 
-- **AC24: Spremanje preferiranog termina uz zahtjev**  
-  - **GIVEN** korisnik je odabrao preferirani datum i vremenski period
-  - **WHEN** zahtjev bude kreiran
+- **AC29: Spremanje preferiranog termina uz zahtjev**  
+  - **GIVEN** korisnik je odabrao preferirani datum i vremenski period  
+  - **WHEN** zahtjev bude kreiran  
   - **THEN** sistem sprema preferirani datum i vremenski period uz zahtjev kao informaciju za dispečera
- 
-- **AC25: Obavezan unos opisa kvara**  
-  - **GIVEN** korisnik se nalazi na koraku “Opis kvara”
-  - **WHEN** pokuša nastaviti bez unesenog opisa kvara
+
+---
+
+### E. Opis, kontakt i fotografija
+
+- **AC30: Obavezan unos opisa kvara**  
+  - **GIVEN** korisnik se nalazi na koraku “Opis kvara”  
+  - **WHEN** pokuša nastaviti bez unesenog opisa kvara  
   - **THEN** sistem ne dozvoljava nastavak i prikazuje poruku da je potrebno opisati problem
 
-- **AC26: Validacija dužine opisa kvara**  
-  - **GIVEN** korisnik je unio opis kvara koji ne zadovoljava minimalnu dužinu
-  - **WHEN** pokuša nastaviti na sljedeći korak
+- **AC31: Validacija dužine opisa kvara**  
+  - **GIVEN** korisnik je unio opis kvara koji ne zadovoljava minimalnu dužinu  
+  - **WHEN** pokuša nastaviti na sljedeći korak  
   - **THEN** sistem prikazuje poruku da opis mora sadržavati dovoljno informacija za obradu zahtjeva
 
-- **AC27: Obavezan kontakt telefon**  
-  - **GIVEN** korisnik se nalazi na koraku “Opis kvara”
-  - **WHEN** pokuša nastaviti bez kontakt telefona
+- **AC32: Obavezan kontakt telefon**  
+  - **GIVEN** korisnik se nalazi na koraku “Opis kvara”  
+  - **WHEN** pokuša nastaviti bez kontakt telefona  
   - **THEN** sistem ne dozvoljava nastavak i prikazuje poruku da je potrebno unijeti kontakt telefon
 
-- **AC28: Validacija formata kontakt telefona**  
-  - **GIVEN** korisnik je unio kontakt telefon u neispravnom formatu
-  - **WHEN** pokuša nastaviti
+- **AC33: Validacija formata kontakt telefona**  
+  - **GIVEN** korisnik je unio kontakt telefon u neispravnom formatu  
+  - **WHEN** pokuša nastaviti  
   - **THEN** sistem prikazuje poruku da je potrebno unijeti ispravan kontakt telefon
 
-- **AC29: Fotografija kvara je opcionalna**  
-  - **GIVEN** korisnik nije dodao fotografiju kvara
-  - **WHEN** popuni obavezni opis i kontakt telefon
+- **AC34: Fotografija kvara je opcionalna**  
+  - **GIVEN** korisnik nije dodao fotografiju kvara  
+  - **WHEN** popuni obavezni opis i kontakt telefon  
   - **THEN** sistem dozvoljava nastavak prijave zahtjeva
 
-- **AC30: Dodavanje fotografije kvara**  
-  - **GIVEN** korisnik se nalazi na koraku “Opis kvara”
-  - **WHEN** doda fotografiju u dozvoljenom formatu i veličini
+- **AC35: Dodavanje fotografije kvara**  
+  - **GIVEN** korisnik se nalazi na koraku “Opis kvara”  
+  - **WHEN** doda fotografiju u dozvoljenom formatu i veličini  
   - **THEN** sistem sprema fotografiju kao opcionalni prilog uz zahtjev
 
-- **AC31: Nedozvoljen format ili prevelika fotografija**  
-  - **GIVEN** korisnik pokuša dodati fotografiju u nedozvoljenom formatu ili veću od dozvoljene veličine
-  - **WHEN** sistem obradi upload
+- **AC36: Nedozvoljen format ili prevelika fotografija**  
+  - **GIVEN** korisnik pokuša dodati fotografiju u nedozvoljenom formatu ili veću od dozvoljene veličine  
+  - **WHEN** sistem obradi upload  
   - **THEN** sistem ne prihvata fotografiju i prikazuje odgovarajuću poruku o grešci
- 
-- **AC32: Pregled zahtjeva prije slanja**  
-  - **GIVEN** korisnik je popunio sve obavezne korake prijave zahtjeva
-  - **WHEN** dođe na korak “Pregled zahtjeva”
-  - **THEN** sistem prikazuje sažetak svih unesenih podataka prije finalnog slanja
 
-- **AC33: Izmjena podataka iz pregleda**  
-  - **GIVEN** korisnik se nalazi na pregledu zahtjeva
-  - **WHEN** odabere opciju za uređivanje određene sekcije
-  - **THEN** sistem vraća korisnika na odgovarajući korak forme bez brisanja prethodno unesenih podataka
+---
 
-- **AC34: Finalno slanje zahtjeva**  
-  - **GIVEN** korisnik je pregledao unesene podatke
-  - **WHEN** potvrdi slanje zahtjeva
-  - **THEN** sistem kreira zahtjev u bazi i evidentira ga kao novi zahtjev za servisnu intervenciju
+### F. Hitnost zahtjeva
 
-- **AC35: Prikaz potvrde nakon slanja**  
-  - **GIVEN** zahtjev je uspješno kreiran
-  - **WHEN** sistem završi obradu slanja
-  - **THEN** korisniku se prikazuje potvrda da je zahtjev uspješno poslan i evidentiran
+- **AC37: Odabir hitnosti zahtjeva**  
+  - **GIVEN** korisnik se nalazi na koraku “Hitnost”  
+  - **WHEN** odabere nivo hitnosti  
+  - **THEN** sistem evidentira odabranu hitnost kao korisničku procjenu uz zahtjev
 
-- **AC36: Prikaz broja i statusa zahtjeva nakon slanja**  
-  - **GIVEN** zahtjev je uspješno kreiran
-  - **WHEN** korisnik vidi potvrdu ili detalje zahtjeva
-  - **THEN** sistem prikazuje broj zahtjeva i početni status zahtjeva
+- **AC38: Hitnost nije konačni prioritet intervencije**  
+  - **GIVEN** korisnik je odabrao hitnost zahtjeva  
+  - **WHEN** sistem kreira zahtjev  
+  - **THEN** sistem sprema hitnost kao informaciju za dispečera, bez automatskog određivanja operativnog prioriteta
 
-- **AC37: Preusmjeravanje na pregled vlastitog zahtjeva**  
-  - **GIVEN** zahtjev je uspješno kreiran
-  - **WHEN** korisnik odabere opciju za pregled zahtjeva
-  - **THEN** sistem prikazuje novokreirani zahtjev u korisnikovom pregledu vlastitih zahtjeva
+- **AC39: Obavezan odabir hitnosti ako je dio korisničkog toka**  
+  - **GIVEN** korak “Hitnost” je definisan kao obavezan dio prijave zahtjeva  
+  - **WHEN** korisnik pokuša nastaviti bez odabrane hitnosti  
+  - **THEN** sistem ne dozvoljava nastavak i prikazuje poruku da je potrebno odabrati hitnost
+
 ---
 
 ## US-06 — Pregled vlastitog zahtjeva
@@ -670,7 +703,7 @@ Zavisi od storyja za prijavu zahtjeva za servisnu intervenciju (US-05) i povezan
 - **AC2: Prikaz trenutnog statusa zahtjeva**  
   - **GIVEN** korisnik pregleda svoj zahtjev  
   - **WHEN** otvori detalje zahtjeva ili listu zahtjeva  
-  - **THEN** sistem prikazuje tačan trenutni status zahtjeva.
+  - **THEN** sistem prikazuje tačan trenutni status zahtjeva
 
 - **AC3: Prikaz samo vlastitih zahtjeva**  
   - **GIVEN** korisnik je prijavljen u sistem  
@@ -686,16 +719,57 @@ Zavisi od storyja za prijavu zahtjeva za servisnu intervenciju (US-05) i povezan
   - **GIVEN** status korisnikovog zahtjeva je promijenjen u sistemu  
   - **WHEN** korisnik ponovo pregleda svoj zahtjev  
   - **THEN** sistem prikazuje ažurirani status zahtjeva
- 
-- **AC6: Prikaz adrese zahtjeva korisniku**  
-  - **GIVEN** korisnik ima evidentiran zahtjev sa adresom kvara
-  - **WHEN** pristupi pregledu svojih zahtjeva
+
+- **AC6: Prikaz novokreiranog zahtjeva nakon slanja**  
+  - **GIVEN** korisnik je uspješno poslao zahtjev  
+  - **WHEN** pristupi sekciji “Moji zahtjevi”  
+  - **THEN** sistem prikazuje novokreirani zahtjev u listi njegovih zahtjeva
+
+- **AC7: Prikaz adrese zahtjeva korisniku**  
+  - **GIVEN** korisnik ima evidentiran zahtjev sa adresom kvara  
+  - **WHEN** pristupi pregledu svojih zahtjeva  
   - **THEN** sistem prikazuje adresu kvara uz osnovne informacije zahtjeva
 
-- **AC7: Prikaz informacije o dodatno označenoj lokaciji**  
-  - **GIVEN** korisnik je prilikom prijave zahtjeva dodatno označio lokaciju putem GPS-a ili mape
-  - **WHEN** pregleda detalje zahtjeva
+- **AC8: Prikaz informacije o dodatno označenoj lokaciji**  
+  - **GIVEN** korisnik je prilikom prijave zahtjeva dodatno označio lokaciju putem GPS-a ili mape  
+  - **WHEN** pregleda detalje zahtjeva  
   - **THEN** sistem prikazuje informaciju da je precizna lokacija dodana uz zahtjev
+
+- **AC9: Prikaz vrste kvara i podkategorije**  
+  - **GIVEN** korisnik ima evidentiran zahtjev sa vrstom kvara  
+  - **WHEN** pregleda listu ili detalje zahtjeva  
+  - **THEN** sistem prikazuje vrstu kvara i podkategoriju ako je unesena
+
+- **AC10: Prikaz opisa i kontakt telefona**  
+  - **GIVEN** korisnik ima evidentiran zahtjev  
+  - **WHEN** otvori detalje zahtjeva  
+  - **THEN** sistem prikazuje opis kvara i kontakt telefon koji su uneseni pri prijavi
+
+- **AC11: Prikaz preferiranog termina korisniku**  
+  - **GIVEN** korisnik je prilikom prijave zahtjeva unio preferirani termin  
+  - **WHEN** pregleda svoj zahtjev  
+  - **THEN** sistem prikazuje preferirani termin kao korisničku preferencu, uz napomenu da konačan termin potvrđuje dispečer
+
+- **AC12: Prikaz informacije da korisnik nema preferirani termin**  
+  - **GIVEN** korisnik je prilikom prijave zahtjeva odabrao opciju bez preferiranog termina  
+  - **WHEN** pregleda svoj zahtjev  
+  - **THEN** sistem prikazuje informaciju da će ga dispečer kontaktirati radi dogovora termina
+
+- **AC13: Prikaz fotografije ako je dodana**  
+  - **GIVEN** korisnik je priložio fotografiju kvara  
+  - **WHEN** pregleda detalje zahtjeva  
+  - **THEN** sistem prikazuje fotografiju ili informaciju da je fotografija dodana
+
+- **AC14: Prikaz hitnosti zahtjeva**  
+  - **GIVEN** korisnik je označio hitnost zahtjeva  
+  - **WHEN** pregleda zahtjev  
+  - **THEN** sistem prikazuje korisnički označenu hitnost
+
+- **AC15: Sakrivanje internih operativnih podataka od korisnika**  
+  - **GIVEN** korisnik usluge pregleda vlastiti zahtjev  
+  - **WHEN** sistem učita podatke zahtjeva  
+  - **THEN** sistem ne prikazuje interne dispečerske napomene, interne operativne procjene i druge podatke koji nisu namijenjeni korisniku usluge
+
 
 ---
 
@@ -721,40 +795,71 @@ Zavisi od storyja za prijavu zahtjeva za servisnu intervenciju (US-05) i povezan
 
 **Acceptance Criteria:**
 
-- **AC1: Prikaz liste otvorenih i aktivnih intervencija**  
-    - **GIVEN** u sistemu postoje otvorene ili aktivne intervencije  
-    - **WHEN** dispečer pristupi pregledu intervencija  
-    - **THEN** sistem prikazuje listu svih relevantnih intervencija za dalju obradu
+- **AC1: Prikaz liste otvorenih i aktivnih zahtjeva/intervencija**  
+  - **GIVEN** u sistemu postoje otvoreni zahtjevi ili aktivne intervencije  
+  - **WHEN** dispečer pristupi operativnom pregledu  
+  - **THEN** sistem prikazuje listu svih relevantnih zapisa za dalju obradu
 
-- **AC2: Prikaz osnovnih informacija o intervenciji**  
-    - **GIVEN** dispečer pregleda listu otvorenih intervencija  
-    - **WHEN** sistem prikaže listu  
-    - **THEN** za svaku intervenciju prikazuje osnovne podatke potrebne za pregled i razlikovanje zapisa
+- **AC2: Prikaz osnovnih informacija o zahtjevu/intervenciji**  
+  - **GIVEN** dispečer pregleda listu otvorenih zahtjeva/intervencija  
+  - **WHEN** sistem prikaže listu  
+  - **THEN** za svaki zapis prikazuje osnovne podatke potrebne za pregled i razlikovanje zapisa
 
-- **AC3: Isključenje završenih ili neaktivnih intervencija iz osnovnog pregleda**  
-    - **GIVEN** u sistemu postoje završene ili zatvorene intervencije  
-    - **WHEN** dispečer pristupi osnovnom pregledu otvorenih intervencija  
-    - **THEN** sistem ne prikazuje intervencije koje više nisu predmet aktivne obrade
+- **AC3: Isključenje završenih ili neaktivnih zapisa iz osnovnog pregleda**  
+  - **GIVEN** u sistemu postoje završeni, zatvoreni, otkazani ili neaktivni zapisi  
+  - **WHEN** dispečer pristupi osnovnom pregledu otvorenih zahtjeva/intervencija  
+  - **THEN** sistem ne prikazuje zapise koji više nisu predmet aktivne obrade
 
-- **AC4: Ažuriranje pregleda nakon promjene stanja intervencije**  
-    - **GIVEN** stanje neke intervencije se promijeni u sistemu  
-    - **WHEN** dispečer osvježi pregled ili ponovo pristupi listi intervencija  
-    - **THEN** sistem prikazuje ažurirano stanje liste.
+- **AC4: Ažuriranje pregleda nakon promjene stanja**  
+  - **GIVEN** stanje nekog zahtjeva ili intervencije se promijeni u sistemu  
+  - **WHEN** dispečer osvježi pregled ili ponovo pristupi listi  
+  - **THEN** sistem prikazuje ažurirano stanje liste
 
 - **AC5: Ograničenje pristupa pregledu intervencija**  
-    - **GIVEN** korisnik nema ulogu dispečera ili drugo odgovarajuće ovlaštenje  
-    - **WHEN** pokuša pristupiti pregledu otvorenih intervencija  
-    - **THEN** sistem mu ne dozvoljava pristup toj funkcionalnosti.
- 
-- **AC6: Prikaz adrese u dispečerskoj listi**  
-  - **GIVEN** u sistemu postoji zahtjev koji čeka obradu
-  - **WHEN** dispečer pristupi listi otvorenih zahtjeva
+  - **GIVEN** korisnik nema ulogu dispečera ili drugo odgovarajuće ovlaštenje  
+  - **WHEN** pokuša pristupiti pregledu otvorenih zahtjeva/intervencija  
+  - **THEN** sistem mu ne dozvoljava pristup toj funkcionalnosti
+
+- **AC6: Prikaz novokreiranog zahtjeva u dispečerskoj listi**  
+  - **GIVEN** korisnik je uspješno poslao zahtjev  
+  - **WHEN** dispečer pristupi listi zahtjeva koji čekaju obradu  
+  - **THEN** sistem prikazuje novokreirani zahtjev u dispečerskom pregledu
+
+- **AC7: Prikaz adrese u dispečerskoj listi**  
+  - **GIVEN** u sistemu postoji zahtjev koji čeka obradu  
+  - **WHEN** dispečer pristupi listi otvorenih zahtjeva  
   - **THEN** sistem prikazuje adresu kvara kao dio osnovnih informacija zahtjeva
 
-- **AC7: Prikaz informacije o koordinatama u dispečerskoj listi**  
-  - **GIVEN** korisnik je uz zahtjev dodatno označio lokaciju putem GPS-a ili mape
-  - **WHEN** dispečer pregleda listu zahtjeva
+- **AC8: Prikaz informacije o koordinatama u dispečerskoj listi**  
+  - **GIVEN** korisnik je uz zahtjev dodatno označio lokaciju putem GPS-a ili mape  
+  - **WHEN** dispečer pregleda listu zahtjeva  
   - **THEN** sistem prikazuje oznaku da zahtjev ima dodatno preciziranu lokaciju
+
+- **AC9: Prikaz osnovnih podataka za početnu obradu**  
+  - **GIVEN** dispečer pregleda listu zahtjeva koji čekaju obradu  
+  - **WHEN** sistem prikaže zahtjeve  
+  - **THEN** za svaki zahtjev prikazuje vrstu kvara, podkategoriju ako postoji, adresu, kontakt telefon, datum prijave, status, korisničku hitnost i preferirani termin ako postoji
+
+- **AC10: Prikaz informacije o zahtjevu bez preferiranog termina**  
+  - **GIVEN** korisnik je prilikom prijave zahtjeva odabrao opciju bez preferiranog termina  
+  - **WHEN** dispečer pregleda listu zahtjeva koji čekaju obradu  
+  - **THEN** sistem prikazuje informaciju da korisnika treba kontaktirati radi dogovora termina
+
+- **AC11: Prikaz indikatora fotografije**  
+  - **GIVEN** korisnik je uz zahtjev priložio fotografiju kvara  
+  - **WHEN** dispečer pregleda listu zahtjeva  
+  - **THEN** sistem prikazuje indikator da zahtjev sadrži fotografiju ili prilog
+
+- **AC12: Korisnička hitnost nije operativni prioritet**  
+  - **GIVEN** korisnik je prilikom prijave označio hitnost zahtjeva  
+  - **WHEN** dispečer pregleda zahtjev u listi  
+  - **THEN** sistem prikazuje korisničku hitnost kao informaciju, bez tretiranja te vrijednosti kao konačnog operativnog prioriteta
+
+- **AC13: Prelazak iz liste na detalje zahtjeva/intervencije**  
+  - **GIVEN** dispečer pregleda listu otvorenih zahtjeva/intervencija  
+  - **WHEN** odabere konkretan zapis  
+  - **THEN** sistem otvara detaljni prikaz tog zahtjeva/intervencije za dalju obradu
+
 ---
 
 ## US-08 — Pregled detalja pojedinačne intervencije
