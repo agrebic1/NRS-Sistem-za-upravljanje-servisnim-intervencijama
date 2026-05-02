@@ -544,6 +544,35 @@ Povezano sa storyjima za pregled vlastitog zahtjeva (US-06), pregled otvorenih i
   - **WHEN** adresa kvara nije unesena ili automatski popunjena
   - **THEN** sistem ne dozvoljava nastavak dok korisnik ne unese adresu kvara
 
+- **AC19: Unos preferiranog datuma i vremenskog perioda**  
+  - **GIVEN** korisnik se nalazi na koraku “Termin”
+  - **WHEN** odabere datum i vremenski period koji mu odgovara
+  - **THEN** sistem evidentira odabrani datum i vremenski period kao preferirani termin korisnika
+
+- **AC20: Preferirani termin nije potvrđeni termin intervencije**  
+  - **GIVEN** korisnik je odabrao preferirani termin
+  - **WHEN** sistem kreira zahtjev za servisnu intervenciju
+  - **THEN** sistem evidentira termin kao korisničku preferencu, bez označavanja intervencije kao zakazane
+
+- **AC21: Opcija bez preferiranog termina**  
+  - **GIVEN** korisnik ne zna koji termin mu odgovara
+  - **WHEN** odabere opciju “Nemam preferirani termin — kontaktirajte me radi dogovora”
+  - **THEN** sistem dozvoljava nastavak prijave zahtjeva bez odabira datuma i vremena
+
+- **AC22: Validacija vremenskog perioda**  
+  - **GIVEN** korisnik je odabrao preferirani datum i vremenski period
+  - **WHEN** vrijeme početka nije prije vremena završetka
+  - **THEN** sistem ne dozvoljava nastavak i prikazuje poruku o neispravnom vremenskom periodu
+
+- **AC23: Zabrana izbora datuma u prošlosti**  
+  - **GIVEN** korisnik se nalazi na koraku “Termin”
+  - **WHEN** pokuša odabrati datum koji je u prošlosti
+  - **THEN** sistem ne dozvoljava izbor tog datuma
+
+- **AC24: Spremanje preferiranog termina uz zahtjev**  
+  - **GIVEN** korisnik je odabrao preferirani datum i vremenski period
+  - **WHEN** zahtjev bude kreiran
+  - **THEN** sistem sprema preferirani datum i vremenski period uz zahtjev kao informaciju za dispečera
 ---
 
 ## US-06 — Pregled vlastitog zahtjeva
