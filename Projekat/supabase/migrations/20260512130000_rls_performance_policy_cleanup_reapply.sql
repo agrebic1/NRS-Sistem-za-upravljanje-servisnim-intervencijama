@@ -1,5 +1,8 @@
 BEGIN;
 
+-- Reapply RLS performance cleanup in a new migration version.
+-- Needed when previous migration file was edited after being applied.
+
 -- ------------------------------------------------------------
 -- 1) auth_rls_initplan: wrap auth.uid() calls with SELECT
 -- ------------------------------------------------------------

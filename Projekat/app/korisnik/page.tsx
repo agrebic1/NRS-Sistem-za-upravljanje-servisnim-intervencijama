@@ -7,8 +7,10 @@ import {
 import { createClient } from '@/lib/supabase/server';
 import type { Tables } from '@/domain/types/supabase';
 
-type KorisnikZahtjev = Pick<Tables<'zahtjev'>, 'id_zahtjeva' | 'opis_kvara' | 'adresa' | 'datum' | 'id_statusa'>;
-type StatusOpcija = Pick<Tables<'status'>, 'id_statusa' | 'naziv'>;
+type KorisnikZahtjev = Pick<
+  Tables<'service_requests'>,
+  'id' | 'category' | 'description' | 'address' | 'created_at' | 'status' | 'urgency_score'
+>;
 
 function izvuciPunoImeIzProfila(profil: unknown): string {
   if (!profil || typeof profil !== 'object') return '';
@@ -20,12 +22,25 @@ function izvuciPunoImeIzProfila(profil: unknown): string {
   return [ime, prezime].filter(Boolean).join(' ').trim();
 }
 
-function mapirajStatus(vrijednost: string | null | undefined): KorisnikDashboardZahtjev['status'] {
-  const normalizovano = (vrijednost ?? '').toLowerCase();
+function mapirajStatus(
+  status: string | null | undefined,
+  urgencyScore: number | null | undefined
+): KorisnikDashboardZahtjev['status'] {
+  const normalizovano = (status ?? '').toLowerCase();
+  const score = Number(urgencyScore ?? 0);
 
-  if (normalizovano.includes('hit')) return 'hitno';
-  if (normalizovano.includes('zavr')) return 'zavrsen';
-  if (normalizovano.includes('tok') || normalizovano.includes('obradi')) return 'u_toku';
+  if (normalizovano === 'zavrseno' || normalizovano === 'otkazano' || normalizovano === 'odbijeno') {
+    return 'zavrsen';
+  }
+  if (score >= 80) return 'hitno';
+  if (
+    normalizovano === 'potvrdeno' ||
+    normalizovano === 'dodijeljeno' ||
+    normalizovano === 'u_radu' ||
+    normalizovano === 'u_izvrsenju'
+  ) {
+    return 'u_toku';
+  }
   return 'novi';
 }
 
@@ -63,39 +78,13 @@ export default async function KorisnikPage() {
     .maybeSingle();
 
   const { data: zahtjeviRaw, error: zahtjeviGreska } = await supabase
-    .from('zahtjev')
-    .select('id_zahtjeva, opis_kvara, adresa, datum, id_statusa')
-    .eq('id_korisnika_usluge', user.id)
-    .order('id_zahtjeva', { ascending: false })
+    .from('service_requests')
+    .select('id, category, description, address, created_at, status, urgency_score')
+    .eq('user_id', user.id)
+    .order('created_at', { ascending: false })
     .returns<KorisnikZahtjev[]>();
 
   const zahtjeviPodaci = zahtjeviRaw ?? [];
-
-  const statusNazivPoId = new Map<number, string>();
-  if (zahtjeviPodaci.length) {
-    const statusIdSet = new Set<number>();
-    for (const zahtjev of zahtjeviPodaci) {
-      if (typeof zahtjev.id_statusa === 'number') {
-        statusIdSet.add(zahtjev.id_statusa);
-      }
-    }
-
-    if (statusIdSet.size > 0) {
-      const { data: statusi, error: statusiGreska } = await supabase
-        .from('status')
-        .select('id_statusa, naziv')
-        .in('id_statusa', Array.from(statusIdSet))
-        .returns<StatusOpcija[]>();
-
-      if (!statusiGreska) {
-        for (const status of statusi ?? []) {
-          statusNazivPoId.set(status.id_statusa, status.naziv);
-        }
-      } else {
-        console.error('Neuspjelo učitavanje statusa zahtjeva:', statusiGreska.message);
-      }
-    }
-  }
 
   if (zahtjeviGreska) {
     console.error('Neuspjelo učitavanje korisničkih zahtjeva:', zahtjeviGreska.message);
@@ -112,11 +101,11 @@ export default async function KorisnikPage() {
 
   const zahtjevi: KorisnikDashboardZahtjev[] = zahtjeviPodaci.map((zahtjev) => {
     return {
-      id: String(zahtjev.id_zahtjeva),
-      naslov: izvuciNaslov(zahtjev.opis_kvara),
-      status: mapirajStatus(statusNazivPoId.get(zahtjev.id_statusa ?? -1)),
-      datum: formatirajDatum(zahtjev.datum),
-      lokacija: zahtjev.adresa ?? 'Lokacija nije unesena',
+      id: String(zahtjev.id),
+      naslov: (zahtjev.category ?? '').trim() || izvuciNaslov(zahtjev.description),
+      status: mapirajStatus(zahtjev.status, zahtjev.urgency_score),
+      datum: formatirajDatum(zahtjev.created_at),
+      lokacija: zahtjev.address ?? 'Lokacija nije unesena',
     };
   });
 
