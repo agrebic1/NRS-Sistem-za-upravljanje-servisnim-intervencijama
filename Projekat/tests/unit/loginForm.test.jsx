@@ -8,7 +8,6 @@ import { LoginForm } from '@/components/forms/LoginForm';
 const mockPush = jest.fn();
 const mockPrijava = jest.fn();
 const mockRedirect = jest.fn();
-const mockResend = jest.fn();
 
 jest.mock('next/navigation', () => ({
   useRouter: () => ({ push: mockPush }),
@@ -23,7 +22,6 @@ jest.mock('next/link', () => {
 jest.mock('@/services/auth/authService', () => ({
   prijaviSeEmailom: (...args) => mockPrijava(...args),
   odrediRedirectNakonPrijave: (...args) => mockRedirect(...args),
-  posaljiPonovoVerifikacijskiEmail: (...args) => mockResend(...args),
 }));
 
 describe('LoginForm', () => {
@@ -31,10 +29,9 @@ describe('LoginForm', () => {
     mockPush.mockReset();
     mockPrijava.mockReset();
     mockRedirect.mockReset();
-    mockResend.mockReset();
   });
 
-  test('submits happy path and redirects user', async () => {
+  test('submits happy path, shows success, then redirects user', async () => {
     const user = userEvent.setup();
     mockPrijava.mockResolvedValue({ user: { id: 'u1' } });
     mockRedirect.mockResolvedValue('/korisnik');
@@ -50,37 +47,24 @@ describe('LoginForm', () => {
         lozinka: 'Abcd123!',
       });
     });
-    expect(mockPush).toHaveBeenCalledWith('/korisnik');
+    expect(await screen.findByText('Uspješno ste prijavljeni.')).toBeInTheDocument();
+    await waitFor(
+      () => {
+        expect(mockPush).toHaveBeenCalledWith('/korisnik');
+      },
+      { timeout: 3000 }
+    );
   });
 
   test('shows error for invalid login', async () => {
     const user = userEvent.setup();
-    mockPrijava.mockRejectedValue(new Error('Pogrešna email adresa ili lozinka'));
+    mockPrijava.mockRejectedValue(new Error('Neispravni podaci za prijavu.'));
     render(<LoginForm />);
 
     await user.type(screen.getByLabelText('Email adresa'), 'user@example.com');
     await user.type(screen.getByLabelText('Lozinka'), 'Abcd123!');
     await user.click(screen.getByRole('button', { name: 'Prijavi se' }));
 
-    expect(await screen.findByText('Pogrešna email adresa ili lozinka')).toBeInTheDocument();
-  });
-
-  test('resend verification flow sends email and shows success message', async () => {
-    const user = userEvent.setup();
-    mockPrijava.mockRejectedValue(new Error('Email adresa nije potvrđena'));
-    mockResend.mockResolvedValue(undefined);
-    render(<LoginForm />);
-
-    await user.type(screen.getByLabelText('Email adresa'), 'user@example.com');
-    await user.type(screen.getByLabelText('Lozinka'), 'Abcd123!');
-    await user.click(screen.getByRole('button', { name: 'Prijavi se' }));
-
-    const resendBtn = await screen.findByRole('button', { name: 'Pošalji ponovo verifikacijski email' });
-    await user.click(resendBtn);
-
-    await waitFor(() => expect(mockResend).toHaveBeenCalledWith('user@example.com'));
-    expect(
-      await screen.findByText('Poslali smo novi verifikacijski email. Provjerite inbox i spam folder.')
-    ).toBeInTheDocument();
+    expect(await screen.findByText('Neispravni podaci za prijavu.')).toBeInTheDocument();
   });
 });

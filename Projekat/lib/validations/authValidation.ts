@@ -25,8 +25,16 @@ const shemaLozinke = z
 // ─── Shema za prijavu ─────────────────────────────────────────────────────────
 
 export const prijavnaShema = z.object({
-  email:   z.string().transform(normalizujEmail).pipe(z.string().min(1, 'Email adresa je obavezna').email('Unesite ispravnu email adresu')),
-  lozinka: z.string().min(1, 'Lozinka je obavezna'),
+  email: z
+    .string()
+    .transform(normalizujEmail)
+    .pipe(
+      z
+        .string()
+        .min(1, 'Unesite email i lozinku.')
+        .email('Unesite ispravnu email adresu.')
+    ),
+  lozinka: z.string().min(1, 'Unesite email i lozinku.'),
 });
 
 // ─── Shema za registraciju (samo Korisnik usluge) ─────────────────────────────

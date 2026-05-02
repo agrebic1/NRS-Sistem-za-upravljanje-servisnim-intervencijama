@@ -7,19 +7,27 @@ import Link from 'next/link';
 import { AppShell } from '@/components/layout/AppShell';
 import { Button } from '@/components/ui/Button';
 import { AlertMessage } from '@/components/ui/AlertMessage';
+import {
+  izracunajGreskuPreferiranogVremena,
+  porukaValidacijePreferiranogTermina,
+} from '@/components/forms/ServiceRequestWizard';
 import { KorakTermin } from '@/components/wizard/KorakTermin';
-import type { ServisniZahtjev, TerminSlot } from '@/domain/types/servisirane';
+import type { ServisniZahtjev } from '@/domain/types/servisirane';
 
 const PHONE_REGEX = /^[0-9+\-\/ ]*$/;
 
 // ─── Forma za izmjenu ─────────────────────────────────────────────────────────
 
 interface EditState {
-  address:      string;
-  description:  string;
-  contactPhone: string;
-  termini:          TerminSlot[];
-  istaVrijemaSvima: boolean;
+  address:             string;
+  description:       string;
+  contactPhone:      string;
+  preferredDate:     string | null;
+  preferredTimeFrom: string;
+  preferredTimeTo:   string;
+  noPreferredTime:   boolean;
+  preferredTimeLabel: string | null;
+  timeValidationError: string | null;
 }
 
 function validiraj(s: EditState): string | null {
@@ -29,10 +37,8 @@ function validiraj(s: EditState): string | null {
   if (s.description.trim().length > 2000) return 'Opis ne smije biti duži od 2000 karaktera.';
   if (s.contactPhone && !PHONE_REGEX.test(s.contactPhone))
     return 'Dozvoljeni su samo brojevi i znakovi +, -, /.';
-  for (const t of s.termini) {
-    if (!t.from || !t.to) return 'Unesite vrijeme za sve odabrane datume.';
-    if (t.from >= t.to)   return '"Vrijeme do" mora biti nakon "Vrijeme od".';
-  }
+  const pt = porukaValidacijePreferiranogTermina(s);
+  if (pt) return pt;
   return null;
 }
 
@@ -49,11 +55,15 @@ export default function UrediZahtjevPage() {
   const [jeSlanje,  setJeSlanje]  = useState(false);
 
   const [editState, setEditState] = useState<EditState>({
-    address:          '',
-    description:      '',
-    contactPhone:     '',
-    termini:          [],
-    istaVrijemaSvima: true,
+    address:             '',
+    description:         '',
+    contactPhone:        '',
+    preferredDate:       null,
+    preferredTimeFrom:   '',
+    preferredTimeTo:     '',
+    noPreferredTime:     false,
+    preferredTimeLabel:  null,
+    timeValidationError: null,
   });
 
   // Učitaj zahtjev i postavi initial values
@@ -72,12 +82,20 @@ export default function UrediZahtjevPage() {
         }
 
         setZahtjev(z);
+        const ps = z.preferred_schedule;
+        const termini = ps?.termini ?? [];
+        const noPref = ps?.no_preferred_time === true || termini.length === 0;
+        const prvi = termini[0];
         setEditState({
-          address:          z.address,
-          description:      z.description,
-          contactPhone:     z.contact_phone,
-          termini:          z.preferred_schedule?.termini ?? [],
-          istaVrijemaSvima: true,
+          address:             z.address,
+          description:         z.description,
+          contactPhone:        z.contact_phone,
+          preferredDate:       noPref ? null : (prvi?.date ?? null),
+          preferredTimeFrom:   noPref ? '' : (prvi?.from ?? ''),
+          preferredTimeTo:     noPref ? '' : (prvi?.to ?? ''),
+          noPreferredTime:     noPref,
+          preferredTimeLabel:  ps?.preferred_time_label ?? null,
+          timeValidationError: null,
         });
       } catch (err) {
         setGreska(err instanceof Error ? err.message : 'Greška pri učitavanju.');
@@ -89,7 +107,18 @@ export default function UrediZahtjevPage() {
   }, [id]);
 
   function azurirajPolje(updates: Partial<EditState>) {
-    setEditState((prev) => ({ ...prev, ...updates }));
+    setEditState((prev) => {
+      const next = { ...prev, ...updates };
+      const korak3 =
+        'preferredDate' in updates ||
+        'preferredTimeFrom' in updates ||
+        'preferredTimeTo' in updates ||
+        'noPreferredTime' in updates;
+      if (korak3) {
+        next.timeValidationError = izracunajGreskuPreferiranogVremena(next);
+      }
+      return next;
+    });
     setGreska(null);
   }
 
@@ -108,9 +137,20 @@ export default function UrediZahtjevPage() {
           address:       editState.address.trim(),
           description:   editState.description.trim(),
           contact_phone: editState.contactPhone.trim() || undefined,
-          preferred_schedule: editState.termini.length > 0
-            ? { termini: editState.termini }
-            : undefined,
+          preferred_schedule: editState.noPreferredTime
+            ? { termini: [], no_preferred_time: true }
+            : {
+                termini: [
+                  {
+                    date: editState.preferredDate!,
+                    from: editState.preferredTimeFrom,
+                    to:   editState.preferredTimeTo,
+                  },
+                ],
+                ...(editState.preferredTimeLabel
+                  ? { preferred_time_label: editState.preferredTimeLabel }
+                  : {}),
+              },
         }),
       });
       const d = await r.json();
@@ -249,13 +289,16 @@ export default function UrediZahtjevPage() {
               <div className="mb-3 flex items-center gap-2">
                 <Clock className="h-4 w-4 flex-shrink-0" style={{ color: 'var(--first-nonary)' }} />
                 <span className="text-sm font-semibold" style={{ color: 'var(--first-octonary)' }}>
-                  Željeni termini
+                  Preferirani termin
                 </span>
               </div>
               <KorakTermin
-                termini={editState.termini}
-                istaVrijemaSvima={editState.istaVrijemaSvima}
-                onUpdate={(u) => azurirajPolje(u as Partial<EditState>)}
+                preferredDate={editState.preferredDate}
+                preferredTimeFrom={editState.preferredTimeFrom}
+                preferredTimeTo={editState.preferredTimeTo}
+                noPreferredTime={editState.noPreferredTime}
+                preferredTimeLabel={editState.preferredTimeLabel}
+                onUpdate={azurirajPolje}
               />
             </div>
 

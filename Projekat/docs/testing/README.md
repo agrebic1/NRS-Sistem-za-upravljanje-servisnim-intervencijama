@@ -23,7 +23,7 @@ Ovaj dokument opisuje kako se pokrecu automatski testovi i sta je trenutno pokri
 - forme:
   - `LoginForm` (happy path, error, resend verifikacije)
   - `RegisterForm` (step navigacija, valid submit, error submit)
-  - `ServiceRequestForm` (uspjesan submit, error submit, loading kategorija)
+  - `ServiceRequestWizard` (petokoračna prijava — pokriveno e2e gdje je primjenjivo)
 - e2e smoke:
   - auth stranice
   - redirect sa privatnih ruta na login

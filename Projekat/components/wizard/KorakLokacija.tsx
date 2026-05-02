@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { MapPin, Navigation, Search, X, Plus, Minus } from 'lucide-react';
+import { MapPin, Navigation, X, Plus, Minus } from 'lucide-react';
+import { AlertMessage } from '@/components/ui/AlertMessage';
 
 // ─── Tile map matematika ──────────────────────────────────────────────────────
 
@@ -62,16 +63,30 @@ async function reverseGeocode(lat: number, lon: number): Promise<string | null> 
 // ─── Interaktivna tile mapa ───────────────────────────────────────────────────
 
 interface TileMapProps {
-  center:   { lat: number; lon: number };
-  pin:      { lat: number; lon: number } | null;
-  zoom:     number;
-  height:   number;
-  onPin:    (c: { lat: number; lon: number }) => void;
-  onCenter: (c: { lat: number; lon: number }) => void;
-  onZoom:   (z: number) => void;
+  center:             { lat: number; lon: number };
+  pin:                { lat: number; lon: number } | null;
+  zoom:               number;
+  height:             number;
+  onPin:              (c: { lat: number; lon: number }) => void;
+  onCenter:           (c: { lat: number; lon: number }) => void;
+  onZoom:             (z: number) => void;
+  /** Kada je `null`, ne prikazuje se centralni tekst dok nema pina (instrukcija je izvan mape). */
+  idleCenterHint?:    string | null;
+  /** `undefined` = podrazumijevani tekst; `null` = sakrij banner kad postoji pin (poruka je izvan mape). */
+  pinnedCenterHint?:  string | null;
 }
 
-function TileMap({ center, pin, zoom, height, onPin, onCenter, onZoom }: TileMapProps) {
+function TileMap({
+  center,
+  pin,
+  zoom,
+  height,
+  onPin,
+  onCenter,
+  onZoom,
+  idleCenterHint,
+  pinnedCenterHint,
+}: TileMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [w, setW]    = useState(600);
   const dragRef      = useRef<{
@@ -148,6 +163,13 @@ function TileMap({ center, pin, zoom, height, onPin, onCenter, onZoom }: TileMap
 
   function handleMouseUp() { dragRef.current = null; }
 
+  const pinCaption =
+    pinnedCenterHint === undefined ? 'Lokacija je označena na mapi.' : pinnedCenterHint;
+  const mapOverlayText = pin ? (pinCaption ?? '') : idleCenterHint ?? '';
+  const prikaziCentralniHint = pin
+    ? pinCaption != null && pinCaption.length > 0
+    : Boolean(idleCenterHint);
+
   return (
     <div
       ref={containerRef}
@@ -160,6 +182,9 @@ function TileMap({ center, pin, zoom, height, onPin, onCenter, onZoom }: TileMap
         backgroundColor: '#e8e0d8',
       }}
       onClick={handleClick}
+      onContextMenu={(e) => {
+        e.preventDefault();
+      }}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
@@ -190,7 +215,6 @@ function TileMap({ center, pin, zoom, height, onPin, onCenter, onZoom }: TileMap
         );
       })}
 
-      {/* Pin */}
       {pin && pinLeft !== null && pinTop !== null && (
         <div
           style={{
@@ -205,19 +229,17 @@ function TileMap({ center, pin, zoom, height, onPin, onCenter, onZoom }: TileMap
         </div>
       )}
 
-      {/* Hint bez pina */}
-      {!pin && (
+      {prikaziCentralniHint && (
         <div
-          className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2
-            rounded-xl px-4 py-2 text-xs font-medium shadow-card"
-          style={{ backgroundColor: 'rgba(255,255,255,0.9)', color: '#1f2a30' }}
+          className="pointer-events-none absolute left-1/2 top-1/2 max-w-[min(90%,20rem)] -translate-x-1/2 -translate-y-1/2
+            rounded-xl px-4 py-2 text-center text-xs font-medium shadow-card"
+          style={{ backgroundColor: 'rgba(255,255,255,0.94)', color: '#1f2a30' }}
         >
-          <MapPin className="mr-1.5 inline h-3.5 w-3.5" style={{ color: '#DC2626' }} />
-          Kliknite na mapu za postavljanje pina
+          <MapPin className="mr-1.5 inline h-3.5 w-3.5 align-text-bottom" style={{ color: '#DC2626' }} />
+          {mapOverlayText}
         </div>
       )}
 
-      {/* Zum dugmad */}
       <div className="absolute right-2 top-2 flex flex-col gap-1">
         {([
           { Icon: Plus,  action: () => onZoom(Math.min(zoom + 1, 18)) },
@@ -230,13 +252,13 @@ function TileMap({ center, pin, zoom, height, onPin, onCenter, onZoom }: TileMap
             className="flex h-7 w-7 items-center justify-center rounded-lg shadow-card
               transition-colors hover:bg-soft-beige/80"
             style={{ backgroundColor: 'rgba(255,255,255,0.92)', color: '#1f2a30' }}
+            aria-label={i === 0 ? 'Približi mapu' : 'Udalji mapu'}
           >
             <Icon className="h-4 w-4" />
           </button>
         ))}
       </div>
 
-      {/* Attribution */}
       <p
         className="pointer-events-none absolute bottom-1 right-1 rounded px-1.5 py-0.5 text-xs"
         style={{ backgroundColor: 'rgba(255,255,255,0.75)', color: '#666' }}
@@ -247,24 +269,32 @@ function TileMap({ center, pin, zoom, height, onPin, onCenter, onZoom }: TileMap
   );
 }
 
-// ─── Autocomplete dropdown ────────────────────────────────────────────────────
+// ─── Autocomplete adresu ─────────────────────────────────────────────────────
 
 interface AutocompleteProps {
-  value:     string;
-  onChange:  (val: string) => void;
-  onSelect:  (result: NominatimResult) => void;
-  error?:    string;
-  loading?:  boolean;
+  value:       string;
+  onChange:    (val: string) => void;
+  onSelect:    (result: NominatimResult) => void;
+  error?:      string;
+  label?:      string;
+  helperText?: string;
 }
 
-function AddressAutocomplete({ value, onChange, onSelect, error, loading }: AutocompleteProps) {
+function AddressAutocomplete({
+  value,
+  onChange,
+  onSelect,
+  error,
+  label = 'Adresa kvara *',
+  helperText,
+}: AutocompleteProps) {
   const [sugestije,   setSugestije]   = useState<NominatimResult[]>([]);
   const [otvoreno,    setOtvoreno]    = useState(false);
   const [aktivan,     setAktivan]     = useState(-1);
+  const [isSearching, setIsSearching] = useState(false);
   const debounceRef   = useRef<ReturnType<typeof setTimeout>>();
   const containerRef  = useRef<HTMLDivElement>(null);
 
-  // Close on outside click
   useEffect(() => {
     function handler(e: MouseEvent) {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
@@ -281,79 +311,89 @@ function AddressAutocomplete({ value, onChange, onSelect, error, loading }: Auto
     clearTimeout(debounceRef.current);
     if (val.trim().length < 3) { setSugestije([]); setOtvoreno(false); return; }
     debounceRef.current = setTimeout(async () => {
+      setIsSearching(true);
       const rezultati = await geocodeAdresa(val);
+      setIsSearching(false);
       setSugestije(rezultati);
       setOtvoreno(rezultati.length > 0);
     }, 450);
   }
 
-  function handleKeyDown(e: React.KeyboardEvent) {
+  function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
     if (!otvoreno) return;
     if (e.key === 'ArrowDown') { e.preventDefault(); setAktivan((a) => Math.min(a + 1, sugestije.length - 1)); }
     if (e.key === 'ArrowUp')   { e.preventDefault(); setAktivan((a) => Math.max(a - 1, 0)); }
-    if (e.key === 'Enter' && aktivan >= 0) { e.preventDefault(); onSelect(sugestije[aktivan]); setOtvoreno(false); }
+    if (e.key === 'Enter' && aktivan >= 0) {
+      e.preventDefault();
+      onSelect(sugestije[aktivan]);
+      setOtvoreno(false);
+    }
     if (e.key === 'Escape') setOtvoreno(false);
   }
 
   return (
-    <div ref={containerRef} className="relative">
-      <div className="flex flex-col gap-1.5">
-        <label className="text-sm font-medium" style={{ color: 'var(--first-octonary)' }}>
-          Adresa kvara
-        </label>
-        <div className="relative">
-          <input
-            type="text"
-            id="wizard-adresa"
-            placeholder="Počnite tipkati adresu..."
-            value={value}
-            onChange={(e) => handleChange(e.target.value)}
-            onKeyDown={handleKeyDown}
-            onFocus={() => sugestije.length > 0 && setOtvoreno(true)}
-            autoComplete="off"
-            className="w-full rounded-xl border px-4 py-2.5 text-sm transition-all duration-200
-              placeholder:text-text-muted/60 focus:outline-none focus:ring-2
-              disabled:cursor-not-allowed disabled:opacity-50"
+    <div ref={containerRef} className="flex flex-col gap-1.5">
+      <label className="text-sm font-medium" style={{ color: 'var(--first-octonary)' }}>
+        {label}
+      </label>
+      {/* Dropdown odmah ispod polja — ne smije vizuelno prekriti GPS/map dugmad ispod. */}
+      <div className="relative z-10">
+        <textarea
+          id="wizard-adresa"
+          placeholder="Unesite adresu kvara…"
+          value={value}
+          rows={2}
+          onChange={(e) => handleChange(e.target.value)}
+          onKeyDown={handleKeyDown}
+          onFocus={() => sugestije.length > 0 && setOtvoreno(true)}
+          autoComplete="off"
+          className="h-[72px] max-h-[72px] min-h-[72px] w-full resize-none overflow-y-auto rounded-xl border px-3 py-2.5
+            text-sm leading-snug transition-all duration-200 placeholder:text-text-muted/60 focus:outline-none focus:ring-2
+            disabled:cursor-not-allowed disabled:opacity-50"
+          style={{
+            borderColor:     error ? 'var(--first-senary)' : 'rgb(var(--first-quaternary-rgb) / 0.4)',
+            backgroundColor: 'rgb(255 255 255 / 0.95)',
+            color:           'var(--first-octonary)',
+          }}
+        />
+        {isSearching && (
+          <div className="pointer-events-none absolute right-3 top-2.5">
+            <div className="h-4 w-4 animate-spin rounded-full border-2 border-celestial-teal border-t-transparent" />
+          </div>
+        )}
+
+        {otvoreno && sugestije.length > 0 && (
+          <div
+            className="absolute left-0 right-0 top-full z-20 mt-1.5 max-h-56 overflow-y-auto overflow-x-hidden rounded-xl shadow-card-lg"
             style={{
-              borderColor:     error ? 'var(--first-senary)' : 'rgb(var(--first-quaternary-rgb) / 0.4)',
-              backgroundColor: 'rgb(255 255 255 / 0.6)',
-              color:           'var(--first-octonary)',
+              backgroundColor: 'var(--first-tertiary)',
+              border:          '1px solid rgb(var(--first-quaternary-rgb) / 0.4)',
             }}
-          />
-          {loading && (
-            <div className="absolute right-3.5 top-1/2 -translate-y-1/2">
-              <div className="h-4 w-4 animate-spin rounded-full border-2 border-celestial-teal border-t-transparent" />
-            </div>
-          )}
-        </div>
-        {error && <p className="text-xs" style={{ color: 'var(--first-senary)' }}>{error}</p>}
+          >
+            {sugestije.map((s, i) => (
+              <button
+                key={i}
+                type="button"
+                onClick={() => { onSelect(s); setOtvoreno(false); }}
+                className="flex w-full items-start gap-2 px-4 py-3 text-left transition-colors hover:bg-soft-beige/30"
+                style={{ backgroundColor: i === aktivan ? 'rgb(var(--first-quaternary-rgb) / 0.2)' : 'transparent' }}
+              >
+                <MapPin className="mt-0.5 h-3.5 w-3.5 flex-shrink-0" style={{ color: '#DC2626' }} />
+                <span className="text-sm" style={{ color: 'var(--first-octonary)' }}>
+                  {s.display_name}
+                </span>
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* Dropdown sa sugestijama */}
-      {otvoreno && sugestije.length > 0 && (
-        <div
-          className="absolute left-0 right-0 top-full z-50 mt-1.5 overflow-hidden rounded-xl shadow-card-lg"
-          style={{
-            backgroundColor: 'var(--first-tertiary)',
-            border:          '1px solid rgb(var(--first-quaternary-rgb) / 0.4)',
-          }}
-        >
-          {sugestije.map((s, i) => (
-            <button
-              key={i}
-              type="button"
-              onClick={() => { onSelect(s); setOtvoreno(false); }}
-              className="flex w-full items-start gap-2 px-4 py-3 text-left transition-colors hover:bg-soft-beige/30"
-              style={{ backgroundColor: i === aktivan ? 'rgb(var(--first-quaternary-rgb) / 0.2)' : 'transparent' }}
-            >
-              <MapPin className="mt-0.5 h-3.5 w-3.5 flex-shrink-0" style={{ color: '#DC2626' }} />
-              <span className="text-sm" style={{ color: 'var(--first-octonary)' }}>
-                {s.display_name}
-              </span>
-            </button>
-          ))}
-        </div>
+      {helperText && (
+        <p className="text-xs leading-relaxed" style={{ color: '#64748b' }}>
+          {helperText}
+        </p>
       )}
+      {error && <p className="text-xs" style={{ color: 'var(--first-senary)' }}>{error}</p>}
     </div>
   );
 }
@@ -363,126 +403,291 @@ function AddressAutocomplete({ value, onChange, onSelect, error, loading }: Auto
 const DEFAULT_CENTER = { lat: 43.8563, lon: 18.4131 };
 const DEFAULT_ZOOM   = 13;
 
-interface KorakLokacijaProps {
-  address:  string;
-  onUpdate: (p: { address?: string }) => void;
-  error?:   string;
+/** Zajednička geometrija sekundarnih akcija (ne konkurišu primarnom „Dalje”). */
+const STIL_DUGME_SEKUNDARNO_BAZA =
+  'inline-flex min-h-[44px] w-full items-center justify-center gap-2 rounded-[12px] border px-4 text-sm font-medium ' +
+  'transition-colors disabled:cursor-not-allowed disabled:opacity-50 sm:px-5 shadow-none';
+
+/** GPS: plava familija (--first-secondary, --first-quaternary). */
+const STIL_DUGME_GPS = [
+  STIL_DUGME_SEKUNDARNO_BAZA,
+  'border-[rgb(var(--first-secondary-rgb)/0.55)] bg-[rgb(var(--first-quaternary-rgb)/0.42)] text-[var(--first-secondary)]',
+  'hover:bg-[rgb(var(--first-secondary-rgb)/0.12)] hover:border-[rgb(var(--first-secondary-rgb)/0.72)]',
+].join(' ');
+
+/** Mapa: akcent zlatno-narančasta (--surface-info, --border-info, --first-septenary). */
+const STIL_DUGME_MAPA = [
+  STIL_DUGME_SEKUNDARNO_BAZA,
+  'border-[var(--border-info)] bg-[var(--surface-info)] text-[var(--first-octonary)]',
+  'hover:bg-[rgb(var(--first-septenary-rgb)/0.24)] hover:border-[rgb(var(--first-septenary-rgb)/0.45)]',
+].join(' ');
+
+export interface KorakLokacijaProps {
+  address:                  string;
+  latitude:                 number | null;
+  longitude:                number | null;
+  isLocating:               boolean;
+  locationError:            string | null;
+  locationSuccessMessage:   string | null;
+  isMapVisible:             boolean;
+  onUpdate:                 (p: {
+    address?:                 string;
+    latitude?:                number | null;
+    longitude?:               number | null;
+    isLocating?:              boolean;
+    locationError?:           string | null;
+    locationSuccessMessage?:  string | null;
+    hasSelectedMapLocation?:  boolean;
+    isMapVisible?:            boolean;
+  }) => void;
+  error?:                   string;
 }
 
-export function KorakLokacija({ address, onUpdate, error }: KorakLokacijaProps) {
-  const [mapCenter,  setMapCenter]  = useState(DEFAULT_CENTER);
-  const [zoom,       setZoom]       = useState(DEFAULT_ZOOM);
-  const [pin,        setPin]        = useState<{ lat: number; lon: number } | null>(null);
-  const [geoGreska,  setGeoGreska]  = useState<string | null>(null);
-  const [geoLoading, setGeoLoading] = useState(false);
+export function KorakLokacija({
+  address,
+  latitude,
+  longitude,
+  isLocating,
+  locationError,
+  locationSuccessMessage,
+  isMapVisible,
+  onUpdate,
+  error,
+}: KorakLokacijaProps) {
+  const [mapCenter, setMapCenter] = useState(DEFAULT_CENTER);
+  const [zoom,      setZoom]      = useState(DEFAULT_ZOOM);
+  const [mapHeight, setMapHeight] = useState(300);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 767px)');
+    function sync() {
+      setMapHeight(mq.matches ? 220 : 300);
+    }
+    sync();
+    mq.addEventListener('change', sync);
+    return () => mq.removeEventListener('change', sync);
+  }, []);
+
+  const pin = latitude != null && longitude != null ? { lat: latitude, lon: longitude } : null;
+
+  useEffect(() => {
+    if (latitude != null && longitude != null) {
+      setMapCenter({ lat: latitude, lon: longitude });
+    }
+  }, [latitude, longitude]);
 
   async function handlePin(coords: { lat: number; lon: number }) {
-    setPin(coords);
     setMapCenter(coords);
-    setGeoLoading(true);
-    setGeoGreska(null);
     const adresa = await reverseGeocode(coords.lat, coords.lon);
-    setGeoLoading(false);
-    if (adresa) onUpdate({ address: adresa });
+    onUpdate({
+      latitude:               coords.lat,
+      longitude:              coords.lon,
+      hasSelectedMapLocation: true,
+      locationError:          null,
+      locationSuccessMessage: 'Lokacija je označena na mapi.',
+      ...(adresa ? { address: adresa } : {}),
+    });
   }
 
   function handleAutocompleteSelect(r: NominatimResult) {
     const lat = parseFloat(r.lat);
     const lon = parseFloat(r.lon);
-    onUpdate({ address: r.display_name });
+    onUpdate({
+      address:                r.display_name,
+      latitude:               lat,
+      longitude:              lon,
+      hasSelectedMapLocation: true,
+      locationError:          null,
+      locationSuccessMessage: null,
+    });
     setMapCenter({ lat, lon });
-    setPin({ lat, lon });
     setZoom(15);
   }
 
-  async function locirajMe() {
-    if (!('geolocation' in navigator)) return;
-    setGeoLoading(true);
-    setGeoGreska(null);
+  const gpsNedostupanPoruka = 'Lokacija nije dostupna. Unesite adresu ručno.';
+  const gpsNijeHTTPSPoruka =
+    'Lokacija u pregledniku radi samo preko HTTPS (ili na localhostu). Otvorite stranicu preko sigurne veze ili unesite adresu ručno.';
+
+  function porukaGpsGreske(err: GeolocationPositionError): string {
+    switch (err.code) {
+      case err.PERMISSION_DENIED:
+        return 'Pristup lokaciji je odbijen ili blokiran. U postavkama preglednika dozvolite lokaciju za ovu stranicu, zatim pokušajte ponovo. Možete i unijeti adresu ručno.';
+      case err.POSITION_UNAVAILABLE:
+        return 'Uređaj trenutno ne može odrediti lokaciju (npr. isključen GPS). Unesite adresu ručno ili pokušajte na otvorenom mjestu.';
+      case err.TIMEOUT:
+        return 'Lociranje je predugo trajalo. Pokušajte ponovo ili unesite adresu ručno.';
+      default:
+        return gpsNedostupanPoruka;
+    }
+  }
+
+  function locirajMe() {
+    if (typeof window !== 'undefined' && !window.isSecureContext) {
+      onUpdate({
+        locationError:          gpsNijeHTTPSPoruka,
+        isLocating:             false,
+        locationSuccessMessage: null,
+      });
+      return;
+    }
+    if (!('geolocation' in navigator)) {
+      onUpdate({
+        locationError:          gpsNedostupanPoruka,
+        isLocating:             false,
+        locationSuccessMessage: null,
+      });
+      return;
+    }
+
+    onUpdate({
+      isLocating:             true,
+      locationError:          null,
+      locationSuccessMessage: null,
+    });
+
+    /* enableHighAccuracy: false brže uspijeva na Wi‑Fi / laptopu; maximumAge dopušta nedavno keširanu poziciju. */
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
         const { latitude: lat, longitude: lon } = pos.coords;
         setMapCenter({ lat, lon });
-        setPin({ lat, lon });
         setZoom(15);
         const adresa = await reverseGeocode(lat, lon);
-        if (adresa) onUpdate({ address: adresa });
-        setGeoLoading(false);
+        onUpdate({
+          latitude:               lat,
+          longitude:              lon,
+          hasSelectedMapLocation: true,
+          isLocating:             false,
+          locationError:          null,
+          locationSuccessMessage: adresa
+            ? 'Lokacija je pronađena. Provjerite adresu prije nastavka.'
+            : 'Lokacija je određena (koordinate će biti sačuvane uz zahtjev). Unesite adresu kvara u polje iznad — obavezna je prije nastavka.',
+          ...(adresa ? { address: adresa } : {}),
+        });
       },
-      () => {
-        setGeoGreska('Lokacija nije odobrena. Unesite adresu ručno.');
-        setGeoLoading(false);
+      (err) => {
+        onUpdate({
+          isLocating:             false,
+          locationError:          porukaGpsGreske(err),
+          locationSuccessMessage: null,
+        });
       },
-      { timeout: 8000 }
+      { enableHighAccuracy: false, timeout: 20_000, maximumAge: 120_000 }
     );
   }
 
+  function ukloniPin() {
+    onUpdate({
+      latitude:               null,
+      longitude:              null,
+      hasSelectedMapLocation: false,
+      locationSuccessMessage: null,
+    });
+  }
+
+  const gpsDisabledPoruka = isLocating ? 'Lociranje…' : 'Koristi moju trenutnu lokaciju';
+
   return (
     <div className="flex flex-col gap-4">
-      <div>
-        <h2 className="mb-1 text-xl font-bold" style={{ color: 'var(--first-octonary)' }}>
+      <div className="space-y-1.5">
+        <h2 className="text-xl font-bold" style={{ color: 'var(--first-octonary)' }}>
           Lokacija kvara
         </h2>
-        <p className="text-sm" style={{ color: 'var(--first-nonary)' }}>
-          Kliknite na mapu za precizno pinovanje ili unesite adresu u polje ispod.
+        <p className="text-sm leading-snug" style={{ color: 'var(--first-nonary)' }}>
+          Unesite adresu kvara. Po želji dodatno precizirajte lokaciju putem GPS-a ili mape.
         </p>
       </div>
 
-      {/* 1. Mapa — primarni alat za lociranje */}
-      <TileMap
-        center={mapCenter}
-        pin={pin}
-        zoom={zoom}
-        height={340}
-        onPin={handlePin}
-        onCenter={setMapCenter}
-        onZoom={setZoom}
-      />
-
-      <p className="text-xs" style={{ color: 'var(--first-quinary)' }}>
-        <MapPin className="mr-1 inline h-3 w-3" style={{ color: '#DC2626' }} />
-        Kliknite na mapu za pin • Prevucite za pomeranje • Scroll za zum.
-      </p>
-
-      {/* 2. Address input — tekstualna verifikacija */}
       <AddressAutocomplete
         value={address}
-        onChange={(val) => { onUpdate({ address: val }); setGeoGreska(null); }}
+        onChange={(val) => { onUpdate({ address: val }); }}
         onSelect={handleAutocompleteSelect}
-        error={error ?? (geoGreska ?? undefined)}
-        loading={geoLoading}
+        error={error}
+        label="Adresa kvara *"
+        helperText="Provjerite da li je adresa tačna. Po potrebi je možete ručno izmijeniti."
       />
 
-      {/* 3. Action dugmad */}
-      <div className="flex gap-2">
+      <div className="relative z-30 grid grid-cols-1 gap-3 sm:grid-cols-2">
         <button
           type="button"
           onClick={locirajMe}
-          disabled={geoLoading}
-          className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border py-2.5
-            text-xs font-medium transition-colors hover:bg-soft-beige/30 disabled:cursor-not-allowed disabled:opacity-50"
+          disabled={isLocating}
+          className={STIL_DUGME_GPS}
+        >
+          <Navigation className="h-4 w-4 shrink-0 text-[var(--first-secondary)]" aria-hidden />
+          {gpsDisabledPoruka}
+        </button>
+        <button
+          type="button"
+          onClick={() => onUpdate({ isMapVisible: !isMapVisible })}
+          className={STIL_DUGME_MAPA}
+        >
+          <MapPin
+            className="h-4 w-4 shrink-0 text-[rgb(var(--first-senary-rgb))]"
+            aria-hidden
+          />
+          {isMapVisible ? 'Sakrij mapu' : 'Preciziraj lokaciju na mapi'}
+        </button>
+      </div>
+
+      {locationError && (
+        <AlertMessage variant="warning" message={locationError} />
+      )}
+      {locationSuccessMessage && (
+        <AlertMessage variant="success" message={locationSuccessMessage} />
+      )}
+
+      {isMapVisible && (
+        <div
+          className="flex flex-col gap-3 rounded-xl border p-4"
           style={{
-            borderColor:     'rgb(var(--first-secondary-rgb) / 0.35)',
-            color:           'var(--first-secondary)',
-            backgroundColor: 'rgb(var(--first-secondary-rgb) / 0.05)',
+            borderColor: 'var(--border-info)',
+            backgroundColor: 'rgb(var(--first-septenary-rgb) / 0.08)',
           }}
         >
-          <Navigation className="h-3.5 w-3.5" />
-          {geoLoading ? 'Lociranje...' : 'Lociraj me (GPS)'}
-        </button>
-        {pin && (
-          <button
-            type="button"
-            onClick={() => { setPin(null); setGeoGreska(null); }}
-            className="flex items-center gap-1.5 rounded-xl border px-3 py-2.5 text-xs font-medium
-              transition-colors hover:bg-soft-beige/30"
-            style={{ borderColor: 'rgba(220,38,38,0.3)', color: '#DC2626', backgroundColor: 'rgba(220,38,38,0.04)' }}
-          >
-            <X className="h-3.5 w-3.5" />
-            Ukloni pin
-          </button>
-        )}
-      </div>
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
+            <div className="min-w-0 space-y-1">
+              <h3 className="text-sm font-semibold" style={{ color: 'var(--first-octonary)' }}>
+                Mapa (opcionalno)
+              </h3>
+              <p className="text-xs leading-relaxed sm:text-sm" style={{ color: 'var(--first-nonary)' }}>
+                Kliknite na mapu ako želite preciznije označiti lokaciju.
+              </p>
+            </div>
+            {pin && (
+              <button
+                type="button"
+                onClick={ukloniPin}
+                className="inline-flex h-9 shrink-0 items-center justify-center gap-1.5 self-start rounded-[10px] border px-3 text-xs font-medium
+                  transition-colors hover:bg-red-50"
+                style={{
+                  borderColor:     'rgba(220,38,38,0.35)',
+                  color:           '#DC2626',
+                  backgroundColor: '#fff',
+                }}
+              >
+                <X className="h-3.5 w-3.5" />
+                Ukloni pin
+              </button>
+            )}
+          </div>
+
+          <TileMap
+            center={mapCenter}
+            pin={pin}
+            zoom={zoom}
+            height={mapHeight}
+            onPin={handlePin}
+            onCenter={setMapCenter}
+            onZoom={setZoom}
+            idleCenterHint={null}
+            pinnedCenterHint={null}
+          />
+
+          <p className="text-xs leading-relaxed" style={{ color: '#64748b' }}>
+            Adresa iz polja iznad ostaje obavezna. Koordinate sa mape služe samo kao dodatna pomoć.
+          </p>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import { mapirajGreskuPrijaveSupabase } from '@/lib/auth/greskaPrijave'
 import { createClient } from '@/lib/supabase/server'
 
 function normalizujEmail(email: string) {
@@ -12,8 +13,13 @@ export type RegistracijaParams = {
   uloga: string
 }
 
+export type RezultatPrijaveRepozitorija = {
+  greska?: string
+  evidentirajNeuspjesanPokusaj?: boolean
+}
+
 export interface IAuthRepozitorij {
-  prijaviKorisnika(email: string, lozinka: string): Promise<{ greska?: string }>
+  prijaviKorisnika(email: string, lozinka: string): Promise<RezultatPrijaveRepozitorija>
   registrujKorisnika(params: RegistracijaParams): Promise<{ greska?: string }>
   odjaviKorisnika(): Promise<void>
 }
@@ -26,7 +32,9 @@ export class SupabaseAuthRepozitorij implements IAuthRepozitorij {
       email: normalizovanEmail,
       password: lozinka,
     })
-    return { greska: error?.message }
+    if (!error) return {}
+    const { poruka, evidentirajNeuspjesanPokusaj } = mapirajGreskuPrijaveSupabase(error)
+    return { greska: poruka, evidentirajNeuspjesanPokusaj }
   }
 
   async registrujKorisnika({ email, lozinka, ime, prezime, uloga }: RegistracijaParams) {

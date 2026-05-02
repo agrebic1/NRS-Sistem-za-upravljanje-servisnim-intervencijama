@@ -13,6 +13,8 @@ import {
 } from 'lucide-react';
 import { AppShell } from '@/components/layout/AppShell';
 import { Button } from '@/components/ui/Button';
+import { StatusBadge } from '@/components/servisirane/ZahtjevKartica';
+import type { ServisniZahtjev } from '@/domain/types/servisirane';
 
 type StatusKorisnika = 'aktivan' | 'neaktivan' | 'suspendovan';
 
@@ -26,6 +28,10 @@ interface KorisnikSistema {
   tip: 'korisnik' | 'uposlenik';
 }
 
+interface ZahtjevSaPodnosiocem extends ServisniZahtjev {
+  podnosilac: { ime: string; prezime: string; broj_telefona: string | null } | null;
+}
+
 const BADGE_STATUSA: Record<StatusKorisnika, { oznaka: string; pozadina: string; boja: string }> = {
   aktivan: { oznaka: 'Aktivan', pozadina: 'rgb(var(--first-secondary-rgb) / 0.15)', boja: 'var(--first-secondary)' },
   neaktivan: { oznaka: 'Neaktivan', pozadina: 'rgb(var(--first-septenary-rgb) / 0.2)', boja: 'var(--first-septenary)' },
@@ -34,6 +40,7 @@ const BADGE_STATUSA: Record<StatusKorisnika, { oznaka: string; pozadina: string;
 
 export default function AdminPage() {
   const [korisnici, setKorisnici] = useState<KorisnikSistema[]>([]);
+  const [zahtjevi, setZahtjevi] = useState<ZahtjevSaPodnosiocem[]>([]);
   const [greska, setGreska] = useState<string | null>(null);
   const [ucitava, setUcitava] = useState(true);
 
@@ -59,6 +66,13 @@ export default function AdminPage() {
 
   useEffect(() => {
     ucitajKorisnike();
+  }, []);
+
+  useEffect(() => {
+    fetch('/api/dispecer/zahtjevi', { cache: 'no-store' })
+      .then((r) => r.json())
+      .then((d) => setZahtjevi(d.zahtjevi ?? []))
+      .catch(() => {});
   }, []);
 
   const kpiKartice = useMemo(
@@ -145,6 +159,50 @@ export default function AdminPage() {
             </div>
           </div>
         ))}
+      </div>
+
+      <div
+        className="mb-8 rounded-2xl shadow-card"
+        style={{
+          backgroundColor: 'rgb(var(--first-quinary-rgb) / 0.22)',
+          border: '1px solid rgb(var(--first-quaternary-rgb) / 0.35)',
+        }}
+      >
+        <div
+          className="flex items-center justify-between px-5 py-4"
+          style={{ borderBottom: '1px solid rgb(var(--first-quaternary-rgb) / 0.3)' }}
+        >
+          <h2 className="font-semibold" style={{ color: 'var(--first-octonary)' }}>
+            Servisni zahtjevi ({zahtjevi.length})
+          </h2>
+          <Link
+            href="/dispecer"
+            className="flex items-center gap-1 text-sm font-medium transition-opacity hover:opacity-70"
+            style={{ color: 'var(--first-secondary)' }}
+          >
+            Otvori pregled <ChevronRight className="h-4 w-4" />
+          </Link>
+        </div>
+        <ul className="divide-y" style={{ borderColor: 'rgb(var(--first-quaternary-rgb) / 0.2)' }}>
+          {zahtjevi.slice(0, 5).map((z) => (
+            <li key={z.id} className="flex items-center justify-between px-5 py-3">
+              <div className="min-w-0">
+                <p className="truncate text-sm font-medium" style={{ color: 'var(--first-octonary)' }}>
+                  {z.category}
+                </p>
+                <p className="text-xs" style={{ color: 'var(--first-nonary)' }}>
+                  {new Date(z.created_at).toLocaleDateString('bs-BA')}
+                </p>
+              </div>
+              <StatusBadge status={z.status} />
+            </li>
+          ))}
+          {zahtjevi.length === 0 && (
+            <li className="px-5 py-4 text-sm" style={{ color: 'var(--first-nonary)' }}>
+              Nema servisnih zahtjeva.
+            </li>
+          )}
+        </ul>
       </div>
 
       <div

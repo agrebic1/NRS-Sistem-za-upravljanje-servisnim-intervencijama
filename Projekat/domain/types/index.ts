@@ -27,11 +27,6 @@ export interface ProfilKorisnika {
   uloga: UserRole;
 }
 
-export interface KategorijaKvara {
-  id_kategorije_kvara: number;
-  naziv: string;
-}
-
 export interface Lokacija {
   id_lokacije: number;
   adresa: string;
@@ -54,15 +49,3 @@ export interface Zahtjev {
   vrijeme: string | null;
 }
 
-// ─── Podaci za forme ──────────────────────────────────────────────────────────
-
-// Podaci koje servis prima pri slanju zahtjeva
-export interface PodaciZahtjeva {
-  naslov: string;
-  idKategorije: number;
-  opis: string;
-  lokacija: string;
-  telefon: string;
-  zeljenoVrijeme?: string;
-  napomena?: string;
-}

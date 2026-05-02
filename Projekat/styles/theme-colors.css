@@ -1,7 +1,8 @@
 :root {
   --first-primary-rgb: 16 37 65;        /* #102541 */
   --first-secondary-rgb: 45 91 159;     /* #2D5B9F */
-  --first-tertiary-rgb: 255 251 239;    /* #FFFBEF */
+  /* Gotovo bijela stranica, blaga hladna nijansa (ne siva #fff). */
+  --first-tertiary-rgb: 252 253 255;    /* #FCFDFF */
   --first-quaternary-rgb: 223 231 242;  /* #DFE7F2 */
   --first-quinary-rgb: 255 255 255;     /* #FFFFFF */
   --first-senary-rgb: 217 132 0;        /* #D98400 */

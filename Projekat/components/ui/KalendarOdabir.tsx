@@ -18,9 +18,16 @@ interface KalendarOdabirProps {
   onPromjena:     (datumi: string[]) => void;
   /** Boja po datumu — svaki datum može imati različitu boju */
   dateColors?:    Record<string, string>;
+  /** Jedan datum (Sprint 7 preferirani termin); novi klik zamjenjuje odabir. */
+  jedanDatum?:    boolean;
 }
 
-export function KalendarOdabir({ odabraniDatumi, onPromjena, dateColors }: KalendarOdabirProps) {
+export function KalendarOdabir({
+  odabraniDatumi,
+  onPromjena,
+  dateColors,
+  jedanDatum = false,
+}: KalendarOdabirProps) {
   const danas    = new Date();
   const danasIso = toIso(danas);
 
@@ -44,6 +51,14 @@ export function KalendarOdabir({ odabraniDatumi, onPromjena, dateColors }: Kalen
   function toggleDan(date: Date) {
     const iso = toIso(date);
     if (iso < danasIso) return;
+    if (jedanDatum) {
+      if (odabraniDatumi.includes(iso)) {
+        onPromjena([]);
+      } else {
+        onPromjena([iso]);
+      }
+      return;
+    }
     if (odabraniDatumi.includes(iso)) {
       onPromjena(odabraniDatumi.filter((d) => d !== iso));
     } else {
@@ -141,7 +156,9 @@ export function KalendarOdabir({ odabraniDatumi, onPromjena, dateColors }: Kalen
             color:           'var(--first-octonary)',
           }}
         >
-          {odabraniDatumi.length === 1 ? 'Odabran 1 datum' : `Odabrano ${odabraniDatumi.length} datuma`}
+          {jedanDatum || odabraniDatumi.length === 1
+            ? 'Odabran 1 datum'
+            : `Odabrano ${odabraniDatumi.length} datuma`}
         </div>
       )}
     </div>

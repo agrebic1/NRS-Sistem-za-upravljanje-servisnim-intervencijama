@@ -1,12 +1,18 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { useForm, type FieldPath } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Eye, EyeOff, ChevronRight, ChevronLeft, Check } from 'lucide-react';
+import { Eye, EyeOff, ChevronRight, ChevronLeft, Check, Mail } from 'lucide-react';
 import { registracijskaShema, type RegistracijskiPodaci } from '@/lib/validations/authValidation';
-import { registrujKorisnika } from '@/services/auth/authService';
+import {
+  odrediRedirectNakonPrijave,
+  posaljiPonovoVerifikacijskiEmail,
+  PotrebnaPotvrdaEmailaError,
+  registrujKorisnika,
+} from '@/services/auth/authService';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { AlertMessage } from '@/components/ui/AlertMessage';
@@ -23,6 +29,9 @@ const POLJA_PO_KORAKU: Record<number, FieldPath<RegistracijskiPodaci>[]> = {
   1: ['ime', 'prezime', 'email', 'telefon'],
   2: ['lozinka', 'potvrdaLozinke'],
 };
+
+/** Pauza prije ponovnog slanja emaila s linkom (ograničenje na klijentu). */
+const SEKUNDE_DO_PONOVNOG_SLANJA = 60;
 
 // Komponenta za progres bar 
 
@@ -85,12 +94,18 @@ export function RegisterForm() {
   const [jePotvrdaVidljiva,  setJePotvrdaVidljiva]  = useState(false);
   const [greskaRegistracije, setGreskaRegistracije] = useState<string | null>(null);
   const [jeKreiranjeNaloga,  setJeKreiranjeNaloga]  = useState(false);
+  const [emailCekaPotvrdu, setEmailCekaPotvrdu] = useState<string | null>(null);
+  const [preostaleSekundePonovo, setPreostaleSekundePonovo] = useState(0);
+  const [porukaNakonPonovnogSlanja, setPorukaNakonPonovnogSlanja] = useState<string | null>(null);
+  const [greskaPonovnogSlanja, setGreskaPonovnogSlanja] = useState<string | null>(null);
+  const [jeSlanjePonovo, setJeSlanjePonovo] = useState(false);
 
   const {
     register,
     handleSubmit,
     trigger,
     watch,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm<RegistracijskiPodaci>({
     resolver: zodResolver(registracijskaShema),
@@ -98,6 +113,14 @@ export function RegisterForm() {
   });
 
   const posmatranLozinka = watch('lozinka', '');
+
+  useEffect(() => {
+    if (emailCekaPotvrdu === null || preostaleSekundePonovo <= 0) return;
+    const id = window.setTimeout(() => {
+      setPreostaleSekundePonovo((s) => Math.max(0, s - 1));
+    }, 1000);
+    return () => window.clearTimeout(id);
+  }, [emailCekaPotvrdu, preostaleSekundePonovo]);
 
   async function idiNaSljedeciKorak() {
     const jeKorakValidan = await trigger(POLJA_PO_KORAKU[trenutniKorak]);
@@ -112,16 +135,128 @@ export function RegisterForm() {
     setGreskaRegistracije(null);
     setJeKreiranjeNaloga(true);
     try {
-      await registrujKorisnika(podaci);
-      // Supabase signUp automatski kreira sesiju → odmah ulazi kao Korisnik usluge
-      router.replace('/korisnik');
+      const rezultat = await registrujKorisnika(podaci);
+      const putanja = await odrediRedirectNakonPrijave(rezultat.user.id);
+      router.replace(putanja);
     } catch (greska) {
-      setGreskaRegistracije(
-        greska instanceof Error ? greska.message : 'Kreiranje naloga nije uspjelo. Pokušajte ponovo.'
-      );
+      if (greska instanceof PotrebnaPotvrdaEmailaError) {
+        setEmailCekaPotvrdu(greska.email);
+        setPreostaleSekundePonovo(SEKUNDE_DO_PONOVNOG_SLANJA);
+        setPorukaNakonPonovnogSlanja(null);
+        setGreskaPonovnogSlanja(null);
+        setGreskaRegistracije(null);
+      } else {
+        setGreskaRegistracije(
+          greska instanceof Error ? greska.message : 'Kreiranje naloga nije uspjelo. Pokušajte ponovo.'
+        );
+      }
       setJeKreiranjeNaloga(false);
     }
     // Nema finally — loader ostaje vidljiv dok traje redirect
+  }
+
+  async function ponovoPosaljiVerifikaciju() {
+    if (!emailCekaPotvrdu || preostaleSekundePonovo > 0 || jeSlanjePonovo) return;
+    setGreskaPonovnogSlanja(null);
+    setPorukaNakonPonovnogSlanja(null);
+    setJeSlanjePonovo(true);
+    try {
+      await posaljiPonovoVerifikacijskiEmail(emailCekaPotvrdu);
+      setPorukaNakonPonovnogSlanja('Email je ponovo poslan. Provjerite sanduče.');
+      setPreostaleSekundePonovo(SEKUNDE_DO_PONOVNOG_SLANJA);
+    } catch (e) {
+      setGreskaPonovnogSlanja(e instanceof Error ? e.message : 'Slanje emaila nije uspjelo. Pokušajte ponovo.');
+    } finally {
+      setJeSlanjePonovo(false);
+    }
+  }
+
+  function zatvoriEkranPotvrde() {
+    setEmailCekaPotvrdu(null);
+    setPreostaleSekundePonovo(0);
+    setPorukaNakonPonovnogSlanja(null);
+    setGreskaPonovnogSlanja(null);
+    setTrenutniKorak(1);
+    reset();
+  }
+
+  if (emailCekaPotvrdu) {
+    return (
+      <>
+        <div
+          className="flex flex-col gap-4 rounded-2xl border p-6 shadow-sm animate-fade-up"
+          style={{
+            borderColor: 'var(--first-quaternary)',
+            backgroundColor: 'rgb(var(--first-secondary-rgb) / 0.06)',
+          }}
+        >
+          <div className="flex items-start gap-3">
+            <div
+              className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full"
+              style={{ backgroundColor: 'rgb(var(--first-septenary-rgb) / 0.2)', color: 'var(--first-octonary)' }}
+            >
+              <Mail className="h-5 w-5" aria-hidden />
+            </div>
+            <div className="min-w-0 flex-1 space-y-3">
+              <h2 className="text-base font-semibold" style={{ color: 'var(--first-primary)' }}>
+                Provjerite email
+              </h2>
+              <p className="text-sm leading-relaxed" style={{ color: 'var(--first-octonary)' }}>
+                Poslali smo vam email na adresu{' '}
+                <span className="font-medium break-all">{emailCekaPotvrdu}</span> s linkom za potvrdu naloga.
+                Otvorite sanduče i kliknite na taj link.
+              </p>
+              <p className="text-sm leading-relaxed" style={{ color: 'var(--first-nonary)' }}>
+                Ako email ne vidite odmah, provjerite i mapu „Neželjeno” ili spam — ponekad završi tamo.
+              </p>
+              {preostaleSekundePonovo > 0 ? (
+                <p className="text-sm tabular-nums" style={{ color: 'var(--first-nonary)' }}>
+                  Novi link možete zatražiti za{' '}
+                  <span className="font-semibold" style={{ color: 'var(--first-octonary)' }}>
+                    {preostaleSekundePonovo}
+                  </span>{' '}
+                  s.
+                </p>
+              ) : (
+                <p className="text-sm" style={{ color: 'var(--first-nonary)' }}>
+                  Niste primili email? Zatražite novi link ispod.
+                </p>
+              )}
+            </div>
+          </div>
+
+          {porukaNakonPonovnogSlanja && (
+            <AlertMessage variant="success" message={porukaNakonPonovnogSlanja} />
+          )}
+          {greskaPonovnogSlanja && (
+            <AlertMessage variant="error" message={greskaPonovnogSlanja} />
+          )}
+
+          <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+            <Button
+              type="button"
+              size="md"
+              disabled={preostaleSekundePonovo > 0 || jeSlanjePonovo}
+              isLoading={jeSlanjePonovo}
+              loadingText="Šaljemo…"
+              onClick={ponovoPosaljiVerifikaciju}
+            >
+              Pošalji novi link
+            </Button>
+            <Link
+              href="/auth/login"
+              className="text-center text-sm font-medium underline-offset-2 hover:underline sm:text-left"
+              style={{ color: 'var(--first-secondary)' }}
+            >
+              Već ste potvrdili nalog? Prijavite se
+            </Link>
+            <Button type="button" variant="ghost" size="md" onClick={zatvoriEkranPotvrde}>
+              Počnite ispočetka
+            </Button>
+          </div>
+        </div>
+      </>
+    );
   }
 
   return (

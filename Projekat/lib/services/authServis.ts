@@ -11,8 +11,19 @@ function normalizujEmail(email: string) {
 }
 
 export const prijavaSchema = z.object({
-  email: z.string().transform(normalizujEmail).pipe(z.string().email('Neispravna email adresa.')),
-  lozinka: z.string().min(6, 'Lozinka mora imati najmanje 6 znakova.'),
+  email: z
+    .string()
+    .transform(normalizujEmail)
+    .pipe(
+      z
+        .string()
+        .min(1, 'Unesite email i lozinku.')
+        .email('Unesite ispravnu email adresu.')
+    ),
+  lozinka: z
+    .string()
+    .min(1, 'Unesite email i lozinku.')
+    .min(6, 'Lozinka mora imati najmanje 6 znakova.'),
 })
 
 export const registracijaSchema = z.object({
@@ -47,8 +58,10 @@ export class AuthServis {
 
     const response = await this.repozitorij.prijaviKorisnika(email, rezultat.data.lozinka)
     if (response.greska) {
-      recordFailedLoginAttempt(email)
-      return response
+      if (response.evidentirajNeuspjesanPokusaj !== false) {
+        recordFailedLoginAttempt(email)
+      }
+      return { greska: response.greska }
     }
 
     clearLoginRateLimit(email)

@@ -15,7 +15,7 @@ export default function NoviZahtjevWizardPage() {
             Prijava kvara
           </h1>
           <p className="mt-1.5 text-sm" style={{ color: 'var(--first-nonary)' }}>
-            Popunite detalje u 3 koraka. Što detaljniji opis, brže ćemo reagirati.
+            Popunite detalje u 5 koraka. Što detaljniji opis unesete, brže ćemo reagirati.
           </p>
         </div>
 

@@ -2,6 +2,10 @@ import { kreirajKlijenta } from '@/lib/supabase/klijent';
 import type { UserRole } from '@/domain/types';
 import { PREUSMJERANJE_PO_ULOZI } from '@/domain/types';
 import {
+  PORUKA_RATE_LIMIT_PRIJAVA,
+  mapirajGreskuPrijaveSupabase,
+} from '@/lib/auth/greskaPrijave';
+import {
   clearLoginRateLimit,
   isLoginBlocked,
   recordFailedLoginAttempt,
@@ -46,7 +50,7 @@ export async function prijaviSeEmailom(podaci: { email: string; lozinka: string 
   const email = normalizujEmail(podaci.email);
 
   if (isLoginBlocked(email)) {
-    throw new Error('Previše pokušaja prijave. Sačekajte 5 minuta i pokušajte ponovo.');
+    throw new Error(PORUKA_RATE_LIMIT_PRIJAVA);
   }
 
   const { data, error } = await supabase.auth.signInWithPassword({
@@ -55,12 +59,9 @@ export async function prijaviSeEmailom(podaci: { email: string; lozinka: string 
   });
 
   if (error) {
-    recordFailedLoginAttempt(email);
-    if (error.message.toLowerCase().includes('email not confirmed')) {
-      throw new Error('Email adresa nije potvrđena. Provjerite inbox i potvrdite nalog.');
-    }
-    // Namjerno generička poruka radi zaštite od otkrivanja korisničkih emailova
-    throw new Error('Pogrešna email adresa ili lozinka');
+    const { poruka, evidentirajNeuspjesanPokusaj } = mapirajGreskuPrijaveSupabase(error);
+    if (evidentirajNeuspjesanPokusaj) recordFailedLoginAttempt(email);
+    throw new Error(poruka);
   }
 
   clearLoginRateLimit(email);
@@ -82,6 +83,20 @@ export async function posaljiPonovoVerifikacijskiEmail(emailAdresa: string) {
 
   if (error) {
     throw new Error('Slanje verifikacijskog emaila nije uspjelo. Pokušajte ponovo.');
+  }
+}
+
+/** Baciti kada je nalog kreiran ali prijava traži potvrdu emaila (npr. Supabase Email confirmations). */
+export class PotrebnaPotvrdaEmailaError extends Error {
+  readonly email: string;
+
+  constructor(email: string) {
+    super(
+      'Na vašu adresu poslan je email s linkom za potvrdu naloga. Otvorite sanduče, potvrdite adresu, pa se prijavite.'
+    );
+    this.name = 'PotrebnaPotvrdaEmailaError';
+    this.email = email;
+    Object.setPrototypeOf(this, new.target.prototype);
   }
 }
 
@@ -124,13 +139,38 @@ export async function registrujKorisnika(podaci: {
     throw new Error('Nalog sa ovom email adresom već postoji. Koristite prijavu ili reset lozinke.');
   }
 
-  // Trigger kreira osobu; broj telefona se sada cuva u tabeli osoba.
+  let sesija = authPodaci.session;
+  let korisnik = authPodaci.user;
+
+  if (!sesija) {
+    const { data: prijavaPodaci, error: greskaPrijava } = await supabase.auth.signInWithPassword({
+      email,
+      password: podaci.lozinka,
+    });
+
+    if (greskaPrijava) {
+      const sy = greskaPrijava.message?.toLowerCase() ?? '';
+      if (sy.includes('email not confirmed') || sy.includes('not confirmed')) {
+        throw new PotrebnaPotvrdaEmailaError(email);
+      }
+      const { poruka, evidentirajNeuspjesanPokusaj } = mapirajGreskuPrijaveSupabase(greskaPrijava);
+      if (evidentirajNeuspjesanPokusaj) recordFailedLoginAttempt(email);
+      throw new Error(poruka);
+    }
+
+    sesija = prijavaPodaci.session;
+    korisnik = prijavaPodaci.user ?? korisnik;
+  }
+
+  clearLoginRateLimit(email);
+
+  // Trigger kreira osobu; broj telefona se sada cuva u tabeli osoba (nakon sesije radi RLS).
   await supabase
     .from('osoba')
     .update({ broj_telefona: podaci.telefon })
-    .eq('id_osobe', authPodaci.user.id);
+    .eq('id_osobe', korisnik.id);
 
-  return authPodaci;
+  return { user: korisnik, session: sesija };
 }
 
 // Detekcija uloga 

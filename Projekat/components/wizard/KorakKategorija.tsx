@@ -1,12 +1,14 @@
 'use client';
 
-import { useState } from 'react';
 import {
   Droplets, Zap, Wind, Key, Monitor, Plus, X,
   Layers, Paintbrush, Refrigerator, Scissors,
   Hammer, Sparkles, Trees, Armchair, HelpCircle,
 } from 'lucide-react';
-import { Input } from '@/components/ui/Input';
+import { Button } from '@/components/ui/Button';
+
+/** Vrijednost za `selectedCategory` kada je odabrano „Ostalo” (nakon podkategorije). */
+export const WIZARD_KATEGORIJA_OSTALO = 'other' as const;
 
 // ─── Primarne kategorije (5+1) ────────────────────────────────────────────────
 
@@ -21,15 +23,15 @@ const PRIMARNE = [
 // ─── Subkategorije modala (3×3) ───────────────────────────────────────────────
 
 const SUBKATEGORIJE = [
-  { id: 'Keramika',      Ikona: Layers },
-  { id: 'Moleraj',       Ikona: Paintbrush },
-  { id: 'Bijela tehnika',Ikona: Refrigerator },
-  { id: 'Staklorez',     Ikona: Scissors },
-  { id: 'Gips',          Ikona: Hammer },
-  { id: 'Čišćenje',      Ikona: Sparkles },
-  { id: 'Eksterijer',    Ikona: Trees },
-  { id: 'Namještaj',     Ikona: Armchair },
-  { id: 'Drugo',         Ikona: HelpCircle },
+  { id: 'Keramika',       Ikona: Layers },
+  { id: 'Moleraj',        Ikona: Paintbrush },
+  { id: 'Bijela tehnika', Ikona: Refrigerator },
+  { id: 'Staklorez',      Ikona: Scissors },
+  { id: 'Gips',           Ikona: Hammer },
+  { id: 'Čišćenje',       Ikona: Sparkles },
+  { id: 'Eksterijer',     Ikona: Trees },
+  { id: 'Namještaj',      Ikona: Armchair },
+  { id: 'Drugo',          Ikona: HelpCircle },
 ] as const;
 
 // ─── Modal za subkategorije ───────────────────────────────────────────────────
@@ -37,15 +39,21 @@ const SUBKATEGORIJE = [
 function SubkategorijeModal({
   onOdabir,
   onZatvori,
+  onNazadNaKategorije,
 }: {
-  onOdabir:  (id: string) => void;
-  onZatvori: () => void;
+  onOdabir:             (id: string) => void;
+  onZatvori:            () => void;
+  onNazadNaKategorije:  () => void;
 }) {
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center px-4"
-      style={{ backgroundColor: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(4px)' }}
+      style={{
+        backgroundColor: 'rgba(15, 23, 42, 0.35)',
+        backdropFilter:    'blur(2px)',
+      }}
       onClick={onZatvori}
+      role="presentation"
     >
       <div
         className="w-full max-w-sm rounded-3xl p-6 shadow-card-lg"
@@ -54,20 +62,43 @@ function SubkategorijeModal({
           border:          '1px solid rgb(var(--first-quaternary-rgb) / 0.45)',
         }}
         onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-ostalo-naslov"
       >
-        <div className="mb-5 flex items-center justify-between">
-          <h3 className="font-bold" style={{ color: 'var(--first-octonary)' }}>
-            Odaberite podkategoriju
-          </h3>
+        <div className="mb-3 flex items-start justify-between gap-2">
+          <div className="min-w-0 flex-1 pr-2">
+            <h3
+              id="modal-ostalo-naslov"
+              className="font-bold leading-snug"
+              style={{ color: 'var(--first-octonary)' }}
+            >
+              Odaberite podkategoriju za &apos;Ostalo&apos;
+            </h3>
+            <p className="mt-2 text-sm leading-relaxed" style={{ color: 'var(--first-nonary)' }}>
+              Ako kvar ne pripada glavnim kategorijama, odaberite najbližu podkategoriju.
+            </p>
+          </div>
           <button
             type="button"
             onClick={onZatvori}
-            className="flex h-7 w-7 items-center justify-center rounded-lg transition-colors hover:bg-soft-beige/40"
+            className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg transition-colors hover:bg-soft-beige/40"
             style={{ color: 'var(--first-nonary)' }}
+            aria-label="Zatvori"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
+
+        <Button
+          type="button"
+          variant="secondary"
+          size="sm"
+          className="mb-4 w-full"
+          onClick={onNazadNaKategorije}
+        >
+          Nazad na kategorije
+        </Button>
 
         <div className="grid grid-cols-3 gap-3">
           {SUBKATEGORIJE.map(({ id, Ikona }) => (
@@ -102,35 +133,59 @@ function SubkategorijeModal({
 
 // ─── Korak 1: Kategorija ──────────────────────────────────────────────────────
 
-interface KorakKategorijaProps {
-  category:       string;
-  customCategory: string;
-  onUpdate:       (p: { category?: string; customCategory?: string }) => void;
-  error?:         string;
+export interface KorakKategorijaProps {
+  selectedCategory:    string | null;
+  selectedSubcategory: string | null;
+  isOtherModalOpen:    boolean;
+  onUpdate:            (p: {
+    selectedCategory?:    string | null;
+    selectedSubcategory?: string | null;
+    isOtherModalOpen?:    boolean;
+  }) => void;
 }
 
 export function KorakKategorija({
-  category,
-  customCategory,
+  selectedCategory,
+  selectedSubcategory,
+  isOtherModalOpen,
   onUpdate,
-  error,
 }: KorakKategorijaProps) {
-  const [modalOtvoren, setModalOtvoren] = useState(false);
+  function odaberiGlavnu(id: string) {
+    onUpdate({
+      selectedCategory:    id,
+      selectedSubcategory: null,
+      isOtherModalOpen:    false,
+    });
+  }
 
-  function selectCategory(id: string) {
-    onUpdate({ category: id, customCategory: id !== 'Ostalo' ? '' : customCategory });
+  function otvoriOstaloModal() {
+    onUpdate({ isOtherModalOpen: true });
+  }
+
+  function zatvoriModal() {
+    onUpdate({ isOtherModalOpen: false });
+  }
+
+  function nazadNaKategorijeIzModala() {
+    const nepotpunoOstalo =
+      selectedCategory === WIZARD_KATEGORIJA_OSTALO && !selectedSubcategory?.trim();
+    onUpdate(
+      nepotpunoOstalo
+        ? { isOtherModalOpen: false, selectedCategory: null, selectedSubcategory: null }
+        : { isOtherModalOpen: false }
+    );
   }
 
   function handleSubkategorijaOdabir(id: string) {
-    setModalOtvoren(false);
-    if (id === 'Drugo') {
-      onUpdate({ category: 'Ostalo', customCategory: '' });
-    } else {
-      onUpdate({ category: id, customCategory: '' });
-    }
+    onUpdate({
+      selectedCategory:    WIZARD_KATEGORIJA_OSTALO,
+      selectedSubcategory: id,
+      isOtherModalOpen:    false,
+    });
   }
 
-  const jeOstalo = category === 'Ostalo';
+  const jeOstaloKompletno =
+    selectedCategory === WIZARD_KATEGORIJA_OSTALO && !!selectedSubcategory?.trim();
 
   return (
     <>
@@ -140,20 +195,18 @@ export function KorakKategorija({
             Vrsta kvara
           </h2>
           <p className="text-sm" style={{ color: 'var(--first-nonary)' }}>
-            Odaberite kategoriju kvara. Niste sigurni? Kliknite "Ostalo".
+            Odaberite kategoriju kvara. Ako niste sigurni, odaberite &apos;Ostalo&apos;.
           </p>
         </div>
 
-        {/* 5+1 grid */}
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-          {/* 5 primarnih */}
           {PRIMARNE.map(({ id, Ikona, boja }) => {
-            const odabrana = category === id;
+            const odabrana = selectedCategory === id;
             return (
               <button
                 key={id}
                 type="button"
-                onClick={() => selectCategory(id)}
+                onClick={() => odaberiGlavnu(id)}
                 className="flex flex-col items-center gap-2.5 rounded-2xl border p-5 text-center
                   transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-celestial-teal/40"
                 style={{
@@ -175,37 +228,32 @@ export function KorakKategorija({
                 >
                   <Ikona className="h-7 w-7" style={{ color: odabrana ? boja : 'var(--first-nonary)' }} />
                 </div>
-                <span
-                  className="text-sm font-semibold"
-                  style={{ color: odabrana ? 'var(--first-octonary)' : 'var(--first-octonary)' }}
-                >
+                <span className="text-sm font-semibold" style={{ color: 'var(--first-octonary)' }}>
                   {id}
                 </span>
                 {odabrana && (
-                  <div
-                    className="h-1.5 w-1.5 rounded-full"
-                    style={{ backgroundColor: boja }}
-                  />
+                  <div className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: boja }} />
                 )}
               </button>
             );
           })}
 
-          {/* 6. kartica: "Ostalo" */}
           <button
             type="button"
-            onClick={() => setModalOtvoren(true)}
+            onClick={otvoriOstaloModal}
             className="flex flex-col items-center gap-2.5 rounded-2xl border p-5 text-center
               transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-celestial-teal/40"
             style={{
-              borderColor:     (jeOstalo || SUBKATEGORIJE.some((s) => s.id === category))
+              borderColor: jeOstaloKompletno
                 ? 'var(--first-primary)'
                 : 'rgb(var(--first-quaternary-rgb) / 0.4)',
-              backgroundColor: (jeOstalo || SUBKATEGORIJE.some((s) => s.id === category))
+              backgroundColor: jeOstaloKompletno
                 ? 'rgb(var(--first-primary-rgb) / 0.06)'
                 : 'rgb(255 255 255 / 0.45)',
               borderStyle: 'dashed',
+              boxShadow: jeOstaloKompletno ? '0 0 0 2px rgb(var(--first-primary-rgb) / 0.2)' : 'none',
             }}
+            aria-pressed={jeOstaloKompletno}
           >
             <div
               className="flex h-14 w-14 items-center justify-center rounded-2xl"
@@ -217,47 +265,17 @@ export function KorakKategorija({
               Ostalo
             </span>
             <span className="text-xs" style={{ color: 'var(--first-nonary)' }}>
-              {category && SUBKATEGORIJE.some((s) => s.id === category)
-                ? category
-                : jeOstalo && customCategory
-                ? customCategory.substring(0, 14) + (customCategory.length > 14 ? '...' : '')
-                : '9 podkategorija'}
+              {jeOstaloKompletno ? selectedSubcategory : '9 podkategorija'}
             </span>
           </button>
         </div>
-
-        {/* Polje za opis kada je "Ostalo / Drugo" */}
-        {jeOstalo && (
-          <div
-            className="animate-[fade-up_0.25s_ease-out_both] rounded-2xl border p-4"
-            style={{
-              borderColor:     'rgb(var(--first-primary-rgb) / 0.25)',
-              backgroundColor: 'rgb(var(--first-primary-rgb) / 0.04)',
-            }}
-          >
-            <Input
-              label="Opišite vrstu kvara"
-              id="wizard-custom-category"
-              type="text"
-              placeholder="Npr. Kvar brave, Pukla cijev grijanja, Oštećen krov..."
-              value={customCategory}
-              onChange={(e) => onUpdate({ customCategory: e.target.value })}
-            />
-          </div>
-        )}
-
-        {error && (
-          <p className="text-xs" style={{ color: 'var(--first-senary)' }}>
-            {error}
-          </p>
-        )}
       </div>
 
-      {/* Modal */}
-      {modalOtvoren && (
+      {isOtherModalOpen && (
         <SubkategorijeModal
           onOdabir={handleSubkategorijaOdabir}
-          onZatvori={() => setModalOtvoren(false)}
+          onZatvori={zatvoriModal}
+          onNazadNaKategorije={nazadNaKategorijeIzModala}
         />
       )}
     </>

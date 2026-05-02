@@ -8,7 +8,9 @@ describe('AuthServis login rate limit integration', () => {
 
   test('returns rate-limit error after too many failed logins', async () => {
     const repo = {
-      prijaviKorisnika: jest.fn().mockResolvedValue({ greska: 'Invalid login credentials' }),
+      prijaviKorisnika: jest
+        .fn()
+        .mockResolvedValue({ greska: 'Neispravni podaci za prijavu.', evidentirajNeuspjesanPokusaj: true }),
       registrujKorisnika: jest.fn(),
       odjaviKorisnika: jest.fn(),
     };
@@ -16,7 +18,7 @@ describe('AuthServis login rate limit integration', () => {
 
     for (let i = 0; i < 5; i += 1) {
       const result = await servis.prijava({ email: 'limit@example.com', lozinka: 'abcdef' });
-      expect(result.greska).toBe('Invalid login credentials');
+      expect(result.greska).toBe('Neispravni podaci za prijavu.');
     }
 
     const blocked = await servis.prijava({ email: 'limit@example.com', lozinka: 'abcdef' });

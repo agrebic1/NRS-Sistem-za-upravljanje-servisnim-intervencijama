@@ -1,107 +1,95 @@
 'use client';
 
-import { useState } from 'react';
-import { Upload, X, AlertCircle, FileText } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import { Upload, X, AlertCircle, FileText, Phone } from 'lucide-react';
 import { Textarea } from '@/components/ui/Textarea';
-import { AlertMessage } from '@/components/ui/AlertMessage';
 
-// ─── Validacija telefona — samo brojevi i +, -, / ─────────────────────────────
-
-const PHONE_REGEX = /^[0-9+\-\/ ]*$/;
+const PHONE_REGEX = /^[+]?[0-9\s\-()]{8,20}$/;
+const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
+const DOZVOLJENI_FORMATI = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
 
 function validirajTelefon(tel: string): string | null {
-  if (!tel.trim()) return null; // prazno polje — provjera dužine u wizardu
-  if (!PHONE_REGEX.test(tel)) return 'Dozvoljeni su samo brojevi i znakovi +, -, /.';
+  if (!tel.trim()) return 'Unesite kontakt telefon.';
+  if (!PHONE_REGEX.test(tel.trim())) return 'Unesite ispravan kontakt telefon.';
   return null;
 }
-
-// ─── Kontrolisani Phone input ─────────────────────────────────────────────────
-
-interface PhoneInputProps {
-  value:    string;
-  onChange: (val: string) => void;
-  error?:   string | null;
-}
-
-function PhoneInput({ value, onChange, error }: PhoneInputProps) {
-  return (
-    <div className="flex flex-col gap-1.5">
-      <label className="text-sm font-medium" style={{ color: 'var(--first-octonary)' }}>
-        Kontakt telefon
-      </label>
-      <div className="relative">
-        <input
-          id="wizard-telefon"
-          type="tel"
-          inputMode="tel"
-          placeholder="+387 61 000 000"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          autoComplete="tel"
-          className="w-full rounded-xl border px-4 py-2.5 text-sm transition-all duration-200
-            placeholder:text-text-muted/60 focus:outline-none focus:ring-2"
-          style={{
-            borderColor:     error
-              ? '#DC2626'
-              : 'rgb(var(--first-quaternary-rgb) / 0.4)',
-            backgroundColor: error
-              ? 'rgba(220,38,38,0.04)'
-              : 'rgb(255 255 255 / 0.6)',
-            color:           'var(--first-octonary)',
-          }}
-        />
-        {error && (
-          <div className="absolute right-3.5 top-1/2 -translate-y-1/2">
-            <AlertCircle className="h-4 w-4" style={{ color: '#DC2626' }} />
-          </div>
-        )}
-      </div>
-      {error && (
-        <p className="text-xs font-medium" style={{ color: '#DC2626' }}>
-          {error}
-        </p>
-      )}
-    </div>
-  );
-}
-
-// ─── Korak 4: Opis i kontakt ──────────────────────────────────────────────────
 
 interface KorakOpisProps {
   description:  string;
   contactPhone: string;
+  accountPhone?: string;
+  useAccountPhone?: boolean;
   photoFile:    File | null;
   onUpdate: (p: {
     description?:  string;
     contactPhone?: string;
+    useAccountPhone?: boolean;
     photoFile?:    File | null;
   }) => void;
-  onPhoneValidity?: (isValid: boolean) => void;
-  errors?: Partial<Record<'description', string>>;
+  validationError?: string | null;
 }
 
 export function KorakOpis({
   description,
   contactPhone,
+  accountPhone,
+  useAccountPhone = false,
   photoFile,
   onUpdate,
-  onPhoneValidity,
-  errors,
+  validationError,
 }: KorakOpisProps) {
   const [isDragging, setIsDragging] = useState(false);
+  const [photoError, setPhotoError] = useState<string | null>(null);
+  const [descriptionTouched, setDescriptionTouched] = useState(false);
+  const [phoneTouched, setPhoneTouched] = useState(false);
 
+  const descriptionError =
+    description.trim().length === 0
+      ? 'Unesite opis kvara prije nastavka.'
+      : description.trim().length < 20
+      ? 'Opis mora sadržavati dovoljno informacija za obradu zahtjeva.'
+      : null;
   const phoneError = validirajTelefon(contactPhone);
+  const previewUrl = useMemo(() => (photoFile ? URL.createObjectURL(photoFile) : null), [photoFile]);
+  const imaPokusajSlanja = Boolean(validationError);
+  const prikaziDescriptionError = (descriptionTouched || imaPokusajSlanja) ? descriptionError : null;
+  const prikaziPhoneError = (phoneTouched || imaPokusajSlanja) ? phoneError : null;
+
+  useEffect(() => {
+    return () => {
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+    };
+  }, [previewUrl]);
 
   function handlePhoneChange(val: string) {
     onUpdate({ contactPhone: val });
-    const err = validirajTelefon(val);
-    onPhoneValidity?.(!err && val.trim().length > 0);
+  }
+
+  function toggleKoristiBrojSaRacuna(checked: boolean) {
+    if (!accountPhone?.trim()) return;
+    if (checked) {
+      onUpdate({ useAccountPhone: true, contactPhone: accountPhone });
+    } else {
+      onUpdate({ useAccountPhone: false });
+    }
+    setPhoneTouched(true);
   }
 
   function handleFile(file: File | null) {
-    if (!file) { onUpdate({ photoFile: null }); return; }
-    if (!file.type.startsWith('image/')) return;
-    if (file.size > 5 * 1024 * 1024) return;
+    if (!file) {
+      setPhotoError(null);
+      onUpdate({ photoFile: null });
+      return;
+    }
+    if (!DOZVOLJENI_FORMATI.includes(file.type)) {
+      setPhotoError('Dozvoljeni formati su JPG, PNG i WEBP.');
+      return;
+    }
+    if (file.size > MAX_PHOTO_BYTES) {
+      setPhotoError('Fotografija ne smije biti veća od 5 MB.');
+      return;
+    }
+    setPhotoError(null);
     onUpdate({ photoFile: file });
   }
 
@@ -109,14 +97,14 @@ export function KorakOpis({
     <div className="flex flex-col gap-6">
       <div>
         <h2 className="mb-1 text-xl font-bold" style={{ color: 'var(--first-octonary)' }}>
-          Opis i kontakt
+          Opis kvara
         </h2>
-        <p className="text-sm" style={{ color: 'var(--first-nonary)' }}>
-          Što detaljniji opis — brža i preciznija intervencija.
+        <p className="text-sm leading-relaxed" style={{ color: 'var(--first-nonary)' }}>
+          Opišite šta se desilo, kada je problem počeo i šta ste već pokušali. Ovi podaci pomažu
+          dispečeru da pravilno obradi zahtjev.
         </p>
       </div>
 
-      {/* Opis kvara — Triple Coding: siva + FileText ikona + naziv */}
       <div>
         <div className="mb-1.5 flex items-center gap-2">
           <div
@@ -126,7 +114,7 @@ export function KorakOpis({
             <FileText className="h-3.5 w-3.5" style={{ color: 'var(--first-nonary)' }} />
           </div>
           <span className="text-sm font-semibold" style={{ color: 'var(--first-octonary)' }}>
-            Opis kvara
+            Opis kvara *
           </span>
         </div>
         <Textarea
@@ -136,46 +124,120 @@ export function KorakOpis({
           placeholder="Opišite šta se desilo, kada je počelo i šta ste već pokušali..."
           value={description}
           onChange={(e) => onUpdate({ description: e.target.value })}
+          onBlur={() => setDescriptionTouched(true)}
           showCharacterCount
           maxCharacters={2000}
           currentLength={description.length}
-          error={errors?.description}
+          error={prikaziDescriptionError ?? undefined}
         />
+        <p className="mt-1 text-xs" style={{ color: 'var(--first-quinary)' }}>
+          Minimum 20 karaktera.
+        </p>
       </div>
 
-      <PhoneInput
-        value={contactPhone}
-        onChange={handlePhoneChange}
-        error={phoneError}
-      />
+      <div className="flex flex-col gap-1.5">
+        <div className="mb-0.5 flex items-center gap-2">
+          <div
+            className="flex h-6 w-6 items-center justify-center rounded-md"
+            style={{ backgroundColor: 'rgb(var(--first-quaternary-rgb) / 0.4)' }}
+          >
+            <Phone className="h-3.5 w-3.5" style={{ color: 'var(--first-nonary)' }} />
+          </div>
+          <label className="text-sm font-semibold" style={{ color: 'var(--first-octonary)' }}>
+            Kontakt telefon *
+          </label>
+        </div>
+        <div className="relative">
+          <input
+            id="wizard-telefon"
+            type="tel"
+            inputMode="tel"
+            placeholder="+387 61 000 000"
+            value={contactPhone}
+            onChange={(e) => handlePhoneChange(e.target.value)}
+            onBlur={() => setPhoneTouched(true)}
+            autoComplete="tel"
+            disabled={useAccountPhone}
+            className="w-full rounded-xl border px-4 py-2.5 pr-10 text-sm transition-all duration-200
+              placeholder:text-text-muted/60 focus:outline-none focus:ring-2 disabled:cursor-not-allowed"
+            style={{
+              borderColor:     prikaziPhoneError ? '#DC2626' : 'rgb(var(--first-quaternary-rgb) / 0.4)',
+              backgroundColor: useAccountPhone
+                ? 'rgb(var(--first-quaternary-rgb) / 0.25)'
+                : prikaziPhoneError
+                ? 'rgba(220,38,38,0.04)'
+                : 'rgb(255 255 255 / 0.6)',
+              color:           'var(--first-octonary)',
+              opacity:         useAccountPhone ? 0.78 : 1,
+            }}
+          />
+          {prikaziPhoneError && (
+            <div className="absolute right-3.5 top-1/2 -translate-y-1/2">
+              <AlertCircle className="h-4 w-4" style={{ color: '#DC2626' }} />
+            </div>
+          )}
+        </div>
+        <p className="text-xs" style={{ color: 'var(--first-quinary)' }}>
+          Ovaj broj ćemo koristiti ako dispečer ili serviser treba dodatne informacije.
+        </p>
+        {accountPhone?.trim() && (
+          <label className="mt-0.5 inline-flex w-fit cursor-pointer items-center gap-2 text-xs">
+            <input
+              type="checkbox"
+              checked={useAccountPhone}
+              onChange={(e) => toggleKoristiBrojSaRacuna(e.target.checked)}
+              className="h-4 w-4 rounded border"
+              style={{ accentColor: 'var(--first-primary)' }}
+            />
+            <span style={{ color: 'var(--first-primary)' }}>
+              Koristi broj sa računa ({accountPhone})
+            </span>
+          </label>
+        )}
+        {prikaziPhoneError && (
+          <p className="text-xs font-medium" style={{ color: '#DC2626' }}>
+            {prikaziPhoneError}
+          </p>
+        )}
+      </div>
 
-      {phoneError && (
-        <AlertMessage
-          variant="warning"
-          message="Telefon može sadržavati samo: cifre (0-9) i znakove +, -, /."
-        />
-      )}
-
-      {/* Drag-and-drop foto */}
       <div>
         <label className="mb-1.5 block text-sm font-medium" style={{ color: 'var(--first-octonary)' }}>
-          Fotografija kvara{' '}
-          <span className="font-normal" style={{ color: 'var(--first-nonary)' }}>(neobavezno)</span>
+          Fotografija kvara (neobavezno)
         </label>
+        <p className="mb-2 text-xs" style={{ color: 'var(--first-quinary)' }}>
+          Fotografija može pomoći u bržem razumijevanju problema.
+        </p>
 
         {photoFile ? (
           <div
-            className="flex items-center justify-between rounded-xl border px-4 py-3"
+            className="flex items-center justify-between gap-3 rounded-xl border px-4 py-3"
             style={{
               borderColor:     'rgb(var(--first-secondary-rgb) / 0.4)',
               backgroundColor: 'rgb(var(--first-secondary-rgb) / 0.06)',
             }}
           >
-            <span className="truncate text-sm" style={{ color: 'var(--first-octonary)' }}>
-              {photoFile.name}
-            </span>
-            <button type="button" onClick={() => onUpdate({ photoFile: null })} className="ml-3 flex-shrink-0 transition-opacity hover:opacity-70">
-              <X className="h-4 w-4" style={{ color: 'var(--first-nonary)' }} />
+            <div className="flex min-w-0 items-center gap-3">
+              {previewUrl && (
+                <img
+                  src={previewUrl}
+                  alt="Pregled fotografije kvara"
+                  className="h-14 w-14 flex-shrink-0 rounded-lg object-cover"
+                />
+              )}
+              <span className="truncate text-sm" style={{ color: 'var(--first-octonary)' }}>
+                {photoFile.name}
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => handleFile(null)}
+              className="ml-3 inline-flex flex-shrink-0 items-center gap-1 text-xs font-medium
+                transition-opacity hover:opacity-70"
+              style={{ color: 'var(--first-nonary)' }}
+            >
+              <X className="h-4 w-4" />
+              Ukloni fotografiju
             </button>
           </div>
         ) : (
@@ -195,11 +257,31 @@ export function KorakOpis({
               Prevucite sliku ili{' '}
               <span style={{ color: 'var(--first-secondary)' }}>kliknite za odabir</span>
             </p>
-            <p className="text-xs" style={{ color: 'var(--first-quinary)' }}>JPG, PNG do 5 MB</p>
-            <input id="wizard-foto-input" type="file" accept="image/*" className="hidden" onChange={(e) => handleFile(e.target.files?.[0] ?? null)} />
+            <p className="text-xs" style={{ color: 'var(--first-quinary)' }}>
+              JPG, PNG ili WEBP, maksimalno 5 MB.
+            </p>
+            <input
+              id="wizard-foto-input"
+              type="file"
+              accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+              className="hidden"
+              onChange={(e) => handleFile(e.target.files?.[0] ?? null)}
+            />
           </div>
         )}
+
+        {photoError && (
+          <p className="mt-2 text-xs font-medium" style={{ color: '#DC2626' }}>
+            {photoError}
+          </p>
+        )}
       </div>
+
+      {validationError && (
+        <p className="text-xs font-medium" style={{ color: '#DC2626' }}>
+          {validationError}
+        </p>
+      )}
     </div>
   );
 }

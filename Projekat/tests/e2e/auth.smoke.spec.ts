@@ -34,7 +34,7 @@ test.describe('Auth smoke', () => {
       await page.getByLabel('Email adresa').fill('limit@example.com');
       await page.getByLabel('Lozinka').fill('PogresnaLozinka123!');
       await page.getByRole('button', { name: 'Prijavi se' }).click();
-      await expect(page.getByText('Pogrešna email adresa ili lozinka')).toBeVisible();
+      await expect(page.getByText('Neispravni podaci za prijavu.')).toBeVisible();
     }
 
     await page.getByRole('button', { name: 'Prijavi se' }).click();

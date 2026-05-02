@@ -9,6 +9,7 @@ import {
   Users, LogOut, Menu, X, Bell, ChevronRight,
   UserCircle, ArrowLeftRight, ChevronDown,
 } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
 import type { UserRole } from '@/domain/types';
 import { odjaviSe } from '@/services/auth/authService';
@@ -17,7 +18,7 @@ import { odjaviSe } from '@/services/auth/authService';
 
 const ROLE_IDENTITET: Record<
   UserRole,
-  { boja: string; pozadina: string; oznaka: string; LogoIkona: React.ComponentType<{ className?: string }> }
+  { boja: string; pozadina: string; oznaka: string; LogoIkona: LucideIcon }
 > = {
   // Plava (#2D5B9F) — konzistentna s KPI "Aktivnih zahtjeva"
   korisnik: {
@@ -54,7 +55,7 @@ const ROLE_IDENTITET: Record<
 interface StavkaNavigacije {
   href:   string;
   oznaka: string;
-  Ikona:  React.ComponentType<{ className?: string }>;
+  Ikona:  LucideIcon;
 }
 
 const NAVIGACIJA_PO_ULOZI: Record<UserRole, StavkaNavigacije[]> = {

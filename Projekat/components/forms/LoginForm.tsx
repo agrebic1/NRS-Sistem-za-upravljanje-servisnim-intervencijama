@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -10,8 +10,8 @@ import { prijavnaShema, type PrijavniPodaci } from '@/lib/validations/authValida
 import {
   prijaviSeEmailom,
   odrediRedirectNakonPrijave,
-  posaljiPonovoVerifikacijskiEmail,
 } from '@/services/auth/authService';
+import { PORUKA_NEISPRAVNA_PRIJAVA } from '@/lib/auth/greskaPrijave';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { AlertMessage } from '@/components/ui/AlertMessage';
@@ -21,26 +21,13 @@ export function LoginForm() {
   const router = useRouter();
 
   const [jeLozinkaVidljiva, setJeLozinkaVidljiva] = useState(false);
-  const [greska,             setGreska]            = useState<string | null>(null);
-  const [poruka,             setPoruka]            = useState<string | null>(null);
-  const [jePrijavljivanje,   setJePrijavljivanje]  = useState(false);
-  const [jeSlanjeVerifikacije, setJeSlanjeVerifikacije] = useState(false);
-  const [preostaloSekundi, setPreostaloSekundi] = useState(0);
-
-  useEffect(() => {
-    if (preostaloSekundi <= 0) return;
-
-    const interval = window.setInterval(() => {
-      setPreostaloSekundi((trenutno) => (trenutno > 0 ? trenutno - 1 : 0));
-    }, 1000);
-
-    return () => window.clearInterval(interval);
-  }, [preostaloSekundi]);
+  const [greska, setGreska] = useState<string | null>(null);
+  const [poruka, setPoruka] = useState<string | null>(null);
+  const [jePrijavljivanje, setJePrijavljivanje] = useState(false);
 
   const {
     register,
     handleSubmit,
-    getValues,
     formState: { errors, isSubmitting, isValid },
   } = useForm<PrijavniPodaci>({
     resolver: zodResolver(prijavnaShema),
@@ -54,35 +41,18 @@ export function LoginForm() {
     try {
       const rezultat = await prijaviSeEmailom(podaci);
       const putanjaZaRedirect = await odrediRedirectNakonPrijave(rezultat.user.id);
+      setJePrijavljivanje(false);
+      setPoruka('Uspješno ste prijavljeni.');
+      await new Promise((resolve) => setTimeout(resolve, 900));
       router.push(putanjaZaRedirect);
     } catch (error) {
       if (error instanceof Error) {
         setGreska(error.message);
         return;
       }
-      setGreska('Email adresa ili lozinka nisu ispravni.');
+      setGreska(PORUKA_NEISPRAVNA_PRIJAVA);
     } finally {
       setJePrijavljivanje(false);
-    }
-  }
-
-  async function ponovoPosaljiVerifikaciju() {
-    setGreska(null);
-    setPoruka(null);
-    setJeSlanjeVerifikacije(true);
-
-    try {
-      await posaljiPonovoVerifikacijskiEmail(getValues('email'));
-      setPoruka('Poslali smo novi verifikacijski email. Provjerite inbox i spam folder.');
-      setPreostaloSekundi(60);
-    } catch (error) {
-      if (error instanceof Error) {
-        setGreska(error.message);
-      } else {
-        setGreska('Slanje verifikacijskog emaila nije uspjelo. Pokušajte ponovo.');
-      }
-    } finally {
-      setJeSlanjeVerifikacije(false);
     }
   }
 
@@ -154,22 +124,6 @@ export function LoginForm() {
         >
           Prijavi se
         </Button>
-
-        {greska?.includes('nije potvrđena') && (
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full"
-            onClick={ponovoPosaljiVerifikaciju}
-            disabled={jeSlanjeVerifikacije || preostaloSekundi > 0}
-            isLoading={jeSlanjeVerifikacije}
-            loadingText="Slanje..."
-          >
-            {preostaloSekundi > 0
-              ? `Pošalji ponovo za ${preostaloSekundi}s`
-              : 'Pošalji ponovo verifikacijski email'}
-          </Button>
-        )}
 
         <div
           className="flex items-start gap-2 rounded-xl px-4 py-3 text-xs"

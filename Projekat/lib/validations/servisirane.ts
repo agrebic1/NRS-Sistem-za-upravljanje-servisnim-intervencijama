@@ -42,15 +42,53 @@ export const wizardKorakTerminSchema = z.object({
   termini: z.array(terminSlotSchema).min(1, 'Odaberite najmanje jedan datum'),
 });
 
+export const preferredScheduleBaseSchema = z.object({
+  termini:              z.array(terminSlotSchema).default([]),
+  no_preferred_time:    z.boolean().optional(),
+  preferred_time_label: z.string().max(64).optional().nullable(),
+});
+
+export const preferredScheduleSchema = preferredScheduleBaseSchema
+  .superRefine((data, ctx) => {
+    const bezPreference = data.no_preferred_time === true;
+    if (bezPreference) {
+      if (data.termini.length > 0) {
+        ctx.addIssue({
+          code:    z.ZodIssueCode.custom,
+          message: 'Uz opciju bez preferiranog termina ne šaljite termine.',
+          path:    ['termini'],
+        });
+      }
+      return;
+    }
+
+    if (data.termini.length === 0) {
+      ctx.addIssue({
+        code:    z.ZodIssueCode.custom,
+        message: 'Odaberite preferirani termin ili označite da nemate preferenciju.',
+        path:    ['termini'],
+      });
+      return;
+    }
+
+    if (data.termini.length > 1) {
+      ctx.addIssue({
+        code:    z.ZodIssueCode.custom,
+        message: 'Dozvoljen je najviše jedan preferirani datum.',
+        path:    ['termini'],
+      });
+    }
+  });
+
 export const wizardKorak2Schema = z.object({
   description:  z
     .string()
-    .min(10, 'Opis mora imati najmanje 10 karaktera')
+    .min(20, 'Opis mora sadržavati dovoljno informacija za obradu zahtjeva.')
     .max(2000, 'Opis ne smije biti duži od 2000 karaktera'),
   contactPhone: z
     .string()
-    .min(6, 'Unesite ispravan broj telefona')
-    .regex(/^[0-9+\-\/ ]*$/, 'Dozvoljeni su samo brojevi i znakovi +, -, /.'),
+    .min(1, 'Unesite kontakt telefon.')
+    .regex(/^[+]?[0-9\s\-()]{8,20}$/, 'Unesite ispravan kontakt telefon.'),
 });
 
 export const wizardKorak3Schema = z.object({
@@ -66,9 +104,17 @@ export const wizardKorak3Schema = z.object({
 export const serviceRequestSchema = z.object({
   category:      z.string().min(1),
   address:       z.string().min(5).max(500),
-  description:   z.string().min(10).max(2000),
-  contact_phone: z.string().min(9).regex(/^[+]?[0-9\s\-()]+$/),
+  description:   z.string().min(20).max(2000),
+  // Usklađeno s wizardom (PHONE_REGEX): 8–20 znakova
+  contact_phone: z
+    .string()
+    .min(8, 'Unesite ispravan kontakt telefon.')
+    .max(20, 'Kontakt telefon je predugačak.')
+    .regex(/^[+]?[0-9\s\-()]{8,20}$/, 'Unesite ispravan kontakt telefon.'),
   photo_url:     z.string().url().optional().nullable(),
+  /** Opcionalno: GPS / mapa (AC15) */
+  latitude:      z.number().min(-90).max(90).optional().nullable(),
+  longitude:     z.number().min(-180).max(180).optional().nullable(),
   triage:        wizardKorak3Schema,
 });
 
@@ -80,8 +126,8 @@ export const updateRequestSchema = z
   .object({
     description:        z.string().min(10, 'Opis mora imati najmanje 10 karaktera').max(2000).optional(),
     address:            z.string().min(5, 'Unesite ispravnu adresu').max(500).optional(),
-    contact_phone:      z.string().min(6, 'Unesite ispravan broj').optional(),
-    preferred_schedule: z.record(z.unknown()).optional(),
+    contact_phone:      z.string().min(1, 'Unesite kontakt telefon.').regex(/^[+]?[0-9\s\-()]{8,20}$/, 'Unesite ispravan kontakt telefon.').optional(),
+    preferred_schedule: preferredScheduleSchema.optional(),
   })
   .refine((d) => Object.keys(d).length > 0, {
     message: 'Nema polja za ažuriranje',

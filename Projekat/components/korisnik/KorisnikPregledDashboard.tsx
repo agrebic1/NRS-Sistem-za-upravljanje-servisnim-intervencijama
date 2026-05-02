@@ -211,7 +211,7 @@ export function KorisnikPregledDashboard({
                   <p className="text-sm" style={{ color: 'var(--first-nonary)' }}>
                     Nemate još nijednog zahtjeva.
                   </p>
-                  <Link href="/korisnik/novi_zahtjev">
+                  <Link href="/korisnik/zahtjevi/novi">
                     <Button size="sm" variant="secondary">
                       Prijavi prvi kvar
                     </Button>

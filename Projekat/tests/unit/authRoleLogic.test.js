@@ -51,13 +51,13 @@ describe('auth service role logic and auth flows', () => {
     mockGetUser.mockReset();
   });
 
-  test('login maps specific and generic auth errors', async () => {
+  test('login maps auth errors to neutral or technical messages', async () => {
     mockSignInWithPassword.mockResolvedValueOnce({
       data: null,
       error: { message: 'Email not confirmed' },
     });
     await expect(prijaviSeEmailom({ email: 'user@example.com', lozinka: 'x' })).rejects.toThrow(
-      'Email adresa nije potvrđena'
+      'Neispravni podaci za prijavu.'
     );
 
     mockSignInWithPassword.mockResolvedValueOnce({
@@ -65,7 +65,15 @@ describe('auth service role logic and auth flows', () => {
       error: { message: 'Invalid login credentials' },
     });
     await expect(prijaviSeEmailom({ email: 'user@example.com', lozinka: 'x' })).rejects.toThrow(
-      'Pogrešna email adresa ili lozinka'
+      'Neispravni podaci za prijavu.'
+    );
+
+    mockSignInWithPassword.mockResolvedValueOnce({
+      data: null,
+      error: { message: 'Internal error', status: 503 },
+    });
+    await expect(prijaviSeEmailom({ email: 'user@example.com', lozinka: 'x' })).rejects.toThrow(
+      'Trenutno nije moguće izvršiti prijavu. Pokušajte ponovo.'
     );
 
     mockSignInWithPassword.mockResolvedValueOnce({
@@ -179,7 +187,11 @@ describe('auth service role logic and auth flows', () => {
       return builder({ data: null });
     });
     mockSignUp.mockResolvedValueOnce({
-      data: { user: { id: 'id-1' } },
+      data: { user: { id: 'id-1' }, session: null },
+      error: null,
+    });
+    mockSignInWithPassword.mockResolvedValueOnce({
+      data: { user: { id: 'id-1' }, session: { access_token: 't' } },
       error: null,
     });
     await expect(
@@ -190,7 +202,53 @@ describe('auth service role logic and auth flows', () => {
         telefon: '061111222',
         lozinka: 'Abcd123!',
       })
-    ).resolves.toEqual({ user: { id: 'id-1' } });
+    ).resolves.toEqual({
+      user: { id: 'id-1' },
+      session: { access_token: 't' },
+    });
+    expect(mockSignInWithPassword).toHaveBeenCalledWith({
+      email: 'user@example.com',
+      password: 'Abcd123!',
+    });
+
+    mockSignUp.mockResolvedValueOnce({
+      data: { user: { id: 'id-2' }, session: { access_token: 'direct' } },
+      error: null,
+    });
+    await expect(
+      registrujKorisnika({
+        ime: 'A',
+        prezime: 'B',
+        email: 'two@example.com',
+        telefon: '061111222',
+        lozinka: 'Abcd123!',
+      })
+    ).resolves.toEqual({
+      user: { id: 'id-2' },
+      session: { access_token: 'direct' },
+    });
+    const poziviNakonDirektneSesije = mockSignInWithPassword.mock.calls.length;
+    mockSignUp.mockResolvedValueOnce({
+      data: { user: { id: 'id-1' }, session: null },
+      error: null,
+    });
+    mockSignInWithPassword.mockResolvedValueOnce({
+      data: { user: null, session: null },
+      error: { message: 'Email not confirmed' },
+    });
+    await expect(
+      registrujKorisnika({
+        ime: 'A',
+        prezime: 'B',
+        email: 'unconfirmed@example.com',
+        telefon: '061111222',
+        lozinka: 'Abcd123!',
+      })
+    ).rejects.toMatchObject({
+      name: 'PotrebnaPotvrdaEmailaError',
+      email: 'unconfirmed@example.com',
+    });
+    expect(mockSignInWithPassword.mock.calls.length).toBe(poziviNakonDirektneSesije + 1);
   });
 
   test('maps roles and redirects', async () => {
@@ -264,7 +322,7 @@ describe('auth service role logic and auth flows', () => {
         error: { message: 'Invalid login credentials' },
       });
       await expect(prijaviSeEmailom({ email: 'limit@example.com', lozinka: 'x' })).rejects.toThrow(
-        'Pogrešna email adresa ili lozinka'
+        'Neispravni podaci za prijavu.'
       );
     }
 

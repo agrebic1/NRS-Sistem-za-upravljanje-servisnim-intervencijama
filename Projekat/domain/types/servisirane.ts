@@ -44,6 +44,10 @@ export interface TerminSlot {
 
 export interface PreferredSchedule {
   termini: TerminSlot[];
+  /** Korisnik nema preferenciju — dispečer dogovara termin. */
+  no_preferred_time?: boolean;
+  /** Oznaka brzog izbora (npr. Jutro, Cijeli dan) ili prilagođeno. */
+  preferred_time_label?: string | null;
 }
 
 // ─── Servisni zahtjev ─────────────────────────────────────────────────────────
@@ -53,6 +57,9 @@ export interface ServisniZahtjev {
   user_id:              string;
   category:             string;
   address:              string;
+  /** Sačuvano uz zahtjev ako je korisnik koristio GPS ili mapu (opcionalno). */
+  latitude:             number | null;
+  longitude:            number | null;
   description:          string;
   contact_phone:        string;
   photo_url:            string | null;

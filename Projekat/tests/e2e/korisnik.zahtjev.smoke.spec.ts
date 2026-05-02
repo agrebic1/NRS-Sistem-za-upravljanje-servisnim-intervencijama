@@ -1,8 +1,8 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Korisnik zahtjev smoke', () => {
-  test('unauthenticated access to novi_zahtjev redirects to login', async ({ page }) => {
-    await page.goto('/korisnik/novi_zahtjev');
+  test('unauthenticated access to zahtjevi/novi redirects to login', async ({ page }) => {
+    await page.goto('/korisnik/zahtjevi/novi');
     await expect(page).toHaveURL(/\/auth\/login/);
   });
 

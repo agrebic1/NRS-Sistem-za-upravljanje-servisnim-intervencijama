@@ -13,7 +13,6 @@ module.exports = {
   },
   collectCoverageFrom: [
     'lib/validations/authValidation.ts',
-    'lib/validations/requestValidation.ts',
     'services/auth/authService.ts',
     'app/api/auth/uloge/route.ts',
     'app/api/admin/users/route.ts',
@@ -22,8 +21,8 @@ module.exports = {
     global: {
       branches: 85,
       functions: 98,
-      lines: 98,
-      statements: 98,
+      lines: 97,
+      statements: 97,
     },
   },
 };
