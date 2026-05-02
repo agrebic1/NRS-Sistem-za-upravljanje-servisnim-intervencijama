@@ -573,6 +573,41 @@ Povezano sa storyjima za pregled vlastitog zahtjeva (US-06), pregled otvorenih i
   - **GIVEN** korisnik je odabrao preferirani datum i vremenski period
   - **WHEN** zahtjev bude kreiran
   - **THEN** sistem sprema preferirani datum i vremenski period uz zahtjev kao informaciju za dispečera
+ 
+- **AC25: Obavezan unos opisa kvara**  
+  - **GIVEN** korisnik se nalazi na koraku “Opis kvara”
+  - **WHEN** pokuša nastaviti bez unesenog opisa kvara
+  - **THEN** sistem ne dozvoljava nastavak i prikazuje poruku da je potrebno opisati problem
+
+- **AC26: Validacija dužine opisa kvara**  
+  - **GIVEN** korisnik je unio opis kvara koji ne zadovoljava minimalnu dužinu
+  - **WHEN** pokuša nastaviti na sljedeći korak
+  - **THEN** sistem prikazuje poruku da opis mora sadržavati dovoljno informacija za obradu zahtjeva
+
+- **AC27: Obavezan kontakt telefon**  
+  - **GIVEN** korisnik se nalazi na koraku “Opis kvara”
+  - **WHEN** pokuša nastaviti bez kontakt telefona
+  - **THEN** sistem ne dozvoljava nastavak i prikazuje poruku da je potrebno unijeti kontakt telefon
+
+- **AC28: Validacija formata kontakt telefona**  
+  - **GIVEN** korisnik je unio kontakt telefon u neispravnom formatu
+  - **WHEN** pokuša nastaviti
+  - **THEN** sistem prikazuje poruku da je potrebno unijeti ispravan kontakt telefon
+
+- **AC29: Fotografija kvara je opcionalna**  
+  - **GIVEN** korisnik nije dodao fotografiju kvara
+  - **WHEN** popuni obavezni opis i kontakt telefon
+  - **THEN** sistem dozvoljava nastavak prijave zahtjeva
+
+- **AC30: Dodavanje fotografije kvara**  
+  - **GIVEN** korisnik se nalazi na koraku “Opis kvara”
+  - **WHEN** doda fotografiju u dozvoljenom formatu i veličini
+  - **THEN** sistem sprema fotografiju kao opcionalni prilog uz zahtjev
+
+- **AC31: Nedozvoljen format ili prevelika fotografija**  
+  - **GIVEN** korisnik pokuša dodati fotografiju u nedozvoljenom formatu ili veću od dozvoljene veličine
+  - **WHEN** sistem obradi upload
+  - **THEN** sistem ne prihvata fotografiju i prikazuje odgovarajuću poruku o grešci
 ---
 
 ## US-06 — Pregled vlastitog zahtjeva
