@@ -1,6 +1,7 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { type NextRequest, NextResponse } from 'next/server';
 import type { Database } from './domain/types/supabase';
+import type { UserRole } from './domain/types';
 
 const JAVNE_RUTE = [
   '/',
@@ -8,9 +9,34 @@ const JAVNE_RUTE = [
   '/auth/registracija',
   '/auth/odabir-uloge',
   '/odabir-uloge',
+  '/postani-partner',
 ] as const;
 
 const ADMIN_PREFIX = '/admin';
+const SERVISER_PREFIX = '/serviser';
+const DISPECER_PREFIX = '/dispecer';
+const KORISNIK_PREFIX = '/korisnik';
+
+function mapirajNazivUloge(naziv: string | null | undefined): UserRole | null {
+  const normalizovanNaziv = naziv?.toLowerCase();
+
+  switch (normalizovanNaziv) {
+    case 'klijent':
+    case 'korisnik':
+    case 'korisnik usluge':
+      return 'korisnik';
+    case 'serviser':
+      return 'serviser';
+    case 'dispecer':
+    case 'dispečer':
+      return 'dispecer';
+    case 'administrator':
+    case 'admin':
+      return 'admin';
+    default:
+      return null;
+  }
+}
 
 export async function middleware(zahtjev: NextRequest) {
   let supabaseResponse = NextResponse.next({ request: zahtjev });
@@ -26,6 +52,9 @@ export async function middleware(zahtjev: NextRequest) {
 
   let user: { id: string } | null = null;
   let jeAdministrator = false;
+  let jeServiser = false;
+  let jeDispecer = false;
+  let jeKorisnik = false;
   try {
     const supabase = createServerClient<Database>(supabaseUrl, supabaseKey, {
       cookies: {
@@ -48,11 +77,56 @@ export async function middleware(zahtjev: NextRequest) {
     } = await supabase.auth.getUser();
     user = authUser;
 
-    if (authUser && pathname.startsWith(ADMIN_PREFIX)) {
-      const { data: adminIzBaze } = await (supabase as any).rpc('is_admin', {
-        p_user_id: authUser.id,
-      });
-      jeAdministrator = adminIzBaze === true;
+    if (authUser) {
+      const { data: korisnikUsluge, error: greskaKorisnikaUsluge } = await supabase
+        .from('korisnik_usluge')
+        .select('id_korisnika_usluge')
+        .eq('id_korisnika_usluge', authUser.id)
+        .maybeSingle();
+
+      const { data: uposlenik, error: greskaUposlenika } = await supabase
+        .from('uposlenici' as any)
+        .select('id_uloge')
+        .eq('id_uposlenika', authUser.id)
+        .maybeSingle();
+
+      let uposlenikUloga: UserRole | null = null;
+      const idUloge = (uposlenik as { id_uloge?: number | null } | null)?.id_uloge;
+      if (!greskaUposlenika && idUloge) {
+        const { data: ulogaPodaci, error: greskaUloge } = await supabase
+          .from('uloga' as any)
+          .select('naziv')
+          .eq('id_uloge', idUloge)
+          .maybeSingle();
+
+        if (!greskaUloge) {
+          uposlenikUloga = mapirajNazivUloge(
+            (ulogaPodaci as { naziv?: string | null } | null)?.naziv
+          );
+        }
+      }
+
+      // Fallback na postojece RPC funkcije ako relacijski upit ne vrati ulogu.
+      if (!uposlenikUloga && (pathname.startsWith(ADMIN_PREFIX) || pathname.startsWith(SERVISER_PREFIX) || pathname.startsWith(DISPECER_PREFIX))) {
+        if (pathname.startsWith(ADMIN_PREFIX)) {
+          const { data: adminIzBaze, error } = await supabase.rpc('is_admin');
+          jeAdministrator = !error && adminIzBaze === true;
+        } else if (pathname.startsWith(SERVISER_PREFIX)) {
+          const { data: serviserIzBaze, error } = await supabase.rpc('is_serviser');
+          jeServiser = !error && serviserIzBaze === true;
+        } else if (pathname.startsWith(DISPECER_PREFIX)) {
+          const { data: dispecerIzBaze, error } = await supabase.rpc('is_dispecer');
+          jeDispecer = !error && dispecerIzBaze === true;
+        }
+      } else {
+        jeAdministrator = uposlenikUloga === 'admin';
+        jeServiser = uposlenikUloga === 'serviser';
+        jeDispecer = uposlenikUloga === 'dispecer';
+      }
+
+      // Korisnicka zona treba biti dostupna svim nalozima koji imaju korisnik_usluge profil,
+      // cak i kada isti nalog ima i internu (uposlenik) ulogu.
+      jeKorisnik = !greskaKorisnikaUsluge && !!korisnikUsluge;
     }
   } catch (error) {
     console.error('Middleware auth provjera nije uspjela:', error);
@@ -70,6 +144,24 @@ export async function middleware(zahtjev: NextRequest) {
 
   if (user && pathname.startsWith(ADMIN_PREFIX)) {
     if (!jeAdministrator) {
+      return NextResponse.redirect(new URL('/', zahtjev.url));
+    }
+  }
+
+  if (user && pathname.startsWith(SERVISER_PREFIX)) {
+    if (!jeServiser) {
+      return NextResponse.redirect(new URL('/', zahtjev.url));
+    }
+  }
+
+  if (user && pathname.startsWith(DISPECER_PREFIX)) {
+    if (!jeDispecer) {
+      return NextResponse.redirect(new URL('/', zahtjev.url));
+    }
+  }
+
+  if (user && pathname.startsWith(KORISNIK_PREFIX)) {
+    if (!jeKorisnik) {
       return NextResponse.redirect(new URL('/', zahtjev.url));
     }
   }

@@ -1,0 +1,10 @@
+ID_greske,Povezani_ID_testa,Funkcionalnost_modul,Opis_greske,Prioritet_greske,Status_greske,Sprint_faza,Dokaz_putanja,Napomena
+B-01,SEC-03,Autorizacija (Role Guard),Korisnik sa ulogom servisera moze neovlasteno pristupiti ruti /dispecer,Visok,Ispravljena,SB-05,SEC-03.png,Middleware ne blokira pristup iako uloga nije adekvatna
+B-02,SEC-07,Sigurnost prijave,Nedostaje zastita od brute-force napada; nema limita na broj pokusaja prijave,Srednji,Ispravljena,SB-05,SEC-07.png,Sistem ne blokira korisnika nakon vise pogresnih unosa lozinke
+B-03,ACC-002,Zastita ruta,Korisnik usluge moze pristupiti ruti /serviser i vidi serviserski sadrzaj,Visok,Ispravljena,SB-05,ACC-002_ACCESS_korisnik_serviser.png,Neispravna kontrola pristupa po ulozi
+B-04,ACC-003,Zastita ruta,Korisnik usluge moze pristupiti ruti /dispecer i vidi dispecerski sadrzaj,Visok,Ispravljena,SB-05,ACC-003_ACCESS_korisnik_dispecer.png,Nedostaje autorizacija
+B-05,ACC-006,Zastita ruta,Serviser moze pristupiti ruti /korisnik i vidi korisnicki sadrzaj,Visok,Ispravljena,SB-05,ACC-006_ACCESS_serviser_korisnik.png,Role-based access nije implementiran ispravno
+B-06,ACC-007,Zastita ruta,Serviser moze pristupiti ruti /dispecer i vidi dispecerski sadrzaj,Visok,Ispravljena,SB-05,ACC-007_ACCESS_serviser_dispecer.png,Kritican sigurnosni propust
+B-07,ACC-010,Zastita ruta,Dispecer moze pristupiti ruti /korisnik i vidi korisnicki sadrzaj,Visok,Ispravljena,SB-05,ACC-010_ACCESS_dispecer_korisnik.png,Neadekvatna segregacija uloga
+B-08,ACC-011,Zastita ruta,Dispecer moze pristupiti ruti /serviser i vidi serviserski sadrzaj,Visok,Ispravljena,SB-05,ACC-011_ACCESS_dispecer_serviser.png,Potrebna validacija privilegija
+B-09,ACC-002,Prijava,Korisnik ne dobija poruku i moguce je kreirati dupli mail,Visok,Ispravljena,SB-05,TC-02_DoubleAccount.png,Dodati zastitu od dupliranja naloga

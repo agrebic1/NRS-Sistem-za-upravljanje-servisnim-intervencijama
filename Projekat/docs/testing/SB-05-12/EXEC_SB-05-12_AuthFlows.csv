@@ -1,0 +1,16 @@
+ID_testa,Okruzenje,Build_verzija,Datum_testiranja,Izvrsilac,Ocekivani_rezultat,Stvarni_rezultat,Status_testa,ID_greske,Dokaz_putanja
+TC-01,Production,main@9f2c1ab,29.4.2026,Suada Peci,Korisnik kreiran kao korisnik_usluge; uspjesna poruka; bez tehnickih detalja greske,Stvarni rezultat odgovara ocekivanom,Prosao,,TC-01_AccountCreation.png
+TC-02,Production,main@9f2c1ab,29.4.2026,Suada Peci,Registracija odbijena neutralnom porukom; ne kreira se dupli korisnik,Korisnik ne dobija poruku da se isti podatci mogu koristiti te se kreira dupli mail,Nije prosao,B-09,TC-02_DoubleAccount.png
+TC-03,Production,main@9f2c1ab,29.4.2026,Suada Peci,Klijentska validacija blokira slanje i prikazuje razumljivu poruku,Stvarni rezultat odgovara ocekivanom,Prosao,,TC-03_InvalidEmail.png
+TC-04,Production,main@9f2c1ab,29.4.2026,Suada Peci,Uspjesna prijava; sesija kreirana; redirect na odgovarajuci dashboard,Stvarni rezultat odgovara ocekivanom,Prosao,,TC-04_ExistingAccount.png
+TC-05,Production,main@9f2c1ab,29.4.2026,Suada Peci,Prijava odbijena neutralnom porukom; bez otkrivanja da li je email validan,Stvarni rezultat odgovara ocekivanom,Prosao,,TC-05_EmailTest.png
+TC-06,Production,main@9f2c1ab,29.4.2026,Suada Peci,Forma ne salje zahtjev dok obavezna polja nisu popunjena,Stvarni rezultat odgovara ocekivanom,Prosao,,TC-06_RequiredFields.png
+TC-07,Production,main@9f2c1ab,29.4.2026,Suada Peci,Sesija prekinuta; korisnik vracen na login/landing; zasticena ruta nije dostupna,Stvarni rezultat odgovara ocekivanom,Prosao,,TC-07_ReturnToLogin.png
+TC-08,Production,main@9f2c1ab,29.4.2026,Suada Peci,Korisnik ostaje prijavljen; aktivna uloga i ruta ostaju uskladjene,Stvarni rezultat odgovara ocekivanom,Prosao,,TC-08_Refresh.png
+TC-09,Production,main@9f2c1ab,29.4.2026,Suada Peci,Redirect na login; nema prikaza zasticenog sadrzaja,Stvarni rezultat odgovara ocekivanom,Prosao,,TC-09_korisnikRoute.png
+TC-10,Production,main@9f2c1ab,29.4.2026,Suada Peci,Automatski redirect na dashboard te uloge bez ekrana za odabir,Stvarni rezultat odgovara ocekivanom,Prosao,,TC-10_NoRole.png
+TC-11,Production,main@9f2c1ab,29.4.2026,Suada Peci,Prikaz odabira uloge; dashboard prati izabranu aktivnu ulogu,Stvarni rezultat odgovara ocekivanom,Prosao,,TC-11_RoleB.png
+TC-12,Production,main@9f2c1ab,29.4.2026,Suada Peci,Pristup tudjim dashboard rutama odbijen redirectom ili deny stranicom,Stvarni rezultat odgovara ocekivanom,Prosao,,TC-12_RedirectRole.png
+TC-13,Production,main@9f2c1ab,29.4.2026,Suada Peci,API vraca 401/403 bez osjetljivih podataka,Stvarni rezultat odgovara ocekivanom,Prosao,,TC-13_RedirectFromAdmin.png
+TC-14,Production,main@9f2c1ab,29.4.2026,Suada Peci,Za svaku ulogu ucitan odgovarajuci osnovni dashboard bez greske,Stvarni rezultat odgovara ocekivanom,Prosao,,TC-14_Role1.png
+TC-15,Production,main@9f2c1ab,29.4.2026,Suada Peci,Prvi tab prepoznaje nevalidnu sesiju i trazi ponovnu prijavu,Stvarni rezultat odgovara ocekivanom,Prosao,,TC-15_LoginAgain.png

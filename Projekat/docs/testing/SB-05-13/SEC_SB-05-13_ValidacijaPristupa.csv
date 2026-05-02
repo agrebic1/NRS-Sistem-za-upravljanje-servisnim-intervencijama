@@ -1,0 +1,9 @@
+ID_scenarija,Opis_scenarija,Koraci,Ocekivani_rezultat,Stvarni_rezultat,Status,ID_greske,Dokaz_putanja,Napomena
+SEC-01,Neprijavljen korisnik pristupa zasticenoj ruti,Otvoriti /korisnik bez prijave,Redirect na /auth/login sa sacuvanim return URL,Sistem blokira pristup i preusmjerava na login,Prosao,,dokaz tester3/SEC-01.png,
+SEC-02,Ne-admin pokusava pristup admin ruti,Prijaviti se kao korisnik_usluge i otvoriti /admin,Pristup odbijen bez prikaza admin sadrzaja,Sistem blokira pristup admin ruti i preusmjerava na pocetnu stranicu,Prosao,,dokaz tester3/SEC-02.png,
+SEC-03,Korisnik pogresne uloge pristupa tudjoj ruti,Prijaviti se kao serviser i otvoriti /dispecer,Pristup odbijen,Sistem dozvoljava pristup dispecerskoj ruti,Nije prosao,B-01,dokaz tester3/SEC-03.png,Neovlasten pristup ruti
+SEC-04,Manipulacija URL-om nakon prijave,Direktno mijenjati rutu u browseru,Nema eskalacije privilegija,Sistem prekida sesiju i vraca na landing,Prosao,,dokaz tester3/SEC-04.png,
+SEC-05,Provjera API role endpointa,Pozvati endpoint kao prijavljen i anoniman korisnik,401/403 za neautorizovane,Sistem vraca odgovarajuce odgovore bez izlaganja podataka,Prosao,,dokaz tester3/SEC-05.png,
+SEC-06,Odjava invalidira sesiju,Prijava pa odjava pa pokusaj pristupa,Nema pristupa bez login,Sistem zahtijeva ponovnu autentifikaciju,Prosao,,dokaz tester3/SEC-06.png,
+SEC-07,Session replay u drugom tabu,Prijava u tab A i odjava u tab B,Tab A mora invalidirati sesiju,Sistem dozvoljava vise pokusaja bez ogranicenja,Nije prosao,B-02,dokaz tester3/SEC-07.png,Nedostaje rate limiting
+SEC-08,Role switch enforcement,Promjena uloge i pokusaj pristupa drugim rutama,Pristup samo aktivnoj ulozi,Sistem zahtijeva izbor aktivne uloge,Prosao,,dokaz tester3/SEC-08.png,

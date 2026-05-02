@@ -1,16 +1,14 @@
 :root {
-  /* Base RGB tokens (anonymous palette for theme management) */
-  --first-primary-rgb: 44 68 77;
-  --first-secondary-rgb: 90 124 131;
-  --first-tertiary-rgb: 242 230 216;
-  --first-quaternary-rgb: 204 182 142;
-  --first-quinary-rgb: 199 184 164;
-  --first-senary-rgb: 139 74 43;
-  --first-septenary-rgb: 212 178 127;
-  --first-octonary-rgb: 31 42 48;
-  --first-nonary-rgb: 107 124 130;
+  --first-primary-rgb: 16 37 65;        /* #102541 */
+  --first-secondary-rgb: 45 91 159;     /* #2D5B9F */
+  --first-tertiary-rgb: 255 251 239;    /* #FFFBEF */
+  --first-quaternary-rgb: 223 231 242;  /* #DFE7F2 */
+  --first-quinary-rgb: 255 255 255;     /* #FFFFFF */
+  --first-senary-rgb: 217 132 0;        /* #D98400 */
+  --first-septenary-rgb: 242 201 76;    /* #F2C94C */
+  --first-octonary-rgb: 11 21 38;       /* #0B1526 */
+  --first-nonary-rgb: 97 112 137;       /* #617089 */
 
-  /* Solid colors */
   --first-primary: rgb(var(--first-primary-rgb));
   --first-secondary: rgb(var(--first-secondary-rgb));
   --first-tertiary: rgb(var(--first-tertiary-rgb));
@@ -22,27 +20,23 @@
   --first-nonary: rgb(var(--first-nonary-rgb));
   --first-white: #fff;
 
-  /* Surfaces */
   --surface-page: var(--first-tertiary);
-  --surface-card: rgb(var(--first-quinary-rgb) / 0.22);
-  --surface-card-strong: rgb(var(--first-quinary-rgb) / 0.45);
-  --surface-panel: rgb(255 255 255 / 0.45);
-  --surface-info: rgb(var(--first-secondary-rgb) / 0.08);
-  --surface-warning: rgb(var(--first-senary-rgb) / 0.06);
-  --surface-success: rgb(var(--first-septenary-rgb) / 0.15);
+  --surface-card: rgb(var(--first-quinary-rgb) / 0.88);
+  --surface-card-strong: rgb(var(--first-quinary-rgb) / 0.98);
+  --surface-panel: rgb(255 255 255 / 0.72);
+  --surface-info: rgb(var(--first-septenary-rgb) / 0.12);
+  --surface-warning: rgb(var(--first-senary-rgb) / 0.10);
+  --surface-success: rgb(79 164 110 / 0.12);
 
-  /* Borders */
-  --border-soft: rgb(var(--first-quaternary-rgb) / 0.35);
-  --border-soft-strong: rgb(var(--first-quaternary-rgb) / 0.4);
-  --border-warning: rgb(var(--first-senary-rgb) / 0.25);
-  --border-info: rgb(var(--first-secondary-rgb) / 0.2);
+  --border-soft: rgb(var(--first-quaternary-rgb) / 0.75);
+  --border-soft-strong: rgb(var(--first-quaternary-rgb) / 1);
+  --border-warning: rgb(var(--first-senary-rgb) / 0.35);
+  --border-info: rgb(var(--first-septenary-rgb) / 0.32);
 
-  /* Semantic aliases */
   --text-primary: var(--first-octonary);
   --text-secondary: var(--first-nonary);
   --brand-primary: var(--first-primary);
   --brand-secondary: var(--first-secondary);
   --brand-accent: var(--first-septenary);
   --brand-danger: var(--first-senary);
-
 }

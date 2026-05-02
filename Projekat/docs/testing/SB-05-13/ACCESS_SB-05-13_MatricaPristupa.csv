@@ -1,0 +1,21 @@
+ID,Uloga,Ruta_ili_akcija,Ocekivano_ponasanje,Stvarno_ponasanje,Status,Dokaz_putanja,Napomena
+ACC-001,korisnik_usluge,/korisnik,Dozvoljeno,Korisnik usluge moze pristupiti ruti /korisnik i stranica se ispravno prikazuje,Prosao,ACC-001_ACCESS_korisnik_korisnik.png,
+ACC-002,korisnik_usluge,/serviser,Zabranjeno (redirect ili deny),Korisnik usluge moze pristupiti ruti /serviser i serviserski sadrzaj je prikazan,Nije prosao,ACC-002_ACCESS_korisnik_serviser.png,
+ACC-003,korisnik_usluge,/dispecer,Zabranjeno (redirect ili deny),Korisnik usluge moze pristupiti ruti /dispecer i dispecerski sadrzaj je prikazan,Nije prosao,ACC-003_ACCESS_korisnik_dispecer.png,
+ACC-004,korisnik_usluge,/admin,Zabranjeno (redirect ili deny),Korisnik usluge je preusmjeren na login ali sesija se ponistava,Djelimicno prosao,ACC-004_ACCESS_korisnik_admin.png,
+ACC-005,serviser,/serviser,Dozvoljeno,Serviser moze pristupiti ruti /serviser i stranica se ispravno prikazuje,Prosao,ACC-005_ACCESS_serviser_serviser.png,
+ACC-006,serviser,/korisnik,Zabranjeno (redirect ili deny),Serviser moze pristupiti ruti /korisnik i korisnicki sadrzaj je prikazan,Nije prosao,ACC-006_ACCESS_serviser_korisnik.png,
+ACC-007,serviser,/dispecer,Zabranjeno (redirect ili deny),Serviser moze pristupiti ruti /dispecer i dispecerski sadrzaj je prikazan,Nije prosao,ACC-007_ACCESS_serviser_dispecer.png,
+ACC-008,serviser,/admin,Zabranjeno (redirect ili deny),Serviser ne moze pristupiti ruti /admin ali nije idealno ponasanje,Djelimicno prosao,ACC-008_ACCESS_serviser_admin.png,
+ACC-009,dispecer,/dispecer,Dozvoljeno,Dispecer moze pristupiti ruti /dispecer i stranica se ispravno prikazuje,Prosao,ACC-009_ACCESS_dispecer_dispecer.png,
+ACC-010,dispecer,/korisnik,Zabranjeno (redirect ili deny),Dispecer moze pristupiti ruti /korisnik i korisnicki sadrzaj je prikazan,Nije prosao,ACC-010_ACCESS_dispecer_korisnik.png,
+ACC-011,dispecer,/serviser,Zabranjeno (redirect ili deny),Dispecer moze pristupiti ruti /serviser i serviserski sadrzaj je prikazan,Nije prosao,ACC-011_ACCESS_dispecer_serviser.png,
+ACC-012,dispecer,/admin,Zabranjeno (redirect ili deny),Dispecer je preusmjeren ali sesija se ponistava,Djelimicno prosao,ACC-012_ACCESS_dispecer_admin.png,
+ACC-013,administrator,/admin,Dozvoljeno,Administrator moze pristupiti ruti /admin i sadrzaj je prikazan,Prosao,ACC-013_ACCESS_admin_admin.png,Pristup drugim rutama dozvoljen prema pravilima sistema
+ACC-014,administrator,/korisnik,Dozvoljeno ili redirect prema pravilima sistema,Administrator moze pristupiti ruti /korisnik i sadrzaj je prikazan,Prosao,ACC-014_ACCESS_admin_korisnik.png,Pristup drugim rutama dozvoljen prema pravilima sistema
+ACC-015,administrator,/serviser,Dozvoljeno ili redirect prema pravilima sistema,Administrator moze pristupiti ruti /serviser i sadrzaj je prikazan,Prosao,ACC-015_ACCESS_admin_serviser.png,Pristup drugim rutama dozvoljen prema pravilima sistema
+ACC-016,administrator,/dispecer,Dozvoljeno ili redirect prema pravilima sistema,Administrator moze pristupiti ruti /dispecer i sadrzaj je prikazan,Prosao,ACC-016_ACCESS_admin_dispecer.png,Pristup drugim rutama dozvoljen prema pravilima sistema
+ACC-017,neprijavljen,/korisnik,Zabranjeno (redirect na login),Neprijavljen korisnik je preusmjeren na login,Prosao,ACC-017_ACCESS_neprijavljen_korisnik.png,
+ACC-018,neprijavljen,/serviser,Zabranjeno (redirect na login),Neprijavljen korisnik je preusmjeren na login,Prosao,ACC-018_ACCESS_neprijavljen_serviser.png,
+ACC-019,neprijavljen,/dispecer,Zabranjeno (redirect na login),Neprijavljen korisnik je preusmjeren na login,Prosao,ACC-019_ACCESS_neprijavljen_dispecer.png,
+ACC-020,neprijavljen,/admin,Zabranjeno (redirect na login),Neprijavljen korisnik je preusmjeren ali ponasanje nije potpuno korektno,Djelimicno prosao,ACC-020_ACCESS_neprijavljen_admin.png,

@@ -1,6 +1,11 @@
 import { kreirajKlijenta } from '@/lib/supabase/klijent';
 import type { UserRole } from '@/domain/types';
 import { PREUSMJERANJE_PO_ULOZI } from '@/domain/types';
+import {
+  clearLoginRateLimit,
+  isLoginBlocked,
+  recordFailedLoginAttempt,
+} from '@/lib/security/loginRateLimiter';
 
 function normalizujEmail(email: string) {
   return email
@@ -22,6 +27,15 @@ function mapirajAuthGresku(greska: { message: string; status?: number; code?: st
     return 'Previše pokušaja registracije. Sačekajte 1-2 minute i pokušajte ponovo.';
   }
 
+  if (
+    poruka.includes('already registered') ||
+    poruka.includes('already exists') ||
+    poruka.includes('user already') ||
+    poruka.includes('email address is already')
+  ) {
+    return 'Nalog sa ovom email adresom već postoji. Koristite prijavu ili reset lozinke.';
+  }
+
   return greska.message;
 }
 
@@ -30,12 +44,18 @@ function mapirajAuthGresku(greska: { message: string; status?: number; code?: st
 export async function prijaviSeEmailom(podaci: { email: string; lozinka: string }) {
   const supabase = kreirajKlijenta();
   const email = normalizujEmail(podaci.email);
+
+  if (isLoginBlocked(email)) {
+    throw new Error('Previše pokušaja prijave. Sačekajte 5 minuta i pokušajte ponovo.');
+  }
+
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password: podaci.lozinka,
   });
 
   if (error) {
+    recordFailedLoginAttempt(email);
     if (error.message.toLowerCase().includes('email not confirmed')) {
       throw new Error('Email adresa nije potvrđena. Provjerite inbox i potvrdite nalog.');
     }
@@ -43,6 +63,7 @@ export async function prijaviSeEmailom(podaci: { email: string; lozinka: string 
     throw new Error('Pogrešna email adresa ili lozinka');
   }
 
+  clearLoginRateLimit(email);
   return data;
 }
 
@@ -83,7 +104,7 @@ export async function registrujKorisnika(podaci: {
     email,
     password: podaci.lozinka,
     options: {
-      // DB trigger reads these from raw_user_meta_data and inserts into korisnik_usluge
+      // DB trigger reads these from raw_user_meta_data and inserts into osoba + odgovarajuci subtype
       data: { ime: podaci.ime, prezime: podaci.prezime, uloga: 'Klijent' },
     },
   });
@@ -91,11 +112,23 @@ export async function registrujKorisnika(podaci: {
   if (greskaAuth) throw new Error(mapirajAuthGresku(greskaAuth));
   if (!authPodaci.user) throw new Error('Kreiranje naloga nije uspjelo');
 
-  // Trigger creates the row — only update the phone field which trigger doesn't handle
+  const identities = authPodaci.user.identities ?? [];
+  const jeMaskiraniDuplikat =
+    authPodaci.session == null &&
+    authPodaci.user.email?.toLowerCase() === email &&
+    Array.isArray(identities) &&
+    identities.length === 0;
+
+  // Supabase za postojeći email može vratiti "uspjeh" bez error-a (anti-enumeration).
+  if (jeMaskiraniDuplikat) {
+    throw new Error('Nalog sa ovom email adresom već postoji. Koristite prijavu ili reset lozinke.');
+  }
+
+  // Trigger kreira osobu; broj telefona se sada cuva u tabeli osoba.
   await supabase
-    .from('korisnik_usluge')
+    .from('osoba')
     .update({ broj_telefona: podaci.telefon })
-    .eq('id_korisnika_usluge', authPodaci.user.id);
+    .eq('id_osobe', authPodaci.user.id);
 
   return authPodaci;
 }
@@ -141,7 +174,7 @@ export async function getUlogeKorisnika(idKorisnika: string): Promise<UserRole[]
   // Provjera korisnik_usluge tabele
   const { data: korisnikUsluge } = await supabase
     .from('korisnik_usluge')
-    .select('id_korisnika_usluge, id_uloge')
+    .select('id_korisnika_usluge')
     .eq('id_korisnika_usluge', idKorisnika)
     .maybeSingle();
 
