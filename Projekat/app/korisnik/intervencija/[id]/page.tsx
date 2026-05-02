@@ -25,18 +25,18 @@ const MOCK_INTERVENCIJA = {
   prioritet: 'hitno' as const,
   lokacija: 'Ul. Ferhadija 8, Stan 304, Sarajevo',
   kontaktTelefon: '+387 61 234 567',
-  datumKreiranja: '23.04.2026. u 09:15',
-  datumIntervencije: '24.04.2026.',
+  datumKreiranja: '23. 04. 2026. 09:15',
+  datumIntervencije: '24. 04. 2026.',
   serviser: {
     ime: 'Marko',
     prezime: 'Jovanović',
     telefon: '+387 61 987 654',
   },
   historija: [
-    { naziv: 'Zahtjev primljen',       datum: '23.04. 09:15', napomena: '' },
-    { naziv: 'Pregled od strane dispečera', datum: '23.04. 10:00', napomena: 'Zahtjev pregledan i odobren.' },
-    { naziv: 'Dodijeljen serviseru',  datum: '23.04. 10:30', napomena: 'Dodijeljeno: Marko Jovanović' },
-    { naziv: 'Intervencija u toku',   datum: '24.04. 08:00', napomena: 'Serviser stigao na lokaciju.' },
+    { naziv: 'Zahtjev primljen',       datum: '23. 04. 2026. 09:15', napomena: '' },
+    { naziv: 'Pregled od strane dispečera', datum: '23. 04. 2026. 10:00', napomena: 'Zahtjev pregledan i odobren.' },
+    { naziv: 'Dodijeljen serviseru',  datum: '23. 04. 2026. 10:30', napomena: 'Dodijeljeno: Marko Jovanović' },
+    { naziv: 'Intervencija u toku',   datum: '24. 04. 2026. 08:00', napomena: 'Serviser stigao na lokaciju.' },
   ],
 };
 

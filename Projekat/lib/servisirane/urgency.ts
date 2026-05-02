@@ -28,3 +28,16 @@ export function kategorizirajHitnost(score: number): NivoHitnosti {
   if (score >= 20) return 'SREDNJE';
   return 'NISKO';
 }
+
+const OZNAKA_HITNOSTI_ZA_KORISNIKA: Record<NivoHitnosti, string> = {
+  NISKO: 'Niska',
+  SREDNJE: 'Srednja',
+  VISOKO: 'Visoka',
+  KRITIČNO: 'Hitno',
+};
+
+/** Korisnički čitljiva hitnost (bez enum vrijednosti i broja bodova). */
+export function oznakaHitnostiZaKorisnika(score: number): string {
+  const nivo = kategorizirajHitnost(score);
+  return OZNAKA_HITNOSTI_ZA_KORISNIKA[nivo] ?? nivo;
+}

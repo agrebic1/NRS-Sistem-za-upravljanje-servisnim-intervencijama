@@ -1,12 +1,9 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { AppShell } from '@/components/layout/AppShell';
 import { ServiceRequestWizard } from '@/components/forms/ServiceRequestWizard';
 
 export default function NoviZahtjevWizardPage() {
-  const router = useRouter();
-
   return (
     <AppShell uloga="korisnik">
       <div className="mx-auto max-w-2xl">
@@ -18,7 +15,7 @@ export default function NoviZahtjevWizardPage() {
             Prijava kvara
           </h1>
           <p className="mt-1.5 text-sm" style={{ color: 'var(--first-nonary)' }}>
-            Popunite detalje u 5 koraka. Što detaljniji opis unesete, brže ćemo reagirati.
+            Popunite detalje u 6 koraka. Što detaljniji opis unesete, brže ćemo reagirati.
           </p>
         </div>
 
@@ -30,12 +27,7 @@ export default function NoviZahtjevWizardPage() {
             backdropFilter:  'blur(12px)',
           }}
         >
-          <ServiceRequestWizard
-            onSubmitted={() => {
-              router.push('/korisnik/zahtjevi');
-              router.refresh();
-            }}
-          />
+          <ServiceRequestWizard />
         </div>
       </div>
     </AppShell>

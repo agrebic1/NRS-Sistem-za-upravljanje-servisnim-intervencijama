@@ -13,6 +13,7 @@ import {
 } from '@/components/forms/ServiceRequestWizard';
 import { KorakTermin } from '@/components/wizard/KorakTermin';
 import type { ServisniZahtjev } from '@/domain/types/servisirane';
+import { brojZahtjevaZaPrikaz } from '@/lib/servisirane/korisnickiBrojZahtjeva';
 
 const PHONE_REGEX = /^[0-9+\-\/ ]*$/;
 
@@ -75,8 +76,8 @@ export default function UrediZahtjevPage() {
         if (!r.ok) throw new Error(d.error ?? 'Zahtjev nije pronađen.');
         const z: ServisniZahtjev = d.zahtjev;
 
-        if (z.status !== 'na_cekanju') {
-          setGreska('Zahtjev se može izmijeniti samo dok je u statusu "Na čekanju".');
+        if (z.status !== 'na_cekanju' && z.status !== 'pending_review') {
+          setGreska('Zahtjev se može izmijeniti samo dok je u statusu "Čeka obradu".');
           setUcitava(false);
           return;
         }
@@ -241,7 +242,13 @@ export default function UrediZahtjevPage() {
             Izmjena zahtjeva
           </h1>
           <p className="mt-1 text-sm" style={{ color: 'var(--first-nonary)' }}>
-            {zahtjev?.category} · možete promijeniti adresu, termin ili opis kvara
+            {zahtjev && (
+              <>
+                Zahtjev #{brojZahtjevaZaPrikaz(zahtjev)} · {zahtjev.category}
+                <br />
+                Možete promijeniti adresu, termin ili opis kvara.
+              </>
+            )}
           </p>
         </div>
       </div>

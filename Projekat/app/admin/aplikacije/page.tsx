@@ -9,6 +9,7 @@ import { AppShell } from '@/components/layout/AppShell';
 import { Button } from '@/components/ui/Button';
 import { AlertMessage } from '@/components/ui/AlertMessage';
 import type { PartnerAplikacija, StatusAplikacije } from '@/domain/types/servisirane';
+import { formatirajDatumPrikaz } from '@/lib/format/datumi';
 
 // ─── Status badge konfiguracija ───────────────────────────────────────────────
 
@@ -67,9 +68,7 @@ function AplikacijaRed({
 }) {
   const badge      = STATUS_BADGE[aplikacija.status];
   const BadgeIkona = badge.Ikona;
-  const datum      = new Date(aplikacija.created_at).toLocaleDateString('bs-BA', {
-    day: '2-digit', month: '2-digit', year: 'numeric',
-  });
+  const datum      = formatirajDatumPrikaz(aplikacija.created_at);
   const [pokaziLozinku, setPokaziLozinku] = useState(false);
 
   return (

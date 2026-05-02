@@ -2,6 +2,7 @@
 
 import { Sunrise, Sun, Sunset, SlidersHorizontal, CalendarDays, Calendar, Check } from 'lucide-react';
 import { KalendarOdabir } from '@/components/ui/KalendarOdabir';
+import { formatirajDatumPrikaz } from '@/lib/format/datumi';
 
 // ─── Period helpers ───────────────────────────────────────────────────────────
 
@@ -34,16 +35,6 @@ const BRZI_PERIODI: { oznaka: string; from: string; to: string; boja: string }[]
   { oznaka: 'Veče',       from: '17:00', to: '20:00', boja: '#3B82F6' },
   { oznaka: 'Cijeli dan', from: '08:00', to: '20:00', boja: '#22C55E' },
 ];
-
-// ─── Format datuma ────────────────────────────────────────────────────────────
-
-const D_KRATKI = ['Ned', 'Pon', 'Uto', 'Sri', 'Čet', 'Pet', 'Sub'];
-const M_GEN    = ['jan', 'feb', 'mar', 'apr', 'maja', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec'];
-
-function formatDatum(iso: string): string {
-  const d = new Date(iso + 'T00:00:00');
-  return `${D_KRATKI[d.getDay()]}, ${d.getDate()}. ${M_GEN[d.getMonth()]}`;
-}
 
 // ─── TimeRange sub-component ──────────────────────────────────────────────────
 
@@ -359,7 +350,7 @@ export function KorakTermin({
                   <span className="font-semibold" style={{ color: 'var(--first-octonary)' }}>
                     Odabrani datum:
                   </span>{' '}
-                  {formatDatum(preferredDate)}
+                  {formatirajDatumPrikaz(preferredDate)}
                 </p>
               )}
               {preferredTimeFrom && preferredTimeTo && (

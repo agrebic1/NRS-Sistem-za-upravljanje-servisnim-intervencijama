@@ -1,6 +1,7 @@
 // ─── Statusi zahtjeva — životni ciklus ───────────────────────────────────────
 
 export type StatusZahtjeva =
+  | 'pending_review' // 🟡 Čeka obradu — preporučeni inicijalni status (Sprint 7)
   | 'na_cekanju'    // 🟡 Žuta  — inicijalni status, korisnik može editovati
   | 'potvrdeno'     // 🔵 Plava — dispečer potvrdio termin i prioritet
   | 'dodijeljeno'   // backward compat
@@ -54,6 +55,8 @@ export interface PreferredSchedule {
 
 export interface ServisniZahtjev {
   id:                   number;
+  /** Redni broj zahtjeva tog korisnika (1 = najstariji); računa se na API-ju, nije kolona u DB. */
+  korisnicki_broj_zahtjeva?: number | null;
   user_id:              string;
   category:             string;
   address:              string;

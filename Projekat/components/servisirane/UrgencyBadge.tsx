@@ -1,7 +1,7 @@
 'use client';
 
 import type { NivoHitnosti } from '@/domain/types/servisirane';
-import { kategorizirajHitnost } from '@/lib/servisirane/urgency';
+import { kategorizirajHitnost, oznakaHitnostiZaKorisnika } from '@/lib/servisirane/urgency';
 
 const KONFIGURACIJA: Record<
   NivoHitnosti,
@@ -32,13 +32,22 @@ const KONFIGURACIJA: Record<
 interface UrgencyBadgeProps {
   score:      number;
   showScore?: boolean;
+  /** Korisnički prikaz: hrvatski naziv, bez broja bodova. */
+  korisnickiPrikaz?: boolean;
   size?:      'sm' | 'md';
 }
 
-export function UrgencyBadge({ score, showScore = false, size = 'sm' }: UrgencyBadgeProps) {
+export function UrgencyBadge({
+  score,
+  showScore = false,
+  korisnickiPrikaz = false,
+  size = 'sm',
+}: UrgencyBadgeProps) {
   const nivo   = kategorizirajHitnost(score);
   const config = KONFIGURACIJA[nivo];
   const cls    = size === 'sm' ? 'px-2.5 py-0.5 text-xs' : 'px-3 py-1 text-sm';
+  const label  = korisnickiPrikaz ? oznakaHitnostiZaKorisnika(score) : nivo;
+  const prikaziBroj = showScore && !korisnickiPrikaz;
 
   return (
     <span
@@ -53,8 +62,8 @@ export function UrgencyBadge({ score, showScore = false, size = 'sm' }: UrgencyB
         className="h-1.5 w-1.5 flex-shrink-0 rounded-full"
         style={{ backgroundColor: config.boja }}
       />
-      {nivo}
-      {showScore && <span className="opacity-60">({score})</span>}
+      {label}
+      {prikaziBroj && <span className="opacity-60">({score})</span>}
     </span>
   );
 }

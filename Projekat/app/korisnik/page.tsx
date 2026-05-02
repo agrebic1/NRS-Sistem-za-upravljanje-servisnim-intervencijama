@@ -6,6 +6,8 @@ import {
 } from '@/components/korisnik/KorisnikPregledDashboard';
 import { createClient } from '@/lib/supabase/server';
 import type { Tables } from '@/domain/types/supabase';
+import { formatirajDatumPrikaz } from '@/lib/format/datumi';
+import { dodijeliKorisnickeBrojeveZahtjeva } from '@/lib/servisirane/korisnickiBrojZahtjeva';
 
 type KorisnikZahtjev = Pick<
   Tables<'service_requests'>,
@@ -34,25 +36,16 @@ function mapirajStatus(
   }
   if (score >= 80) return 'hitno';
   if (
+    normalizovano === 'pending_review' ||
     normalizovano === 'potvrdeno' ||
     normalizovano === 'dodijeljeno' ||
     normalizovano === 'u_radu' ||
     normalizovano === 'u_izvrsenju'
   ) {
+    if (normalizovano === 'pending_review') return 'novi';
     return 'u_toku';
   }
   return 'novi';
-}
-
-function formatirajDatum(vrijednost: string | null) {
-  if (!vrijednost) return '-';
-  const datum = new Date(vrijednost);
-  if (Number.isNaN(datum.getTime())) return vrijednost;
-  return new Intl.DateTimeFormat('bs-BA', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  }).format(datum);
 }
 
 function izvuciNaslov(opisKvara: string | null) {
@@ -99,12 +92,14 @@ export default async function KorisnikPage() {
     user.email ||
     'Korisnik';
 
-  const zahtjevi: KorisnikDashboardZahtjev[] = zahtjeviPodaci.map((zahtjev) => {
+  const saBrojevima = dodijeliKorisnickeBrojeveZahtjeva(zahtjeviPodaci);
+  const zahtjevi: KorisnikDashboardZahtjev[] = saBrojevima.map((zahtjev) => {
     return {
       id: String(zahtjev.id),
+      korisnickiBroj: zahtjev.korisnicki_broj_zahtjeva,
       naslov: (zahtjev.category ?? '').trim() || izvuciNaslov(zahtjev.description),
       status: mapirajStatus(zahtjev.status, zahtjev.urgency_score),
-      datum: formatirajDatum(zahtjev.created_at),
+      datum: formatirajDatumPrikaz(zahtjev.created_at, '-'),
       lokacija: zahtjev.address ?? 'Lokacija nije unesena',
     };
   });

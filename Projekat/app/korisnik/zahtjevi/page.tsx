@@ -44,10 +44,13 @@ function PraznoDashboard({ onZahtjevPoslan }: { onZahtjevPoslan: () => void }) {
             Prijavite kvar
           </h2>
           <p className="mt-1 text-sm" style={{ color: 'var(--first-nonary)' }}>
-            Popunite korake i vaš zahtjev će biti evidentiran.
+            Popunite 6 koraka i vaš zahtjev će biti evidentiran.
           </p>
         </div>
-        <ServiceRequestWizard onSubmitted={onZahtjevPoslan} />
+        <ServiceRequestWizard
+          onSubmitted={onZahtjevPoslan}
+          odustaniHref="/korisnik"
+        />
       </div>
     </div>
   );
@@ -70,7 +73,7 @@ function ListaDashboard({ zahtjevi, onUredi, onOtkazi }: ListaDashboardProps) {
             Moji zahtjevi
           </h1>
           <p className="mt-1 text-sm" style={{ color: 'var(--first-nonary)' }}>
-            Zahtjevi u statusu &quot;Na čekanju&quot; mogu se izmijeniti ili otkazati.
+            Zahtjevi koji čekaju obradu mogu se izmijeniti ili otkazati.
           </p>
         </div>
         <Link href="/korisnik/zahtjevi/novi">
@@ -97,7 +100,7 @@ function ListaDashboard({ zahtjevi, onUredi, onOtkazi }: ListaDashboardProps) {
           </h2>
         </div>
 
-        <ul className="divide-y" style={{ borderColor: 'rgb(var(--first-quaternary-rgb) / 0.25)' }}>
+        <div className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 sm:p-5">
           {zahtjevi.map((z) => (
             <ZahtjevKartica
               key={z.id}
@@ -106,7 +109,7 @@ function ListaDashboard({ zahtjevi, onUredi, onOtkazi }: ListaDashboardProps) {
               onOtkazi={onOtkazi}
             />
           ))}
-        </ul>
+        </div>
       </div>
     </div>
   );
@@ -140,6 +143,19 @@ export default function KorisnikZahtjeviPage() {
   }
 
   useEffect(() => { ucitajZahtjeve(); }, []);
+
+  useEffect(() => {
+    function handleVisibilityChange() {
+      if (document.visibilityState === 'visible') {
+        void ucitajZahtjeve();
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, []);
 
   function handleUredi(z: ServisniZahtjev) {
     router.push(`/korisnik/zahtjevi/${z.id}/uredi`);
@@ -203,6 +219,9 @@ export default function KorisnikZahtjeviPage() {
       {otkaziTarget && (
         <OtkaziModal
           zahtjevId={otkaziTarget.id}
+          korisnickiBrojZahtjeva={
+            otkaziTarget.korisnicki_broj_zahtjeva ?? undefined
+          }
           kategorija={otkaziTarget.category}
           onZatvori={() => setOtkaziTarget(null)}
           onUspjeh={handleOtkaziUspjeh}

@@ -18,6 +18,7 @@ import { AlertMessage } from '@/components/ui/AlertMessage';
 import { UrgencyBadge } from '@/components/servisirane/UrgencyBadge';
 import { StatusBadge } from '@/components/servisirane/ZahtjevKartica';
 import type { ServisniZahtjev } from '@/domain/types/servisirane';
+import { formatirajDatumPrikaz } from '@/lib/format/datumi';
 
 interface ZahtjevSaPodnosiocem extends ServisniZahtjev {
   podnosilac: { ime: string; prezime: string; broj_telefona: string | null } | null;
@@ -47,7 +48,7 @@ export default function ServiserPage() {
     ucitajZahtjeve();
   }, []);
 
-  const datumDanas = new Date().toLocaleDateString('bs', { weekday: 'long', day: 'numeric', month: 'long' });
+  const datumDanas = formatirajDatumPrikaz(new Date());
   const aktivniZadaci = zahtjevi.filter((z) => !['zavrseno', 'otkazano', 'odbijeno'].includes(z.status)).length;
   const danasnji = zahtjevi.filter((z) => {
     const d = new Date(z.created_at);
@@ -62,7 +63,7 @@ export default function ServiserPage() {
         <h1 className="text-2xl font-bold tracking-tight" style={{ color: 'var(--first-octonary)' }}>
           Dobro jutro, Marko!
         </h1>
-        <p className="mt-1 text-sm capitalize" style={{ color: 'var(--first-nonary)' }}>
+        <p className="mt-1 text-sm" style={{ color: 'var(--first-nonary)' }}>
           {datumDanas} — imate {aktivniZadaci} aktivnih zadataka
         </p>
       </div>
@@ -147,7 +148,7 @@ export default function ServiserPage() {
                       <span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{zadatak.address}</span>
                       <span className="flex items-center gap-1">
                         <Clock className="h-3 w-3" />
-                        {new Date(zadatak.created_at).toLocaleDateString('bs-BA')}
+                        {formatirajDatumPrikaz(zadatak.created_at)}
                       </span>
                     </div>
                     <p className="mt-0.5 text-xs" style={{ color: 'var(--first-quinary)' }}>

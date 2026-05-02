@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import {
-  ArrowLeft, Calendar, MapPin, Phone, Tag,
+  ArrowLeft, Calendar, Clock, MapPin, Phone, Tag,
   Pencil, X, AlertTriangle,
 } from 'lucide-react';
 import Link from 'next/link';
@@ -15,6 +15,8 @@ import { Select } from '@/components/ui/Select';
 import { AlertMessage } from '@/components/ui/AlertMessage';
 import { UrgencyBadge } from '@/components/servisirane/UrgencyBadge';
 import type { ServisniZahtjev, StatusZahtjeva } from '@/domain/types/servisirane';
+import { formatirajDatumPrikaz } from '@/lib/format/datumi';
+import { brojZahtjevaZaPrikaz } from '@/lib/servisirane/korisnickiBrojZahtjeva';
 
 // ─── Status badge ─────────────────────────────────────────────────────────────
 
@@ -22,6 +24,7 @@ const STATUS_CONFIG: Record<
   StatusZahtjeva,
   { oznaka: string; pozadina: string; boja: string }
 > = {
+  pending_review: { oznaka: 'Čeka obradu', pozadina: 'rgb(var(--first-quaternary-rgb) / 0.2)',  boja: 'var(--first-nonary)' },
   na_cekanju:  { oznaka: 'Na čekanju',  pozadina: 'rgb(var(--first-quaternary-rgb) / 0.2)',  boja: 'var(--first-nonary)' },
   potvrdeno:   { oznaka: 'Potvrđeno',   pozadina: 'rgb(var(--first-secondary-rgb) / 0.12)',  boja: 'var(--first-secondary)' },
   dodijeljeno: { oznaka: 'Dodijeljeno', pozadina: 'rgb(var(--first-secondary-rgb) / 0.12)',  boja: 'var(--first-secondary)' },
@@ -39,6 +42,16 @@ const RAZLOZI_OTKAZIVANJA = [
   { value: 'Angažovao/la drugog servisera', label: 'Angažovao/la drugog servisera' },
   { value: 'Ostalo',                        label: 'Ostalo' },
 ];
+
+function formatirajPreferiraniTermin(zahtjev: ServisniZahtjev): string {
+  const schedule = zahtjev.preferred_schedule;
+  if (!schedule || schedule.no_preferred_time || (schedule.termini?.length ?? 0) === 0) {
+    return 'Nema preferirani termin — dispečer će vas kontaktirati radi dogovora.';
+  }
+  const prvi = schedule.termini[0];
+  if (!prvi) return 'Nema preferirani termin — dispečer će vas kontaktirati radi dogovora.';
+  return `${formatirajDatumPrikaz(prvi.date)} (${prvi.from} - ${prvi.to})`;
+}
 
 // ─── Panel za izmjenu ─────────────────────────────────────────────────────────
 
@@ -286,10 +299,8 @@ export default function ZahtjevDetaljPage() {
   }
 
   const status        = STATUS_CONFIG[zahtjev.status];
-  const mozeBitMijenjan = zahtjev.status === 'na_cekanju';
-  const datum = new Date(zahtjev.created_at).toLocaleDateString('bs-BA', {
-    day: '2-digit', month: 'long', year: 'numeric',
-  });
+  const mozeBitMijenjan = zahtjev.status === 'na_cekanju' || zahtjev.status === 'pending_review';
+  const datum = formatirajDatumPrikaz(zahtjev.created_at);
 
   return (
     <AppShell uloga="korisnik">
@@ -311,7 +322,7 @@ export default function ZahtjevDetaljPage() {
               {zahtjev.category}
             </h1>
             <p className="text-sm" style={{ color: 'var(--first-nonary)' }}>
-              Zahtjev #{zahtjev.id}
+              Zahtjev #{brojZahtjevaZaPrikaz(zahtjev)}
             </p>
           </div>
         </div>
@@ -338,7 +349,7 @@ export default function ZahtjevDetaljPage() {
             >
               {status.oznaka}
             </span>
-            <UrgencyBadge score={zahtjev.urgency_score} showScore size="md" />
+            <UrgencyBadge score={zahtjev.urgency_score} korisnickiPrikaz size="md" />
           </div>
 
           {/* Podaci */}
@@ -377,6 +388,26 @@ export default function ZahtjevDetaljPage() {
               <dd className="text-sm" style={{ color: 'var(--first-octonary)' }}>
                 {zahtjev.address}
               </dd>
+              {zahtjev.latitude !== null && zahtjev.longitude !== null && (
+                <dd className="mt-1 text-xs" style={{ color: 'var(--first-nonary)' }}>
+                  Precizna lokacija je dodana (koordinate).
+                </dd>
+              )}
+            </div>
+
+            <div>
+              <dt
+                className="mb-1 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider"
+                style={{ color: 'var(--first-nonary)' }}
+              >
+                <Clock className="h-3 w-3" /> Preferirani termin
+              </dt>
+              <dd className="text-sm" style={{ color: 'var(--first-octonary)' }}>
+                {formatirajPreferiraniTermin(zahtjev)}
+              </dd>
+              <dd className="mt-1 text-xs" style={{ color: 'var(--first-nonary)' }}>
+                Konačan termin potvrđuje dispečer.
+              </dd>
             </div>
 
             <div>
@@ -401,6 +432,28 @@ export default function ZahtjevDetaljPage() {
               <dd className="text-sm" style={{ color: 'var(--first-octonary)' }}>
                 {datum}
               </dd>
+            </div>
+
+            <div>
+              <dt
+                className="mb-1 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider"
+                style={{ color: 'var(--first-nonary)' }}
+              >
+                Fotografija
+              </dt>
+              <dd className="text-sm" style={{ color: 'var(--first-octonary)' }}>
+                {zahtjev.photo_url ? 'Fotografija je dodana.' : 'Fotografija nije dodana.'}
+              </dd>
+              {zahtjev.photo_url && (
+                // External image URL comes from Supabase storage public URL.
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={zahtjev.photo_url}
+                  alt="Fotografija prijavljenog kvara"
+                  className="mt-2 h-36 w-full max-w-sm rounded-xl border object-cover"
+                  style={{ borderColor: 'rgb(var(--first-quaternary-rgb) / 0.35)' }}
+                />
+              )}
             </div>
 
             {zahtjev.cancel_reason && (

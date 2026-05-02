@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { AppShell } from '@/components/layout/AppShell';
 import { Button } from '@/components/ui/Button';
+import { formatirajDatumPrikaz } from '@/lib/format/datumi';
 
 // ─── Mock data ────────────────────────────────────────────────────────────────
 
@@ -113,9 +114,7 @@ function TaskRow({ zadatak }: { zadatak: Zadatak }) {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function ServiserDashboardPage() {
-  const danas = new Date().toLocaleDateString('bs', {
-    weekday: 'long', day: 'numeric', month: 'long',
-  });
+  const danas = formatirajDatumPrikaz(new Date());
 
   return (
     <AppShell uloga="serviser" imeKorisnika="Marko J.">
@@ -124,7 +123,7 @@ export default function ServiserDashboardPage() {
         <h1 className="text-2xl font-bold tracking-tight" style={{ color: 'var(--first-octonary)' }}>
           Dobro jutro, Marko!
         </h1>
-        <p className="mt-1 text-sm capitalize" style={{ color: 'var(--first-nonary)' }}>
+        <p className="mt-1 text-sm" style={{ color: 'var(--first-nonary)' }}>
           {danas} — imate {MOCK_ZADACI.filter((z) => z.status !== 'zavrsen').length} aktivnih zadataka
         </p>
       </div>

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { formatirajDatumPrikaz } from '@/lib/format/datumi';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { createClient as createServerClient } from '@/lib/supabase/server';
 
@@ -24,13 +25,7 @@ function procitajNazivUloge(
 }
 
 function formatirajDatum(vrijednost: string | null | undefined) {
-  if (!vrijednost) return '-';
-
-  return new Intl.DateTimeFormat('bs-BA', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  }).format(new Date(vrijednost));
+  return formatirajDatumPrikaz(vrijednost ?? null, '-');
 }
 
 function odrediStatus(user: { banned_until?: string | null; email_confirmed_at?: string | null; confirmed_at?: string | null }): StatusKorisnika {

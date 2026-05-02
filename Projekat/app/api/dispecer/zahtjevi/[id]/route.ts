@@ -22,10 +22,30 @@ const odbijSchema = z.object({
 });
 
 const actionSchema = z.discriminatedUnion('action', [potvrdiSchema, odbijSchema]);
+const PENDING_STATUSES = new Set(['na_cekanju', 'pending_review']);
+type RouteParams = { id: string } | Promise<{ id: string }>;
 
-export async function PATCH(
-  request: Request,
-  { params }: { params: { id: string } }
+async function resolveRequestId(params: RouteParams): Promise<number | null> {
+  const resolved = await params;
+  const parsed = Number.parseInt(resolved.id, 10);
+  if (!Number.isFinite(parsed) || parsed <= 0) return null;
+  return parsed;
+}
+
+async function assertDispatcherAccess(supabase: ReturnType<typeof createAdminClient>, userId: string) {
+  const { data: uposlenik } = await supabase
+    .from('uposlenici')
+    .select('uloga(naziv)')
+    .eq('id_uposlenika', userId)
+    .maybeSingle();
+
+  const naziv = getUlogaNaziv(uposlenik?.uloga).toLowerCase();
+  return ['dispečer', 'dispecer', 'administrator', 'admin'].includes(naziv);
+}
+
+export async function GET(
+  _request: Request,
+  { params }: { params: RouteParams }
 ) {
   try {
     const supabaseSesija = createServerClient();
@@ -37,17 +57,66 @@ export async function PATCH(
       return NextResponse.json({ error: 'Niste prijavljeni.' }, { status: 401 });
     }
 
-    const supabase = createAdminClient();
+    const requestId = await resolveRequestId(params);
+    if (!requestId) {
+      return NextResponse.json({ error: 'Neispravan ID zahtjeva.' }, { status: 400 });
+    }
 
-    // Provjeri dispečer/admin rolu
-    const { data: uposlenik } = await supabase
-      .from('uposlenici')
-      .select('uloga(naziv)')
-      .eq('id_uposlenika', user.id)
+    const supabase = createAdminClient();
+    const imaPriv = await assertDispatcherAccess(supabase, user.id);
+    if (!imaPriv) {
+      return NextResponse.json({ error: 'Pristup odbijen.' }, { status: 403 });
+    }
+
+    const { data: zahtjev, error } = await supabase
+      .from('service_requests')
+      .select('*')
+      .eq('id', requestId)
+      .single();
+
+    if (error || !zahtjev) {
+      return NextResponse.json({ error: 'Zahtjev nije pronađen.' }, { status: 404 });
+    }
+
+    const { data: osoba } = await supabase
+      .from('osoba')
+      .select('ime, prezime, broj_telefona')
+      .eq('id_osobe', zahtjev.user_id)
       .maybeSingle();
 
-    const naziv = getUlogaNaziv(uposlenik?.uloga).toLowerCase();
-    const imaPriv = ['dispečer', 'dispecer', 'administrator', 'admin'].includes(naziv);
+    return NextResponse.json({
+      zahtjev: {
+        ...zahtjev,
+        podnosilac: osoba ?? null,
+      },
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Greška servera.';
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+}
+
+export async function PATCH(
+  request: Request,
+  { params }: { params: RouteParams }
+) {
+  try {
+    const supabaseSesija = createServerClient();
+    const {
+      data: { user },
+    } = await supabaseSesija.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ error: 'Niste prijavljeni.' }, { status: 401 });
+    }
+
+    const requestId = await resolveRequestId(params);
+    if (!requestId) {
+      return NextResponse.json({ error: 'Neispravan ID zahtjeva.' }, { status: 400 });
+    }
+
+    const supabase = createAdminClient();
+    const imaPriv = await assertDispatcherAccess(supabase, user.id);
     if (!imaPriv) {
       return NextResponse.json({ error: 'Pristup odbijen.' }, { status: 403 });
     }
@@ -62,16 +131,16 @@ export async function PATCH(
     const { data: zahtjev } = await supabase
       .from('service_requests')
       .select('status')
-      .eq('id', params.id)
+      .eq('id', requestId)
       .single();
 
     if (!zahtjev) {
       return NextResponse.json({ error: 'Zahtjev nije pronađen.' }, { status: 404 });
     }
 
-    if (zahtjev.status !== 'na_cekanju') {
+    if (!PENDING_STATUSES.has(zahtjev.status)) {
       return NextResponse.json(
-        { error: 'Akcija je moguća samo za zahtjeve sa statusom "Na čekanju".' },
+        { error: 'Akcija je moguća samo za zahtjeve sa statusom "Čeka obradu".' },
         { status: 400 }
       );
     }
@@ -85,7 +154,7 @@ export async function PATCH(
           status:         'potvrdeno',
           final_priority: podaci.final_priority,
         })
-        .eq('id', params.id);
+        .eq('id', requestId);
 
       if (error) return NextResponse.json({ error: error.message }, { status: 500 });
       return NextResponse.json({ success: true, novi_status: 'potvrdeno' });
@@ -98,7 +167,7 @@ export async function PATCH(
           status:           'odbijeno',
           rejection_reason: podaci.rejection_reason,
         })
-        .eq('id', params.id);
+        .eq('id', requestId);
 
       if (error) return NextResponse.json({ error: error.message }, { status: 500 });
       return NextResponse.json({ success: true, novi_status: 'odbijeno' });

@@ -1,10 +1,22 @@
 'use client';
 
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import {
+  CalendarClock,
+  CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
+  Image as ImageIcon,
+  MapPin,
+  Phone,
+  TriangleAlert,
+  Wrench,
+  X,
+} from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { AlertMessage } from '@/components/ui/AlertMessage';
-import { SuccessModal } from '@/components/ui/SuccessModal';
 import { KorakKategorija, WIZARD_KATEGORIJA_OSTALO } from '@/components/wizard/KorakKategorija';
 import { KorakLokacija }    from '@/components/wizard/KorakLokacija';
 import { KorakTermin }      from '@/components/wizard/KorakTermin';
@@ -12,6 +24,8 @@ import { KorakOpis }        from '@/components/wizard/KorakOpis';
 import { KorakTrijaza, type TriageFormState, INITIAL_TRIAGE } from '@/components/wizard/KorakTrijaza';
 import { wizardKorak2Schema, wizardKorak3Schema } from '@/lib/validations/servisirane';
 import type { TriageOdgovori } from '@/domain/types/servisirane';
+import { formatirajDatumPrikaz, formatirajDatumVrijemeZaPrikaz } from '@/lib/format/datumi';
+import { izracunajUrgency, oznakaHitnostiZaKorisnika } from '@/lib/servisirane/urgency';
 import { kreirajKlijenta } from '@/lib/supabase/klijent';
 
 // ─── Konstante ────────────────────────────────────────────────────────────────
@@ -77,6 +91,9 @@ const INITIAL: WizardState = {
   photoFile:           null,
   triage:              INITIAL_TRIAGE,
 };
+
+const ODUSTANI_PORUKA =
+  'Jeste li sigurni da želite odustati od prijave? Svi uneseni podaci će biti odbačeni.';
 
 /** Validnost prvog koraka: glavna kategorija ili Ostalo + podkategorija. */
 export function isStepOneValid(s: WizardState): boolean {
@@ -151,7 +168,7 @@ export function porukaValidacijePreferiranogTermina(s: StanjePreferiranogTermina
 
 // ─── Step indicator ───────────────────────────────────────────────────────────
 
-const STEP_OZNAKE = ['Vrsta kvara', 'Lokacija', 'Termin', 'Opis', 'Hitnost'];
+const STEP_OZNAKE = ['Vrsta kvara', 'Lokacija', 'Termin', 'Opis', 'Hitnost', 'Pregled'];
 
 function StepIndicator({ currentStep }: { currentStep: number }) {
   return (
@@ -295,15 +312,219 @@ function kategorijaZaApi(s: WizardState): string {
 
 interface ServiceRequestWizardProps {
   onSubmitted?: () => void | Promise<void>;
+  /** Cilj „Odustani od prijave” (zadano: lista zahtjeva). */
+  odustaniHref?: string;
 }
 
-export function ServiceRequestWizard({ onSubmitted }: ServiceRequestWizardProps) {
+interface ConfirmationData {
+  id: number;
+  requestNumber: number;
+  status: string;
+  createdAt: string;
+}
+
+function formatirajTermin(state: WizardState): string {
+  if (state.noPreferredTime) return 'Nema preferirani termin';
+  if (!state.preferredDate || !state.preferredTimeFrom || !state.preferredTimeTo) return 'Nema preferirani termin';
+  return `${formatirajDatumPrikaz(state.preferredDate)} (${state.preferredTimeFrom} - ${state.preferredTimeTo})`;
+}
+
+function formatirajStatusZaPrikaz(status: string): string {
+  if (status === 'pending_review' || status === 'na_cekanju') return 'Čeka obradu';
+  return status;
+}
+
+function PregledFotografije({ file }: { file: File }) {
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    const blobUrl = URL.createObjectURL(file);
+    setPreviewUrl(blobUrl);
+    return () => URL.revokeObjectURL(blobUrl);
+  }, [file]);
+
+  if (!previewUrl) return null;
+
+  return (
+    // Blob preview is generated client-side from selected file.
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={previewUrl}
+      alt="Pregled fotografije kvara"
+      className="mt-2 h-32 w-full max-w-xs rounded-lg border object-cover"
+      style={{ borderColor: 'rgb(var(--first-quaternary-rgb) / 0.35)' }}
+    />
+  );
+}
+
+function PregledZahtjevaKorak({
+  state,
+  onEditStep,
+}: {
+  state: WizardState;
+  onEditStep: (step: number) => void;
+}) {
+  const hitnost = oznakaHitnostiZaKorisnika(izracunajUrgency(state.triage as TriageOdgovori));
+  const kategorija = kategorijaZaApi(state);
+  const imaKoordinate = state.latitude !== null && state.longitude !== null;
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div>
+        <h2 className="mb-1 text-xl font-bold" style={{ color: 'var(--first-octonary)' }}>
+          Pregled zahtjeva
+        </h2>
+        <p className="text-sm leading-relaxed" style={{ color: 'var(--first-nonary)' }}>
+          Pregledajte unesene podatke prije slanja zahtjeva.
+        </p>
+      </div>
+
+      <div className="rounded-xl border p-4" style={{ borderColor: 'rgb(var(--first-quaternary-rgb) / 0.35)', backgroundColor: 'rgb(255 255 255 / 0.5)' }}>
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <Wrench className="h-4 w-4" style={{ color: 'var(--first-primary)' }} />
+            <h3 className="text-sm font-semibold" style={{ color: 'var(--first-octonary)' }}>Vrsta kvara</h3>
+          </div>
+          <Button type="button" variant="ghost" size="sm" onClick={() => onEditStep(1)}>Uredi</Button>
+        </div>
+        <p className="text-sm" style={{ color: 'var(--first-octonary)' }}>{kategorija || '—'}</p>
+      </div>
+
+      <div className="rounded-xl border p-4" style={{ borderColor: 'rgb(var(--first-quaternary-rgb) / 0.35)', backgroundColor: 'rgb(255 255 255 / 0.5)' }}>
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <MapPin className="h-4 w-4" style={{ color: 'var(--first-primary)' }} />
+            <h3 className="text-sm font-semibold" style={{ color: 'var(--first-octonary)' }}>Lokacija</h3>
+          </div>
+          <Button type="button" variant="ghost" size="sm" onClick={() => onEditStep(2)}>Uredi</Button>
+        </div>
+        <p className="text-sm" style={{ color: 'var(--first-octonary)' }}>{state.address}</p>
+        {imaKoordinate && (
+          <p className="mt-1 text-xs" style={{ color: 'var(--first-nonary)' }}>
+            Precizna lokacija je dodana (koordinate).
+          </p>
+        )}
+      </div>
+
+      <div className="rounded-xl border p-4" style={{ borderColor: 'rgb(var(--first-quaternary-rgb) / 0.35)', backgroundColor: 'rgb(255 255 255 / 0.5)' }}>
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <CalendarClock className="h-4 w-4" style={{ color: 'var(--first-primary)' }} />
+            <h3 className="text-sm font-semibold" style={{ color: 'var(--first-octonary)' }}>Preferirani termin</h3>
+          </div>
+          <Button type="button" variant="ghost" size="sm" onClick={() => onEditStep(3)}>Uredi</Button>
+        </div>
+        <p className="text-sm" style={{ color: 'var(--first-octonary)' }}>{formatirajTermin(state)}</p>
+        <p className="mt-1 text-xs" style={{ color: 'var(--first-nonary)' }}>
+          Konačan termin potvrđuje dispečer.
+        </p>
+      </div>
+
+      <div className="rounded-xl border p-4" style={{ borderColor: 'rgb(var(--first-quaternary-rgb) / 0.35)', backgroundColor: 'rgb(255 255 255 / 0.5)' }}>
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <Phone className="h-4 w-4" style={{ color: 'var(--first-primary)' }} />
+            <h3 className="text-sm font-semibold" style={{ color: 'var(--first-octonary)' }}>Opis i kontakt</h3>
+          </div>
+          <Button type="button" variant="ghost" size="sm" onClick={() => onEditStep(4)}>Uredi</Button>
+        </div>
+        <p className="text-sm" style={{ color: 'var(--first-octonary)' }}>{state.description}</p>
+        <p className="mt-2 text-sm" style={{ color: 'var(--first-octonary)' }}>
+          Kontakt telefon: {state.contactPhone}
+        </p>
+        {state.photoFile ? (
+          <div className="mt-2">
+            <p className="inline-flex items-center gap-1 text-xs" style={{ color: 'var(--first-nonary)' }}>
+              <ImageIcon className="h-3.5 w-3.5" />
+              Fotografija kvara je dodana ({state.photoFile.name}).
+            </p>
+            <PregledFotografije file={state.photoFile} />
+          </div>
+        ) : (
+          <p className="mt-2 text-xs" style={{ color: 'var(--first-nonary)' }}>
+            Fotografija kvara nije dodana.
+          </p>
+        )}
+      </div>
+
+      <div className="rounded-xl border p-4" style={{ borderColor: 'rgb(var(--first-quaternary-rgb) / 0.35)', backgroundColor: 'rgb(255 255 255 / 0.5)' }}>
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <TriangleAlert className="h-4 w-4" style={{ color: 'var(--first-primary)' }} />
+            <h3 className="text-sm font-semibold" style={{ color: 'var(--first-octonary)' }}>Hitnost</h3>
+          </div>
+          <Button type="button" variant="ghost" size="sm" onClick={() => onEditStep(5)}>Uredi</Button>
+        </div>
+        <p className="text-sm font-semibold" style={{ color: 'var(--first-octonary)' }}>{hitnost}</p>
+      </div>
+    </div>
+  );
+}
+
+function ConfirmationScreen({
+  confirmation,
+  onReset,
+}: {
+  confirmation: ConfirmationData;
+  onReset: () => void;
+}) {
+  return (
+    <div className="flex flex-col gap-5 rounded-2xl border p-6" style={{ borderColor: 'rgb(var(--first-quaternary-rgb) / 0.35)', backgroundColor: 'rgb(var(--first-quinary-rgb) / 0.22)' }}>
+      <div className="flex items-center gap-2">
+        <CheckCircle2 className="h-6 w-6" style={{ color: 'var(--first-secondary)' }} />
+        <h2 className="text-xl font-bold" style={{ color: 'var(--first-octonary)' }}>
+          Zahtjev je uspješno poslan
+        </h2>
+      </div>
+      <p className="text-sm" style={{ color: 'var(--first-nonary)' }}>
+        Vaš zahtjev je evidentiran i čeka obradu.
+      </p>
+
+      <div className="grid gap-3 rounded-xl border p-4" style={{ borderColor: 'rgb(var(--first-quaternary-rgb) / 0.35)', backgroundColor: 'rgb(255 255 255 / 0.6)' }}>
+        <p className="text-sm" style={{ color: 'var(--first-octonary)' }}>
+          Broj zahtjeva: <span className="font-semibold">#{confirmation.requestNumber}</span>
+        </p>
+        <p className="text-sm" style={{ color: 'var(--first-octonary)' }}>
+          Status: <span className="font-semibold">{formatirajStatusZaPrikaz(confirmation.status)}</span>
+        </p>
+        <p className="text-sm" style={{ color: 'var(--first-octonary)' }}>
+          Datum prijave: <span className="font-semibold">{formatirajDatumVrijemeZaPrikaz(confirmation.createdAt)}</span>
+        </p>
+      </div>
+
+      <div className="flex flex-col gap-2 sm:flex-row">
+        <Link href={`/korisnik/zahtjevi/${confirmation.id}`} className="w-full sm:w-auto">
+          <Button size="md" className="w-full">Pregledaj zahtjev</Button>
+        </Link>
+        <Button type="button" variant="secondary" size="md" onClick={onReset}>
+          Prijavi novi kvar
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+export function ServiceRequestWizard({
+  onSubmitted,
+  odustaniHref = '/korisnik/zahtjevi',
+}: ServiceRequestWizardProps) {
+  const router = useRouter();
   const [korak,       setKorak]      = useState(1);
   const [state,       setState]      = useState<WizardState>(INITIAL);
   const [greska,      setGreska]     = useState<string | null>(null);
   const [triageError, setTriageError] = useState<string | null>(null);
   const [jeSlanje,    setJeSlanje]   = useState(false);
-  const [jeUspjelo,   setJeUspjelo]  = useState(false);
+  const [confirmation, setConfirmation] = useState<ConfirmationData | null>(null);
+  const [odustaniModalOtvoren, setOdustaniModalOtvoren] = useState(false);
+
+  useEffect(() => {
+    if (!odustaniModalOtvoren) return;
+    function onKey(ev: KeyboardEvent) {
+      if (ev.key === 'Escape') setOdustaniModalOtvoren(false);
+    }
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [odustaniModalOtvoren]);
 
   useEffect(() => {
     fetch('/api/profil', { cache: 'no-store' })
@@ -365,7 +586,7 @@ export function ServiceRequestWizard({ onSubmitted }: ServiceRequestWizardProps)
     const err = validirajKorak(korak, state);
     if (err) { setGreska(err); return; }
     setGreska(null);
-    setKorak((k) => Math.min(k + 1, 5));
+    setKorak((k) => Math.min(k + 1, 6));
   }
 
   function prethodniKorak() {
@@ -395,8 +616,15 @@ export function ServiceRequestWizard({ onSubmitted }: ServiceRequestWizardProps)
   }
 
   async function posaljiZahtjev() {
-    const err = validirajKorak(5, state);
-    if (err) { setTriageError(err); return; }
+    for (let k = 1; k <= 5; k += 1) {
+      const err = validirajKorak(k, state);
+      if (err) {
+        setKorak(k);
+        if (k === 5) setTriageError(err);
+        else setGreska(err);
+        return;
+      }
+    }
 
     setJeSlanje(true);
     setGreska(null);
@@ -437,7 +665,15 @@ export function ServiceRequestWizard({ onSubmitted }: ServiceRequestWizardProps)
 
       const podaci = await odgovor.json();
       if (!odgovor.ok) throw new Error(podaci.error ?? 'Greška pri slanju zahtjeva.');
-      setJeUspjelo(true);
+      setConfirmation({
+        id: podaci.zahtjev.id,
+        requestNumber:
+          podaci.zahtjev.korisnicki_broj_zahtjeva ??
+          podaci.korisnicki_broj_zahtjeva ??
+          podaci.zahtjev.id,
+        status: podaci.zahtjev.status,
+        createdAt: podaci.zahtjev.created_at,
+      });
       await onSubmitted?.();
     } catch (err) {
       setGreska(err instanceof Error ? err.message : 'Greška pri slanju zahtjeva.');
@@ -446,23 +682,42 @@ export function ServiceRequestWizard({ onSubmitted }: ServiceRequestWizardProps)
     }
   }
 
-  if (jeUspjelo) {
+  if (confirmation) {
     return (
-      <SuccessModal
-        onZatvori={() => {
+      <ConfirmationScreen
+        confirmation={confirmation}
+        onReset={() => {
           setState(INITIAL);
           setKorak(1);
-          setJeUspjelo(false);
+          setConfirmation(null);
         }}
       />
     );
   }
 
   const blokiran     = jeKorakBlokiran(korak, state);
-  const jePosljednji = korak === 5;
+  const jePosljednji = korak === 6;
 
   return (
+    <>
     <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-end">
+        {!jeSlanje && (
+          <button
+            type="button"
+            onClick={() => setOdustaniModalOtvoren(true)}
+            className="inline-flex items-center justify-center gap-1.5 self-stretch rounded-xl border px-3 py-2 text-sm font-semibold transition-colors duration-150 hover:bg-soft-beige/25 sm:self-auto sm:border-0 sm:px-2 sm:py-1"
+            style={{
+              borderColor: 'rgb(var(--first-quaternary-rgb) / 0.45)',
+              color: 'var(--first-nonary)',
+            }}
+          >
+            <X className="h-4 w-4 shrink-0" aria-hidden />
+            Odustani od prijave
+          </button>
+        )}
+      </div>
+
       <StepIndicator currentStep={korak} />
 
       {korak !== 5 && korak !== 3 && greska && <AlertMessage variant="error" message={greska} />}
@@ -521,6 +776,9 @@ export function ServiceRequestWizard({ onSubmitted }: ServiceRequestWizardProps)
           triageError={triageError ?? greska}
         />
       )}
+      {korak === 6 && (
+        <PregledZahtjevaKorak state={state} onEditStep={(step) => setKorak(step)} />
+      )}
 
       <div
         className="mt-2 flex min-h-[52px] items-center justify-between gap-4 border-t border-slate-200/60 pt-5"
@@ -569,5 +827,70 @@ export function ServiceRequestWizard({ onSubmitted }: ServiceRequestWizardProps)
         )}
       </div>
     </div>
+
+    {odustaniModalOtvoren && (
+      <div
+        className="fixed inset-0 z-[100] flex items-center justify-center px-4 backdrop-blur-sm"
+        style={{ backgroundColor: 'rgba(0,0,0,0.45)' }}
+        onClick={(e) => {
+          if (e.target === e.currentTarget) setOdustaniModalOtvoren(false);
+        }}
+        role="presentation"
+      >
+        <div
+          className="w-full max-w-md overflow-hidden rounded-2xl shadow-2xl"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="odustani-naslov"
+          style={{
+            backgroundColor: 'var(--first-tertiary)',
+            border: '1px solid rgb(var(--first-quaternary-rgb) / 0.4)',
+          }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div
+            className="border-b px-6 py-4"
+            style={{ borderColor: 'rgb(var(--first-quaternary-rgb) / 0.3)' }}
+          >
+            <h2
+              id="odustani-naslov"
+              className="text-lg font-bold"
+              style={{ color: 'var(--first-octonary)' }}
+            >
+              Odustajanje od prijave
+            </h2>
+          </div>
+          <div className="px-6 py-4">
+            <p className="text-sm leading-relaxed" style={{ color: 'var(--first-nonary)' }}>
+              {ODUSTANI_PORUKA}
+            </p>
+            <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+              <Button
+                type="button"
+                variant="secondary"
+                size="md"
+                className="w-full sm:w-auto"
+                onClick={() => setOdustaniModalOtvoren(false)}
+              >
+                Nastavi prijavu
+              </Button>
+              <Button
+                type="button"
+                variant="danger"
+                size="md"
+                className="w-full sm:w-auto"
+                onClick={() => {
+                  setOdustaniModalOtvoren(false);
+                  router.push(odustaniHref);
+                }}
+              >
+                Da, odustajem
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   );
 }

@@ -2,283 +2,22 @@
 
 import { useEffect, useRef, useState } from 'react';
 import {
-  ClipboardList, Clock, Wrench, ChevronRight, AlertTriangle,
-  User, RefreshCw, MapPin, Phone, CheckCircle2, XCircle, BellOff,
+  ClipboardList, Clock, Wrench, ChevronRight,
+  RefreshCw, XCircle, BellOff,
 } from 'lucide-react';
 import Link from 'next/link';
 import { AppShell } from '@/components/layout/AppShell';
 import { Button } from '@/components/ui/Button';
 import { AlertMessage } from '@/components/ui/AlertMessage';
-import { UrgencyBadge } from '@/components/servisirane/UrgencyBadge';
-import { StatusBadge } from '@/components/servisirane/ZahtjevKartica';
-import type { ServisniZahtjev } from '@/domain/types/servisirane';
-import { kategorizirajHitnost } from '@/lib/servisirane/urgency';
+import {
+  DispecerskaZahtjevKartica,
+  zahtjevCekaObraduSprint7,
+  type ZahtjevZaDispecerskuKarticu,
+} from '@/components/dispecer/DispecerskaZahtjevKartica';
 import { kreirajKlijenta } from '@/lib/supabase/klijent';
 
-// ─── Tipovi ───────────────────────────────────────────────────────────────────
-
-interface ZahtjevSaPodnosiocem extends ServisniZahtjev {
-  podnosilac: { ime: string; prezime: string; broj_telefona: string | null } | null;
-}
-
-const PRIORITETI = ['NISKO', 'SREDNJE', 'VISOKO', 'KRITIČNO'] as const;
-type Prioritet = typeof PRIORITETI[number];
-
-const PRIORITET_BOJE: Record<Prioritet, string> = {
-  NISKO:    '#64748b',
-  SREDNJE:  '#D97706',
-  VISOKO:   '#EA580C',
-  KRITIČNO: '#DC2626',
-};
-
-// ─── Override panel ───────────────────────────────────────────────────────────
-
-function OverridePanel({
-  zahtjev,
-  onZatvori,
-  onAkcija,
-}: {
-  zahtjev:  ZahtjevSaPodnosiocem;
-  onZatvori: () => void;
-  onAkcija:  () => void;
-}) {
-  const sistemskiPrioritet = kategorizirajHitnost(zahtjev.system_score || zahtjev.urgency_score);
-  const [odabranPrioritet, setOdabranPrioritet] = useState<Prioritet>(sistemskiPrioritet as Prioritet);
-  const [jeOdbijanje,      setJeOdbijanje]       = useState(false);
-  const [razlogOdbijanja,  setRazlogOdbijanja]   = useState('');
-  const [jeSlanje,         setJeSlanje]          = useState(false);
-  const [greska,           setGreska]            = useState<string | null>(null);
-
-  async function potvrdi() {
-    setJeSlanje(true);
-    setGreska(null);
-    try {
-      const r = await fetch(`/api/dispecer/zahtjevi/${zahtjev.id}`, {
-        method:  'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ action: 'potvrdi', final_priority: odabranPrioritet }),
-      });
-      const d = await r.json();
-      if (!r.ok) throw new Error(d.error ?? 'Greška pri potvrdi.');
-      onAkcija();
-    } catch (err) {
-      setGreska(err instanceof Error ? err.message : 'Greška.');
-    } finally {
-      setJeSlanje(false);
-    }
-  }
-
-  async function odbij() {
-    if (!razlogOdbijanja.trim() || razlogOdbijanja.trim().length < 5) {
-      setGreska('Unesite razlog odbijanja (min. 5 karaktera).');
-      return;
-    }
-    setJeSlanje(true);
-    setGreska(null);
-    try {
-      const r = await fetch(`/api/dispecer/zahtjevi/${zahtjev.id}`, {
-        method:  'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ action: 'odbij', rejection_reason: razlogOdbijanja }),
-      });
-      const d = await r.json();
-      if (!r.ok) throw new Error(d.error ?? 'Greška pri odbijanju.');
-      onAkcija();
-    } catch (err) {
-      setGreska(err instanceof Error ? err.message : 'Greška.');
-    } finally {
-      setJeSlanje(false);
-    }
-  }
-
-  return (
-    <div
-      className="rounded-2xl p-5"
-      style={{
-        backgroundColor: 'rgb(var(--first-quinary-rgb) / 0.18)',
-        border:          '1px solid rgb(var(--first-quaternary-rgb) / 0.4)',
-      }}
-    >
-      {greska && <div className="mb-4"><AlertMessage variant="error" message={greska} /></div>}
-
-      {!jeOdbijanje ? (
-        <>
-          {/* Sistem prijedlog */}
-          <div
-            className="mb-4 flex items-center justify-between rounded-xl px-4 py-2.5"
-            style={{ backgroundColor: `${PRIORITET_BOJE[sistemskiPrioritet as Prioritet]}15`, border: `1px solid ${PRIORITET_BOJE[sistemskiPrioritet as Prioritet]}30` }}
-          >
-            <span className="text-xs font-medium" style={{ color: 'var(--first-nonary)' }}>
-              Sistem predlaže:
-            </span>
-            <span className="text-sm font-bold" style={{ color: PRIORITET_BOJE[sistemskiPrioritet as Prioritet] }}>
-              {sistemskiPrioritet}
-            </span>
-          </div>
-
-          {/* Override prioriteta */}
-          <p className="mb-2 text-xs font-semibold" style={{ color: 'var(--first-nonary)' }}>
-            Konačni prioritet
-          </p>
-          <div className="mb-4 flex gap-2">
-            {PRIORITETI.map((p) => (
-              <button
-                key={p}
-                type="button"
-                onClick={() => setOdabranPrioritet(p)}
-                className="flex-1 rounded-xl border py-1.5 text-xs font-semibold transition-all duration-150"
-                style={{
-                  borderColor:     odabranPrioritet === p ? PRIORITET_BOJE[p] : 'rgb(var(--first-quaternary-rgb) / 0.35)',
-                  backgroundColor: odabranPrioritet === p ? `${PRIORITET_BOJE[p]}18` : 'transparent',
-                  color:           odabranPrioritet === p ? PRIORITET_BOJE[p] : 'var(--first-nonary)',
-                }}
-              >
-                {p}
-              </button>
-            ))}
-          </div>
-
-          <div className="flex gap-2">
-            <Button size="sm" onClick={potvrdi} isLoading={jeSlanje} loadingText="Potvrđivanje...">
-              <CheckCircle2 className="h-3.5 w-3.5" />
-              Potvrdi
-            </Button>
-            <Button
-              size="sm"
-              variant="danger"
-              onClick={() => setJeOdbijanje(true)}
-              disabled={jeSlanje}
-            >
-              <XCircle className="h-3.5 w-3.5" />
-              Odbij
-            </Button>
-            <Button size="sm" variant="ghost" onClick={onZatvori} disabled={jeSlanje}>
-              Odustani
-            </Button>
-          </div>
-        </>
-      ) : (
-        <>
-          <textarea
-            className="mb-3 w-full resize-none rounded-xl border px-3 py-2.5 text-sm"
-            style={{
-              borderColor:     'rgb(var(--first-senary-rgb) / 0.3)',
-              backgroundColor: 'rgb(var(--first-senary-rgb) / 0.04)',
-              color:           'var(--first-octonary)',
-            }}
-            rows={3}
-            placeholder="Razlog odbijanja zahtjeva (min. 5 karaktera)..."
-            value={razlogOdbijanja}
-            onChange={(e) => setRazlogOdbijanja(e.target.value)}
-          />
-          <div className="flex gap-2">
-            <Button size="sm" variant="danger" onClick={odbij} isLoading={jeSlanje} loadingText="Odbijanje...">
-              Potvrdi odbijanje
-            </Button>
-            <Button size="sm" variant="ghost" onClick={() => setJeOdbijanje(false)} disabled={jeSlanje}>
-              Nazad
-            </Button>
-          </div>
-        </>
-      )}
-    </div>
-  );
-}
-
-// ─── Redak zahtjeva ───────────────────────────────────────────────────────────
-
-function ZahtjevRedak({
-  zahtjev,
-  onRefresh,
-}: {
-  zahtjev:   ZahtjevSaPodnosiocem;
-  onRefresh: () => void;
-}) {
-  const [otvoren, setOtvoren] = useState(false);
-  const datum = new Date(zahtjev.created_at).toLocaleDateString('bs-BA', {
-    day: '2-digit', month: '2-digit', year: 'numeric',
-  });
-  const sistemskiPrioritet = kategorizirajHitnost(zahtjev.system_score || zahtjev.urgency_score);
-
-  return (
-    <li>
-      <div
-        className="flex items-start gap-4 px-5 py-4 transition-colors hover:bg-soft-beige/10"
-      >
-        <div className="mt-1 flex-shrink-0">
-          {zahtjev.status === 'na_cekanju'
-            ? <AlertTriangle className="h-4 w-4" style={{ color: '#D97706' }} />
-            : <User className="h-4 w-4" style={{ color: 'var(--first-quinary)' }} />}
-        </div>
-
-        <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <p className="font-medium" style={{ color: 'var(--first-octonary)' }}>
-              {zahtjev.category}
-            </p>
-            <StatusBadge status={zahtjev.status} />
-            <UrgencyBadge score={zahtjev.urgency_score} />
-            {/* Sistem prijedlog */}
-            <span
-              className="rounded-full px-2 py-0.5 text-xs font-medium"
-              style={{
-                backgroundColor: `${PRIORITET_BOJE[sistemskiPrioritet as Prioritet]}15`,
-                color:           PRIORITET_BOJE[sistemskiPrioritet as Prioritet],
-                border:          `1px dashed ${PRIORITET_BOJE[sistemskiPrioritet as Prioritet]}40`,
-              }}
-            >
-              Sistem: {sistemskiPrioritet}
-            </span>
-          </div>
-          <p className="mt-0.5 truncate text-sm" style={{ color: 'var(--first-nonary)' }}>
-            {zahtjev.description.length > 80
-              ? `${zahtjev.description.substring(0, 80)}...`
-              : zahtjev.description}
-          </p>
-          <div className="mt-1.5 flex flex-wrap gap-x-4 text-xs" style={{ color: 'var(--first-nonary)' }}>
-            <span className="flex items-center gap-1">
-              <MapPin className="h-3 w-3" />
-              {zahtjev.address.length > 35 ? `${zahtjev.address.substring(0, 35)}...` : zahtjev.address}
-            </span>
-            {zahtjev.podnosilac && (
-              <span className="flex items-center gap-1">
-                <User className="h-3 w-3" />
-                {zahtjev.podnosilac.ime} {zahtjev.podnosilac.prezime}
-              </span>
-            )}
-            {zahtjev.podnosilac?.broj_telefona && (
-              <span className="flex items-center gap-1">
-                <Phone className="h-3 w-3" />
-                {zahtjev.podnosilac.broj_telefona}
-              </span>
-            )}
-            <span>{datum}</span>
-          </div>
-
-          {/* Override panel */}
-          {otvoren && zahtjev.status === 'na_cekanju' && (
-            <div className="mt-3">
-              <OverridePanel
-                zahtjev={zahtjev}
-                onZatvori={() => setOtvoren(false)}
-                onAkcija={() => { setOtvoren(false); onRefresh(); }}
-              />
-            </div>
-          )}
-        </div>
-
-        {zahtjev.status === 'na_cekanju' && !otvoren && (
-          <Button size="sm" onClick={() => setOtvoren(true)} className="flex-shrink-0">
-            Obradi
-            <ChevronRight className="h-3.5 w-3.5" />
-          </Button>
-        )}
-      </div>
-    </li>
-  );
-}
-
-// ─── Stranica ─────────────────────────────────────────────────────────────────
+const JE_PENDING = (status: string) =>
+  status === 'na_cekanju' || status === 'pending_review' || status === 'in_review';
 
 interface ToastPoruka {
   id:      number;
@@ -287,11 +26,19 @@ interface ToastPoruka {
 }
 
 export default function DispecerPage() {
-  const [zahtjevi, setZahtjevi] = useState<ZahtjevSaPodnosiocem[]>([]);
+  const [zahtjevi, setZahtjevi] = useState<ZahtjevZaDispecerskuKarticu[]>([]);
   const [ucitava,  setUcitava]  = useState(true);
   const [greska,   setGreska]   = useState<string | null>(null);
   const [toast,    setToast]    = useState<ToastPoruka | null>(null);
   const toastTimerRef           = useRef<ReturnType<typeof setTimeout>>();
+
+  const zahtjeviCekajuObradu = zahtjevi
+    .filter((z) => zahtjevCekaObraduSprint7(z.status))
+    .sort((a, b) => {
+      const t = new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+      if (t !== 0) return t;
+      return a.id - b.id;
+    });
 
   function prikaziToast(tekst: string, boja = '#DC2626') {
     clearTimeout(toastTimerRef.current);
@@ -299,7 +46,6 @@ export default function DispecerPage() {
     toastTimerRef.current = setTimeout(() => setToast(null), 6000);
   }
 
-  // Supabase Realtime — prati otkazivanje zahtjeva od strane korisnika
   useEffect(() => {
     const supabase = kreirajKlijenta();
     const kanal = supabase
@@ -316,7 +62,6 @@ export default function DispecerPage() {
           const z = payload.new as { id: number; category?: string; status: string };
           const naziv = z.category ?? 'Nepoznat zahtjev';
           prikaziToast(`Zahtjev "${naziv}" je upravo otkazan od strane korisnika.`);
-          // Ukloni iz lokalne liste
           setZahtjevi((prev) => prev.filter((x) => x.id !== z.id));
         }
       )
@@ -342,7 +87,7 @@ export default function DispecerPage() {
 
   useEffect(() => { ucitajZahtjeve(); }, []);
 
-  const naCekanju = zahtjevi.filter((z) => z.status === 'na_cekanju').length;
+  const naCekanju = zahtjevi.filter((z) => JE_PENDING(z.status)).length;
   const potvrdeno = zahtjevi.filter((z) => z.status === 'potvrdeno').length;
   const aktivnih  = zahtjevi.filter((z) => !['zavrseno', 'otkazano', 'odbijeno'].includes(z.status)).length;
 
@@ -355,7 +100,7 @@ export default function DispecerPage() {
             Upravljanje zahtjevima
           </h1>
           <p className="mt-1 text-sm" style={{ color: 'var(--first-nonary)' }}>
-            Sortirano po sistemskom prioritetu. Pregledajte i obradite zahtjeve.
+            Pregled zahtjeva u redu za obradu. Redoslijed: prvo ranije prijavljeni.
           </p>
         </div>
         <Button type="button" variant="secondary" size="md" onClick={ucitajZahtjeve} isLoading={ucitava} loadingText="Osvježavanje...">
@@ -364,10 +109,9 @@ export default function DispecerPage() {
         </Button>
       </div>
 
-      {/* KPI */}
       <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
         {[
-          { oznaka: 'Na čekanju',  vrijednost: naCekanju, boja: '#D97706', Ikona: ClipboardList },
+          { oznaka: 'Čeka obradu',  vrijednost: naCekanju, boja: '#D97706', Ikona: ClipboardList },
           { oznaka: 'Potvrđeno',   vrijednost: potvrdeno, boja: '#2563EB', Ikona: Clock },
           { oznaka: 'Svi aktivni', vrijednost: aktivnih,  boja: '#059669', Ikona: Wrench },
         ].map(({ oznaka, vrijednost, boja, Ikona }) => (
@@ -391,7 +135,7 @@ export default function DispecerPage() {
         <div className="flex items-center justify-between px-5 py-4"
           style={{ borderBottom: '1px solid rgb(var(--first-quaternary-rgb) / 0.3)' }}>
           <h2 className="font-semibold" style={{ color: 'var(--first-octonary)' }}>
-            Svi zahtjevi ({zahtjevi.length})
+            Zahtjevi koji čekaju obradu ({zahtjeviCekajuObradu.length})
           </h2>
           <Link href="/dispecer/zahtjevi"
             className="flex items-center gap-1 text-sm font-medium transition-opacity hover:opacity-70"
@@ -406,21 +150,39 @@ export default function DispecerPage() {
           </div>
         )}
         {!ucitava && zahtjevi.length === 0 && (
-          <div className="px-5 py-8 text-center">
-            <p className="text-sm" style={{ color: 'var(--first-nonary)' }}>Nema aktivnih zahtjeva.</p>
+          <div className="px-5 py-10 text-center">
+            <p className="text-sm font-medium" style={{ color: 'var(--first-octonary)' }}>
+              Nema aktivnih zahtjeva
+            </p>
+            <p className="mt-1 text-sm" style={{ color: 'var(--first-nonary)' }}>
+              Kada korisnik pošalje zahtjev, pojavit će se ovdje.
+            </p>
           </div>
         )}
-        {!ucitava && zahtjevi.length > 0 && (
-          <ul className="divide-y" style={{ borderColor: 'rgb(var(--first-quaternary-rgb) / 0.25)' }}>
-            {zahtjevi.map((z) => (
-              <ZahtjevRedak key={z.id} zahtjev={z} onRefresh={ucitajZahtjeve} />
-            ))}
-          </ul>
+        {!ucitava && zahtjevi.length > 0 && zahtjeviCekajuObradu.length === 0 && (
+          <div className="px-5 py-10 text-center">
+            <p className="text-sm font-medium" style={{ color: 'var(--first-octonary)' }}>
+              Nema zahtjeva koji čekaju obradu
+            </p>
+            <p className="mt-1 text-sm" style={{ color: 'var(--first-nonary)' }}>
+              Svi trenutni zahtjevi su dalje u obradi. Pregled svih zahtjeva: Upravljanje.
+            </p>
+          </div>
+        )}
+        {!ucitava && zahtjeviCekajuObradu.length > 0 && (
+          <div className="p-4 sm:p-5">
+            <ul className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+              {zahtjeviCekajuObradu.map((z) => (
+                <li key={z.id}>
+                  <DispecerskaZahtjevKartica zahtjev={z} />
+                </li>
+              ))}
+            </ul>
+          </div>
         )}
       </div>
     </AppShell>
 
-      {/* Realtime toast — zahtjev otkazan */}
       {toast && (
         <div
           className="fixed bottom-5 right-5 z-50 flex max-w-sm items-start gap-3

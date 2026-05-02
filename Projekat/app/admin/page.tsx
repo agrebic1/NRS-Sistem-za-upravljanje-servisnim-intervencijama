@@ -15,6 +15,7 @@ import { AppShell } from '@/components/layout/AppShell';
 import { Button } from '@/components/ui/Button';
 import { StatusBadge } from '@/components/servisirane/ZahtjevKartica';
 import type { ServisniZahtjev } from '@/domain/types/servisirane';
+import { formatirajDatumPrikaz } from '@/lib/format/datumi';
 
 type StatusKorisnika = 'aktivan' | 'neaktivan' | 'suspendovan';
 
@@ -191,7 +192,7 @@ export default function AdminPage() {
                   {z.category}
                 </p>
                 <p className="text-xs" style={{ color: 'var(--first-nonary)' }}>
-                  {new Date(z.created_at).toLocaleDateString('bs-BA')}
+                  {formatirajDatumPrikaz(z.created_at)}
                 </p>
               </div>
               <StatusBadge status={z.status} />

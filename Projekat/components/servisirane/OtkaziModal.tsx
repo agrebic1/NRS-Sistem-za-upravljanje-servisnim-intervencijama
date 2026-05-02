@@ -14,6 +14,8 @@ const RAZLOZI = [
 
 interface OtkaziModalProps {
   zahtjevId:  number;
+  /** Redni broj zahtjeva korisnika (prikaz); ako nije proslijeđen, ne prikazuje se. */
+  korisnickiBrojZahtjeva?: number;
   kategorija: string;
   onZatvori: () => void;
   onUspjeh:  () => void;
@@ -21,6 +23,7 @@ interface OtkaziModalProps {
 
 export function OtkaziModal({
   zahtjevId,
+  korisnickiBrojZahtjeva,
   kategorija,
   onZatvori,
   onUspjeh,
@@ -87,7 +90,9 @@ export function OtkaziModal({
                 Otkazivanje zahtjeva
               </h2>
               <p className="text-xs" style={{ color: 'var(--first-nonary)' }}>
-                {kategorija}
+                {typeof korisnickiBrojZahtjeva === 'number'
+                  ? `Zahtjev #${korisnickiBrojZahtjeva} · ${kategorija}`
+                  : kategorija}
               </p>
             </div>
           </div>

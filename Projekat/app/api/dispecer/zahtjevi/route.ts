@@ -41,6 +41,7 @@ export async function GET() {
     const { data, error } = await supabase
       .from('service_requests')
       .select('*')
+      .not('status', 'in', '("zavrseno","otkazano","odbijeno")')
       .order('urgency_score', { ascending: false })
       .order('created_at', { ascending: true });
 

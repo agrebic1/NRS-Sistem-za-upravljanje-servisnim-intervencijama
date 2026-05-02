@@ -17,6 +17,8 @@ type StatusZahtjeva = 'novi' | 'u_toku' | 'zavrsen' | 'hitno';
 
 export interface KorisnikDashboardZahtjev {
   id: string;
+  /** Redni broj zahtjeva korisnika (1 = najstariji). */
+  korisnickiBroj: number;
   naslov: string;
   status: StatusZahtjeva;
   datum: string;
@@ -170,11 +172,14 @@ export function KorisnikPregledDashboard({
                   {hitniLista.map((z) => (
                     <li key={z.id}>
                       <Link
-                        href={`/korisnik/intervencija/${z.id}`}
+                        href={`/korisnik/zahtjevi/${z.id}`}
                         className="flex items-center justify-between gap-2 rounded-xl px-2 py-1.5 text-sm transition-colors hover:bg-soft-beige/20"
                         style={{ color: 'var(--first-octonary)' }}
                       >
-                        <span className="min-w-0 truncate font-medium">{z.naslov}</span>
+                        <span className="flex min-w-0 items-center gap-2">
+                          <span className="shrink-0 tabular-nums text-xs font-bold opacity-70">#{z.korisnickiBroj}</span>
+                          <span className="min-w-0 truncate font-medium">{z.naslov}</span>
+                        </span>
                         <ChevronRight className="h-4 w-4 shrink-0 opacity-50" />
                       </Link>
                     </li>
@@ -197,7 +202,7 @@ export function KorisnikPregledDashboard({
                   </p>
                 </div>
                 <Link
-                  href="/korisnik/intervencije"
+                  href="/korisnik/zahtjevi"
                   className="inline-flex shrink-0 items-center gap-1 text-sm font-medium transition-opacity hover:opacity-70"
                   style={{ color: 'var(--first-secondary)' }}
                 >
@@ -225,7 +230,7 @@ export function KorisnikPregledDashboard({
                     return (
                       <li key={zahtjev.id}>
                         <Link
-                          href={`/korisnik/intervencija/${zahtjev.id}`}
+                          href={`/korisnik/zahtjevi/${zahtjev.id}`}
                           className="flex items-start gap-4 px-5 py-4 transition-colors duration-150 hover:bg-soft-beige/10 sm:items-center"
                           style={
                             accentHitno
@@ -235,6 +240,15 @@ export function KorisnikPregledDashboard({
                         >
                           <div className="min-w-0 flex-1">
                             <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                              <span
+                                className="shrink-0 rounded-md px-2 py-0.5 text-[11px] font-bold tabular-nums"
+                                style={{
+                                  backgroundColor: 'rgb(var(--first-quaternary-rgb) / 0.2)',
+                                  color: 'var(--first-nonary)',
+                                }}
+                              >
+                                #{zahtjev.korisnickiBroj}
+                              </span>
                               <p
                                 className="min-w-0 break-words font-medium sm:truncate"
                                 style={{ color: 'var(--first-octonary)' }}
@@ -280,6 +294,9 @@ export function KorisnikPregledDashboard({
               </div>
               {sljedeci ? (
                 <>
+                  <p className="text-xs font-semibold tabular-nums" style={{ color: 'var(--first-nonary)' }}>
+                    Zahtjev #{sljedeci.korisnickiBroj}
+                  </p>
                   <p className="text-sm font-medium leading-snug" style={{ color: 'var(--first-octonary)' }}>{sljedeci.datum}</p>
                   <p className="mt-2 text-sm leading-relaxed" style={{ color: 'var(--first-nonary)' }}>
                     {sljedeci.naslov}
@@ -288,7 +305,7 @@ export function KorisnikPregledDashboard({
                     {sljedeci.lokacija}
                   </p>
                   <Link
-                    href={`/korisnik/intervencija/${sljedeci.id}`}
+                    href={`/korisnik/zahtjevi/${sljedeci.id}`}
                     className="mt-4 inline-flex items-center gap-1 text-sm font-semibold transition-opacity hover:opacity-70"
                     style={{ color: 'var(--first-secondary)' }}
                   >
