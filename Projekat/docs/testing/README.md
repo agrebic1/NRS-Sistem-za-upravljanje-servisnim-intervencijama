@@ -9,7 +9,6 @@ Ovaj folder sadrži **automatske** testove (pokretanje iz projekta) i **ručne**
 1. [Automatski testovi](#automatski-testovi) — komande, šta se mockuje, pokrivenost Sprinta 5 (Sprint 6: još nema)  
 2. [Ručno testiranje](#ručno-testiranje) — kako su fajlovi organizovani, Sprint 5 i Sprint 6  
 3. [Dokazi (screenshoti)](#dokazi-screenshoti)  
-4. [Sigurnosna napomena (login)](#sigurnosna-napomena-login)
 
 ---
 
