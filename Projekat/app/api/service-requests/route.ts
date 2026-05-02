@@ -125,8 +125,9 @@ export async function POST(request: Request) {
 
     // Fallback: ako DB još nema latitude/longitude kolone, pokušaj bez njih.
     if (error?.message?.includes("'latitude' column") || error?.message?.includes("'longitude' column")) {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { latitude, longitude, ...bezKoordinata } = insertPayload;
+      const bezKoordinata: Record<string, unknown> = { ...insertPayload };
+      delete bezKoordinata.latitude;
+      delete bezKoordinata.longitude;
       const retry = await supabase
         .from('service_requests')
         .insert(bezKoordinata)

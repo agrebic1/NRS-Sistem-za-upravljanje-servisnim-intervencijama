@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import {
   ArrowLeft, Calendar, MapPin, Phone, Tag,
@@ -233,7 +233,7 @@ export default function ZahtjevDetaljPage() {
   const [aktivniPanel,  setAktivniPanel]  = useState<'izmjena' | 'otkazivanje' | null>(null);
   const [jeAkcijaDone,  setJeAkcijaDone] = useState(false);
 
-  async function ucitajZahtjev() {
+  const ucitajZahtjev = useCallback(async () => {
     setUcitava(true);
     setGreska(null);
     try {
@@ -246,9 +246,9 @@ export default function ZahtjevDetaljPage() {
     } finally {
       setUcitava(false);
     }
-  }
+  }, [id]);
 
-  useEffect(() => { ucitajZahtjev(); }, [id]);
+  useEffect(() => { ucitajZahtjev(); }, [ucitajZahtjev]);
 
   function onUspjehAkcije() {
     setJeAkcijaDone(true);

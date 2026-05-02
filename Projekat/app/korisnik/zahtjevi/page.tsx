@@ -70,7 +70,7 @@ function ListaDashboard({ zahtjevi, onUredi, onOtkazi }: ListaDashboardProps) {
             Moji zahtjevi
           </h1>
           <p className="mt-1 text-sm" style={{ color: 'var(--first-nonary)' }}>
-            Zahtjevi u statusu "Na čekanju" mogu se izmijeniti ili otkazati.
+            Zahtjevi u statusu &quot;Na čekanju&quot; mogu se izmijeniti ili otkazati.
           </p>
         </div>
         <Link href="/korisnik/zahtjevi/novi">
