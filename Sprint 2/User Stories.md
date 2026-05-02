@@ -568,7 +568,7 @@ Zavisi od storyja za prijavu zahtjeva za servisnu intervenciju (US-05) i povezan
   - **WHEN** korisnik ponovo pregleda svoj zahtjev  
   - **THEN** sistem prikazuje ažurirani status zahtjeva
  
-  - **AC6: Prikaz adrese zahtjeva korisniku**  
+- **AC6: Prikaz adrese zahtjeva korisniku**  
   - **GIVEN** korisnik ima evidentiran zahtjev sa adresom kvara
   - **WHEN** pristupi pregledu svojih zahtjeva
   - **THEN** sistem prikazuje adresu kvara uz osnovne informacije zahtjeva
