@@ -518,6 +518,31 @@ Povezano sa storyjima za pregled vlastitog zahtjeva (US-06), pregled otvorenih i
   - **GIVEN** korisnik je unio adresu i dodatno označio lokaciju putem GPS-a ili mape
   - **WHEN** sistem kreira zahtjev
   - **THEN** sistem sprema adresu kao obavezni podatak, a koordinate kao opcionalni dodatni podatak
+ 
+- **AC14: Korištenje trenutne lokacije kao opcionalne pomoći**  
+  - **GIVEN** korisnik se nalazi na koraku “Lokacija”
+  - **WHEN** odabere opciju “Koristi moju trenutnu lokaciju”
+  - **THEN** sistem traži dozvolu za pristup trenutnoj lokaciji korisnika
+
+- **AC15: Uspješno određivanje trenutne lokacije**  
+  - **GIVEN** korisnik je dozvolio pristup trenutnoj lokaciji
+  - **WHEN** sistem uspješno odredi lokaciju
+  - **THEN** sistem čuva geografske koordinate kao dodatni podatak uz zahtjev
+
+- **AC16: Automatsko popunjavanje adrese na osnovu trenutne lokacije**  
+  - **GIVEN** sistem je uspješno odredio trenutnu lokaciju korisnika
+  - **WHEN** sistem može prepoznati adresu na osnovu koordinata
+  - **THEN** sistem automatski popunjava polje adrese i omogućava korisniku da adresu ručno provjeri i izmijeni
+
+- **AC17: Odbijena ili nedostupna trenutna lokacija**  
+  - **GIVEN** korisnik pokuša koristiti trenutnu lokaciju
+  - **WHEN** korisnik odbije dozvolu ili lokacija nije dostupna
+  - **THEN** sistem prikazuje poruku da lokacija nije dostupna i omogućava korisniku da adresu unese ručno
+
+- **AC18: Adresa ostaje obavezna nakon korištenja trenutne lokacije**  
+  - **GIVEN** korisnik je koristio opciju trenutne lokacije
+  - **WHEN** adresa kvara nije unesena ili automatski popunjena
+  - **THEN** sistem ne dozvoljava nastavak dok korisnik ne unese adresu kvara
 
 ---
 
