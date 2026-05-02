@@ -478,6 +478,46 @@ Povezano sa storyjima za pregled vlastitog zahtjeva (US-06), pregled otvorenih i
   - **GIVEN** prijavljeni korisnik je uspješno poslao zahtjev  
   - **WHEN** zahtjev bude kreiran  
   - **THEN** sistem zahtjev povezuje sa korisničkim nalogom koji ga je podnio
+ 
+- **AC6: Obavezan unos adrese kvara**  
+  - **GIVEN** korisnik se nalazi na koraku “Lokacija”
+  - **WHEN** pokuša nastaviti bez unesene adrese kvara
+  - **THEN** sistem ne dozvoljava nastavak i prikazuje poruku da je potrebno unijeti adresu kvara
+
+- **AC7: Validna adresa kvara omogućava nastavak**  
+  - **GIVEN** korisnik se nalazi na koraku “Lokacija”
+  - **WHEN** unese validnu adresu kvara
+  - **THEN** sistem evidentira adresu i omogućava nastavak na sljedeći korak
+
+- **AC8: GPS kao opcionalno preciziranje lokacije**  
+  - **GIVEN** korisnik se nalazi na koraku “Lokacija”
+  - **WHEN** odabere opciju za korištenje trenutne GPS lokacije i dozvoli pristup lokaciji
+  - **THEN** sistem čuva koordinate kao dodatni podatak uz zahtjev, ali adresa kvara ostaje obavezna
+
+- **AC9: Nedostupna GPS lokacija**  
+  - **GIVEN** korisnik pokuša koristiti GPS lokaciju
+  - **WHEN** lokacija nije dostupna ili korisnik odbije dozvolu za lokaciju
+  - **THEN** sistem prikazuje poruku da lokacija nije dostupna i omogućava korisniku da adresu unese ručno
+
+- **AC10: Mapa kao opcionalno preciziranje lokacije**  
+  - **GIVEN** korisnik želi dodatno precizirati lokaciju kvara
+  - **WHEN** odabere opciju “Preciziraj lokaciju na mapi”
+  - **THEN** sistem prikazuje mapu kao opcionalni alat za označavanje lokacije
+
+- **AC11: Označavanje lokacije na mapi**  
+  - **GIVEN** mapa je prikazana korisniku
+  - **WHEN** korisnik klikne na mapu
+  - **THEN** sistem postavlja marker na odabranu lokaciju i čuva koordinate kao dodatni podatak uz zahtjev
+
+- **AC12: Adresa ostaje obavezna i kada su koordinate unesene**  
+  - **GIVEN** korisnik je označio lokaciju putem GPS-a ili mape, ali nije unio adresu kvara
+  - **WHEN** pokuša nastaviti na sljedeći korak
+  - **THEN** sistem ne dozvoljava nastavak i traži unos adrese kvara
+
+- **AC13: Spremanje adrese i koordinata uz zahtjev**  
+  - **GIVEN** korisnik je unio adresu i dodatno označio lokaciju putem GPS-a ili mape
+  - **WHEN** sistem kreira zahtjev
+  - **THEN** sistem sprema adresu kao obavezni podatak, a koordinate kao opcionalni dodatni podatak
 
 ---
 
@@ -527,6 +567,16 @@ Zavisi od storyja za prijavu zahtjeva za servisnu intervenciju (US-05) i povezan
   - **GIVEN** status korisnikovog zahtjeva je promijenjen u sistemu  
   - **WHEN** korisnik ponovo pregleda svoj zahtjev  
   - **THEN** sistem prikazuje ažurirani status zahtjeva
+ 
+  - **AC6: Prikaz adrese zahtjeva korisniku**  
+  - **GIVEN** korisnik ima evidentiran zahtjev sa adresom kvara
+  - **WHEN** pristupi pregledu svojih zahtjeva
+  - **THEN** sistem prikazuje adresu kvara uz osnovne informacije zahtjeva
+
+- **AC7: Prikaz informacije o dodatno označenoj lokaciji**  
+  - **GIVEN** korisnik je prilikom prijave zahtjeva dodatno označio lokaciju putem GPS-a ili mape
+  - **WHEN** pregleda detalje zahtjeva
+  - **THEN** sistem prikazuje informaciju da je precizna lokacija dodana uz zahtjev
 
 ---
 
@@ -576,6 +626,16 @@ Zavisi od storyja za prijavu zahtjeva za servisnu intervenciju (US-05) i povezan
     - **GIVEN** korisnik nema ulogu dispečera ili drugo odgovarajuće ovlaštenje  
     - **WHEN** pokuša pristupiti pregledu otvorenih intervencija  
     - **THEN** sistem mu ne dozvoljava pristup toj funkcionalnosti.
+ 
+  - **AC6: Prikaz adrese u dispečerskoj listi**  
+  - **GIVEN** u sistemu postoji zahtjev koji čeka obradu
+  - **WHEN** dispečer pristupi listi otvorenih zahtjeva
+  - **THEN** sistem prikazuje adresu kvara kao dio osnovnih informacija zahtjeva
+
+- **AC7: Prikaz informacije o koordinatama u dispečerskoj listi**  
+  - **GIVEN** korisnik je uz zahtjev dodatno označio lokaciju putem GPS-a ili mape
+  - **WHEN** dispečer pregleda listu zahtjeva
+  - **THEN** sistem prikazuje oznaku da zahtjev ima dodatno preciziranu lokaciju
 ---
 
 ## US-08 — Pregled detalja pojedinačne intervencije
