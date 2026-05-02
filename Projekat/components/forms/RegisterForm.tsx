@@ -162,10 +162,10 @@ export function RegisterForm() {
     setJeSlanjePonovo(true);
     try {
       await posaljiPonovoVerifikacijskiEmail(emailCekaPotvrdu);
-      setPorukaNakonPonovnogSlanja('Email je ponovo poslan. Provjerite sanduče.');
+      setPorukaNakonPonovnogSlanja('Poslali smo novi link za potvrdu naloga.');
       setPreostaleSekundePonovo(SEKUNDE_DO_PONOVNOG_SLANJA);
-    } catch (e) {
-      setGreskaPonovnogSlanja(e instanceof Error ? e.message : 'Slanje emaila nije uspjelo. Pokušajte ponovo.');
+    } catch {
+      setGreskaPonovnogSlanja('Nije moguće poslati novi link. Pokušajte ponovo.');
     } finally {
       setJeSlanjePonovo(false);
     }
@@ -202,12 +202,14 @@ export function RegisterForm() {
                 Provjerite email
               </h2>
               <p className="text-sm leading-relaxed" style={{ color: 'var(--first-octonary)' }}>
-                Poslali smo vam email na adresu{' '}
-                <span className="font-medium break-all">{emailCekaPotvrdu}</span> s linkom za potvrdu naloga.
-                Otvorite sanduče i kliknite na taj link.
+                Poslali smo link za potvrdu naloga na adresu{' '}
+                <strong className="break-all font-semibold" style={{ color: 'var(--first-primary)' }}>
+                  {emailCekaPotvrdu}
+                </strong>
+                . Otvorite inbox i kliknite na link kako biste potvrdili nalog.
               </p>
               <p className="text-sm leading-relaxed" style={{ color: 'var(--first-nonary)' }}>
-                Ako email ne vidite odmah, provjerite i mapu „Neželjeno” ili spam — ponekad završi tamo.
+                Ako email ne vidite odmah, provjerite spam folder ili mapu &quot;Neželjena pošta&quot;.
               </p>
               {preostaleSekundePonovo > 0 ? (
                 <p className="text-sm tabular-nums" style={{ color: 'var(--first-nonary)' }}>
@@ -219,7 +221,7 @@ export function RegisterForm() {
                 </p>
               ) : (
                 <p className="text-sm" style={{ color: 'var(--first-nonary)' }}>
-                  Niste primili email? Zatražite novi link ispod.
+                  Sada možete zatražiti novi link.
                 </p>
               )}
             </div>
@@ -251,7 +253,7 @@ export function RegisterForm() {
               Već ste potvrdili nalog? Prijavite se
             </Link>
             <Button type="button" variant="ghost" size="md" onClick={zatvoriEkranPotvrde}>
-              Počnite ispočetka
+              Počni ispočetka
             </Button>
           </div>
         </div>

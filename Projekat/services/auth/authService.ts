@@ -92,7 +92,7 @@ export class PotrebnaPotvrdaEmailaError extends Error {
 
   constructor(email: string) {
     super(
-      'Na vašu adresu poslan je email s linkom za potvrdu naloga. Otvorite sanduče, potvrdite adresu, pa se prijavite.'
+      'Na vašu adresu poslan je link za potvrdu naloga. Otvorite inbox, potvrdite nalog, pa se prijavite.'
     );
     this.name = 'PotrebnaPotvrdaEmailaError';
     this.email = email;
