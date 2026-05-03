@@ -182,6 +182,7 @@ Sažeti pregled user story-a u okviru MVP-a:
 | US-30 | Razmjena napomena na intervenciji | Kao dispečer ili serviser, želim dodati kratku napomenu na konkretnu intervenciju, kako bi sve važne operativne informacije bile dostupne na jednom mjestu svim učesnicima u procesu. | - interna komunikacija<br>- važne informacije na jednom mjestu<br>- manje oslanjanja na vanjske kanale | Srednji |
 | US-31 | Pregled sažetog operativnog statusa intervencija | Kao dispečer, želim na početnom ekranu vidjeti sažet operativni status intervencija, kako bih odmah imao pregled trenutnog obima posla i stanja intervencija po ključnim fazama obrade. | - brz pregled stanja sistema<br>- lakše uočavanje zastoja<br>- efikasnije operativno odlučivanje | Srednji |
 | US-32 | Pregled historije aktivnosti intervencije | Kao dispečer, želim vidjeti listu svih prethodnih promjena i aktivnosti na zahtjevu, kako bih imao jasan uvid u hronologiju obrade od trenutka prijave do trenutnog statusa. | - transparentnost procesa<br>- praćenje toka rada<br>- audit trag | Srednji | 
+| US-33 |	Zahtjev za Premium (Hitnom) uslugom	| Kao korisnik usluge, želim odabrati "Premium/Hitno" opciju prilikom prijave kvara, kako bih osigurao prioritetnu obradu zahtjeva bez obzira na vrstu kvara.	|- prioritetna obrada <br> - veće zadovoljstvo korisnika <br> - dodatni prihod za servis | Visok |
 
 U sljedećoj tabeli je prikazana povezanost konkretnog User Story-a sa itemima iz Product Backloga:
 | User Story | Naziv user storyja                                    | Feature / PBI                                                       | Epic                                                    |
@@ -218,7 +219,7 @@ U sljedećoj tabeli je prikazana povezanost konkretnog User Story-a sa itemima i
 | US-30      | Razmjena napomena na intervenciji                     | **PBI-020 – Napomene na intervenciji**                              | **Komunikacija i historija aktivnosti**                 |
 | US-31      | Pregled sažetog operativnog statusa intervencija      | **PBI-009 – Pregled operativnog statusa na kontrolnoj tabli**       | **Operativni pregled intervencija od strane dispečera** |
 | US-32      | Pregled historije aktivnosti intervencije             | **PBI-021 – Historija aktivnosti intervencije**                     | **Komunikacija i historija aktivnosti**                 |
-
+| US-33      | Zahtjev za Premium (Hitnom) uslugom                   | **PBI-004 – Kreiranje zahtjeva za servisnu intervenciju**           | **Upravljanje zahtjevima za servisne intervencije**     |
 ---
 
 ## US-01 — Samostalna registracija korisnika usluge
