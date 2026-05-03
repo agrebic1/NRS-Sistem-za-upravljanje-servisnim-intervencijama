@@ -68,6 +68,6 @@ Zavisnosti:
 | SBI-06-16 | Administrativno kreiranje internog korisničkog naloga (US-18) | Frontend + backend + baza | To Do | Kreiranje naloga za opretaivne korisnike (servisser, dispečer), onboarding proces. |
 | SBI-06-17 | Izmjena vlastitog zahtjeva (US-26) | Frontend + backend + baza | To Do | Omogućiti korisniku re-open wizarda i ažuriranje podataka. Dozvoljeno samo dok je status "na_cekanju". | 
 | SBI-06-18 | Otkazivanje vlastitog zahtjeva (US-27) | Frontdend + backend + baza | To Do | Implementacija "Otkaži" funkcije uz potvrdu (confirm modal). Status zahtjeva prelazi u "otkazano". |
-| SBI-06-19 | Testiranje toka prijave kvara i onboarding procesa | Testeri / QA | To Do | Testiranje "end-to-end" scenarija: od slanja zahtjeva do admin odobrenja i kreiranja partnerskog naloga. |
-| SBI-06-20 |
+| SBI-06-19 | Zahtjev za premium/hitnom uslugom (US-33) | Frontend + backend + baza | To Do | |
+| SBI-06-20 | Testiranje toka prijave kvara i onboarding procesa | Testeri / QA | To Do | Testiranje "end-to-end" scenarija: od slanja zahtjeva do admin odobrenja i kreiranja partnerskog naloga. |
 
