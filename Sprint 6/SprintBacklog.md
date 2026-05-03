@@ -64,7 +64,7 @@ Zavisnosti:
 | SBI-05-12 | Testiranje registracije, prijave, odjave, sesije i preusmjeravanja | Testeri | Done | Testirati pozitivne, negativne i edge case scenarije prema acceptance kriterijima i decision log pravilima. |
 | SBI-05-13 | Validacija autentifikacije i kontrole pristupa korisnika | QA / Solution architect | Done | Validacija poslovnih pravila i logike sistema. | 
 | SBI-06-14 | Prijava zahtjeva za servisnu intervenciju (US-05) | Frontend + backend | To Do | Kreiranje forme i wizarda, kalendar, mapa, upitnik za trijažu. |
-| SBI-06-15 | Pregled vlastitog zahtjeva (US-06) | Frontend + backend + baza | To Do | Prikaz zahtjeva na dashboardu korisnika i prikaz njegovog ststusa. |
+| SBI-06-15 | Pregled vlastitog zahtjeva (US-06) | Frontend + backend + baza | To Do | Prikaz zahtjeva na dashboardu korisnika i prikaz njegovog statusa. |
 | SBI-06-16 | Administrativno kreiranje internog korisničkog naloga (US-18) | Frontend + backend + baza | To Do | Kreiranje naloga za opretaivne korisnike (servisser, dispečer), onboarding proces. |
 | SBI-06-17 | Izmjena vlastitog zahtjeva (US-26) | Frontend + backend + baza | To Do | Omogućiti korisniku re-open wizarda i ažuriranje podataka. Dozvoljeno samo dok je status "na_cekanju". | 
 | SBI-06-18 | Otkazivanje vlastitog zahtjeva (US-27) | Frontdend + backend + baza | To Do | Implementacija "Otkaži" funkcije uz potvrdu (confirm modal). Status zahtjeva prelazi u "otkazano". |
