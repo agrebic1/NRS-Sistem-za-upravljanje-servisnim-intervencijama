@@ -1,6 +1,7 @@
 # AI Usage Log
 
 | Polje | Opis |
+|-------|------|  
 | Datum | 30.04.2026. |
 | Sprint broj | 6 |
 | Alat koji je korišten | Claude AI |
@@ -14,6 +15,7 @@
 | Ko je koristio alat | Amina Grebić |
 
 | Polje | Opis |
+|-------|------|
 | Datum | .05.2026. |
 | Sprint broj | 6 |
 | Alat koji je korišten | Claude AI |
@@ -28,6 +30,7 @@
 
 
 | Polje | Opis |
+|-------|------|
 | Datum |  |
 | Sprint broj | 6 |
 | Alat koji je korišten | |
