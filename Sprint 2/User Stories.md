@@ -56,7 +56,8 @@ THEME (Tema)
     │   │
     │   ├── FEATURE: Kreiranje zahtjeva za servisnu intervenciju (PBI-004)
     │   │   │
-    │   │   └── Story: US-05 Prijava zahtjeva za servisnu intervenciju
+    │   │   ├── Story: US-05 Prijava zahtjeva za servisnu intervenciju
+    │   │   └── Story: US-33 Zahtjev za Premium (Hitnom) uslugom
     │   │
     │   ├── FEATURE: Pregled detalja vlastitog zahtjeva (PBI-005)
     │   │   │
@@ -1956,6 +1957,57 @@ Zavisi od svih storyja koji mijenjaju stanje intervencije: prijava zahtjeva za s
   - **GIVEN** zapisi u historiji su jednom kreirani  
   - **WHEN** bilo koji korisnik pokuša obrisati ili izmijeniti zapis u historiji  
   - **THEN** sistem onemogućava takve akcije i garantuje integritet audit trail-a kao trajnog dokaza o radu
+
+---
+## US-33 — Zahtjev za Premium (Hitnom) uslugom
+**Opis:** Kao korisnik usluge, želim odabrati "Premium" opciju prilikom prijave kvara, kako bih osigurao prioritetnu obradu zahtjeva i brži izlazak servisera na teren, bez obzira na vrstu kvara.
+
+**Poslovna vrijednost:** Ovaj story omogućava korisnicima koji su spremni platiti više (ili imaju pretplatu) da preskoče redovnu listu čekanja. Za firmu, ovo donosi veće prihode i omogućava bolju segmentaciju klijenata.
+
+**Prioritet:** Visok (ako je biznis model baziran na hitnosti)
+
+**Pretpostavke i otvorena pitanja:** Pretpostavka: Sistem razlikuje standardne i premium zahtjeve. Premium zahtjev automatski dobiva najviši operativni prioritet.
+
+**Otvorena pitanja:** Da li se "Premium" opcija naplaćuje odmah kroz sistem ili se samo evidentira kao stavka za fakturu?
+
+**Veze sa drugim storyjima:** Povezano sa storyjem za prijava zahtjeva (US-05), pregled otvorenih intervencija (US-07) i određivanje prioriteta (US-12).
+
+**Acceptance Criteria:**
+
+- **AC1: Odabir Premium opcije tokom prijave**
+**GIVEN** korisnik se nalazi na koraku "Hitnost" u US-05
+
+**WHEN** označi opciju "Premium — hitna intervencija (dodatni troškovi)"
+
+**THEN** sistem evidentira zahtjev sa specijalnom oznakom is_premium = true i prikazuje korisniku obavijest o uslovima te usluge.
+
+- **AC2: Vizuelno isticanje u dispečerskoj listi**
+**GIVEN** novi Premium zahtjev je kreiran
+
+**WHEN** dispečer pregleda listu otvorenih intervencija (US-07)
+
+**THEN** taj zahtjev mora biti vizuelno istaknut (npr. crveni/zuti okvir, ikona "Premium" ili "HITNO") i postavljen na sam vrh liste.
+
+- **AC3: Automatsko obavještavanje (Instant Alert)**
+**GIVEN** korisnik je potvrdio Premium zahtjev
+
+**WHEN** sistem kreira zapis
+
+**THEN** sistem šalje trenutnu notifikaciju (Push/SMS/Email) svim slobodnim dispečerima s informacijom da je pristigao Premium zahtjev koji čeka dodjelu.
+
+- **AC4: Automatski prioritet**
+**GIVEN** dispečer otvori detalje Premium zahtjeva
+
+**WHEN** sistem učita podatke
+
+**THEN** operativni prioritet (US-12) je unaprijed postavljen na "Hitno" i dispečer ga ne može sniziti bez unosa posebnog obrazloženja.
+
+- **AC5: Prioritetni status u pregledu za servisere**
+**GIVEN** Premium zahtjev je dodijeljen serviseru
+
+**WHEN** serviser otvori svoju listu zadataka (US-15)
+
+**THEN** Premium zadatak mora biti pri vrhu liste uz jasnu oznaku hitnosti.
 
 ---
 
