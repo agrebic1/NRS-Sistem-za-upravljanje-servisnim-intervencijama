@@ -138,3 +138,24 @@ Kompletno stablo kategorija
 
 9. (+1) Specifične usluge
 9.1. Bazeni, 9.2. Krov/oluci, 9.3. Solarni sistemi, 9.4. Dezinsekcija, 9.5. Održavanje okoliša, 9.6. Fasaderski radovi, 9.7. Profesionalno čišćenje, 9.8. Odvoz otpada, 9.9. SVE OSTALO.
+
+| Polje | Opis |
+|-------|------|
+| ID odluke | DLI- |
+| Datum | 03.05.206. |
+| Kratak naziv odluke | SOS Bypass (Preskakanje trijaže za hitne slučajeve) |
+| Opis problema | Da li korisnik koji plaća premium hitnu uslugu treba prolaziti kroz standardni Wizard proces? |
+| Razmatrane opcije | 1. Standardni tok za sve (Gubljenje dragocjenog vremena u krizi) <br> 2. Telefonski poziv samo za hitne (Teško praćenje i logovanje) <br> 3. SOS Bypass protokol (Automatizovano preskakanje koraka uz premium naplatu) |
+| Odabrana opcija | 3. SOS Bypass protokol |
+| Razlog izbora | Korisnik koji plaća hitnost je u kriznoj situaciji. Svaka sekunda u aplikaciji povećava frustraciju. Sistem preuzima rizik manje preciznih podataka u zamjenu za maksimalnu brzinu odziva. |
+| Posljedice odluke | Majstor na teren izlazi sa manje informacija, ali sa opremom za hitne intervencije. |
+| Status odluke | otvoreno pitanje |
+
+Detaljno obrazloženje
+U kriznim situacijama, svaki dodatni klik u aplikaciji povećava vjerovatnoću da će korisnik odustati od sistema i pozvati vatrogasce ili drugog majstora van platforme. SOS Bypass je dizajniran da zadrži tog korisnika tako što mu nudi najbrži mogući put do rješenja.
+
+Logika preskakanja (The Bypass):
+Dok standardna popravka zahtijeva popunu upitnika za trijažu zahtjeva, SOS Bypass preskače korak trijaže, s obzirom da je to već ranije određeno.
+
+Ekonomski model:
+Budući da hitni izlazak remeti planirane termine ostalih korisnika, ovaj protokol uvodi vanrednu tarifu. Ta tarifa služi i kao prirodni filter: korisnik kojem nije stvarno hitno, vratiće se na standardni Wizard kada vidi cijenu SOS izlaska.
