@@ -97,9 +97,3 @@ Sprint 11 nije planiran kao poseban inkrement, nego kao završni sprint usmjeren
 - dopunu dokumentacije
 - pripremu za demonstraciju i predaju
 
----
-
-## Scope napomena (premium)
-
-Premium funkcionalnosti u MVP-u pokrivaju aktivaciju i korištenje kroz simulirani tok naplate.
-Integracija stvarnog payment gateway-a nije dio MVP opsega i planirana je post-MVP.
