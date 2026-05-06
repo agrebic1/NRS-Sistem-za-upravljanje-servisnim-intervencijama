@@ -161,3 +161,15 @@ export const profilUpdateSchema = z.object({
 export const premiumCancelSchema = z.object({
   reason: z.string().max(500).optional().nullable(),
 });
+
+export const premiumPlanSchema = z.enum(['monthly', 'yearly'], {
+  errorMap: () => ({ message: 'Odaberite validan premium plan.' }),
+});
+
+export const premiumStartSchema = z.object({
+  plan: premiumPlanSchema,
+});
+
+export const premiumConfirmSchema = z.object({
+  plan: premiumPlanSchema,
+});

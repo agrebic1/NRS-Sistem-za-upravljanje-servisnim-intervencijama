@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { CheckCircle2, ShieldCheck, Zap } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, ShieldCheck, X, Zap } from 'lucide-react';
 import { AppShell } from '@/components/layout/AppShell';
 import { Button } from '@/components/ui/Button';
 import { AlertMessage } from '@/components/ui/AlertMessage';
@@ -89,6 +89,9 @@ export default function KorisnikPremiumPage() {
   const [cvv, setCvv] = useState('');
   const [imeNaKartici, setImeNaKartici] = useState('');
   const [odabraniPlan, setOdabraniPlan] = useState<PlanTip>('monthly');
+  const [prikaziOtkazivanjeModal, setPrikaziOtkazivanjeModal] = useState(false);
+  const [otkazivanjeKljuc, setOtkazivanjeKljuc] = useState<'cancel' | 'cancelActive' | null>(null);
+  const premiumVecOtkazan = Boolean(otkazano);
 
   function formatirajBrojKartice(vrijednost: string): string {
     const cifre = vrijednost.replace(/\D/g, '').slice(0, 16);
@@ -180,11 +183,19 @@ export default function KorisnikPremiumPage() {
     setGreska(null);
     setPoruka(null);
     try {
-      const r1 = await fetch('/api/premium/start', { method: 'POST' });
+      const r1 = await fetch('/api/premium/start', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ plan: odabraniPlan }),
+      });
       const d1 = (await r1.json()) as { error?: string };
       if (!r1.ok) throw new Error(d1.error ?? 'Pokretanje naplate nije uspjelo.');
 
-      const r2 = await fetch('/api/premium/confirm', { method: 'POST' });
+      const r2 = await fetch('/api/premium/confirm', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ plan: odabraniPlan }),
+      });
       const d2 = (await r2.json()) as { error?: string };
       if (!r2.ok) throw new Error(d2.error ?? 'Potvrda uplate nije uspjela.');
 
@@ -200,6 +211,21 @@ export default function KorisnikPremiumPage() {
     } finally {
       setAkcijaUToku(null);
     }
+  }
+
+  function otvoriOtkazivanjeModal(kljuc: 'cancel' | 'cancelActive') {
+    setOtkazivanjeKljuc(kljuc);
+    setPrikaziOtkazivanjeModal(true);
+  }
+
+  async function potvrdiOtkazivanjePremiuma() {
+    if (!otkazivanjeKljuc) return;
+    await pozoviPremium(otkazivanjeKljuc, '/api/premium/cancel', {
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ reason: unosRazlogaOtkaza || null }),
+    });
+    setPrikaziOtkazivanjeModal(false);
+    setOtkazivanjeKljuc(null);
   }
 
   return (
@@ -238,8 +264,16 @@ export default function KorisnikPremiumPage() {
           </div>
         </section>
 
-        {greska && <AlertMessage variant="error" message={greska} />}
-        {poruka && <AlertMessage variant="success" message={poruka} />}
+        {greska && (
+          <div className="mb-4">
+            <AlertMessage variant="error" message={greska} />
+          </div>
+        )}
+        {poruka && (
+          <div className="mb-4">
+            <AlertMessage variant="success" message={poruka} />
+          </div>
+        )}
 
         {ucitava ? (
           <div className="rounded-2xl border p-6 text-sm" style={{ color: 'var(--first-nonary)' }}>
@@ -263,6 +297,16 @@ export default function KorisnikPremiumPage() {
                     <p className="mt-1 text-sm" style={{ color: 'var(--first-nonary)' }}>
                       Transparentan pregled cijena i pogodnosti prije aktivacije.
                     </p>
+                    <div
+                      className="mt-3 rounded-xl border px-3 py-2 text-xs font-medium"
+                      style={{
+                        borderColor: 'rgb(var(--first-primary-rgb) / 0.35)',
+                        backgroundColor: 'rgb(var(--first-primary-rgb) / 0.08)',
+                        color: 'var(--first-octonary)',
+                      }}
+                    >
+                      Mjesečni plan možete otkazati u bilo kojem trenutku. Premium ostaje aktivan do kraja već plaćenog perioda.
+                    </div>
 
                     <div className="mt-4 grid gap-3 sm:grid-cols-2">
                       {(Object.keys(PLANOVI) as PlanTip[]).map((tip) => {
@@ -396,7 +440,12 @@ export default function KorisnikPremiumPage() {
                         <Button
                           type="button"
                           size="md"
-                          onClick={() => void pozoviPremium('confirm', '/api/premium/confirm')}
+                          onClick={() =>
+                            void pozoviPremium('confirm', '/api/premium/confirm', {
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({ plan: (plan as PlanTip | null) ?? odabraniPlan }),
+                            })
+                          }
                           isLoading={akcijaUToku === 'confirm'}
                           loadingText="Potvrda..."
                         >
@@ -418,16 +467,15 @@ export default function KorisnikPremiumPage() {
                         type="button"
                         size="md"
                         variant="secondary"
-                        onClick={() =>
-                          void pozoviPremium('cancel', '/api/premium/cancel', {
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ reason: unosRazlogaOtkaza || null }),
-                          })
-                        }
+                        onClick={() => {
+                          if (premiumVecOtkazan) return;
+                          otvoriOtkazivanjeModal('cancel');
+                        }}
                         isLoading={akcijaUToku === 'cancel'}
                         loadingText="Otkazivanje..."
+                        disabled={premiumVecOtkazan}
                       >
-                        Otkaži
+                        {premiumVecOtkazan ? 'Već otkazano' : 'Otkaži'}
                       </Button>
                     </div>
                   </section>
@@ -502,31 +550,38 @@ export default function KorisnikPremiumPage() {
                     </ul>
                   </div>
 
+                  {otkazano && istek && (
+                    <div
+                      className="mt-4 rounded-xl border p-4"
+                      style={{
+                        borderColor: 'rgba(217,119,6,0.35)',
+                        backgroundColor: 'rgba(217,119,6,0.08)',
+                      }}
+                    >
+                      <p className="text-sm font-semibold" style={{ color: '#B45309' }}>
+                        Otkazivanje je zabilježeno
+                      </p>
+                      <p className="mt-1 text-sm" style={{ color: 'var(--first-nonary)' }}>
+                        Premium ostaje aktivan do <strong>{formatirajDatumPrikaz(istek)}</strong>, jer je period već plaćen.
+                      </p>
+                    </div>
+                  )}
+
                   <div className="mt-4">
-                    <textarea
-                      className="w-full rounded-lg border px-3 py-2 text-sm"
-                      style={{ borderColor: 'rgb(var(--first-quaternary-rgb) / 0.45)' }}
-                      rows={2}
-                      placeholder="Opcioni razlog otkazivanja"
-                      value={unosRazlogaOtkaza}
-                      onChange={(e) => setUnosRazlogaOtkaza(e.target.value)}
-                      maxLength={500}
-                    />
                     <div className="mt-2">
                       <Button
                         type="button"
                         size="md"
                         variant="secondary"
-                        onClick={() =>
-                          void pozoviPremium('cancelActive', '/api/premium/cancel', {
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ reason: unosRazlogaOtkaza || null }),
-                          })
-                        }
+                        onClick={() => {
+                          if (premiumVecOtkazan) return;
+                          otvoriOtkazivanjeModal('cancelActive');
+                        }}
                         isLoading={akcijaUToku === 'cancelActive'}
                         loadingText="Otkazivanje..."
+                        disabled={premiumVecOtkazan}
                       >
-                        Otkaži premium
+                        {premiumVecOtkazan ? 'Otkazivanje već aktivno' : 'Otkaži premium'}
                       </Button>
                     </div>
                   </div>
@@ -561,11 +616,16 @@ export default function KorisnikPremiumPage() {
                     <Button
                       type="button"
                       size="md"
-                      onClick={() => void pozoviPremium('renew', '/api/premium/renew')}
-                      isLoading={akcijaUToku === 'renew'}
-                      loadingText="Obnova..."
+                      onClick={() =>
+                        void pozoviPremium('restartCheckout', '/api/premium/start', {
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ plan: odabraniPlan }),
+                        })
+                      }
+                      isLoading={akcijaUToku === 'restartCheckout'}
+                      loadingText="Pokretanje..."
                     >
-                      Obnovi premium
+                      Kupi premium ponovo
                     </Button>
                   </div>
                 </section>
@@ -611,6 +671,14 @@ export default function KorisnikPremiumPage() {
                       {istek ? formatirajDatumPrikaz(istek) : '-'}
                     </dd>
                   </div>
+                  {status === 'active' && otkazano && istek && (
+                    <div className="flex justify-between gap-4">
+                      <dt style={{ color: '#B45309' }}>Prestaje važiti</dt>
+                      <dd className="font-semibold" style={{ color: '#B45309' }}>
+                        {formatirajDatumPrikaz(istek)}
+                      </dd>
+                    </div>
+                  )}
                 </dl>
               </section>
 
@@ -658,6 +726,128 @@ export default function KorisnikPremiumPage() {
           </div>
         )}
       </div>
+      {prikaziOtkazivanjeModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center px-4 backdrop-blur-sm"
+          style={{ backgroundColor: 'rgba(0,0,0,0.45)' }}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setPrikaziOtkazivanjeModal(false);
+              setOtkazivanjeKljuc(null);
+            }
+          }}
+        >
+          <div
+            className="w-full max-w-lg overflow-hidden rounded-2xl shadow-2xl"
+            style={{
+              backgroundColor: 'var(--first-tertiary)',
+              border: '1px solid rgb(var(--first-quaternary-rgb) / 0.4)',
+            }}
+          >
+            <div
+              className="flex items-start justify-between border-b px-6 py-4"
+              style={{ borderColor: 'rgb(var(--first-quaternary-rgb) / 0.3)' }}
+            >
+              <div className="flex items-center gap-3">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl" style={{ backgroundColor: 'rgba(217,119,6,0.12)' }}>
+                  <AlertTriangle className="h-5 w-5" style={{ color: '#B45309' }} />
+                </div>
+                <div>
+                  <h2 className="text-base font-bold" style={{ color: 'var(--first-octonary)' }}>
+                    Potvrda otkazivanja premiuma
+                  </h2>
+                  <p className="text-xs" style={{ color: 'var(--first-nonary)' }}>
+                    Pregled posljedica prije potvrde
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setPrikaziOtkazivanjeModal(false);
+                  setOtkazivanjeKljuc(null);
+                }}
+                className="transition-opacity hover:opacity-70"
+                style={{ color: 'var(--first-nonary)' }}
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="space-y-4 px-6 py-5">
+              <p className="text-sm leading-relaxed" style={{ color: 'var(--first-nonary)' }}>
+                Otkazivanjem gasite naredni ciklus naplate. Premium pogodnosti ostaju dostupne do kraja već plaćenog perioda.
+              </p>
+              <p className="text-xs font-semibold" style={{ color: '#B45309' }}>
+                Mjesečni plan je moguće otkazati u bilo kojem trenutku.
+              </p>
+              <div>
+                <label className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--first-nonary)' }}>
+                  Razlog otkazivanja (opciono)
+                </label>
+                <textarea
+                  className="mt-2 w-full rounded-lg border px-3 py-2 text-sm"
+                  style={{ borderColor: 'rgb(var(--first-quaternary-rgb) / 0.45)' }}
+                  rows={3}
+                  placeholder="Npr. trenutno mi ne treba premium"
+                  value={unosRazlogaOtkaza}
+                  onChange={(e) => setUnosRazlogaOtkaza(e.target.value)}
+                  maxLength={500}
+                />
+              </div>
+              <div
+                className="rounded-xl border p-4"
+                style={{
+                  borderColor: 'rgba(217,119,6,0.35)',
+                  backgroundColor: 'rgba(217,119,6,0.08)',
+                }}
+              >
+                <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: '#B45309' }}>
+                  Šta to znači
+                </p>
+                <ul className="mt-2 space-y-1 text-sm" style={{ color: 'var(--first-nonary)' }}>
+                  <li>- Prioritetna obrada ostaje aktivna do datuma isteka.</li>
+                  <li>- Nakon isteka status prelazi na "Istekao".</li>
+                  <li>- Premium kasnije možete ponovo kupiti kroz standardni checkout.</li>
+                </ul>
+                {istek && (
+                  <p className="mt-2 text-sm font-semibold" style={{ color: 'var(--first-octonary)' }}>
+                    Premium prestaje važiti: {formatirajDatumPrikaz(istek)}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <div
+              className="flex items-center justify-end gap-3 border-t px-6 py-4"
+              style={{ borderColor: 'rgb(var(--first-quaternary-rgb) / 0.3)' }}
+            >
+              <Button
+                type="button"
+                variant="ghost"
+                size="md"
+                onClick={() => {
+                  setPrikaziOtkazivanjeModal(false);
+                  setOtkazivanjeKljuc(null);
+                }}
+                disabled={akcijaUToku === 'cancel' || akcijaUToku === 'cancelActive'}
+              >
+                Odustani
+              </Button>
+              <Button
+                type="button"
+                variant="danger"
+                size="md"
+                onClick={() => void potvrdiOtkazivanjePremiuma()}
+                isLoading={akcijaUToku === 'cancel' || akcijaUToku === 'cancelActive'}
+                loadingText="Otkazivanje..."
+              >
+                Potvrdi otkazivanje
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </AppShell>
   );
 }

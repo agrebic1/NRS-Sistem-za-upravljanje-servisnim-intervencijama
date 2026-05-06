@@ -2025,39 +2025,29 @@ Zavisi od svih storyja koji mijenjaju stanje intervencije: prijava zahtjeva za s
 **Acceptance Criteria:**
 
 - **AC1: Odabir Premium opcije tokom prijave**
-**GIVEN** korisnik je završio korake izbora kategorije i potkategorije u US-05 i nalazi se na koraku "Hitnost"
-
-**WHEN** označi opciju "Premium — hitna intervencija (dodatni troškovi)"
-
-**THEN** sistem evidentira zahtjev sa specijalnom oznakom is_premium = true i prikazuje korisniku obavijest o uslovima te usluge.
+  - **GIVEN** korisnik je završio korake izbora kategorije i potkategorije u US-05 i nalazi se na koraku "Hitnost"
+  - **WHEN** označi opciju "Premium — hitna intervencija (dodatni troškovi)"
+  - **THEN** sistem evidentira zahtjev sa specijalnom oznakom `is_premium = true` i prikazuje korisniku obavijest o uslovima te usluge.
 
 - **AC2: Vizuelno isticanje u dispečerskoj listi**
-**GIVEN** novi Premium zahtjev je kreiran
-
-**WHEN** dispečer pregleda listu otvorenih intervencija (US-07)
-
-**THEN** taj zahtjev mora biti vizuelno istaknut (npr. crveni/zuti okvir, ikona "Premium" ili "HITNO") i postavljen na sam vrh liste.
+  - **GIVEN** novi Premium zahtjev je kreiran
+  - **WHEN** dispečer pregleda listu otvorenih intervencija (US-07)
+  - **THEN** taj zahtjev mora biti vizuelno istaknut (npr. crveni/žuti okvir, ikona "Premium" ili "HITNO") i postavljen na sam vrh liste.
 
 - **AC3: Automatsko obavještavanje (Instant Alert)**
-**GIVEN** korisnik je potvrdio Premium zahtjev
-
-**WHEN** sistem kreira zapis
-
-**THEN** sistem šalje trenutnu notifikaciju (Push/SMS/Email) svim slobodnim dispečerima s informacijom da je pristigao Premium zahtjev koji čeka dodjelu.
+  - **GIVEN** korisnik je potvrdio Premium zahtjev
+  - **WHEN** sistem kreira zapis
+  - **THEN** sistem šalje trenutnu notifikaciju (Push/SMS/Email) svim slobodnim dispečerima s informacijom da je pristigao Premium zahtjev koji čeka dodjelu.
 
 - **AC4: Automatski prioritet**
-**GIVEN** dispečer otvori detalje Premium zahtjeva
-
-**WHEN** sistem učita podatke
-
-**THEN** operativni prioritet (US-12) je unaprijed postavljen na "Hitno" i dispečer ga ne može sniziti bez unosa posebnog obrazloženja.
+  - **GIVEN** dispečer otvori detalje Premium zahtjeva
+  - **WHEN** sistem učita podatke
+  - **THEN** operativni prioritet (US-12) je unaprijed postavljen na "Hitno" i dispečer ga ne može sniziti bez unosa posebnog obrazloženja.
 
 - **AC5: Prioritetni status u pregledu za servisere**
-**GIVEN** Premium zahtjev je dodijeljen serviseru
-
-**WHEN** serviser otvori svoju listu zadataka (US-15)
-
-**THEN** Premium zadatak mora biti pri vrhu liste uz jasnu oznaku hitnosti.
+  - **GIVEN** Premium zahtjev je dodijeljen serviseru
+  - **WHEN** serviser otvori svoju listu zadataka (US-15)
+  - **THEN** Premium zadatak mora biti pri vrhu liste uz jasnu oznaku hitnosti.
 
 ---
 
