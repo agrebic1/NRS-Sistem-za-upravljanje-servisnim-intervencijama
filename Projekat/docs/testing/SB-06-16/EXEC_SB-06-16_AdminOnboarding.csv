@@ -1,8 +1,0 @@
-ID_testa,Okruzenje,Datum_testiranja,Izvrsilac,Ocekivani_rezultat,Stvarni_rezultat,Status_testa,ID_greske,Dokaz_putanja
-TC-01,Local,06.05.2026,QA tim,Nalog se kreira; dodjeljuje se odabrana uloga; prikazuje se poruka uspjeha i privremena lozinka,Automatski integration test prolazi; API vraca 200 i payload sa korisnikom i lozinkom,Prosao,,SB-06-16/TC-01_AdminCreateSuccess.png
-TC-02,Local,06.05.2026,QA tim,Sistem ne kreira nalog i prikazuje validacionu poruku,Automatski integration test vraca 400 na nevalidan payload,Prosao,,SB-06-16/TC-02_InvalidPayload.png
-TC-03,Local,06.05.2026,QA tim,Sistem odbija kreiranje i prikazuje poruku o duplikatu,Automatski integration test vraca 409 na duplikat email,Prosao,,SB-06-16/TC-03_DuplicateEmail.png
-TC-04,Local,06.05.2026,QA tim,API vraca 403 i ne kreira nalog,Automatski integration test vraca 403 za non-admin sesiju,Prosao,,SB-06-16/TC-04_NonAdminApiDenied.png
-TC-05,Local,06.05.2026,QA tim,Sistem onemogucava pristup stranici ili preusmjerava korisnika,Automatski e2e test pokriva non-admin redirect sa /admin/korisnici/novi,Prosao,,SB-06-16/TC-05_NonAdminUiDenied.png
-TC-06,Local,06.05.2026,QA tim,Pristupni podaci su poslani emailom ili je fallback slanje evidentirano,API vraca email_poslan=true kada je fallback aktivan bez RESEND_API_KEY,Prosao,,SB-06-16/TC-06_EmailFlow.png
-TC-07,Local,06.05.2026,QA tim,API vraca 401 i ne vraca osjetljive podatke,Automatski integration test vraca 401 bez sesije,Prosao,,SB-06-16/TC-07_UnauthenticatedDenied.png

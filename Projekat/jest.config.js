@@ -17,12 +17,13 @@ module.exports = {
     'app/api/auth/uloge/route.ts',
     'app/api/admin/users/route.ts',
   ],
+  coverageReporters: ['text', 'lcov', 'json-summary'],
   coverageThreshold: {
     global: {
       branches: 85,
-      functions: 98,
-      lines: 97,
-      statements: 97,
+      functions: 99,
+      lines: 99,
+      statements: 99,
     },
   },
 };

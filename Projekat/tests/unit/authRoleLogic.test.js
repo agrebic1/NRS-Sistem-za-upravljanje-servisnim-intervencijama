@@ -249,6 +249,31 @@ describe('auth service role logic and auth flows', () => {
       email: 'unconfirmed@example.com',
     });
     expect(mockSignInWithPassword.mock.calls.length).toBe(poziviNakonDirektneSesije + 1);
+
+    mockSignUp.mockResolvedValueOnce({
+      data: {
+        user: {
+          id: 'id-3',
+          email: 'generic-login-error@example.com',
+          identities: [{ id: 'identity-1' }],
+        },
+        session: null,
+      },
+      error: null,
+    });
+    mockSignInWithPassword.mockResolvedValueOnce({
+      data: { user: null, session: null },
+      error: { message: 'Invalid login credentials' },
+    });
+    await expect(
+      registrujKorisnika({
+        ime: 'A',
+        prezime: 'B',
+        email: 'generic-login-error@example.com',
+        telefon: '061111222',
+        lozinka: 'Abcd123!',
+      })
+    ).rejects.toThrow('Neispravni podaci za prijavu.');
   });
 
   test('maps roles and redirects', async () => {

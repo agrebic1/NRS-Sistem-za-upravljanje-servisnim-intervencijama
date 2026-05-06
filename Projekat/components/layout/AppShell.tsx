@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
@@ -121,12 +121,14 @@ function KorisnikDropdown({
   identitet,
   onOdjava,
   jeOdjavaUToku,
+  mozePromijenitiUlogu,
 }: {
   imeKorisnika?: string;
   uloga:         UserRole;
   identitet:     typeof ROLE_IDENTITET[UserRole];
   onOdjava:      () => void;
   jeOdjavaUToku: boolean;
+  mozePromijenitiUlogu: boolean;
 }) {
   const [otvoren, setOtvoren] = useState(false);
   const { LogoIkona, boja, pozadina, oznaka } = identitet;
@@ -177,15 +179,17 @@ function KorisnikDropdown({
               <UserCircle className="h-4 w-4" style={{ color: 'var(--first-nonary)' }} />
               Profil i postavke
             </Link>
-            <Link
-              href="/odabir-uloge"
-              onClick={() => setOtvoren(false)}
-              className="flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium transition-colors hover:bg-soft-beige/30"
-              style={{ color: 'var(--first-octonary)' }}
-            >
-              <ArrowLeftRight className="h-4 w-4" style={{ color: 'var(--first-nonary)' }} />
-              Promijeni ulogu
-            </Link>
+            {mozePromijenitiUlogu && (
+              <Link
+                href="/odabir-uloge"
+                onClick={() => setOtvoren(false)}
+                className="flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium transition-colors hover:bg-soft-beige/30"
+                style={{ color: 'var(--first-octonary)' }}
+              >
+                <ArrowLeftRight className="h-4 w-4" style={{ color: 'var(--first-nonary)' }} />
+                Promijeni ulogu
+              </Link>
+            )}
             <div className="mx-3 my-1.5 h-px" style={{ backgroundColor: 'rgb(var(--first-quaternary-rgb) / 0.35)' }} />
             <button
               type="button"
@@ -216,6 +220,7 @@ interface AppShellProps {
 export function AppShell({ children, uloga, imeKorisnika }: AppShellProps) {
   const [jeMenuOtvoren, setJeMenuOtvoren] = useState(false);
   const [jeOdjavaUToku, setJeOdjavaUToku] = useState(false);
+  const [mozePromijenitiUlogu, setMozePromijenitiUlogu] = useState(false);
   const router           = useRouter();
   const putanja          = usePathname();
   const stavke           = NAVIGACIJA_PO_ULOZI[uloga] ?? [];
@@ -232,6 +237,22 @@ export function AppShell({ children, uloga, imeKorisnika }: AppShellProps) {
     try { await odjaviSe(); router.replace('/auth/login'); }
     finally { setJeOdjavaUToku(false); }
   }
+
+  useEffect(() => {
+    let aktivan = true;
+    async function ucitajUloge() {
+      try {
+        const odgovor = await fetch('/api/profil', { cache: 'no-store' });
+        const podaci = await odgovor.json();
+        const ulogeKorisnika = Array.isArray(podaci?.profil?.uloge) ? podaci.profil.uloge : [];
+        if (aktivan) setMozePromijenitiUlogu(ulogeKorisnika.length > 1);
+      } catch {
+        if (aktivan) setMozePromijenitiUlogu(false);
+      }
+    }
+    ucitajUloge();
+    return () => { aktivan = false; };
+  }, []);
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: 'var(--first-tertiary)' }}>
@@ -290,6 +311,7 @@ export function AppShell({ children, uloga, imeKorisnika }: AppShellProps) {
             identitet={identitet}
             onOdjava={odjaviKorisnika}
             jeOdjavaUToku={jeOdjavaUToku}
+            mozePromijenitiUlogu={mozePromijenitiUlogu}
           />
 
           <button
@@ -359,12 +381,14 @@ export function AppShell({ children, uloga, imeKorisnika }: AppShellProps) {
                 <UserCircle className="h-4 w-4" />
                 Profil i postavke
               </Link>
-              <Link href="/odabir-uloge" onClick={() => setJeMenuOtvoren(false)}
-                className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors hover:bg-soft-beige/30"
-                style={{ color: 'var(--first-nonary)' }}>
-                <ArrowLeftRight className="h-4 w-4" />
-                Promijeni ulogu
-              </Link>
+              {mozePromijenitiUlogu && (
+                <Link href="/odabir-uloge" onClick={() => setJeMenuOtvoren(false)}
+                  className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors hover:bg-soft-beige/30"
+                  style={{ color: 'var(--first-nonary)' }}>
+                  <ArrowLeftRight className="h-4 w-4" />
+                  Promijeni ulogu
+                </Link>
+              )}
               <button
                 type="button"
                 onClick={odjaviKorisnika}

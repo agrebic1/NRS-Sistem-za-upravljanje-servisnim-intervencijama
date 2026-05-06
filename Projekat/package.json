@@ -12,7 +12,8 @@
     "test:unit": "jest --config jest.config.js --runInBand tests/unit",
     "test:integration": "jest --config jest.config.js --runInBand tests/integration",
     "test:e2e": "playwright test",
-    "test:coverage": "jest --config jest.config.js --coverage --runInBand"
+    "test:coverage": "jest --config jest.config.js --coverage --runInBand",
+    "test:krajnje": "npm run test:coverage && node tools/krajnjeTestiranjeReport.mjs"
   },
   "dependencies": {
     "@babel/runtime": "^7.29.2",

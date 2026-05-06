@@ -268,7 +268,7 @@ function UlogeSekcija({ uloge }: { uloge: string[] }) {
             </div>
             <Link href={cfg.href}>
               <Button type="button" variant="secondary" size="sm">
-                Prijeđi
+                Pređi
               </Button>
             </Link>
           </div>

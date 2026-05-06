@@ -409,7 +409,9 @@ function PregledZahtjevaKorak({
           </div>
           <Button type="button" variant="ghost" size="sm" onClick={() => onEditStep(2)}>Uredi</Button>
         </div>
-        <p className="text-sm" style={{ color: 'var(--first-octonary)' }}>{state.address}</p>
+        <p className="text-sm break-words [overflow-wrap:anywhere]" style={{ color: 'var(--first-octonary)' }}>
+          {state.address}
+        </p>
         {imaKoordinate && (
           <p className="mt-1 text-xs" style={{ color: 'var(--first-nonary)' }}>
             Precizna lokacija je dodana (koordinate).
@@ -439,7 +441,12 @@ function PregledZahtjevaKorak({
           </div>
           <Button type="button" variant="ghost" size="sm" onClick={() => onEditStep(4)}>Uredi</Button>
         </div>
-        <p className="text-sm" style={{ color: 'var(--first-octonary)' }}>{state.description}</p>
+        <p
+          className="text-sm whitespace-pre-wrap break-words [overflow-wrap:anywhere]"
+          style={{ color: 'var(--first-octonary)' }}
+        >
+          {state.description}
+        </p>
         <p className="mt-2 text-sm" style={{ color: 'var(--first-octonary)' }}>
           Kontakt telefon: {state.contactPhone}
         </p>

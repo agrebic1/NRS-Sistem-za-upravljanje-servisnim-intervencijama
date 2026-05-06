@@ -2,6 +2,8 @@ const mockSessionGetUser = jest.fn();
 const mockFrom = jest.fn();
 const mockListUsers = jest.fn();
 const mockCreateUser = jest.fn();
+const mockSendEmail = jest.fn();
+const mockKreirajEmailInternogNaloga = jest.fn();
 
 jest.mock('@/lib/supabase/server', () => ({
   createClient: () => ({
@@ -14,6 +16,11 @@ jest.mock('@/lib/supabase/admin', () => ({
     from: mockFrom,
     auth: { admin: { listUsers: mockListUsers, createUser: mockCreateUser } },
   }),
+}));
+
+jest.mock('@/lib/email/sendEmail', () => ({
+  sendEmail: (...args) => mockSendEmail(...args),
+  kreirajEmailInternogNaloga: (...args) => mockKreirajEmailInternogNaloga(...args),
 }));
 
 const { GET, POST } = require('@/app/api/admin/users/route');
@@ -44,6 +51,10 @@ describe('/api/admin/users route', () => {
     mockListUsers.mockReset();
     mockCreateUser.mockReset();
     mockSessionGetUser.mockReset();
+    mockSendEmail.mockReset();
+    mockKreirajEmailInternogNaloga.mockReset();
+    mockSendEmail.mockResolvedValue({ success: true });
+    mockKreirajEmailInternogNaloga.mockReturnValue('<p>email</p>');
   });
 
   test('returns 401 when no session', async () => {
@@ -249,6 +260,182 @@ describe('/api/admin/users route', () => {
     const response = await GET();
     expect(response.status).toBe(500);
   });
+
+  test('GET uses premium fallback queries when primary premium query fails', async () => {
+    mockSessionGetUser.mockResolvedValue({ data: { user: { id: 'u1' } } });
+
+    const ulogaLookup = {
+      select: jest.fn().mockImplementation((query) => {
+        if (query === 'naziv') {
+          return {
+            eq: jest.fn().mockReturnValue({
+              maybeSingle: jest.fn().mockResolvedValue({ data: { naziv: 'Administrator' }, error: null }),
+            }),
+          };
+        }
+        return Promise.resolve({ data: [{ id_uloge: 1, naziv: 'Administrator' }], error: null });
+      }),
+      eq: jest.fn().mockReturnThis(),
+      maybeSingle: jest.fn(),
+    };
+
+    const premiumSelect = jest
+      .fn()
+      .mockResolvedValueOnce({ data: null, error: { message: 'missing premium columns' } })
+      .mockResolvedValueOnce({
+        data: [{ id_korisnika_usluge: 'k1', is_premium: true, premium_status: 'active' }],
+        error: null,
+      });
+
+    mockFrom.mockImplementation((table) => {
+      if (table === 'uposlenici') return maybeSingle({ data: { id_uloge: 1 }, error: null });
+      if (table === 'uloga') return ulogaLookup;
+      if (table === 'v_korisnik_usluge') {
+        return selectOnly({
+          data: [{ id_korisnika_usluge: 'k1', ime: 'K', prezime: 'U', email: 'k@example.com' }],
+          error: null,
+        });
+      }
+      if (table === 'v_uposlenici') return selectOnly({ data: [], error: null });
+      if (table === 'korisnik_usluge') {
+        return {
+          select: premiumSelect,
+        };
+      }
+      return selectOnly({ data: [], error: null });
+    });
+
+    mockListUsers.mockResolvedValue({
+      data: {
+        users: [
+          {
+            id: 'k1',
+            email: 'k@example.com',
+            created_at: '2026-01-01T00:00:00.000Z',
+            user_metadata: {},
+            email_confirmed_at: '2026-01-02T00:00:00.000Z',
+          },
+        ],
+      },
+      error: null,
+    });
+
+    const response = await GET();
+    const body = await response.json();
+    expect(response.status).toBe(200);
+    expect(body.users[0].isPremium).toBe(true);
+    expect(body.users[0].premium_status).toBe('active');
+    expect(premiumSelect).toHaveBeenCalledTimes(2);
+  });
+
+  test('GET returns 500 when all premium fallback queries fail', async () => {
+    mockSessionGetUser.mockResolvedValue({ data: { user: { id: 'u1' } } });
+
+    const ulogaLookup = {
+      select: jest.fn().mockImplementation((query) => {
+        if (query === 'naziv') {
+          return {
+            eq: jest.fn().mockReturnValue({
+              maybeSingle: jest.fn().mockResolvedValue({ data: { naziv: 'Administrator' }, error: null }),
+            }),
+          };
+        }
+        return Promise.resolve({ data: [{ id_uloge: 1, naziv: 'Administrator' }], error: null });
+      }),
+      eq: jest.fn().mockReturnThis(),
+      maybeSingle: jest.fn(),
+    };
+
+    const premiumSelect = jest
+      .fn()
+      .mockResolvedValueOnce({ data: null, error: { message: 'missing premium columns' } })
+      .mockResolvedValueOnce({ data: null, error: { message: 'fallback 2 fail' } })
+      .mockResolvedValueOnce({ data: null, error: { message: 'fallback 3 fail' } });
+
+    mockFrom.mockImplementation((table) => {
+      if (table === 'uposlenici') return maybeSingle({ data: { id_uloge: 1 }, error: null });
+      if (table === 'uloga') return ulogaLookup;
+      if (table === 'v_korisnik_usluge') return selectOnly({ data: [], error: null });
+      if (table === 'v_uposlenici') return selectOnly({ data: [], error: null });
+      if (table === 'korisnik_usluge') {
+        return {
+          select: premiumSelect,
+        };
+      }
+      return selectOnly({ data: [], error: null });
+    });
+
+    mockListUsers.mockResolvedValue({ data: { users: [] }, error: null });
+    const response = await GET();
+    expect(response.status).toBe(500);
+  });
+
+  test('GET uses minimal premium fallback mapping when only is_premium is available', async () => {
+    mockSessionGetUser.mockResolvedValue({ data: { user: { id: 'u1' } } });
+
+    const ulogaLookup = {
+      select: jest.fn().mockImplementation((query) => {
+        if (query === 'naziv') {
+          return {
+            eq: jest.fn().mockReturnValue({
+              maybeSingle: jest.fn().mockResolvedValue({ data: { naziv: 'Administrator' }, error: null }),
+            }),
+          };
+        }
+        return Promise.resolve({ data: [{ id_uloge: 1, naziv: 'Administrator' }], error: null });
+      }),
+      eq: jest.fn().mockReturnThis(),
+      maybeSingle: jest.fn(),
+    };
+
+    const premiumSelect = jest
+      .fn()
+      .mockResolvedValueOnce({ data: null, error: { message: 'missing premium columns' } })
+      .mockResolvedValueOnce({ data: null, error: { message: 'fallback 2 fail' } })
+      .mockResolvedValueOnce({
+        data: [{ id_korisnika_usluge: 'k1', is_premium: true }],
+        error: null,
+      });
+
+    mockFrom.mockImplementation((table) => {
+      if (table === 'uposlenici') return maybeSingle({ data: { id_uloge: 1 }, error: null });
+      if (table === 'uloga') return ulogaLookup;
+      if (table === 'v_korisnik_usluge') {
+        return selectOnly({
+          data: [{ id_korisnika_usluge: 'k1', ime: 'K', prezime: 'U', email: 'k@example.com' }],
+          error: null,
+        });
+      }
+      if (table === 'v_uposlenici') return selectOnly({ data: [], error: null });
+      if (table === 'korisnik_usluge') {
+        return {
+          select: premiumSelect,
+        };
+      }
+      return selectOnly({ data: [], error: null });
+    });
+
+    mockListUsers.mockResolvedValue({
+      data: {
+        users: [
+          {
+            id: 'k1',
+            email: 'k@example.com',
+            created_at: '2026-01-01T00:00:00.000Z',
+            user_metadata: {},
+            email_confirmed_at: '2026-01-02T00:00:00.000Z',
+          },
+        ],
+      },
+      error: null,
+    });
+
+    const response = await GET();
+    const body = await response.json();
+    expect(response.status).toBe(200);
+    expect(body.users[0].isPremium).toBe(true);
+    expect(body.users[0].premium_status).toBe('active');
+  });
 });
 
 describe('/api/admin/users POST route', () => {
@@ -257,6 +444,10 @@ describe('/api/admin/users POST route', () => {
     mockListUsers.mockReset();
     mockCreateUser.mockReset();
     mockSessionGetUser.mockReset();
+    mockSendEmail.mockReset();
+    mockKreirajEmailInternogNaloga.mockReset();
+    mockSendEmail.mockResolvedValue({ success: true });
+    mockKreirajEmailInternogNaloga.mockReturnValue('<p>email</p>');
   });
 
   function baseAdminMock() {
@@ -359,5 +550,78 @@ describe('/api/admin/users POST route', () => {
     expect(body.success).toBe(true);
     expect(body.user.id).toBe('new-user-id');
     expect(body.privremena_lozinka).toBeTruthy();
+  });
+
+  test('POST maps role to Dispečer and marks email send failure as soft-success', async () => {
+    mockSendEmail.mockResolvedValue({ success: false, greska: 'smtp fail' });
+    mockSessionGetUser.mockResolvedValue({ data: { user: { id: 'u1' } } });
+    baseAdminMock();
+    mockListUsers.mockResolvedValue({ data: { users: [] }, error: null });
+    mockCreateUser.mockResolvedValue({
+      data: { user: { id: 'new-dispecer-id', email: 'd@example.com' } },
+      error: null,
+    });
+
+    const request = new Request('http://localhost/api/admin/users', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        first_name: 'Dino',
+        last_name: 'Dispecer',
+        email: 'd@example.com',
+        role: 'dispecer',
+      }),
+    });
+
+    const response = await POST(request);
+    const body = await response.json();
+    expect(response.status).toBe(200);
+    expect(body.user.role).toBe('Dispečer');
+    expect(body.email_poslan).toBe(false);
+  });
+
+  test('POST returns 500 when listUsers fails before duplicate check', async () => {
+    mockSessionGetUser.mockResolvedValue({ data: { user: { id: 'u1' } } });
+    baseAdminMock();
+    mockListUsers.mockResolvedValue({
+      data: null,
+      error: { message: 'list users failed before create' },
+    });
+
+    const request = new Request('http://localhost/api/admin/users', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        first_name: 'Amir',
+        last_name: 'Basic',
+        email: 'ab2@example.com',
+        role: 'administrator',
+      }),
+    });
+    const response = await POST(request);
+    expect(response.status).toBe(500);
+  });
+
+  test('POST returns 500 when createUser fails', async () => {
+    mockSessionGetUser.mockResolvedValue({ data: { user: { id: 'u1' } } });
+    baseAdminMock();
+    mockListUsers.mockResolvedValue({ data: { users: [] }, error: null });
+    mockCreateUser.mockResolvedValue({
+      data: { user: null },
+      error: { message: 'create failed' },
+    });
+
+    const request = new Request('http://localhost/api/admin/users', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        first_name: 'Amir',
+        last_name: 'Basic',
+        email: 'create-fail@example.com',
+        role: 'administrator',
+      }),
+    });
+    const response = await POST(request);
+    expect(response.status).toBe(500);
   });
 });

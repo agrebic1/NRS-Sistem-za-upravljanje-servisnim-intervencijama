@@ -21,6 +21,28 @@ Komande se pokreću iz **`Projekat/`** (gdje je `package.json`):
 | `npm run test` | Unit + integration testovi |
 | `npm run test:coverage` | Isti testovi + coverage izvještaj za kritične module |
 | `npm run test:e2e` | Playwright e2e (smoke) u browseru |
+| `npm run test:krajnje` | Jedna komanda za krajnje testiranje: pokreće coverage i generiše sažetak u `docs/testing/KRAJNJE_TESTIRANJE_IZVJESTAJ.md` |
+
+### E2E kredencijali
+
+Neki e2e testovi koriste stvarne role naloge (admin, korisnik, serviser, dispecer).  
+Ako varijable ne postoje, ti testovi se automatski označe kao `skipped`.
+
+Kopiraj ih u `.env.local` i po potrebi promijeni prema svom okruženju.  
+Potrebne su sve 4 uloge (`admin`, `dispecer`, `serviser`, `korisnik`) da bi svi e2e smoke testovi bili izvršeni bez `skipped` statusa.
+
+E2E_ADMIN_EMAIL=admin@nrs.local
+E2E_ADMIN_PASSWORD=Admin123!Strong
+
+E2E_DISPECER_EMAIL=dispecer@nrs.local
+E2E_DISPECER_PASSWORD=Dispecer123!Strong
+
+E2E_SERVISER_EMAIL=serviser@nrs.local
+E2E_SERVISER_PASSWORD=Serviser123!Strong
+
+E2E_KORISNIK_EMAIL=test@gmail.com
+E2E_KORISNIK_PASSWORD=123456789Aa@
+
 
 ### Mockovi i backend
 
@@ -34,6 +56,17 @@ Komande se pokreću iz **`Projekat/`** (gdje je `package.json`):
 
 - **Sprint 5 (auth i uloge):** middleware (neprijavljeni, role-based pristup na `/admin`, `/serviser`, `/dispecer`, `/korisnik`), forme `LoginForm` i `RegisterForm`, e2e smoke na auth stranicama i redirect sa privatnih ruta na login.  
 - **Sprint 6 (servisni zahtjevi, korisnik, dispečer):** 
+  - **Unit:** validacija auth podataka, auth servis (login, rate-limit, registracija, verifikacijski email, mapiranje uloga, redirect logika, session helperi).
+  - **Integration:** API `/api/auth/uloge` i `/api/admin/users` (GET/POST), uključujući admin autorizaciju, premium fallback tokove, duplikate, validaciju payload-a, audit zapis i greške.
+  - **E2E:** smoke tokovi (`auth.smoke`, `korisnik.zahtjev.smoke`) + RBAC cross-access + admin create-user stranica (sa i bez admin privilegija).
+
+### Coverage cilj (99%)
+
+- Za kritične module postavljen je prag: **Statements >= 99%, Lines >= 99%, Functions >= 99%**.
+- Branches su ostavljene na 85% zbog velikog broja odbrambenih fallback grana u API sloju.
+- Trenutno stanje se vidi kroz:
+  1. terminal izlaz komande `npm run test:coverage`
+  2. fajl `docs/testing/KRAJNJE_TESTIRANJE_IZVJESTAJ.md` (generiše `npm run test:krajnje`)
 
 ### Premium MVP test matrica 
 
@@ -74,10 +107,10 @@ Napomena: u MVP-u je premium naplata **simulirana** (bez eksternog payment gatew
 
 | Stavka | Fajl | Namjena |
 |--------|------|--------|
-| **SB-06-16** | `SB-06-16/TC_SB-06-16_AdminOnboarding.csv` |
-| | `SB-06-16/EXEC_SB-06-16_AdminOnboarding.csv` | Evidencija izvršenja testova |
-| | `SB-06-16/BUG_SB-06-16_AdminOnboarding.csv` | Evidencija grešaka i otvorenih rizika |
-| | `SB-06-16/SIGNOFF_SB-06-16_QA-SA.md` | Formalni QA/SA sign-off za SB-06-16 |
+| **SB-06-20** | `SB-06-20/TC_SB-06-20_Sprint6_ManualFlows.csv` | Ručna test matrica za Sprint 6 tokove (prijava kvara, onboarding partnera, admin kreiranje naloga, premium aktivacija) |
+| | `SB-06-20/EXEC_SB-06-20_Sprint6_ManualFlows.csv` | Evidencija izvršenja manualnih testova za SB-06-20 |
+| | `SB-06-20/BUG_SB-06-20_Sprint6_ManualFlows.csv` | Evidencija bugova za SB-06-20 |
+| | `SB-06-20/SIGNOFF_SB-06-20_QA-SA.md` | Formalni QA/SA sign-off za SB-06-20 |
 
 
 Imenovanje: po dogovoru tima, npr. `TC-042_KratkiOpis.png`, da se mapira na `ID_testa` u `EXEC` fajlu.

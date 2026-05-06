@@ -41,7 +41,7 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           id={textareaId}
           {...props}
           className={[
-            'w-full resize-none rounded-xl border px-4 py-2.5 text-sm transition-all duration-200',
+            'w-full resize-none rounded-xl border px-4 py-2.5 text-sm transition-all duration-200 break-words [overflow-wrap:anywhere]',
             'placeholder:text-text-muted/60',
             'focus:outline-none focus:ring-2',
             'disabled:cursor-not-allowed disabled:opacity-50',

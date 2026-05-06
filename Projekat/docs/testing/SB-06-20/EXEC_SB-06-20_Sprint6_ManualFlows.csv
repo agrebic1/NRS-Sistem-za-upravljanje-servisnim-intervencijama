@@ -1,0 +1,13 @@
+ID_testa,Okruzenje,Datum_testiranja,Izvrsilac,Ocekivani_rezultat,Stvarni_rezultat,Status_testa,ID_greske,Dokaz_putanja
+TC-01,,,,Zahtjev je uspjesno kreiran; prikazuje se potvrda i dodijeljen korisnicki broj zahtjeva; status inicijalno pending_review/na_cekanju,,,,SB-06-20/TC-01_RequestWizardSuccess.png
+TC-02,,,,Sistem ne dozvoljava nastavak/slanje; prikazuju se jasne validacione poruke bez kreiranja zahtjeva,,,,SB-06-20/TC-02_RequestWizardValidation.png
+TC-03,,,,Sistem odbija slanje premium zahtjeva sa porukom da premium mora biti aktivan i/ili zavrsen,,,,SB-06-20/TC-03_PremiumBlockedInactive.png
+TC-04,,,,Aplikacija je kreirana sa statusom na_cekanju; korisnik dobija potvrdu o uspjesnom slanju,,,,SB-06-20/TC-04_PartnerApplicationSuccess.png
+TC-05,,,,Sistem vraca validacionu gresku (400) i ne kreira aplikaciju,,,,SB-06-20/TC-05_PartnerApplicationValidation.png
+TC-06,,,,Sistem vraca 403 i ne prikazuje listu aplikacija,,,,SB-06-20/TC-06_PartnerApplicationsForbidden.png
+TC-07,,,,Nalog je kreiran; dodijeljena uloga; vraca se privremena lozinka; audit zapis i email/fallback su evidentirani,,,,SB-06-20/TC-07_AdminCreateUserSuccess.png
+TC-08,,,,Sistem vraca 409 i ne kreira novi nalog; biljezi se neuspjesan audit,,,,SB-06-20/TC-08_AdminCreateDuplicate.png
+TC-09,,,,Sistem vraca 403 (ili 401 bez sesije) i ne kreira nalog,,,,SB-06-20/TC-09_AdminCreateForbidden.png
+TC-10,,,,Premium status prelazi na active; upisuju se datumi pocetka/isteka i premium dogadjaj; korisnik dobija poruku uspjeha,,,,SB-06-20/TC-10_PremiumActivationSuccess.png
+TC-11,,,,Sistem blokira akciju kroz klijentsku/server validaciju i vraca poruku greske bez prelaska u active,,,,SB-06-20/TC-11_PremiumActivationValidation.png
+TC-12,,,,Premium ostaje aktivan do kraja placenog perioda; biljezi se datum/razlog otkazivanja i odgovarajuci event,,,,SB-06-20/TC-12_PremiumCancelAtPeriodEnd.png

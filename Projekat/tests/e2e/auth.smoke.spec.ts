@@ -16,7 +16,7 @@ test.describe('Auth smoke', () => {
     await page.getByLabel('Potvrda lozinke').fill('Abcd123!');
 
     await page.goto('/auth/login');
-    await expect(page.getByRole('heading', { name: 'Prijava u sistem' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Dobrodošli nazad' })).toBeVisible();
     await page.getByLabel('Email adresa').fill('user@example.com');
     await page.getByLabel('Lozinka').fill('Abcd123!');
     await expect(page.getByRole('button', { name: 'Prijavi se' })).toBeVisible();
@@ -41,5 +41,13 @@ test.describe('Auth smoke', () => {
     await expect(
       page.getByText('Previše pokušaja prijave. Sačekajte 5 minuta i pokušajte ponovo.')
     ).toBeVisible();
+  });
+
+  test('shows error for invalid credentials on login', async ({ page }) => {
+    await page.goto('/auth/login');
+    await page.getByLabel('Email adresa').fill(`invalid.${Date.now()}@example.com`);
+    await page.getByLabel('Lozinka').fill('PogresnaLozinka123!');
+    await page.getByRole('button', { name: 'Prijavi se' }).click();
+    await expect(page.getByText('Neispravni podaci za prijavu.')).toBeVisible();
   });
 });
