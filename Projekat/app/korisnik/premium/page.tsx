@@ -807,7 +807,7 @@ export default function KorisnikPremiumPage() {
                 </p>
                 <ul className="mt-2 space-y-1 text-sm" style={{ color: 'var(--first-nonary)' }}>
                   <li>- Prioritetna obrada ostaje aktivna do datuma isteka.</li>
-                  <li>- Nakon isteka status prelazi na "Istekao".</li>
+                  <li>- Nakon isteka status prelazi na &quot;Istekao&quot;.</li>
                   <li>- Premium kasnije možete ponovo kupiti kroz standardni checkout.</li>
                 </ul>
                 {istek && (
