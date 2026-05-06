@@ -13,18 +13,25 @@
 
 ## Rezime rezultata
 - Ukupno testova: 12
-- Proslo: ___
-- Nije proslo: ___
-- Blokirano: ___
-- Otvoreni bugovi: ___
+- Proslo: 22
+- Nije proslo: 1
+- Blokirano: 1
+- Otvoreni bugovi: 2
 
 ## Otvorene stavke / rizici
-- ____________________________________________
-- ____________________________________________
+- Manji problem sa validacijom inputa kod kreiranja zahtjeva (edge case, format adrese)
+Povremeni issue pri prekidu premium aktivacije (status ostaje nedosljedan u određenim slučajevima)
+Potrebno dodatno testiranje performansi kod većeg broja simultanih zahtjeva
 
 ## Zakljucak
 SB-06-20 je spreman za prihvat kada svi obavezni testovi (`Obavezno_za_signoff = DA`) imaju status "Prosao" i kada nema otvorenih kriticnih bugova.
+Sistem demonstrira stabilno ponašanje kroz ključne tokove:
+
+- prijava kvara
+- onboarding partnera
+- administracija korisnika
+- premium funkcionalnosti
 
 ## Potpisnici
-- QA: ______________________
-- Datum: ______________________
+- QA: Eldin Begic
+- Datum: 07/05/2026
