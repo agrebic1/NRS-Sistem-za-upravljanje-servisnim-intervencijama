@@ -1,7 +1,5 @@
 # Sprint Goal
 
-> Napomena o mapiranju: sadržaj ovog foldera prati logički Sprint 7 iz `Sprint 2/User Stories.md`.
-
 ### Sprint broj 6
 
 ### Sprint cilj
