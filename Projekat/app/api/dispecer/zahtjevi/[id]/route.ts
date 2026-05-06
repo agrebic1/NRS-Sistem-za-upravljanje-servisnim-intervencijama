@@ -13,7 +13,8 @@ function getUlogaNaziv(uloga: unknown): string {
 
 const potvrdiSchema = z.object({
   action:         z.literal('potvrdi'),
-  final_priority: z.enum(['NISKO', 'SREDNJE', 'VISOKO', 'KRITIČNO']),
+  final_priority: z.enum(['NISKO', 'SREDNJE', 'VISOKO', 'KRITIČNO', 'HITNO']),
+  premium_downgrade_reason: z.string().max(500).optional(),
 });
 
 const odbijSchema = z.object({
@@ -130,7 +131,7 @@ export async function PATCH(
 
     const { data: zahtjev } = await supabase
       .from('service_requests')
-      .select('status')
+      .select('status, is_premium')
       .eq('id', requestId)
       .single();
 
@@ -148,11 +149,27 @@ export async function PATCH(
     const podaci = rezultat.data;
 
     if (podaci.action === 'potvrdi') {
+      if (
+        zahtjev.is_premium === true &&
+        podaci.final_priority !== 'HITNO' &&
+        (!podaci.premium_downgrade_reason || podaci.premium_downgrade_reason.trim().length < 10)
+      ) {
+        return NextResponse.json(
+          {
+            error: 'Premium zahtjev mora ostati HITNO ili unesite obrazloženje (min. 10 karaktera).',
+          },
+          { status: 400 }
+        );
+      }
       const { error } = await supabase
         .from('service_requests')
         .update({
           status:         'potvrdeno',
           final_priority: podaci.final_priority,
+          premium_priority_override_reason:
+            zahtjev.is_premium === true && podaci.final_priority !== 'HITNO'
+              ? podaci.premium_downgrade_reason?.trim() ?? null
+              : null,
         })
         .eq('id', requestId);
 

@@ -59,6 +59,8 @@ export interface ServisniZahtjev {
   korisnicki_broj_zahtjeva?: number | null;
   user_id:              string;
   category:             string;
+  category_main:        string | null;
+  category_sub:         string | null;
   address:              string;
   /** Sačuvano uz zahtjev ako je korisnik koristio GPS ili mapu (opcionalno). */
   latitude:             number | null;
@@ -66,6 +68,10 @@ export interface ServisniZahtjev {
   description:          string;
   contact_phone:        string;
   photo_url:            string | null;
+  is_premium:           boolean;
+  premium_terms_accepted: boolean;
+  premium_requested_at: string | null;
+  premium_priority_override_reason: string | null;
   status:               StatusZahtjeva;
   urgency_score:        number;
   system_score:         number;
@@ -107,4 +113,11 @@ export interface ProfilKorisnika {
   adresa:       string | null;
   uloge:        string[];
   is_verified:  boolean;
+  is_premium:   boolean;
+  premium_status?: 'inactive' | 'pending_payment' | 'active' | 'expired' | 'cancelled';
+  premium_started_at?: string | null;
+  premium_expires_at?: string | null;
+  premium_plan?: string | null;
+  premium_cancelled_at?: string | null;
+  premium_cancel_reason?: string | null;
 }

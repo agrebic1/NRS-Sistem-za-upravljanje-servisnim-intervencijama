@@ -28,7 +28,7 @@ function PraznoDashboard({ onZahtjevPoslan }: { onZahtjevPoslan: () => void }) {
           Dobrodošli!
         </h1>
         <p className="mt-2 text-sm" style={{ color: 'var(--first-nonary)' }}>
-          Nemate još nijednog zahtjeva. Prijavite kvar ispod i naš tim će se pobrinuti.
+          Nemate još nijednog zahtjeva. Kreirajte novu prijavu ispod i naš tim će se pobrinuti.
         </p>
       </div>
       <div
@@ -41,7 +41,7 @@ function PraznoDashboard({ onZahtjevPoslan }: { onZahtjevPoslan: () => void }) {
       >
         <div className="mb-6">
           <h2 className="text-xl font-bold" style={{ color: 'var(--first-octonary)' }}>
-            Prijavite kvar
+            Kreiraj zahtjev
           </h2>
           <p className="mt-1 text-sm" style={{ color: 'var(--first-nonary)' }}>
             Popunite 6 koraka i vaš zahtjev će biti evidentiran.

@@ -1,6 +1,7 @@
 'use client';
 
-import { ShieldAlert, PauseCircle, AlertTriangle, Users, UsersRound, Check } from 'lucide-react';
+import Link from 'next/link';
+import { ShieldAlert, PauseCircle, AlertTriangle, Users, UsersRound, Check, Crown } from 'lucide-react';
 import { AlertMessage } from '@/components/ui/AlertMessage';
 
 // ─── Triage state ─────────────────────────────────────────────────────────────
@@ -52,7 +53,7 @@ const PITANJA = [
   {
     id:        'steta' as const,
     naslov:    'Materijalna šteta',
-    pitanje:   'Postoji li rizik od sekundarne štete (poplava, kvar hrane...)?',
+    pitanje:   'Postoji li rizik od sekundarne štete (poplava, oštećenje opreme i sl.)?',
     Ikona:     AlertTriangle,
     ikonaStil: { color: '#F59E0B' } as React.CSSProperties,
     opcije:    [
@@ -73,8 +74,8 @@ const PITANJA = [
   },
   {
     id:        'obuhvat' as const,
-    naslov:    'Obim kvara',
-    pitanje:   'Da li kvar pogađa više stanara ili korisnika?',
+    naslov:    'Obim uticaja',
+    pitanje:   'Da li problem pogađa više stanara ili korisnika?',
     Ikona:     UsersRound,
     ikonaStil: {} as React.CSSProperties,
     opcije:    [
@@ -124,13 +125,31 @@ function OpcijaBtn({
 
 // ─── Korak 5: Trijaža ─────────────────────────────────────────────────────────
 
+type PremiumLifecycle = 'inactive' | 'pending_payment' | 'active' | 'expired' | 'cancelled' | null;
+
 interface KorakTrijazaProps {
   triage:      TriageFormState;
   onUpdate:    (updates: Partial<TriageFormState>) => void;
   triageError: string | null;
+  isPremium: boolean;
+  premiumLifecycleStatus?: PremiumLifecycle;
+  premiumRequested: boolean;
+  premiumTermsAccepted: boolean;
+  onPremiumRequestedChange: (value: boolean) => void;
+  onPremiumTermsAcceptedChange: (value: boolean) => void;
 }
 
-export function KorakTrijaza({ triage, onUpdate, triageError }: KorakTrijazaProps) {
+export function KorakTrijaza({
+  triage,
+  onUpdate,
+  triageError,
+  isPremium,
+  premiumLifecycleStatus = null,
+  premiumRequested,
+  premiumTermsAccepted,
+  onPremiumRequestedChange,
+  onPremiumTermsAcceptedChange,
+}: KorakTrijazaProps) {
   function getOdabrana(id: keyof TriageFormState): string | undefined {
     const v = triage[id];
     if (v === null || v === undefined) return undefined;
@@ -175,6 +194,87 @@ export function KorakTrijaza({ triage, onUpdate, triageError }: KorakTrijazaProp
       </div>
 
       {triageError && <AlertMessage variant="error" message={triageError} />}
+
+      <div
+        className="rounded-xl border p-4"
+        style={{
+          borderColor: isPremium ? 'rgba(217, 119, 6, 0.35)' : 'rgb(var(--first-quaternary-rgb) / 0.35)',
+          backgroundColor: isPremium ? 'rgba(255, 251, 235, 0.95)' : 'rgb(var(--first-quinary-rgb) / 0.2)',
+          boxShadow: isPremium ? '0 4px 14px rgba(217, 119, 6, 0.1)' : 'none',
+        }}
+      >
+        <div className="flex items-start gap-2">
+          <span
+            className="mt-0.5 inline-flex h-7 w-7 items-center justify-center rounded-full"
+            style={{ backgroundColor: 'rgba(217, 119, 6, 0.12)', color: '#A16207' }}
+          >
+            <Crown className="h-4 w-4" />
+          </span>
+          <div>
+            <p className="text-sm font-semibold" style={{ color: '#3F2F1E' }}>
+              Hitna intervencija (premium)
+            </p>
+            <p className="mt-1 text-xs leading-relaxed" style={{ color: '#5B4A3A' }}>
+              Premium zahtjev dobija prioritetnu obradu prema pravilima premium paketa.
+            </p>
+          </div>
+        </div>
+        {isPremium ? (
+          <div className="mt-3 flex flex-col gap-2">
+            <button
+              type="button"
+              onClick={() => onPremiumRequestedChange(!premiumRequested)}
+              className="inline-flex w-full items-center rounded-lg border px-4 py-3 text-sm font-semibold transition-all duration-150 hover:brightness-[1.02] focus:outline-none focus:ring-2"
+              style={{
+                borderColor: premiumRequested ? '#C18820' : '#D4A340',
+                backgroundColor: premiumRequested ? 'rgba(245, 158, 11, 0.2)' : 'rgba(252, 211, 77, 0.2)',
+                color: '#5A3B1A',
+                boxShadow: premiumRequested
+                  ? '0 0 0 2px rgba(212, 163, 64, 0.25), inset 0 1px 0 rgba(255,255,255,0.55)'
+                  : '0 0 0 1px rgba(212, 163, 64, 0.22), inset 0 1px 0 rgba(255,255,255,0.7)',
+                outlineColor: 'rgba(212, 163, 64, 0.5)',
+              }}
+            >
+              {premiumRequested
+                ? 'Premium hitna intervencija je uključena'
+                : 'Uključi premium hitnu intervenciju'}
+              {premiumRequested && (
+                <Check className="ml-auto h-4 w-4" style={{ color: '#A16207' }} />
+              )}
+            </button>
+            {premiumRequested && (
+              <label className="inline-flex items-start gap-2 text-xs" style={{ color: '#5A3B1A' }}>
+                <input
+                  type="checkbox"
+                  checked={premiumTermsAccepted}
+                  onChange={(e) => onPremiumTermsAcceptedChange(e.target.checked)}
+                  className="mt-0.5"
+                  style={{ accentColor: '#B45309' }}
+                />
+                Potvrđujem da razumijem uslove premium usluge i pravila prioritetne obrade.
+              </label>
+            )}
+          </div>
+        ) : (
+          <div className="mt-3 space-y-2 text-xs font-medium" style={{ color: 'var(--first-senary)' }}>
+            <p>
+              {premiumLifecycleStatus === 'pending_payment' &&
+                'Premium čeka potvrdu simulirane uplate — prvo dovršite korake na stranici Premium usluge.'}
+              {premiumLifecycleStatus === 'expired' && 'Premium je istekao — obnovite ga na stranici Premium usluge.'}
+              {premiumLifecycleStatus === 'cancelled' && 'Premium je otkazan — možete ga ponovo aktivirati na stranici Premium usluge.'}
+              {(premiumLifecycleStatus === 'inactive' || premiumLifecycleStatus === null) &&
+                'Ova opcija je dostupna samo sa aktivnim premium statusom.'}
+            </p>
+            <Link
+              href="/korisnik/premium"
+              className="inline-block font-semibold underline"
+              style={{ color: 'var(--first-primary)' }}
+            >
+              Otvori Premium usluga
+            </Link>
+          </div>
+        )}
+      </div>
 
       {/* Lista pitanja */}
       <div className="flex flex-col gap-3">

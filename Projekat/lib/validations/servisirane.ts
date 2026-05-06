@@ -19,9 +19,18 @@ export const partnerApplicationSchema = z.object({
   specialnosti:    z.array(z.string()).optional(),
 });
 
+export const adminCreateUserSchema = z.object({
+  first_name: z.string().min(2, 'Ime mora imati najmanje 2 karaktera').max(100),
+  last_name: z.string().min(2, 'Prezime mora imati najmanje 2 karaktera').max(100),
+  email: z.string().email('Unesite ispravnu email adresu'),
+  role: z.enum(['serviser', 'dispecer', 'administrator'], {
+    errorMap: () => ({ message: 'Odaberite validnu internu ulogu' }),
+  }),
+});
+
 // Zod sheme po koracima wizarda
 export const wizardKorak1Schema = z.object({
-  category: z.string().min(1, 'Odaberite kategoriju kvara'),
+  category: z.string().min(1, 'Odaberite kategoriju zahtjeva'),
   address:  z
     .string()
     .min(5, 'Adresa mora imati najmanje 5 karaktera')
@@ -83,7 +92,7 @@ export const preferredScheduleSchema = preferredScheduleBaseSchema
 export const wizardKorak2Schema = z.object({
   description:  z
     .string()
-    .min(20, 'Opis mora sadržavati dovoljno informacija za obradu zahtjeva.')
+    .min(20, 'Opis zahtjeva mora sadržavati dovoljno informacija za obradu.')
     .max(2000, 'Opis ne smije biti duži od 2000 karaktera'),
   contactPhone: z
     .string()
@@ -98,11 +107,13 @@ export const wizardKorak3Schema = z.object({
   }),
   steta:     z.boolean({ required_error: 'Odgovorite na pitanje o riziku od štete' }),
   ranjivost: z.boolean({ required_error: 'Odgovorite na pitanje o ranjivim osobama' }),
-  obuhvat:   z.boolean({ required_error: 'Odgovorite na pitanje o obimu kvara' }),
+  obuhvat:   z.boolean({ required_error: 'Odgovorite na pitanje o obimu uticaja' }),
 });
 
 export const serviceRequestSchema = z.object({
   category:      z.string().min(1),
+  category_main: z.string().min(1).optional(),
+  category_sub:  z.string().min(1).optional(),
   address:       z.string().min(5).max(500),
   description:   z.string().min(20).max(2000),
   // Usklađeno s wizardom (PHONE_REGEX): 8–20 znakova
@@ -115,6 +126,8 @@ export const serviceRequestSchema = z.object({
   /** Opcionalno: GPS / mapa (AC15) */
   latitude:      z.number().min(-90).max(90).optional().nullable(),
   longitude:     z.number().min(-180).max(180).optional().nullable(),
+  is_premium:    z.boolean().optional(),
+  premium_terms_accepted: z.boolean().optional(),
   triage:        wizardKorak3Schema,
 });
 
@@ -142,4 +155,9 @@ export const profilUpdateSchema = z.object({
     .optional()
     .nullable(),
   adresa: z.string().max(255).optional().nullable(),
+});
+
+/** MVP: otkazivanje premiuma (simulacija naplate). */
+export const premiumCancelSchema = z.object({
+  reason: z.string().max(500).optional().nullable(),
 });

@@ -14,19 +14,20 @@
 | Rizici, problemi ili greške | Izazovi u sinhronizaciji stanja (state management) između koraka Wizarda kod SSR-a i kompleksne integracije mapa; riješeno uvođenjem perzistentnog klijentskog stanja i custom API poziva. |
 | Ko je koristio alat | Amina Grebić |
 
+
 | Polje | Opis |
 |-------|------|
-| Datum | .05.2026. |
+| Datum | 06.05.2026. |
 | Sprint broj | 6 |
-| Alat koji je korišten | Claude AI |
-| Svrha korištenja | 
-| Kratak opis zadatka | 
-| Šta je AI generisao | 
-| Šta je tim prihvatio | 
-| Šta je tim izmijenio | 
-| Šta je tim odbacio | 
-| Rizici, problemi ili greške | 
-| Ko je koristio alat | Ajna Ičić |
+| Alat koji je korišten | Cursor |
+| Svrha korištenja | Usklađivanje premium lifecycle implementacije kroz bazu, API i UI za korisnika/dispečera/admina. |
+| Kratak opis zadatka | Implementiran je premium lifecycle model sa statusima, korisničkim aktivacionim tokom, admin lifecycle upravljanjem, audit evidencijom i cron istekom premium statusa. |
+| Šta je AI generisao | Predloženu strukturu lifecycle tranzicija, API route kosture (`start`, `confirm`, `cancel`, `renew`), promjene za admin API i redizajn premium korisničke stranice. |
+| Šta je tim prihvatio | Dvokorak aktivacije (`start` -> `confirm`), premium event audit, statusno upravljanje kroz admin panel i UI poboljšanja premium aktivacije. |
+| Šta je tim izmijenio | Uklonjen je brzi endpoint aktivacije; tok je standardizovan na dvokorak. Premium UI je doradjen sa jasnijim planovima i validacijom podataka kartice. |
+| Šta je tim odbacio | Quick activation endpoint i kombinovani tok koji je preskakao standardni activation flow. |
+| Rizici, problemi ili greške | Potrebno osigurati da je `CRON_SECRET` postavljen u produkciji; bez toga cron endpoint ne treba biti javno dostupan. |
+| Ko je koristio alat | Ajla Ćesir |
 
 
 | Polje | Opis |

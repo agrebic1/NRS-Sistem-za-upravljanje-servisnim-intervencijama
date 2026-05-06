@@ -18,6 +18,7 @@ Glavni ciljevi testiranja su:
 - provjeriti ispunjenost nefunkcionalnih zahtjeva
 - potvrditi da sistem zadovoljava zahtjeve sigurnosti, dostupnosti, performansi i upotrebljivosti
 - provjeriti da je sistem upotrebljiv i tehnički održiv u okviru MVP obima
+- potvrditi da se premium naplata u MVP-u testira kao simulirani tok, bez verifikacije realnog payment gateway-a
 
 ## Nivoi testiranja
 

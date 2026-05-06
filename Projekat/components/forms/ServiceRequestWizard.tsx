@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { AlertMessage } from '@/components/ui/AlertMessage';
-import { KorakKategorija, WIZARD_KATEGORIJA_OSTALO } from '@/components/wizard/KorakKategorija';
+import { KorakKategorija } from '@/components/wizard/KorakKategorija';
 import { KorakLokacija }    from '@/components/wizard/KorakLokacija';
 import { KorakTermin }      from '@/components/wizard/KorakTermin';
 import { KorakOpis }        from '@/components/wizard/KorakOpis';
@@ -26,6 +26,7 @@ import { wizardKorak2Schema, wizardKorak3Schema } from '@/lib/validations/servis
 import type { TriageOdgovori } from '@/domain/types/servisirane';
 import { formatirajDatumPrikaz, formatirajDatumVrijemeZaPrikaz } from '@/lib/format/datumi';
 import { izracunajUrgency, oznakaHitnostiZaKorisnika } from '@/lib/servisirane/urgency';
+import { glavnaKategorijaPoId, labelKategorije, serializujKategoriju, validnaKombinacijaKategorije } from '@/lib/servisirane/kategorije';
 import { kreirajKlijenta } from '@/lib/supabase/klijent';
 
 // ─── Konstante ────────────────────────────────────────────────────────────────
@@ -39,7 +40,6 @@ interface WizardState {
   // Step 1 — Kategorija
   selectedCategory:    string | null;
   selectedSubcategory: string | null;
-  isOtherModalOpen:    boolean;
   // Step 2 — Lokacija
   address:                  string;
   latitude:                 number | null;
@@ -64,12 +64,16 @@ interface WizardState {
   photoFile:        File | null;
   // Step 5 — Trijaža
   triage:           TriageFormState;
+  isPremiumUser:    boolean;
+  /** Lifecycle iz /api/profil (za poruke kada nije `active`). */
+  premiumLifecycleStatus: 'inactive' | 'pending_payment' | 'active' | 'expired' | 'cancelled' | null;
+  premiumRequested: boolean;
+  premiumTermsAccepted: boolean;
 }
 
 const INITIAL: WizardState = {
   selectedCategory:    null,
   selectedSubcategory: null,
-  isOtherModalOpen:    false,
   address:                  '',
   latitude:                 null,
   longitude:                null,
@@ -90,6 +94,10 @@ const INITIAL: WizardState = {
   useAccountPhone:     false,
   photoFile:           null,
   triage:              INITIAL_TRIAGE,
+  isPremiumUser:       false,
+  premiumLifecycleStatus: null,
+  premiumRequested:    false,
+  premiumTermsAccepted: false,
 };
 
 const ODUSTANI_PORUKA =
@@ -97,12 +105,7 @@ const ODUSTANI_PORUKA =
 
 /** Validnost prvog koraka: glavna kategorija ili Ostalo + podkategorija. */
 export function isStepOneValid(s: WizardState): boolean {
-  const c = s.selectedCategory;
-  if (c == null || c === '') return false;
-  if (c === WIZARD_KATEGORIJA_OSTALO) {
-    return !!(s.selectedSubcategory && s.selectedSubcategory.trim().length > 0);
-  }
-  return true;
+  return validnaKombinacijaKategorije(s.selectedCategory, s.selectedSubcategory);
 }
 
 /** Korak 2: adresa je obavezna (≥5 znakova). Mapa/GPS su dodatno preciziranje. */
@@ -168,7 +171,7 @@ export function porukaValidacijePreferiranogTermina(s: StanjePreferiranogTermina
 
 // ─── Step indicator ───────────────────────────────────────────────────────────
 
-const STEP_OZNAKE = ['Vrsta kvara', 'Lokacija', 'Termin', 'Opis', 'Hitnost', 'Pregled'];
+const STEP_OZNAKE = ['Vrsta zahtjeva', 'Lokacija', 'Termin', 'Opis', 'Hitnost', 'Pregled'];
 
 function StepIndicator({ currentStep }: { currentStep: number }) {
   return (
@@ -222,9 +225,9 @@ function StepIndicator({ currentStep }: { currentStep: number }) {
 
 function validirajKorak(k: number, s: WizardState): string | null {
   if (k === 1) {
-    if (!s.selectedCategory) return 'Odaberite vrstu kvara prije nastavka.';
-    if (s.selectedCategory === WIZARD_KATEGORIJA_OSTALO && !s.selectedSubcategory?.trim()) {
-      return "Odaberite podkategoriju za opciju 'Ostalo'.";
+    if (!s.selectedCategory) return 'Odaberite vrstu zahtjeva prije nastavka.';
+    if (!validnaKombinacijaKategorije(s.selectedCategory, s.selectedSubcategory)) {
+      return 'Odabrana kombinacija kategorije i podkategorije nije ispravna.';
     }
     return null;
   }
@@ -236,13 +239,13 @@ function validirajKorak(k: number, s: WizardState): string | null {
     if (s.address.trim().length > 0 && s.address.trim().length < 5) {
       return 'Adresa mora sadržavati dovoljno informacija za pronalazak lokacije.';
     }
-    return 'Unesite adresu kvara prije nastavka.';
+    return 'Unesite adresu intervencije prije nastavka.';
   }
   if (k === 3) {
     return porukaValidacijePreferiranogTermina(s);
   }
   if (k === 4) {
-    if (s.description.trim().length === 0) return 'Unesite opis kvara prije nastavka.';
+    if (s.description.trim().length === 0) return 'Unesite opis zahtjeva prije nastavka.';
     if (s.description.trim().length < 20) {
       return 'Opis mora sadržavati dovoljno informacija za obradu zahtjeva.';
     }
@@ -256,6 +259,12 @@ function validirajKorak(k: number, s: WizardState): string | null {
     return null;
   }
   if (k === 5) {
+    if (s.premiumRequested && !s.isPremiumUser) {
+      return 'Premium hitnu intervenciju možete koristiti samo sa aktivnim premium statusom. Otvorite stranicu „Premium usluga” i dovršite aktivaciju.';
+    }
+    if (s.premiumRequested && !s.premiumTermsAccepted) {
+      return 'Za premium hitnu intervenciju potrebno je potvrditi uslove i dodatne troškove.';
+    }
     const r = wizardKorak3Schema.safeParse(s.triage);
     return r.success ? null : r.error.errors[0].message;
   }
@@ -276,8 +285,8 @@ function jeKorakBlokiran(k: number, s: WizardState): boolean {
 }
 
 function porukaBlokiranja(k: number): string {
-  if (k === 1) return 'Odaberite vrstu kvara prije nastavka.';
-  if (k === 2) return 'Unesite adresu kvara prije nastavka.';
+  if (k === 1) return 'Odaberite vrstu zahtjeva prije nastavka.';
+  if (k === 2) return 'Unesite adresu intervencije prije nastavka.';
   if (k === 3) {
     return '"Dalje" je onemogućen — odaberite preferirani termin (datum i raspon) ili opciju bez preferencije.';
   }
@@ -287,25 +296,22 @@ function porukaBlokiranja(k: number): string {
 function naslovDaljeDugmeta(k: number, s: WizardState): string | undefined {
   if (!jeKorakBlokiran(k, s)) return undefined;
   if (k === 1) {
-    if (s.selectedCategory === WIZARD_KATEGORIJA_OSTALO && !s.selectedSubcategory?.trim()) {
-      return "Odaberite podkategoriju za opciju 'Ostalo'.";
+    if (!s.selectedCategory) {
+      return 'Odaberite vrstu zahtjeva prije nastavka.';
     }
-    return 'Odaberite vrstu kvara prije nastavka.';
+    const glavna = glavnaKategorijaPoId(s.selectedCategory);
+    if (glavna && glavna.podkategorije.length > 0 && !s.selectedSubcategory) {
+      return 'Odaberite podkategoriju prije nastavka.';
+    }
+    return 'Dovršite odabir kategorije prije nastavka.';
   }
   if (k === 2) {
     if (s.address.trim().length > 0 && s.address.trim().length < 5) {
       return 'Adresa mora sadržavati dovoljno informacija za pronalazak lokacije.';
     }
-    return 'Unesite adresu kvara prije nastavka.';
+    return 'Unesite adresu intervencije prije nastavka.';
   }
   return porukaBlokiranja(k);
-}
-
-function kategorijaZaApi(s: WizardState): string {
-  if (s.selectedCategory === WIZARD_KATEGORIJA_OSTALO && s.selectedSubcategory?.trim()) {
-    return `Ostalo — ${s.selectedSubcategory.trim()}`;
-  }
-  return s.selectedCategory?.trim() ?? '';
 }
 
 // ─── Glavni wizard ────────────────────────────────────────────────────────────
@@ -350,7 +356,7 @@ function PregledFotografije({ file }: { file: File }) {
     // eslint-disable-next-line @next/next/no-img-element
     <img
       src={previewUrl}
-      alt="Pregled fotografije kvara"
+      alt="Pregled fotografije zahtjeva"
       className="mt-2 h-32 w-full max-w-xs rounded-lg border object-cover"
       style={{ borderColor: 'rgb(var(--first-quaternary-rgb) / 0.35)' }}
     />
@@ -365,7 +371,10 @@ function PregledZahtjevaKorak({
   onEditStep: (step: number) => void;
 }) {
   const hitnost = oznakaHitnostiZaKorisnika(izracunajUrgency(state.triage as TriageOdgovori));
-  const kategorija = kategorijaZaApi(state);
+  const kategorija = labelKategorije({
+    category_main: state.selectedCategory,
+    category_sub: state.selectedSubcategory,
+  });
   const imaKoordinate = state.latitude !== null && state.longitude !== null;
 
   return (
@@ -383,11 +392,13 @@ function PregledZahtjevaKorak({
         <div className="mb-3 flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <Wrench className="h-4 w-4" style={{ color: 'var(--first-primary)' }} />
-            <h3 className="text-sm font-semibold" style={{ color: 'var(--first-octonary)' }}>Vrsta kvara</h3>
+            <h3 className="text-sm font-semibold" style={{ color: 'var(--first-octonary)' }}>Vrsta zahtjeva</h3>
           </div>
           <Button type="button" variant="ghost" size="sm" onClick={() => onEditStep(1)}>Uredi</Button>
         </div>
-        <p className="text-sm" style={{ color: 'var(--first-octonary)' }}>{kategorija || '—'}</p>
+        <p className="text-sm" style={{ color: 'var(--first-octonary)' }}>
+          {kategorija.podkategorija ? `${kategorija.glavna} — ${kategorija.podkategorija}` : kategorija.glavna}
+        </p>
       </div>
 
       <div className="rounded-xl border p-4" style={{ borderColor: 'rgb(var(--first-quaternary-rgb) / 0.35)', backgroundColor: 'rgb(255 255 255 / 0.5)' }}>
@@ -436,13 +447,13 @@ function PregledZahtjevaKorak({
           <div className="mt-2">
             <p className="inline-flex items-center gap-1 text-xs" style={{ color: 'var(--first-nonary)' }}>
               <ImageIcon className="h-3.5 w-3.5" />
-              Fotografija kvara je dodana ({state.photoFile.name}).
+              Fotografija je dodana ({state.photoFile.name}).
             </p>
             <PregledFotografije file={state.photoFile} />
           </div>
         ) : (
           <p className="mt-2 text-xs" style={{ color: 'var(--first-nonary)' }}>
-            Fotografija kvara nije dodana.
+            Fotografija nije dodana.
           </p>
         )}
       </div>
@@ -456,6 +467,11 @@ function PregledZahtjevaKorak({
           <Button type="button" variant="ghost" size="sm" onClick={() => onEditStep(5)}>Uredi</Button>
         </div>
         <p className="text-sm font-semibold" style={{ color: 'var(--first-octonary)' }}>{hitnost}</p>
+        {state.premiumRequested && (
+          <p className="mt-2 text-xs font-semibold" style={{ color: '#B91C1C' }}>
+            Hitna intervencija (premium) je zatražena.
+          </p>
+        )}
       </div>
     </div>
   );
@@ -497,7 +513,7 @@ function ConfirmationScreen({
           <Button size="md" className="w-full">Pregledaj zahtjev</Button>
         </Link>
         <Button type="button" variant="secondary" size="md" onClick={onReset}>
-          Prijavi novi kvar
+          Kreiraj novi zahtjev
         </Button>
       </div>
     </div>
@@ -531,11 +547,19 @@ export function ServiceRequestWizard({
       .then((r) => r.json())
       .then((d) => {
         if (d.profil) {
+          const ps =
+            d.profil.premium_status ??
+            (d.profil.is_premium ? ('active' as const) : ('inactive' as const));
+          const aktivanPremium = ps === 'active';
           setState((prev) => ({
             ...prev,
             address:      prev.address      || d.profil.adresa        || '',
             contactPhone: prev.contactPhone || d.profil.broj_telefona || '',
             accountPhone: d.profil.broj_telefona || '',
+            premiumLifecycleStatus: ps,
+            isPremiumUser: aktivanPremium,
+            premiumRequested: aktivanPremium ? prev.premiumRequested : false,
+            premiumTermsAccepted: aktivanPremium ? prev.premiumTermsAccepted : false,
           }));
         }
       })
@@ -632,16 +656,24 @@ export function ServiceRequestWizard({
 
     try {
       const photoUrl = state.photoFile ? await uploadFotografijuKvara(state.photoFile) : null;
+      if (!state.selectedCategory) {
+        throw new Error('Odaberite glavnu kategoriju prije slanja.');
+      }
+      const kategorijaPayload = serializujKategoriju(state.selectedCategory, state.selectedSubcategory);
 
       const odgovor = await fetch('/api/service-requests', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          category:      kategorijaZaApi(state),
+          category:      kategorijaPayload.category,
+          category_main: kategorijaPayload.category_main,
+          category_sub:  kategorijaPayload.category_sub,
           address:       state.address.trim(),
           description:   state.description,
           contact_phone: state.contactPhone,
           photo_url:     photoUrl,
+          is_premium: state.premiumRequested,
+          premium_terms_accepted: state.premiumTermsAccepted,
           latitude:      state.latitude,
           longitude:     state.longitude,
           preferred_schedule: state.noPreferredTime
@@ -730,7 +762,6 @@ export function ServiceRequestWizard({
         <KorakKategorija
           selectedCategory={state.selectedCategory}
           selectedSubcategory={state.selectedSubcategory}
-          isOtherModalOpen={state.isOtherModalOpen}
           onUpdate={azuriraj}
         />
       )}
@@ -774,6 +805,17 @@ export function ServiceRequestWizard({
           triage={state.triage}
           onUpdate={(u) => azuriraj({ triage: { ...state.triage, ...u } })}
           triageError={triageError ?? greska}
+          isPremium={state.isPremiumUser}
+          premiumLifecycleStatus={state.premiumLifecycleStatus}
+          premiumRequested={state.premiumRequested}
+          premiumTermsAccepted={state.premiumTermsAccepted}
+          onPremiumRequestedChange={(value) =>
+            azuriraj({
+              premiumRequested: value,
+              premiumTermsAccepted: value ? state.premiumTermsAccepted : false,
+            })
+          }
+          onPremiumTermsAcceptedChange={(value) => azuriraj({ premiumTermsAccepted: value })}
         />
       )}
       {korak === 6 && (

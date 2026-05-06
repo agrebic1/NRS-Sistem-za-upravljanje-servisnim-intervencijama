@@ -62,7 +62,8 @@ const NAVIGACIJA_PO_ULOZI: Record<UserRole, StavkaNavigacije[]> = {
   korisnik: [
     { href: '/korisnik',               oznaka: 'Pregled',       Ikona: LayoutDashboard },
     { href: '/korisnik/zahtjevi',      oznaka: 'Moji zahtjevi', Ikona: ClipboardList },
-    { href: '/korisnik/zahtjevi/novi', oznaka: 'Prijavi kvar',  Ikona: PlusCircle },
+    { href: '/korisnik/premium',       oznaka: 'Premium usluga', Ikona: ShieldCheck },
+    { href: '/korisnik/zahtjevi/novi', oznaka: 'Kreiraj zahtjev',  Ikona: PlusCircle },
   ],
   serviser: [
     { href: '/serviser',               oznaka: 'Pregled',       Ikona: LayoutDashboard },

@@ -45,7 +45,7 @@ export function KorakOpis({
 
   const descriptionError =
     description.trim().length === 0
-      ? 'Unesite opis kvara prije nastavka.'
+      ? 'Unesite opis zahtjeva prije nastavka.'
       : description.trim().length < 20
       ? 'Opis mora sadržavati dovoljno informacija za obradu zahtjeva.'
       : null;
@@ -97,7 +97,7 @@ export function KorakOpis({
     <div className="flex flex-col gap-6">
       <div>
         <h2 className="mb-1 text-xl font-bold" style={{ color: 'var(--first-octonary)' }}>
-          Opis kvara
+          Opis zahtjeva
         </h2>
         <p className="text-sm leading-relaxed" style={{ color: 'var(--first-nonary)' }}>
           Opišite šta se desilo, kada je problem počeo i šta ste već pokušali. Ovi podaci pomažu
@@ -114,7 +114,7 @@ export function KorakOpis({
             <FileText className="h-3.5 w-3.5" style={{ color: 'var(--first-nonary)' }} />
           </div>
           <span className="text-sm font-semibold" style={{ color: 'var(--first-octonary)' }}>
-            Opis kvara *
+            Opis zahtjeva *
           </span>
         </div>
         <Textarea
@@ -203,7 +203,7 @@ export function KorakOpis({
 
       <div>
         <label className="mb-1.5 block text-sm font-medium" style={{ color: 'var(--first-octonary)' }}>
-          Fotografija kvara (neobavezno)
+          Fotografija (neobavezno)
         </label>
         <p className="mb-2 text-xs" style={{ color: 'var(--first-quinary)' }}>
           Fotografija može pomoći u bržem razumijevanju problema.
@@ -223,7 +223,7 @@ export function KorakOpis({
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={previewUrl}
-                  alt="Pregled fotografije kvara"
+                  alt="Pregled fotografije zahtjeva"
                   className="h-14 w-14 flex-shrink-0 rounded-lg object-cover"
                 />
               )}

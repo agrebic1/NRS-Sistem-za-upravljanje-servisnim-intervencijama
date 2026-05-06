@@ -57,6 +57,7 @@ THEME (Tema)
     │   ├── FEATURE: Kreiranje zahtjeva za servisnu intervenciju (PBI-004)
     │   │   │
     │   │   ├── Story: US-05 Prijava zahtjeva za servisnu intervenciju
+    │   │   ├── Story: US-34 Aktivacija Premium usluge
     │   │   └── Story: US-33 Zahtjev za Premium (Hitnom) uslugom
     │   │
     │   ├── FEATURE: Pregled detalja vlastitog zahtjeva (PBI-005)
@@ -182,6 +183,7 @@ Sažeti pregled user story-a u okviru MVP-a:
 | US-30 | Razmjena napomena na intervenciji | Kao dispečer ili serviser, želim dodati kratku napomenu na konkretnu intervenciju, kako bi sve važne operativne informacije bile dostupne na jednom mjestu svim učesnicima u procesu. | - interna komunikacija<br>- važne informacije na jednom mjestu<br>- manje oslanjanja na vanjske kanale | Srednji |
 | US-31 | Pregled sažetog operativnog statusa intervencija | Kao dispečer, želim na početnom ekranu vidjeti sažet operativni status intervencija, kako bih odmah imao pregled trenutnog obima posla i stanja intervencija po ključnim fazama obrade. | - brz pregled stanja sistema<br>- lakše uočavanje zastoja<br>- efikasnije operativno odlučivanje | Srednji |
 | US-32 | Pregled historije aktivnosti intervencije | Kao dispečer, želim vidjeti listu svih prethodnih promjena i aktivnosti na zahtjevu, kako bih imao jasan uvid u hronologiju obrade od trenutka prijave do trenutnog statusa. | - transparentnost procesa<br>- praćenje toka rada<br>- audit trag | Srednji | 
+| US-34 | Aktivacija Premium usluge | Kao korisnik usluge, želim aktivirati Premium paket kroz sistem, kako bih mogao koristiti opciju premium zahtjeva i dobiti prioritetnu obradu intervencija. | - jasan tok aktivacije<br>- kontrola prava na premium<br>- pouzdana naplata | Visok |
 | US-33 |	Zahtjev za Premium (Hitnom) uslugom	| Kao korisnik usluge, želim odabrati "Premium/Hitno" opciju prilikom prijave kvara, kako bih osigurao prioritetnu obradu zahtjeva bez obzira na vrstu kvara.	|- prioritetna obrada <br> - veće zadovoljstvo korisnika <br> - dodatni prihod za servis | Visok |
 
 U sljedećoj tabeli je prikazana povezanost konkretnog User Story-a sa itemima iz Product Backloga:
@@ -219,6 +221,7 @@ U sljedećoj tabeli je prikazana povezanost konkretnog User Story-a sa itemima i
 | US-30      | Razmjena napomena na intervenciji                     | **PBI-020 – Napomene na intervenciji**                              | **Komunikacija i historija aktivnosti**                 |
 | US-31      | Pregled sažetog operativnog statusa intervencija      | **PBI-009 – Pregled operativnog statusa na kontrolnoj tabli**       | **Operativni pregled intervencija od strane dispečera** |
 | US-32      | Pregled historije aktivnosti intervencije             | **PBI-021 – Historija aktivnosti intervencije**                     | **Komunikacija i historija aktivnosti**                 |
+| US-34      | Aktivacija Premium usluge                             | **PBI-004 – Kreiranje zahtjeva za servisnu intervenciju**           | **Upravljanje zahtjevima za servisne intervencije**     |
 | US-33      | Zahtjev za Premium (Hitnom) uslugom                   | **PBI-004 – Kreiranje zahtjeva za servisnu intervenciju**           | **Upravljanje zahtjevima za servisne intervencije**     |
 ---
 
@@ -500,32 +503,32 @@ Povezano sa storyjima za pregled vlastitog zahtjeva (US-06), pregled otvorenih i
 
 ---
 
-### B. Vrsta kvara
+### B. Kategorija i potkategorija kvara
 
-- **AC9: Obavezan odabir vrste kvara**  
-  - **GIVEN** korisnik se nalazi na koraku “Vrsta kvara”  
-  - **WHEN** pokuša nastaviti bez odabrane vrste kvara  
-  - **THEN** sistem ne dozvoljava nastavak i prikazuje poruku da je potrebno odabrati vrstu kvara
+- **AC9: Obavezan odabir glavne kategorije**  
+  - **GIVEN** korisnik se nalazi na koraku “Kategorija”  
+  - **WHEN** pokuša nastaviti bez odabrane glavne kategorije  
+  - **THEN** sistem ne dozvoljava nastavak i prikazuje poruku da je potrebno odabrati kategoriju
 
-- **AC10: Odabir glavne kategorije kvara**  
-  - **GIVEN** korisnik se nalazi na koraku “Vrsta kvara”  
-  - **WHEN** odabere jednu od ponuđenih glavnih kategorija  
-  - **THEN** sistem evidentira odabranu kategoriju kao dio zahtjeva i omogućava nastavak na sljedeći korak
+- **AC10: Učitavanje potkategorija prema odabranoj kategoriji**  
+  - **GIVEN** korisnik je odabrao glavnu kategoriju kvara  
+  - **WHEN** sistem učita podatke za naredni korak wizarda  
+  - **THEN** sistem prikazuje samo potkategorije koje pripadaju odabranoj kategoriji
 
-- **AC11: Otvaranje podkategorija za opciju Ostalo**  
-  - **GIVEN** korisnik se nalazi na koraku “Vrsta kvara”  
-  - **WHEN** odabere opciju “Ostalo”  
-  - **THEN** sistem prikazuje modal ili dodatni izbor podkategorije
+- **AC11: Obavezan odabir potkategorije kada postoji lista potkategorija**  
+  - **GIVEN** odabrana kategorija ima definisane potkategorije  
+  - **WHEN** korisnik pokuša nastaviti bez odabrane potkategorije  
+  - **THEN** sistem ne dozvoljava nastavak i prikazuje poruku da je potrebno odabrati potkategoriju
 
-- **AC12: Obavezan izbor podkategorije za opciju Ostalo**  
-  - **GIVEN** korisnik je odabrao opciju “Ostalo”  
-  - **WHEN** nije odabrao nijednu podkategoriju  
-  - **THEN** sistem ne dozvoljava nastavak na sljedeći korak
+- **AC12: Nastavak bez potkategorije kada kategorija nema potkategorije**  
+  - **GIVEN** odabrana kategorija nema definisane potkategorije  
+  - **WHEN** korisnik nastavi na sljedeći korak  
+  - **THEN** sistem dozvoljava nastavak bez izbora potkategorije
 
-- **AC13: Evidentiranje izabrane podkategorije**  
-  - **GIVEN** korisnik je otvorio izbor podkategorije za opciju “Ostalo”  
-  - **WHEN** odabere jednu podkategoriju  
-  - **THEN** sistem evidentira izabranu podkategoriju kao dio zahtjeva
+- **AC13: Evidentiranje izabrane kategorije i potkategorije**  
+  - **GIVEN** korisnik je završio korake “Kategorija” i “Potkategorija”  
+  - **WHEN** potvrdi slanje zahtjeva  
+  - **THEN** sistem evidentira glavnu kategoriju kao obavezan podatak, a potkategoriju kao podatak vezan za odabranu kategoriju
 
 ---
 
@@ -656,7 +659,7 @@ Povezano sa storyjima za pregled vlastitog zahtjeva (US-06), pregled otvorenih i
 
 ---
 
-### F. Hitnost zahtjeva
+### F. Hitnost i Premium opcija
 
 - **AC37: Odabir hitnosti zahtjeva**  
   - **GIVEN** korisnik se nalazi na koraku “Hitnost”  
@@ -737,10 +740,10 @@ Zavisi od storyja za prijavu zahtjeva za servisnu intervenciju (US-05) i povezan
   - **WHEN** pregleda detalje zahtjeva  
   - **THEN** sistem prikazuje informaciju da je precizna lokacija dodana uz zahtjev
 
-- **AC9: Prikaz vrste kvara i podkategorije**  
-  - **GIVEN** korisnik ima evidentiran zahtjev sa vrstom kvara  
+- **AC9: Prikaz kategorije i potkategorije**  
+  - **GIVEN** korisnik ima evidentiran zahtjev sa odabranom kategorijom  
   - **WHEN** pregleda listu ili detalje zahtjeva  
-  - **THEN** sistem prikazuje vrstu kvara i podkategoriju ako je unesena
+  - **THEN** sistem prikazuje kategoriju i potkategoriju ako je evidentirana
 
 - **AC10: Prikaz opisa i kontakt telefona**  
   - **GIVEN** korisnik ima evidentiran zahtjev  
@@ -840,7 +843,7 @@ Zavisi od storyja za prijavu zahtjeva za servisnu intervenciju (US-05) i povezan
 - **AC9: Prikaz osnovnih podataka za početnu obradu**  
   - **GIVEN** dispečer pregleda listu zahtjeva koji čekaju obradu  
   - **WHEN** sistem prikaže zahtjeve  
-  - **THEN** za svaki zahtjev prikazuje vrstu kvara, podkategoriju ako postoji, adresu, kontakt telefon, datum prijave, status, korisničku hitnost i preferirani termin ako postoji
+  - **THEN** za svaki zahtjev prikazuje kategoriju kvara, potkategoriju ako postoji, adresu, kontakt telefon, datum prijave, status, korisničku hitnost i preferirani termin ako postoji
 
 - **AC10: Prikaz informacije o zahtjevu bez preferiranog termina**  
   - **GIVEN** korisnik je prilikom prijave zahtjeva odabrao opciju bez preferiranog termina  
@@ -1959,7 +1962,53 @@ Zavisi od svih storyja koji mijenjaju stanje intervencije: prijava zahtjeva za s
   - **WHEN** bilo koji korisnik pokuša obrisati ili izmijeniti zapis u historiji  
   - **THEN** sistem onemogućava takve akcije i garantuje integritet audit trail-a kao trajnog dokaza o radu
 
+## US-34 — Aktivacija Premium usluge
+**Opis:** Kao korisnik usluge, želim aktivirati Premium paket kroz sistem, kako bih mogao koristiti opciju premium zahtjeva i dobiti prioritetnu obradu intervencija.
+
+**Poslovna vrijednost:** Ovaj story uvodi jasan i provjerljiv tok aktivacije premium usluge, smanjuje nejasnoće oko naplate i omogućava da se premium pogodnosti dodjeljuju samo korisnicima sa validnim statusom.
+
+**Prioritet:** Visok
+
+**Pretpostavke i otvorena pitanja:** Pretpostavka: U MVP verziji aktivacija premium paketa se provodi kroz simulirani tok naplate unutar sistema (bez integracije eksternog payment gateway-a). Nakon uspješne aktivacije korisniku se dodjeljuje status `premium_status = active` sa periodom važenja.
+
+**Otvorena pitanja:** Da li post-MVP verzija premium paketa treba podržavati automatsku obnovu pretplate ili samo ručno produženje?
+
+**Veze sa drugim storyjima:** Povezano sa storyjem za prijavu zahtjeva (US-05), premium zahtjev (US-33), kontrolu pristupa prema ulozi (US-04) i pregled vlastitog zahtjeva (US-06).
+
+**Acceptance Criteria:**
+
+- **AC1: Pokretanje aktivacije Premium paketa**
+  - **GIVEN** korisnik je prijavljen u sistem i nema aktivan premium status
+  - **WHEN** otvori sekciju "Premium usluga" i odabere opciju aktivacije
+  - **THEN** sistem prikazuje dostupne pakete, cijenu, period važenja i uslove korištenja
+
+- **AC2: Uspješna naplata i aktivacija**
+  - **GIVEN** korisnik je odabrao premium paket i unio validne podatke za plaćanje
+  - **WHEN** platna transakcija bude potvrđena kao uspješna
+  - **THEN** sistem korisniku postavlja status `premium_active`, evidentira datum početka i datum isteka, te prikazuje potvrdu aktivacije
+
+- **AC3: Neuspješna naplata**
+  - **GIVEN** korisnik je pokrenuo plaćanje premium paketa
+  - **WHEN** transakcija bude odbijena ili neuspješna
+  - **THEN** sistem ne aktivira premium status, prikazuje razlog greške i omogućava novi pokušaj plaćanja
+
+- **AC4: Korištenje premium opcije pri prijavi zahtjeva**
+  - **GIVEN** korisnik pokušava označiti premium opciju tokom prijave zahtjeva (US-33)
+  - **WHEN** sistem provjeri premium status korisnika
+  - **THEN** premium oznaka je dozvoljena samo ako korisnik ima status `premium_status = active`; u suprotnom sistem onemogućava premium opciju i nudi preusmjeravanje na aktivaciju
+
+- **AC5: Istek premium statusa**
+  - **GIVEN** korisnik je imao aktivan premium paket
+  - **WHEN** istekne period važenja paketa
+  - **THEN** sistem automatski mijenja status u `premium_status = expired`, uklanja pravo na nove premium zahtjeve i prikazuje korisniku obavijest o isteku
+
+- **AC6: Evidencija i audit aktivacije**
+  - **GIVEN** došlo je do promjene premium statusa (aktivacija, obnova, istek ili neuspješna naplata)
+  - **WHEN** sistem završi obradu događaja
+  - **THEN** sistem kreira audit zapis sa tipom događaja, vremenom i identifikatorom korisnika/transakcije
+
 ---
+
 ## US-33 — Zahtjev za Premium (Hitnom) uslugom
 **Opis:** Kao korisnik usluge, želim odabrati "Premium" opciju prilikom prijave kvara, kako bih osigurao prioritetnu obradu zahtjeva i brži izlazak servisera na teren, bez obzira na vrstu kvara.
 
@@ -1969,14 +2018,14 @@ Zavisi od svih storyja koji mijenjaju stanje intervencije: prijava zahtjeva za s
 
 **Pretpostavke i otvorena pitanja:** Pretpostavka: Sistem razlikuje standardne i premium zahtjeve. Premium zahtjev automatski dobiva najviši operativni prioritet.
 
-**Otvorena pitanja:** Da li se "Premium" opcija naplaćuje odmah kroz sistem ili se samo evidentira kao stavka za fakturu?
+**Napomena o MVP naplati:** U MVP-u se koristi simulacija premium naplate/statusa. Integracija stvarnog payment procesa nije obuhvaćena ovom verzijom.
 
 **Veze sa drugim storyjima:** Povezano sa storyjem za prijava zahtjeva (US-05), pregled otvorenih intervencija (US-07) i određivanje prioriteta (US-12).
 
 **Acceptance Criteria:**
 
 - **AC1: Odabir Premium opcije tokom prijave**
-**GIVEN** korisnik se nalazi na koraku "Hitnost" u US-05
+**GIVEN** korisnik je završio korake izbora kategorije i potkategorije u US-05 i nalazi se na koraku "Hitnost"
 
 **WHEN** označi opciju "Premium — hitna intervencija (dodatni troškovi)"
 
@@ -2058,6 +2107,8 @@ Ovaj plan je organizovan tako da se razvoj sistema odvija **postepeno, smisleno 
 - dodjeljivanje početnog statusa zahtjevu  (Dio logike kreiranja zahtjeva - **US-05**)
 - pregled vlastitog zahtjeva za korisnika  (**US-06**)
 - prikaz zahtjeva u dispečerovoj listi zahtjeva koji čekaju obradu (**US-07**)
+- aktivacija Premium usluge (online aktivacija, status premium korisnika i period važenja) (**US-34**)
+- premium zahtjev unutar prijave kvara (Hitnost/Premium korak, validacija prava i prioritetna obrada) (**US-33**)
 
 ### **Rizici i zavisnosti**
 - Sprint 7 direktno zavisi od **tehničke osnove, korisničkih uloga, prijave korisnika i pripremljene forme zahtjeva** iz Sprinta 6.  
@@ -2065,6 +2116,8 @@ Ovaj plan je organizovan tako da se razvoj sistema odvija **postepeno, smisleno 
 - Spremanje zahtjeva u bazu i dodjeljivanje početnog statusa moraju biti **konzistentni**, jer od tih podataka kasnije zavise dispečerski pregled, prioriteti i dodjela izvršiocu.  
 - Prikaz zahtjeva korisniku i dispečeru mora biti zasnovan na **istom izvoru podataka**, kako bi se izbjegla nedosljednost između korisničkog i internog pogleda na sistem.  
 - U ovoj fazi ne treba previše širiti logiku statusa, već je zadržati na **osnovnom nivou** potrebnom za evidentiranje i pregled zahtjeva.  
+- Premium tok uvodi dodatnu zavisnost između korisničkog statusa, naplate i prava korištenja Premium opcije, pa pravila aktivacije i validacije moraju biti jasno povezana sa US-05 kako ne bi došlo do nekonzistentnih zahtjeva.  
+- Notifikacije za premium i standardne zahtjeve prema dispečeru/adminu moraju biti pouzdane, kako bi operativna obrada zahtjeva u narednom sprintu imala potpune ulazne informacije.  
 - Ovaj sprint zatvara **prvi stvarni korisnički tok** i priprema sistem za dispečersku obradu u Sprintu 8.  
 
 ---

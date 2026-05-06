@@ -38,12 +38,23 @@ export async function GET() {
     }
 
     // Dohvati sve zahtjeve sa podacima podnosioca
-    const { data, error } = await supabase
+    let { data, error } = await supabase
       .from('service_requests')
       .select('*')
       .not('status', 'in', '("zavrseno","otkazano","odbijeno")')
+      .order('is_premium', { ascending: false })
       .order('urgency_score', { ascending: false })
       .order('created_at', { ascending: true });
+    if (error?.message?.includes("'is_premium' column")) {
+      const fallback = await supabase
+        .from('service_requests')
+        .select('*')
+        .not('status', 'in', '("zavrseno","otkazano","odbijeno")')
+        .order('urgency_score', { ascending: false })
+        .order('created_at', { ascending: true });
+      data = fallback.data;
+      error = fallback.error;
+    }
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 

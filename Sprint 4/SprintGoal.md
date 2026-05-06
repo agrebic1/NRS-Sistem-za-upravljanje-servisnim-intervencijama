@@ -18,3 +18,6 @@ Uspostaviti projektne i tehničke temelje sistema kroz definisanje Definition of
 - neusklađenost oko prioriteta release cjelina  
 - kašnjenje u tehničkom setupu i organizaciji repozitorija  
 - nedovoljno stabilni temelji za prelazak u AI-enabled fazu  
+
+### **Scope napomena (premium):**
+- U MVP-u premium naplata je simulirana; realni payment gateway nije dio ovog opsega i planira se post-MVP.

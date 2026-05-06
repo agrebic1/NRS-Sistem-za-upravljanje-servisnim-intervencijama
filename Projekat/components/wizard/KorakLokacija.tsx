@@ -287,7 +287,7 @@ function AddressAutocomplete({
   onChange,
   onSelect,
   error,
-  label = 'Adresa kvara *',
+  label = 'Adresa intervencije *',
   helperText,
 }: AutocompleteProps) {
   const [sugestije,   setSugestije]   = useState<NominatimResult[]>([]);
@@ -342,7 +342,7 @@ function AddressAutocomplete({
       <div className="relative z-10">
         <textarea
           id="wizard-adresa"
-          placeholder="Unesite adresu kvara…"
+          placeholder="Unesite adresu intervencije…"
           value={value}
           rows={2}
           onChange={(e) => handleChange(e.target.value)}
@@ -562,7 +562,7 @@ export function KorakLokacija({
           locationError:          null,
           locationSuccessMessage: adresa
             ? 'Lokacija je pronađena. Provjerite adresu prije nastavka.'
-            : 'Lokacija je određena (koordinate će biti sačuvane uz zahtjev). Unesite adresu kvara u polje iznad — obavezna je prije nastavka.',
+            : 'Lokacija je određena (koordinate će biti sačuvane uz zahtjev). Unesite adresu intervencije u polje iznad — obavezna je prije nastavka.',
           ...(adresa ? { address: adresa } : {}),
         });
       },
@@ -592,10 +592,10 @@ export function KorakLokacija({
     <div className="flex flex-col gap-4">
       <div className="space-y-1.5">
         <h2 className="text-xl font-bold" style={{ color: 'var(--first-octonary)' }}>
-          Lokacija kvara
+          Lokacija intervencije
         </h2>
         <p className="text-sm leading-snug" style={{ color: 'var(--first-nonary)' }}>
-          Unesite adresu kvara. Po želji dodatno precizirajte lokaciju putem GPS-a ili mape.
+          Unesite adresu intervencije. Po želji dodatno precizirajte lokaciju putem GPS-a ili mape.
         </p>
       </div>
 
@@ -604,7 +604,7 @@ export function KorakLokacija({
         onChange={(val) => { onUpdate({ address: val }); }}
         onSelect={handleAutocompleteSelect}
         error={error}
-        label="Adresa kvara *"
+        label="Adresa intervencije *"
         helperText="Provjerite da li je adresa tačna. Po potrebi je možete ručno izmijeniti."
       />
 

@@ -5,6 +5,8 @@ import { profilUpdateSchema } from '@/lib/validations/servisirane';
 
 export const dynamic = 'force-dynamic';
 
+type PremiumStatus = 'inactive' | 'pending_payment' | 'active' | 'expired' | 'cancelled';
+
 export async function GET() {
   try {
     const supabaseSesija = createServerClient();
@@ -33,11 +35,52 @@ export async function GET() {
     const uloge: string[] = [];
     let isVerified = false;
 
-    const { data: korisnikUsluge } = await supabase
+    let { data: korisnikUsluge, error: korisnikUslugeErr } = await supabase
       .from('korisnik_usluge')
-      .select('id_korisnika_usluge')
+      .select(
+        'id_korisnika_usluge, is_premium, premium_status, premium_started_at, premium_expires_at, premium_plan, premium_cancelled_at, premium_cancel_reason'
+      )
       .eq('id_korisnika_usluge', user.id)
       .maybeSingle();
+    if (
+      korisnikUslugeErr?.message?.includes("'premium_status' column") ||
+      korisnikUslugeErr?.message?.includes('premium_cancelled_at')
+    ) {
+      const fallback = await supabase
+        .from('korisnik_usluge')
+        .select(
+          'id_korisnika_usluge, is_premium, premium_status, premium_started_at, premium_expires_at, premium_plan'
+        )
+        .eq('id_korisnika_usluge', user.id)
+        .maybeSingle();
+      korisnikUsluge = fallback.data as typeof korisnikUsluge;
+      korisnikUslugeErr = fallback.error;
+    }
+    if (korisnikUslugeErr?.message?.includes("'premium_status' column")) {
+      const fallback = await supabase
+        .from('korisnik_usluge')
+        .select('id_korisnika_usluge, is_premium')
+        .eq('id_korisnika_usluge', user.id)
+        .maybeSingle();
+      korisnikUsluge = fallback.data as typeof korisnikUsluge;
+      korisnikUslugeErr = fallback.error;
+    }
+    if (korisnikUslugeErr?.message?.includes("'is_premium' column")) {
+      const fallback = await supabase
+        .from('korisnik_usluge')
+        .select('id_korisnika_usluge')
+        .eq('id_korisnika_usluge', user.id)
+        .maybeSingle();
+      korisnikUsluge = fallback.data as typeof korisnikUsluge;
+      korisnikUslugeErr = fallback.error;
+    }
+    if (korisnikUslugeErr) {
+      return NextResponse.json({ error: korisnikUslugeErr.message }, { status: 500 });
+    }
+
+    const premiumStatus = (korisnikUsluge?.premium_status as PremiumStatus | null | undefined) ?? 'inactive';
+    const isPremium =
+      premiumStatus === 'active' || (korisnikUsluge?.is_premium === true && !korisnikUsluge?.premium_status);
 
     if (korisnikUsluge) uloge.push('korisnik');
 
@@ -73,6 +116,15 @@ export async function GET() {
         adresa:        osoba?.adresa ?? null,
         uloge,
         is_verified:   isVerified,
+        is_premium:    isPremium,
+        premium_status: premiumStatus,
+        premium_started_at: korisnikUsluge?.premium_started_at ?? null,
+        premium_expires_at: korisnikUsluge?.premium_expires_at ?? null,
+        premium_plan: korisnikUsluge?.premium_plan ?? null,
+        premium_cancelled_at:
+          (korisnikUsluge as { premium_cancelled_at?: string | null } | null | undefined)?.premium_cancelled_at ?? null,
+        premium_cancel_reason:
+          (korisnikUsluge as { premium_cancel_reason?: string | null } | null | undefined)?.premium_cancel_reason ?? null,
       },
     });
   } catch (err) {

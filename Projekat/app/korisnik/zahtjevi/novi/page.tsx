@@ -12,7 +12,7 @@ export default function NoviZahtjevWizardPage() {
             className="text-2xl font-bold tracking-tight"
             style={{ color: 'var(--first-octonary)' }}
           >
-            Prijava kvara
+            Nova prijava zahtjeva
           </h1>
           <p className="mt-1.5 text-sm" style={{ color: 'var(--first-nonary)' }}>
             Popunite detalje u 6 koraka. Što detaljniji opis unesete, brže ćemo reagirati.

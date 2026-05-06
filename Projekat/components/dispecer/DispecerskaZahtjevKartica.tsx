@@ -20,21 +20,7 @@ import {
 import type { ServisniZahtjev, StatusZahtjeva } from '@/domain/types/servisirane';
 import { formatirajDatumPrikaz } from '@/lib/format/datumi';
 import { oznakaHitnostiZaKorisnika } from '@/lib/servisirane/urgency';
-
-const OSTALO_PREFIX = /^Ostalo\s*[—–-]\s*/i;
-
-function parsirajKategoriju(category: string): { glavna: string; podkategorija: string | null } {
-  const trimmed = (category ?? '').trim();
-  if (!trimmed) return { glavna: 'Zahtjev', podkategorija: null };
-  const match = trimmed.match(/^(.+?)\s*[—–-]\s*(.+)$/);
-  if (match && OSTALO_PREFIX.test(trimmed)) {
-    return { glavna: 'Ostalo', podkategorija: match[2].trim() || null };
-  }
-  if (match) {
-    return { glavna: match[1].trim(), podkategorija: match[2].trim() || null };
-  }
-  return { glavna: trimmed, podkategorija: null };
-}
+import { labelKategorije } from '@/lib/servisirane/kategorije';
 
 function skracenOpis(tekst: string, maxLen = 150): string {
   const t = (tekst ?? '').trim();
@@ -257,7 +243,7 @@ export interface DispecerskaZahtjevKarticaProps {
 export function DispecerskaZahtjevKartica({ zahtjev }: DispecerskaZahtjevKarticaProps) {
   const podnosilac = zahtjev.podnosilac;
 
-  const { glavna, podkategorija } = parsirajKategoriju(zahtjev.category);
+  const { glavna, podkategorija } = labelKategorije(zahtjev);
   const { tekstCijeli: terminTekst, imaPreferirani } = preferiraniTerminZaDispecera(zahtjev);
   const hitnostKorisnika = oznakaHitnostiZaKorisnika(zahtjev.urgency_score);
   const imaKoordinate = zahtjev.latitude != null && zahtjev.longitude != null;
@@ -273,7 +259,7 @@ export function DispecerskaZahtjevKartica({ zahtjev }: DispecerskaZahtjevKartica
       className="flex h-full flex-col rounded-2xl border p-4 shadow-sm transition-shadow duration-200 hover:shadow-md sm:p-5"
       style={{
         backgroundColor: 'rgb(255 255 255 / 0.72)',
-        borderColor: 'rgb(var(--first-quaternary-rgb) / 0.35)',
+        borderColor: zahtjev.is_premium ? 'rgba(220,38,38,0.45)' : 'rgb(var(--first-quaternary-rgb) / 0.35)',
       }}
     >
       <header className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
@@ -287,6 +273,33 @@ export function DispecerskaZahtjevKartica({ zahtjev }: DispecerskaZahtjevKartica
           <DispecerStatusBadge status={zahtjev.status} />
         </div>
       </header>
+      {zahtjev.is_premium && (
+        <div className="mb-3 flex flex-col gap-1.5">
+          <span
+            className="inline-flex w-fit items-center rounded-full px-2.5 py-1 text-xs font-semibold"
+            style={{
+              backgroundColor: 'rgba(220,38,38,0.12)',
+              color: '#B91C1C',
+              border: '1px solid rgba(220,38,38,0.25)',
+            }}
+          >
+            Hitna intervencija (premium)
+          </span>
+          {zahtjev.premium_priority_override_reason?.trim() && (
+            <span
+              className="inline-flex w-fit max-w-full items-start rounded-lg px-2 py-1 text-[11px] font-semibold leading-snug"
+              style={{
+                backgroundColor: 'rgba(37,99,235,0.08)',
+                color: '#1D4ED8',
+                border: '1px solid rgba(37,99,235,0.22)',
+              }}
+              title={zahtjev.premium_priority_override_reason}
+            >
+              Prioritet smanjen (dispečer): {skracenOpis(zahtjev.premium_priority_override_reason, 120)}
+            </span>
+          )}
+        </div>
+      )}
 
       <div className="mb-3 min-w-0">
         <h3

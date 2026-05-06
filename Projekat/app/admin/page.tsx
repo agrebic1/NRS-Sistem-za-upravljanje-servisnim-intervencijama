@@ -19,6 +19,8 @@ import { formatirajDatumPrikaz } from '@/lib/format/datumi';
 
 type StatusKorisnika = 'aktivan' | 'neaktivan' | 'suspendovan';
 
+type PremiumLifecycleStatus = 'inactive' | 'pending_payment' | 'active' | 'expired' | 'cancelled';
+
 interface KorisnikSistema {
   id: string;
   imeIPrezime: string;
@@ -27,6 +29,10 @@ interface KorisnikSistema {
   status: StatusKorisnika;
   datumRegistracije: string;
   tip: 'korisnik' | 'uposlenik';
+  isPremium: boolean;
+  premium_status?: PremiumLifecycleStatus;
+  premium_expires_at?: string | null;
+  premium_plan?: string | null;
 }
 
 interface ZahtjevSaPodnosiocem extends ServisniZahtjev {
@@ -44,6 +50,7 @@ export default function AdminPage() {
   const [zahtjevi, setZahtjevi] = useState<ZahtjevSaPodnosiocem[]>([]);
   const [greska, setGreska] = useState<string | null>(null);
   const [ucitava, setUcitava] = useState(true);
+  const [premiumLoadingId, setPremiumLoadingId] = useState<string | null>(null);
 
   async function ucitajKorisnike() {
     setUcitava(true);
@@ -75,6 +82,32 @@ export default function AdminPage() {
       .then((d) => setZahtjevi(d.zahtjevi ?? []))
       .catch(() => {});
   }, []);
+
+  async function primijeniPremiumLifecycle(korisnikId: string, lifecycle: PremiumLifecycleStatus) {
+    setPremiumLoadingId(korisnikId);
+    setGreska(null);
+    try {
+      const actionMap: Record<PremiumLifecycleStatus, string> = {
+        active: 'set_active',
+        inactive: 'set_inactive',
+        pending_payment: 'set_pending_payment',
+        cancelled: 'set_cancelled',
+        expired: 'set_expired',
+      };
+      const r = await fetch(`/api/admin/users/${korisnikId}/premium`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: actionMap[lifecycle] }),
+      });
+      const d = await r.json();
+      if (!r.ok) throw new Error(d.error ?? 'Neuspjela izmjena premium statusa.');
+      await ucitajKorisnike();
+    } catch (error) {
+      setGreska(error instanceof Error ? error.message : 'Neuspjela izmjena premium statusa.');
+    } finally {
+      setPremiumLoadingId(null);
+    }
+  }
 
   const kpiKartice = useMemo(
     () => [
@@ -246,7 +279,7 @@ export default function AdminPage() {
           <table className="w-full text-sm">
             <thead>
               <tr style={{ borderBottom: '1px solid rgb(var(--first-quaternary-rgb) / 0.25)' }}>
-                {['Ime i prezime', 'Email', 'Uloga', 'Status', 'Registrovan', ''].map((zaglavlje) => (
+                {['Ime i prezime', 'Email', 'Uloga', 'Status', 'Premium lifecycle', 'Registrovan', ''].map((zaglavlje) => (
                   <th
                     key={zaglavlje}
                     className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider"
@@ -260,7 +293,7 @@ export default function AdminPage() {
             <tbody className="divide-y" style={{ borderColor: 'rgb(var(--first-quaternary-rgb) / 0.2)' }}>
               {ucitava && (
                 <tr>
-                  <td colSpan={6} className="px-5 py-8 text-center" style={{ color: 'var(--first-nonary)' }}>
+                  <td colSpan={7} className="px-5 py-8 text-center" style={{ color: 'var(--first-nonary)' }}>
                     Ucitavanje korisnika...
                   </td>
                 </tr>
@@ -268,7 +301,7 @@ export default function AdminPage() {
 
               {!ucitava && korisnici.length === 0 && !greska && (
                 <tr>
-                  <td colSpan={6} className="px-5 py-8 text-center" style={{ color: 'var(--first-nonary)' }}>
+                  <td colSpan={7} className="px-5 py-8 text-center" style={{ color: 'var(--first-nonary)' }}>
                     Nema korisnika za prikaz.
                   </td>
                 </tr>
@@ -296,6 +329,39 @@ export default function AdminPage() {
                         >
                           {badge.oznaka}
                         </span>
+                      </td>
+                      <td className="px-5 py-3.5">
+                        {korisnik.tip === 'korisnik' ? (
+                          <div className="flex min-w-[10rem] flex-col gap-1">
+                            <select
+                              className="rounded-lg border px-2 py-1.5 text-xs font-medium"
+                              style={{
+                                borderColor: 'rgb(var(--first-quaternary-rgb) / 0.45)',
+                                color: 'var(--first-octonary)',
+                                backgroundColor: 'rgb(255 255 255 / 0.9)',
+                              }}
+                              value={korisnik.premium_status ?? (korisnik.isPremium ? 'active' : 'inactive')}
+                              disabled={premiumLoadingId === korisnik.id}
+                              onChange={(e) => {
+                                const v = e.target.value as PremiumLifecycleStatus;
+                                void primijeniPremiumLifecycle(korisnik.id, v);
+                              }}
+                            >
+                              <option value="inactive">Neaktivan</option>
+                              <option value="pending_payment">Čeka uplatu</option>
+                              <option value="active">Aktivan</option>
+                              <option value="expired">Istekao</option>
+                              <option value="cancelled">Otkazan</option>
+                            </select>
+                            {korisnik.premium_expires_at && korisnik.premium_status === 'active' && (
+                              <span className="text-[10px]" style={{ color: 'var(--first-nonary)' }}>
+                                Istek: {formatirajDatumPrikaz(korisnik.premium_expires_at)}
+                              </span>
+                            )}
+                          </div>
+                        ) : (
+                          <span className="text-xs" style={{ color: 'var(--first-nonary)' }}>—</span>
+                        )}
                       </td>
                       <td className="px-5 py-3.5" style={{ color: 'var(--first-nonary)' }}>
                         {korisnik.datumRegistracije}
@@ -342,13 +408,42 @@ export default function AdminPage() {
                     <p className="text-xs" style={{ color: 'var(--first-nonary)' }}>
                       {korisnik.email}
                     </p>
+                    {korisnik.tip === 'korisnik' && (
+                      <p className="mt-1 text-xs" style={{ color: 'var(--first-nonary)' }}>
+                        Premium: {korisnik.premium_status ?? (korisnik.isPremium ? 'active' : 'inactive')}
+                      </p>
+                    )}
                   </div>
-                  <span
-                    className="rounded-full px-2.5 py-0.5 text-xs font-semibold"
-                    style={{ backgroundColor: badge.pozadina, color: badge.boja }}
-                  >
-                    {badge.oznaka}
-                  </span>
+                  <div className="flex flex-col items-end gap-2">
+                    <span
+                      className="rounded-full px-2.5 py-0.5 text-xs font-semibold"
+                      style={{ backgroundColor: badge.pozadina, color: badge.boja }}
+                    >
+                      {badge.oznaka}
+                    </span>
+                    {korisnik.tip === 'korisnik' && (
+                      <select
+                        className="mt-1 w-full max-w-[11rem] rounded-lg border px-2 py-1.5 text-xs font-medium"
+                        style={{
+                          borderColor: 'rgb(var(--first-quaternary-rgb) / 0.45)',
+                          color: 'var(--first-octonary)',
+                          backgroundColor: 'rgb(255 255 255 / 0.9)',
+                        }}
+                        value={korisnik.premium_status ?? (korisnik.isPremium ? 'active' : 'inactive')}
+                        disabled={premiumLoadingId === korisnik.id}
+                        onChange={(e) => {
+                          const v = e.target.value as PremiumLifecycleStatus;
+                          void primijeniPremiumLifecycle(korisnik.id, v);
+                        }}
+                      >
+                        <option value="inactive">Neaktivan</option>
+                        <option value="pending_payment">Čeka uplatu</option>
+                        <option value="active">Aktivan</option>
+                        <option value="expired">Istekao</option>
+                        <option value="cancelled">Otkazan</option>
+                      </select>
+                    )}
+                  </div>
                 </li>
               );
             })}

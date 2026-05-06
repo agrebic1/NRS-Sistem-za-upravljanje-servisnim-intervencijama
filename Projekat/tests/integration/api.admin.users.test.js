@@ -1,6 +1,7 @@
 const mockSessionGetUser = jest.fn();
 const mockFrom = jest.fn();
 const mockListUsers = jest.fn();
+const mockCreateUser = jest.fn();
 
 jest.mock('@/lib/supabase/server', () => ({
   createClient: () => ({
@@ -11,11 +12,11 @@ jest.mock('@/lib/supabase/server', () => ({
 jest.mock('@/lib/supabase/admin', () => ({
   createAdminClient: () => ({
     from: mockFrom,
-    auth: { admin: { listUsers: mockListUsers } },
+    auth: { admin: { listUsers: mockListUsers, createUser: mockCreateUser } },
   }),
 }));
 
-const { GET } = require('@/app/api/admin/users/route');
+const { GET, POST } = require('@/app/api/admin/users/route');
 
 function maybeSingle(result) {
   return {
@@ -31,10 +32,17 @@ function selectOnly(result) {
   };
 }
 
+function insertOnly(result) {
+  return {
+    insert: jest.fn().mockResolvedValue(result),
+  };
+}
+
 describe('/api/admin/users route', () => {
   beforeEach(() => {
     mockFrom.mockReset();
     mockListUsers.mockReset();
+    mockCreateUser.mockReset();
     mockSessionGetUser.mockReset();
   });
 
@@ -240,5 +248,116 @@ describe('/api/admin/users route', () => {
     mockListUsers.mockResolvedValue({ data: { users: [] }, error: null });
     const response = await GET();
     expect(response.status).toBe(500);
+  });
+});
+
+describe('/api/admin/users POST route', () => {
+  beforeEach(() => {
+    mockFrom.mockReset();
+    mockListUsers.mockReset();
+    mockCreateUser.mockReset();
+    mockSessionGetUser.mockReset();
+  });
+
+  function baseAdminMock() {
+    mockFrom.mockImplementation((table) => {
+      if (table === 'uposlenici') return maybeSingle({ data: { id_uloge: 1 }, error: null });
+      if (table === 'uloga') {
+        return {
+          select: jest.fn().mockReturnValue({
+            eq: jest.fn().mockReturnValue({
+              maybeSingle: jest.fn().mockResolvedValue({ data: { naziv: 'Administrator' }, error: null }),
+            }),
+          }),
+        };
+      }
+      if (table === 'admin_user_create_audit') return insertOnly({ data: null, error: null });
+      return selectOnly({ data: [], error: null });
+    });
+  }
+
+  test('returns 401 when no session', async () => {
+    mockSessionGetUser.mockResolvedValue({ data: { user: null } });
+    const request = new Request('http://localhost/api/admin/users', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({}),
+    });
+    const response = await POST(request);
+    expect(response.status).toBe(401);
+  });
+
+  test('returns 403 when user is not admin', async () => {
+    mockSessionGetUser.mockResolvedValue({ data: { user: { id: 'u1' } } });
+    mockFrom.mockImplementation((table) => {
+      if (table === 'uposlenici') return maybeSingle({ data: null, error: null });
+      return maybeSingle({ data: null, error: null });
+    });
+    const request = new Request('http://localhost/api/admin/users', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ first_name: 'A', last_name: 'B', email: 'ab@example.com', role: 'serviser' }),
+    });
+    const response = await POST(request);
+    expect(response.status).toBe(403);
+  });
+
+  test('returns 400 for invalid payload', async () => {
+    mockSessionGetUser.mockResolvedValue({ data: { user: { id: 'u1' } } });
+    baseAdminMock();
+    const request = new Request('http://localhost/api/admin/users', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ first_name: '', last_name: 'B', email: 'not-email', role: 'x' }),
+    });
+    const response = await POST(request);
+    expect(response.status).toBe(400);
+  });
+
+  test('returns 409 for duplicate user email', async () => {
+    mockSessionGetUser.mockResolvedValue({ data: { user: { id: 'u1' } } });
+    baseAdminMock();
+    mockListUsers.mockResolvedValue({
+      data: { users: [{ email: 'dup@example.com' }] },
+      error: null,
+    });
+    const request = new Request('http://localhost/api/admin/users', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        first_name: 'Amina',
+        last_name: 'Admin',
+        email: 'dup@example.com',
+        role: 'serviser',
+      }),
+    });
+    const response = await POST(request);
+    expect(response.status).toBe(409);
+  });
+
+  test('returns 200 on successful user creation', async () => {
+    mockSessionGetUser.mockResolvedValue({ data: { user: { id: 'u1' } } });
+    baseAdminMock();
+    mockListUsers.mockResolvedValue({ data: { users: [] }, error: null });
+    mockCreateUser.mockResolvedValue({
+      data: { user: { id: 'new-user-id', email: 'novi@example.com' } },
+      error: null,
+    });
+    const request = new Request('http://localhost/api/admin/users', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        first_name: 'Novi',
+        last_name: 'Serviser',
+        email: 'novi@example.com',
+        role: 'serviser',
+      }),
+    });
+    const response = await POST(request);
+    const body = await response.json();
+    expect(response.status).toBe(200);
+    expect(body.success).toBe(true);
+    expect(body.user.id).toBe('new-user-id');
+    expect(body.privremena_lozinka).toBeTruthy();
   });
 });

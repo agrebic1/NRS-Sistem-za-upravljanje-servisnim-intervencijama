@@ -6,8 +6,8 @@ Ovaj folder sadrži **automatske** testove (pokretanje iz projekta) i **ručne**
 
 ## Sadržaj
 
-1. [Automatski testovi](#automatski-testovi) — komande, šta se mockuje, pokrivenost Sprinta 5 (Sprint 6: još nema)  
-2. [Ručno testiranje](#ručno-testiranje) — kako su fajlovi organizovani, Sprint 5 i Sprint 6  
+1. [Automatski testovi](#automatski-testovi) — komande, šta se mockuje, pokrivenost  
+2. [Ručno testiranje](#ručno-testiranje) — kako su fajlovi organizovani
 3. [Dokazi (screenshoti)](#dokazi-screenshoti)  
 
 ---
@@ -33,7 +33,20 @@ Komande se pokreću iz **`Projekat/`** (gdje je `package.json`):
 ### Šta automatski testovi pokrivaju (veza sa sprintovima)
 
 - **Sprint 5 (auth i uloge):** middleware (neprijavljeni, role-based pristup na `/admin`, `/serviser`, `/dispecer`, `/korisnik`), forme `LoginForm` i `RegisterForm`, e2e smoke na auth stranicama i redirect sa privatnih ruta na login.  
-- **Sprint 6 (servisni zahtjevi, korisnik, dispečer):** _Još nisu urađeni posvećeni automatski testovi._ Cijela trenutna pokrivenost je u **ručnom** planu `SB-06-14` (`TC` / `EXEC` / `BUG`). Kad tim doda unit, integration ili e2e za wizard, liste i dispečera, ovdje se može dopuniti tabela ili lista fajlova.
+- **Sprint 6 (servisni zahtjevi, korisnik, dispečer):** 
+
+### Premium MVP test matrica 
+
+Napomena: u MVP-u je premium naplata **simulirana** (bez eksternog payment gateway-a). Testovi verifikuju lifecycle i prava korištenja, a ne realnu finansijsku transakciju.
+
+| Scenarij | Očekivanje |
+|----------|------------|
+| Aktivacija premiuma (success) | Korisnik prelazi u `premium_status=active`, upisuje se `premium_events` |
+| Aktivacija premiuma (fail) | Status ostaje neaktivan, korisnik dobija poruku greške |
+| Slanje premium zahtjeva sa `active` statusom | Zahtjev prolazi validaciju i kreira se `is_premium=true` |
+| Slanje premium zahtjeva sa `expired` statusom | Zahtjev se odbija uz poruku za obnovu/aktivaciju |
+| Slanje premium zahtjeva sa `pending_payment` statusom | Zahtjev se odbija uz poruku da aktivacija nije dovršena |
+| Cron istek premiuma | `active -> expired`, `is_premium=false`, upis `premium_expired` događaja |
 
 ---
 
@@ -57,24 +70,15 @@ Komande se pokreću iz **`Projekat/`** (gdje je `package.json`):
 | | `SB-05-13/SEC_SB-05-13_ValidacijaPristupa.csv` | Sigurnosni scenariji (npr. neautorizovan pristup, sesija) |
 | | `SB-05-13/SIGNOFF_SB-05-13_QA-SA.md` | Završni QA/SA sign-off za tu stavku |
 
-### Sprint 6 — zahtjevi za servis, korisnik, dispečer
+### Sprint 6 — administrativni onboarding internog korisnika
 
 | Stavka | Fajl | Namjena |
 |--------|------|--------|
-| | `SB-06-14/TC_SB-06-14_ServiceRequests.csv` | Katalog: wizard, „Moji zahtjevi”, dispečerska pending lista, integracija, sigurnost, UX (125 slučajeva) |
-| | `SB-06-14/EXEC_SB-06-14_ServiceRequests.csv` | Izvršenje |
-| | `SB-06-14/BUG_SB-06-14_ServiceRequests.csv` | Greške |
-| | `SB-06-14/SIGNOFF_SB-06-14_QA-SA.md` | Predložak sign-offa |
+| **SB-06-16** | `SB-06-16/TC_SB-06-16_AdminOnboarding.csv` |
+| | `SB-06-16/EXEC_SB-06-16_AdminOnboarding.csv` | Evidencija izvršenja testova |
+| | `SB-06-16/BUG_SB-06-16_AdminOnboarding.csv` | Evidencija grešaka i otvorenih rizika |
+| | `SB-06-16/SIGNOFF_SB-06-16_QA-SA.md` | Formalni QA/SA sign-off za SB-06-16 |
 
----
-
-## Dokazi (screenshoti)
-
-| Sprint / stavka | Folder |
-|-----------------|--------|
-| SB-05-12 | `evidence/SB-05-12/` |
-| SB-05-13 | `evidence/SB-05-13/` |
-| SB-06-14 | `evidence/SB-06-14/` |
 
 Imenovanje: po dogovoru tima, npr. `TC-042_KratkiOpis.png`, da se mapira na `ID_testa` u `EXEC` fajlu.
 

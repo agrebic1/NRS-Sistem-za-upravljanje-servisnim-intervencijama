@@ -20,6 +20,7 @@ import type { ServisniZahtjev, StatusZahtjeva } from '@/domain/types/servisirane
 import { formatirajDatumPrikaz } from '@/lib/format/datumi';
 import { brojZahtjevaZaPrikaz } from '@/lib/servisirane/korisnickiBrojZahtjeva';
 import { oznakaHitnostiZaKorisnika } from '@/lib/servisirane/urgency';
+import { labelKategorije } from '@/lib/servisirane/kategorije';
 
 // ─── Životni ciklus statusa — Triple Coding ───────────────────────────────────
 
@@ -131,21 +132,6 @@ export function StatusBadge({ status }: { status: StatusZahtjeva | string }) {
 
 // ─── Pomoćne funkcije za sadržaj kartice ───────────────────────────────────────
 
-const OSTALO_PREFIX = /^Ostalo\s*[—–-]\s*/i;
-
-function parsirajKategoriju(category: string): { glavna: string; podkategorija: string | null } {
-  const trimmed = (category ?? '').trim();
-  if (!trimmed) return { glavna: 'Zahtjev', podkategorija: null };
-  const match = trimmed.match(/^(.+?)\s*[—–-]\s*(.+)$/);
-  if (match && OSTALO_PREFIX.test(trimmed)) {
-    return { glavna: 'Ostalo', podkategorija: match[2].trim() || null };
-  }
-  if (match) {
-    return { glavna: match[1].trim(), podkategorija: match[2].trim() || null };
-  }
-  return { glavna: trimmed, podkategorija: null };
-}
-
 function terminZaKarticu(zahtjev: ServisniZahtjev): { label: string; vrijednost: string } {
   const schedule = zahtjev.preferred_schedule;
   const nemaTermina =
@@ -182,7 +168,7 @@ interface ZahtjevKarticaProps {
 }
 
 export function ZahtjevKartica({ zahtjev, onUredi, onOtkazi }: ZahtjevKarticaProps) {
-  const { glavna, podkategorija } = parsirajKategoriju(zahtjev.category);
+  const { glavna, podkategorija } = labelKategorije(zahtjev);
   const datumPrijave = formatirajDatumPrikaz(zahtjev.created_at);
   const { label: terminLabel, vrijednost: terminVrijednost } = terminZaKarticu(zahtjev);
   const hitnost = oznakaHitnostiZaKorisnika(zahtjev.urgency_score);
@@ -214,6 +200,20 @@ export function ZahtjevKartica({ zahtjev, onUredi, onOtkazi }: ZahtjevKarticaPro
           <StatusBadge status={zahtjev.status} />
         </div>
       </header>
+      {zahtjev.is_premium && (
+        <p className="mb-3">
+          <span
+            className="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold"
+            style={{
+              backgroundColor: 'rgba(220,38,38,0.12)',
+              color: '#B91C1C',
+              border: '1px solid rgba(220,38,38,0.25)',
+            }}
+          >
+            Hitna intervencija (premium)
+          </span>
+        </p>
+      )}
 
       {/* Naslov + podkategorija */}
       <div className="mb-3 min-w-0">

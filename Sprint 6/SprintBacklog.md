@@ -1,5 +1,7 @@
 # Sprint Goal
 
+> Napomena o mapiranju: sadržaj ovog foldera prati logički Sprint 7 iz `Sprint 2/User Stories.md`.
+
 ### Sprint broj 6
 
 ### Sprint cilj
@@ -11,6 +13,8 @@ Omogućiti korisnicima intuitivan proces prijave kvara kroz pametni wizard, uspo
 - implementacija pametnog wizarda za prijavu kvara (US-05): 5+1 sistem kategorizacije, integracija mape, hromatski kalendar i trijaža
 
 - upravljanje životnim ciklusom zahtjeva (US-06, US-26, US-27): Pregled statusa u realnom vremenu, mogućnost izmjene i sigurno otkazivanje zahtjeva dok je u statusu "na čekanju"
+
+- premium model u toku prijave (US-34, US-33): aktivacija premium statusa, validacija premium prava pri slanju zahtjeva, prioritetna obrada i notifikacije prema dispečeru/adminu
 
 - onboarding i verifikacija partnera (US-18): Hibridna forma za servisere i dispečere sa Zod fail-fast validacijom
 
@@ -63,11 +67,12 @@ Zavisnosti:
 | SBI-05-11 | Upravljanje korisničkom sesijom | Backend / frontend | Done | Provjera sesije nakon refresh-a, održavanje prijavljenog stanja i usklađivanje server/client logike. |
 | SBI-05-12 | Testiranje registracije, prijave, odjave, sesije i preusmjeravanja | Testeri | Done | Testirati pozitivne, negativne i edge case scenarije prema acceptance kriterijima i decision log pravilima. |
 | SBI-05-13 | Validacija autentifikacije i kontrole pristupa korisnika | QA / Solution architect | Done | Validacija poslovnih pravila i logike sistema. | 
-| SBI-06-14 | Prijava zahtjeva za servisnu intervenciju (US-05) | Frontend + backend | To Do | Kreiranje forme i wizarda, kalendar, mapa, upitnik za trijažu. |
-| SBI-06-15 | Pregled vlastitog zahtjeva (US-06) | Frontend + backend + baza | To Do | Prikaz zahtjeva na dashboardu korisnika i prikaz njegovog statusa. |
-| SBI-06-16 | Administrativno kreiranje internog korisničkog naloga (US-18) | Frontend + backend + baza | To Do | Kreiranje naloga za opretaivne korisnike (servisser, dispečer), onboarding proces. |
-| SBI-06-17 | Izmjena vlastitog zahtjeva (US-26) | Frontend + backend + baza | To Do | Omogućiti korisniku re-open wizarda i ažuriranje podataka. Dozvoljeno samo dok je status "na_cekanju". | 
-| SBI-06-18 | Otkazivanje vlastitog zahtjeva (US-27) | Frontdend + backend + baza | To Do | Implementacija "Otkaži" funkcije uz potvrdu (confirm modal). Status zahtjeva prelazi u "otkazano". |
-| SBI-06-19 | Zahtjev za premium/hitnom uslugom (US-33) | Frontend + backend + baza | To Do | |
-| SBI-06-20 | Testiranje toka prijave kvara i onboarding procesa | Testeri / QA | To Do | Testiranje "end-to-end" scenarija: od slanja zahtjeva do admin odobrenja i kreiranja partnerskog naloga. |
+| SBI-06-14 | Prijava zahtjeva za servisnu intervenciju (US-05) | Frontend + backend | Done | Implementiran wizard sa kategorijama/potkategorijama, mapom, terminima i trijažom; validacija usklađena sa API slojem. |
+| SBI-06-15 | Pregled vlastitog zahtjeva (US-06) | Frontend + backend + baza | Done | Implementiran pregled liste i detalja vlastitih zahtjeva sa statusima i premium oznakama. |
+| SBI-06-16 | Administrativno kreiranje internog korisničkog naloga (US-18) | Frontend + backend + baza | To Do | Administrativni onboarding internih korisnika i dodjela uloga implementirani kroz admin tok. |
+| SBI-06-17 | Izmjena vlastitog zahtjeva (US-26) | Frontend + backend + baza | To Do | Omogućena izmjena zahtjeva kada je status dozvoljen, uz backend validaciju pravila statusa. | 
+| SBI-06-18 | Otkazivanje vlastitog zahtjeva (US-27) | Frontend + backend + baza | To Do | Implementirana funkcija otkazivanja sa potvrdom i promjenom statusa na "otkazano". |
+| SBI-06-19 | Zahtjev za premium/hitnom uslugom (US-33) | Frontend + backend + baza | To Do | Usklađen korak Hitnost/Premium sa US-05; backend validira premium status i dispečerski override razloga. U MVP-u naplata ostaje simulirana. |
+| SBI-06-21 | Aktivacija premium usluge (US-34) | Frontend + backend + baza | Done | Implementiran premium lifecycle (`inactive`, `pending_payment`, `active`, `expired`, `cancelled`), API tok (`start/confirm/cancel/renew`), audit log (`premium_events`) i cron expiry obrada. |
+| SBI-06-20 | Testiranje toka prijave kvara i onboarding procesa | Testeri / QA | In Progress | Pokriveni su ključni ručni scenariji; potrebno finalno formalno sign-off test matrice. |
 

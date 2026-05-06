@@ -1,11 +1,27 @@
 import { NextResponse } from 'next/server';
+import { randomBytes } from 'crypto';
 import { formatirajDatumPrikaz } from '@/lib/format/datumi';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { createClient as createServerClient } from '@/lib/supabase/server';
+import { sendEmail, kreirajEmailInternogNaloga } from '@/lib/email/sendEmail';
+import { adminCreateUserSchema } from '@/lib/validations/servisirane';
 
 export const dynamic = 'force-dynamic';
 
 type StatusKorisnika = 'aktivan' | 'neaktivan' | 'suspendovan';
+
+type PremiumLifecycleStatus = 'inactive' | 'pending_payment' | 'active' | 'expired' | 'cancelled';
+
+type PremiumRedIzBaze = {
+  id_korisnika_usluge: string;
+  is_premium?: boolean | null;
+  premium_status?: string | null;
+  premium_started_at?: string | null;
+  premium_expires_at?: string | null;
+  premium_plan?: string | null;
+  premium_cancelled_at?: string | null;
+  premium_cancel_reason?: string | null;
+};
 
 interface ProfilKorisnika {
   id: string;
@@ -14,6 +30,13 @@ interface ProfilKorisnika {
   email: string | null;
   uloga: string | null;
   tip: 'korisnik' | 'uposlenik';
+  is_premium?: boolean;
+  premium_status?: PremiumLifecycleStatus;
+  premium_started_at?: string | null;
+  premium_expires_at?: string | null;
+  premium_plan?: string | null;
+  premium_cancelled_at?: string | null;
+  premium_cancel_reason?: string | null;
 }
 
 function procitajNazivUloge(
@@ -61,6 +84,33 @@ async function provjeriAdminPristup(supabase: ReturnType<typeof createAdminClien
   return nazivUloge === 'Administrator' || nazivUloge === 'admin';
 }
 
+function mapirajUlogu(role: 'serviser' | 'dispecer' | 'administrator') {
+  if (role === 'serviser') return 'Serviser';
+  if (role === 'dispecer') return 'Dispečer';
+  return 'Administrator';
+}
+
+function generisiPrivremenuLozinku() {
+  const godina = new Date().getFullYear();
+  const randomPart = randomBytes(4).toString('hex');
+  return `Temp${godina}!${randomPart}`;
+}
+
+async function upisiAdminCreateAudit(
+  supabase: ReturnType<typeof createAdminClient>,
+  payload: {
+    created_user_id: string | null;
+    created_by_user_id: string;
+    target_email: string;
+    target_role: string;
+    success: boolean;
+    error_message?: string | null;
+    email_sent?: boolean | null;
+  }
+) {
+  await supabase.from('admin_user_create_audit').insert(payload);
+}
+
 export async function GET() {
   try {
     const supabaseSesija = createServerClient();
@@ -82,6 +132,7 @@ export async function GET() {
     const [
       { data: authPodaci, error: authGreska },
       { data: korisnici, error: korisniciGreska },
+      { data: premiumStatusi, error: premiumStatusiGreska },
       { data: uposlenici, error: uposleniciGreska },
       { data: uloge, error: ulogeGreska },
     ] =
@@ -90,6 +141,11 @@ export async function GET() {
         supabase
           .from('v_korisnik_usluge')
           .select('id_korisnika_usluge, ime, prezime, email'),
+        supabase
+          .from('korisnik_usluge')
+          .select(
+            'id_korisnika_usluge, is_premium, premium_status, premium_started_at, premium_expires_at, premium_plan, premium_cancelled_at, premium_cancel_reason'
+          ),
         supabase
           .from('v_uposlenici')
           .select('id_uposlenika, id_uloge, ime, prezime, email'),
@@ -110,6 +166,31 @@ export async function GET() {
       return NextResponse.json({ error: uposleniciGreska.message }, { status: 500 });
     }
 
+    let premiumRedovi: PremiumRedIzBaze[] = (premiumStatusi as PremiumRedIzBaze[] | null) ?? [];
+    if (premiumStatusiGreska) {
+      const r2 = await supabase
+        .from('korisnik_usluge')
+        .select('id_korisnika_usluge, is_premium, premium_status, premium_started_at, premium_expires_at, premium_plan');
+      if (!r2.error && r2.data) {
+        premiumRedovi = r2.data as PremiumRedIzBaze[];
+      } else {
+        const r3 = await supabase.from('korisnik_usluge').select('id_korisnika_usluge, is_premium');
+        if (r3.error) {
+          return NextResponse.json({ error: premiumStatusiGreska.message }, { status: 500 });
+        }
+        premiumRedovi = (r3.data ?? []).map((row) => ({
+          id_korisnika_usluge: row.id_korisnika_usluge,
+          is_premium: row.is_premium,
+          premium_status: row.is_premium ? 'active' : 'inactive',
+          premium_started_at: null,
+          premium_expires_at: null,
+          premium_plan: null,
+          premium_cancelled_at: null,
+          premium_cancel_reason: null,
+        }));
+      }
+    }
+
     if (ulogeGreska) {
       return NextResponse.json({ error: ulogeGreska.message }, { status: 500 });
     }
@@ -119,9 +200,35 @@ export async function GET() {
       nazivUlogePoId.set(uloga.id_uloge, uloga.naziv);
     }
 
+    const premiumPoId = new Map<
+      string,
+      {
+        is_premium: boolean;
+        premium_status: PremiumLifecycleStatus;
+        premium_started_at: string | null;
+        premium_expires_at: string | null;
+        premium_plan: string | null;
+        premium_cancelled_at: string | null;
+        premium_cancel_reason: string | null;
+      }
+    >();
+    for (const r of premiumRedovi) {
+      const st = (r.premium_status as PremiumLifecycleStatus | undefined) ?? 'inactive';
+      premiumPoId.set(r.id_korisnika_usluge, {
+        is_premium: Boolean(r.is_premium),
+        premium_status: st,
+        premium_started_at: r.premium_started_at ?? null,
+        premium_expires_at: r.premium_expires_at ?? null,
+        premium_plan: r.premium_plan ?? null,
+        premium_cancelled_at: r.premium_cancelled_at ?? null,
+        premium_cancel_reason: r.premium_cancel_reason ?? null,
+      });
+    }
+
     const profili = new Map<string, ProfilKorisnika>();
 
     for (const korisnik of korisnici ?? []) {
+      const prem = premiumPoId.get(korisnik.id_korisnika_usluge);
       profili.set(korisnik.id_korisnika_usluge, {
         id: korisnik.id_korisnika_usluge,
         ime: korisnik.ime,
@@ -129,6 +236,13 @@ export async function GET() {
         email: korisnik.email,
         uloga: 'Korisnik usluge',
         tip: 'korisnik',
+        is_premium: prem?.is_premium ?? false,
+        premium_status: prem?.premium_status ?? 'inactive',
+        premium_started_at: prem?.premium_started_at ?? null,
+        premium_expires_at: prem?.premium_expires_at ?? null,
+        premium_plan: prem?.premium_plan ?? null,
+        premium_cancelled_at: prem?.premium_cancelled_at ?? null,
+        premium_cancel_reason: prem?.premium_cancel_reason ?? null,
       });
     }
 
@@ -157,12 +271,153 @@ export async function GET() {
         status: odrediStatus(user),
         datumRegistracije: formatirajDatum(user.created_at),
         tip: profil?.tip ?? 'korisnik',
+        isPremium: profil?.is_premium ?? false,
+        premium_status: profil?.premium_status,
+        premium_started_at: profil?.premium_started_at,
+        premium_expires_at: profil?.premium_expires_at,
+        premium_plan: profil?.premium_plan,
+        premium_cancelled_at: profil?.premium_cancelled_at,
+        premium_cancel_reason: profil?.premium_cancel_reason,
       };
     });
 
     return NextResponse.json({ users });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Nije moguce ucitati korisnike.';
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+}
+
+export async function POST(request: Request) {
+  let actorId = '';
+  let targetEmail = '';
+  let targetRole = '';
+  let createdUserId: string | null = null;
+
+  try {
+    const supabaseSesija = createServerClient();
+    const {
+      data: { user },
+    } = await supabaseSesija.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ error: 'Niste prijavljeni.' }, { status: 401 });
+    }
+
+    actorId = user.id;
+    const supabase = createAdminClient();
+    const jeAdmin = await provjeriAdminPristup(supabase, user.id);
+    if (!jeAdmin) {
+      return NextResponse.json({ error: 'Nemate dozvolu za kreiranje korisnika.' }, { status: 403 });
+    }
+
+    const body = await request.json();
+    const parsed = adminCreateUserSchema.safeParse(body);
+    if (!parsed.success) {
+      const poruka = parsed.error.issues[0]?.message ?? 'Neispravni podaci za kreiranje internog naloga.';
+      return NextResponse.json({ error: poruka }, { status: 400 });
+    }
+
+    const podaci = parsed.data;
+    targetEmail = podaci.email.trim().toLowerCase();
+    targetRole = mapirajUlogu(podaci.role);
+
+    const sviKorisnici = await supabase.auth.admin.listUsers({ page: 1, perPage: 1000 });
+    if (sviKorisnici.error) {
+      throw new Error(sviKorisnici.error.message);
+    }
+
+    const postojiKorisnik = sviKorisnici.data.users.some((u) => (u.email ?? '').toLowerCase() === targetEmail);
+    if (postojiKorisnik) {
+      await upisiAdminCreateAudit(supabase, {
+        created_user_id: null,
+        created_by_user_id: actorId,
+        target_email: targetEmail,
+        target_role: targetRole,
+        success: false,
+        error_message: 'Duplikat email adrese.',
+        email_sent: false,
+      });
+      return NextResponse.json({ error: 'Korisnik sa ovom email adresom već postoji.' }, { status: 409 });
+    }
+
+    const privremenaLozinka = generisiPrivremenuLozinku();
+    const createResult = await supabase.auth.admin.createUser({
+      email: targetEmail,
+      password: privremenaLozinka,
+      email_confirm: true,
+      user_metadata: {
+        ime: podaci.first_name,
+        prezime: podaci.last_name,
+        uloga: targetRole,
+      },
+    });
+
+    if (createResult.error || !createResult.data.user) {
+      await upisiAdminCreateAudit(supabase, {
+        created_user_id: null,
+        created_by_user_id: actorId,
+        target_email: targetEmail,
+        target_role: targetRole,
+        success: false,
+        error_message: createResult.error?.message ?? 'Greška pri kreiranju korisnika.',
+        email_sent: false,
+      });
+      return NextResponse.json(
+        { error: createResult.error?.message ?? 'Greška pri kreiranju korisnika.' },
+        { status: 500 }
+      );
+    }
+
+    createdUserId = createResult.data.user.id;
+    const emailHtml = kreirajEmailInternogNaloga({
+      ime: podaci.first_name,
+      prezime: podaci.last_name,
+      email: targetEmail,
+      privremena_lozinka: privremenaLozinka,
+      uloga: targetRole,
+    });
+
+    const emailRezultat = await sendEmail({
+      to: targetEmail,
+      subject: 'InterServ - Kreiran interni korisnicki nalog',
+      html: emailHtml,
+    });
+
+    await upisiAdminCreateAudit(supabase, {
+      created_user_id: createdUserId,
+      created_by_user_id: actorId,
+      target_email: targetEmail,
+      target_role: targetRole,
+      success: true,
+      error_message: emailRezultat.success ? null : emailRezultat.greska ?? 'Email nije poslan.',
+      email_sent: emailRezultat.success,
+    });
+
+    return NextResponse.json({
+      success: true,
+      user: {
+        id: createdUserId,
+        email: targetEmail,
+        role: targetRole,
+      },
+      privremena_lozinka: privremenaLozinka,
+      email_poslan: emailRezultat.success,
+    });
+  } catch (error) {
+    const supabase = createAdminClient();
+    if (actorId && targetEmail && targetRole) {
+      await upisiAdminCreateAudit(supabase, {
+        created_user_id: createdUserId,
+        created_by_user_id: actorId,
+        target_email: targetEmail,
+        target_role: targetRole,
+        success: false,
+        error_message: error instanceof Error ? error.message : 'Neočekivana greška pri kreiranju korisnika.',
+        email_sent: false,
+      });
+    }
+    const message = error instanceof Error ? error.message : 'Neočekivana greška pri kreiranju korisnika.';
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

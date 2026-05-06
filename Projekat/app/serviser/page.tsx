@@ -19,6 +19,7 @@ import { UrgencyBadge } from '@/components/servisirane/UrgencyBadge';
 import { StatusBadge } from '@/components/servisirane/ZahtjevKartica';
 import type { ServisniZahtjev } from '@/domain/types/servisirane';
 import { formatirajDatumPrikaz } from '@/lib/format/datumi';
+import { labelKategorije } from '@/lib/servisirane/kategorije';
 
 interface ZahtjevSaPodnosiocem extends ServisniZahtjev {
   podnosilac: { ime: string; prezime: string; broj_telefona: string | null } | null;
@@ -36,7 +37,11 @@ export default function ServiserPage() {
       const r = await fetch('/api/dispecer/zahtjevi', { cache: 'no-store' });
       const d = await r.json();
       if (!r.ok) throw new Error(d.error ?? 'Greška pri učitavanju zahtjeva.');
-      setZahtjevi(d.zahtjevi ?? []);
+      const sortirani = [...(d.zahtjevi ?? [])].sort((a, b) => {
+        if (Boolean(a.is_premium) !== Boolean(b.is_premium)) return a.is_premium ? -1 : 1;
+        return (b.urgency_score ?? 0) - (a.urgency_score ?? 0);
+      });
+      setZahtjevi(sortirani);
     } catch (err) {
       setGreska(err instanceof Error ? err.message : 'Greška pri učitavanju zahtjeva.');
     } finally {
@@ -127,6 +132,8 @@ export default function ServiserPage() {
           )}
 
           {zahtjevi.map((zadatak) => {
+            const kat = labelKategorije(zadatak);
+            const naslov = kat.podkategorija ? `${kat.glavna} — ${kat.podkategorija}` : kat.glavna;
             return (
               <li key={zadatak.id}>
                 <Link
@@ -140,9 +147,21 @@ export default function ServiserPage() {
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <p className="font-medium" style={{ color: 'var(--first-octonary)' }}>{zadatak.category}</p>
+                      <p className="font-medium" style={{ color: 'var(--first-octonary)' }}>{naslov}</p>
                       <StatusBadge status={zadatak.status} />
                       <UrgencyBadge score={zadatak.urgency_score} />
+                      {zadatak.is_premium && (
+                        <span
+                          className="rounded-full px-2.5 py-0.5 text-xs font-semibold"
+                          style={{
+                            backgroundColor: 'rgba(220,38,38,0.12)',
+                            color: '#B91C1C',
+                            border: '1px solid rgba(220,38,38,0.25)',
+                          }}
+                        >
+                          Premium HITNO
+                        </span>
+                      )}
                     </div>
                     <div className="mt-1.5 flex flex-wrap gap-x-4 text-xs" style={{ color: 'var(--first-nonary)' }}>
                       <span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{zadatak.address}</span>

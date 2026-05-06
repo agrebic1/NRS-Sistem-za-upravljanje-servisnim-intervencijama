@@ -17,6 +17,7 @@ import { UrgencyBadge } from '@/components/servisirane/UrgencyBadge';
 import type { ServisniZahtjev, StatusZahtjeva } from '@/domain/types/servisirane';
 import { formatirajDatumPrikaz } from '@/lib/format/datumi';
 import { brojZahtjevaZaPrikaz } from '@/lib/servisirane/korisnickiBrojZahtjeva';
+import { labelKategorije } from '@/lib/servisirane/kategorije';
 
 // ─── Status badge ─────────────────────────────────────────────────────────────
 
@@ -301,6 +302,10 @@ export default function ZahtjevDetaljPage() {
   const status        = STATUS_CONFIG[zahtjev.status];
   const mozeBitMijenjan = zahtjev.status === 'na_cekanju' || zahtjev.status === 'pending_review';
   const datum = formatirajDatumPrikaz(zahtjev.created_at);
+  const kategorija = labelKategorije(zahtjev);
+  const kategorijaPrikaz = kategorija.podkategorija
+    ? `${kategorija.glavna} — ${kategorija.podkategorija}`
+    : kategorija.glavna;
 
   return (
     <AppShell uloga="korisnik">
@@ -319,7 +324,7 @@ export default function ZahtjevDetaljPage() {
               className="truncate text-xl font-bold"
               style={{ color: 'var(--first-octonary)' }}
             >
-              {zahtjev.category}
+              {kategorijaPrikaz}
             </h1>
             <p className="text-sm" style={{ color: 'var(--first-nonary)' }}>
               Zahtjev #{brojZahtjevaZaPrikaz(zahtjev)}
@@ -350,6 +355,17 @@ export default function ZahtjevDetaljPage() {
               {status.oznaka}
             </span>
             <UrgencyBadge score={zahtjev.urgency_score} korisnickiPrikaz size="md" />
+            {zahtjev.is_premium && (
+              <span
+                className="rounded-full px-3 py-1 text-sm font-semibold"
+                style={{
+                  backgroundColor: 'rgba(220,38,38,0.12)',
+                  color: '#B91C1C',
+                }}
+              >
+                Hitna intervencija (premium)
+              </span>
+            )}
           </div>
 
           {/* Podaci */}
@@ -362,7 +378,7 @@ export default function ZahtjevDetaljPage() {
                 <Tag className="h-3 w-3" /> Kategorija
               </dt>
               <dd className="text-sm font-medium" style={{ color: 'var(--first-octonary)' }}>
-                {zahtjev.category}
+                {kategorijaPrikaz}
               </dd>
             </div>
 
@@ -371,7 +387,7 @@ export default function ZahtjevDetaljPage() {
                 className="mb-1 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider"
                 style={{ color: 'var(--first-nonary)' }}
               >
-                Opis kvara
+                Opis zahtjeva
               </dt>
               <dd className="text-sm leading-relaxed" style={{ color: 'var(--first-octonary)' }}>
                 {zahtjev.description}
@@ -449,7 +465,7 @@ export default function ZahtjevDetaljPage() {
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={zahtjev.photo_url}
-                  alt="Fotografija prijavljenog kvara"
+                  alt="Fotografija prijavljenog zahtjeva"
                   className="mt-2 h-36 w-full max-w-sm rounded-xl border object-cover"
                   style={{ borderColor: 'rgb(var(--first-quaternary-rgb) / 0.35)' }}
                 />

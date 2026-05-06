@@ -21,6 +21,7 @@ const JE_PENDING = (status: string) =>
 
 interface ToastPoruka {
   id:      number;
+  naslov:  string;
   tekst:   string;
   boja:    string;
 }
@@ -35,14 +36,17 @@ export default function DispecerPage() {
   const zahtjeviCekajuObradu = zahtjevi
     .filter((z) => zahtjevCekaObraduSprint7(z.status))
     .sort((a, b) => {
+      if (Boolean(a.is_premium) !== Boolean(b.is_premium)) {
+        return a.is_premium ? -1 : 1;
+      }
       const t = new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
       if (t !== 0) return t;
       return a.id - b.id;
     });
 
-  function prikaziToast(tekst: string, boja = '#DC2626') {
+  function prikaziToast(tekst: string, boja = '#DC2626', naslov = 'Obavještenje') {
     clearTimeout(toastTimerRef.current);
-    setToast({ id: Date.now(), tekst, boja });
+    setToast({ id: Date.now(), naslov, tekst, boja });
     toastTimerRef.current = setTimeout(() => setToast(null), 6000);
   }
 
@@ -61,13 +65,46 @@ export default function DispecerPage() {
         (payload) => {
           const z = payload.new as { id: number; category?: string; status: string };
           const naziv = z.category ?? 'Nepoznat zahtjev';
-          prikaziToast(`Zahtjev "${naziv}" je upravo otkazan od strane korisnika.`);
+          prikaziToast(`Zahtjev "${naziv}" je upravo otkazan od strane korisnika.`, '#DC2626', 'Zahtjev otkazan');
           setZahtjevi((prev) => prev.filter((x) => x.id !== z.id));
         }
       )
       .subscribe();
 
     return () => { supabase.removeChannel(kanal); };
+  }, []);
+
+  useEffect(() => {
+    const supabase = kreirajKlijenta();
+    let premiumKanal: ReturnType<typeof supabase.channel> | null = null;
+    let mounted = true;
+    supabase.auth.getUser().then(({ data }) => {
+      if (!mounted || !data.user) return;
+      premiumKanal = supabase
+        .channel(`dispecer-premium-alert-${data.user.id}`)
+        .on(
+          'postgres_changes',
+          {
+            event: 'INSERT',
+            schema: 'public',
+            table: 'dispatcher_alerts',
+            filter: `recipient_user_id=eq.${data.user.id}`,
+          },
+          (payload) => {
+            const a = payload.new as { message?: string };
+            prikaziToast(
+              a.message ?? 'Novi premium zahtjev čeka prioritetnu obradu.',
+              '#B91C1C',
+              'Premium zahtjev'
+            );
+          }
+        )
+        .subscribe();
+    });
+    return () => {
+      mounted = false;
+      if (premiumKanal) supabase.removeChannel(premiumKanal);
+    };
   }, []);
 
   async function ucitajZahtjeve() {
@@ -201,7 +238,7 @@ export default function DispecerPage() {
           </div>
           <div className="min-w-0 flex-1">
             <p className="text-xs font-bold uppercase tracking-wide" style={{ color: toast.boja }}>
-              Zahtjev otkazan
+              {toast.naslov}
             </p>
             <p className="mt-0.5 text-sm leading-snug" style={{ color: 'var(--first-octonary)' }}>
               {toast.tekst}

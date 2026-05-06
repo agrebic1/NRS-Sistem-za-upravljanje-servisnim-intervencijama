@@ -197,3 +197,4 @@ dist
 
 # Timska pravila (lokalno; ne pushati)
 PRAVILA.md
+supabase/.temp/

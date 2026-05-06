@@ -18,3 +18,6 @@ kako bi naredne faze razvoja bile zasnovane na stvarnim zahtjevima, a ne na proi
 - arhitektura mora proizlaziti iz zahtjeva i definisanih funkcionalnosti, a ne iz nasumičnog izbora tehnologije
 - kvalitet Risk Registera i Test Strategy dokumenta zavisi od dovoljno jasnog razumijevanja poslovnog procesa
 - nedovoljna usklađenost između modela, arhitekture i zahtjeva može otežati nastavak implementacije u narednim sprintovima
+
+### Scope napomena (premium)
+- Premium naplata je u MVP obimu simulirana; integracija realnog payment gateway-a planirana je post-MVP.

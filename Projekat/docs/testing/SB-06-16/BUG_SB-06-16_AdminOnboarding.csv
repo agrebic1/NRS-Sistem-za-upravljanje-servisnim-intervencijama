@@ -1,0 +1,2 @@
+ID_greske,ID_testa,Naziv_modula,Opis_greske,Severity,Status,Sprint,Dokaz_putanja,Napomena
+B-01,TC-06,Email onboarding,Email servis nije konfigurisan u production okruzenju (RESEND_API_KEY nedostaje),Visok,Otvorena,SB-06-16,SB-06-16/B-01_EmailConfig.png,Postaviti RESEND_API_KEY i EMAIL_FROM u deploy okruzenju

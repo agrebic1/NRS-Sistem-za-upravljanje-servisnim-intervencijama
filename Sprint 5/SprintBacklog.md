@@ -39,6 +39,11 @@ Zavisnosti:
 - ispravna definicija korisničkih uloga  
 - frontend-backend integracija  
 
+## Scope napomena (premium)
+
+U okviru MVP-a premium naplata tretira se kao simulirani tok.
+Integracija realnog payment gateway-a ostaje planirana za post-MVP fazu.
+
 ---
 
 # Sprint Backlog – Sprint 5
