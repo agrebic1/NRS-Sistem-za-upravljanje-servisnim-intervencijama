@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import {
   Clock,
@@ -13,6 +14,7 @@ import {
 import { AppShell } from '@/components/layout/AppShell';
 import { Button } from '@/components/ui/Button';
 import { formatirajDatumPrikaz } from '@/lib/format/datumi';
+import { kreirajKlijenta } from '@/lib/supabase/klijent';
 
 // ─── Mock data ────────────────────────────────────────────────────────────────
 
@@ -114,14 +116,48 @@ function TaskRow({ zadatak }: { zadatak: Zadatak }) {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function ServiserDashboardPage() {
+  const [imeKorisnika, setImeKorisnika] = useState('Korisnik');
   const danas = formatirajDatumPrikaz(new Date());
+  const imeZaPozdrav = imeKorisnika.split(' ')[0]?.trim() || imeKorisnika;
+
+  useEffect(() => {
+    const supabase = kreirajKlijenta();
+    let mounted = true;
+
+    const ucitajImeKorisnika = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!mounted || !user) return;
+
+      const { data: profil } = await supabase
+        .from('osoba')
+        .select('ime, prezime')
+        .eq('id_osobe', user.id)
+        .maybeSingle();
+
+      const imeIzProfila = [profil?.ime, profil?.prezime].filter(Boolean).join(' ').trim();
+      const imeIzMeta = [user.user_metadata?.ime, user.user_metadata?.prezime]
+        .filter(Boolean)
+        .join(' ')
+        .trim();
+
+      setImeKorisnika(imeIzProfila || imeIzMeta || user.email || 'Korisnik');
+    };
+
+    void ucitajImeKorisnika();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   return (
-    <AppShell uloga="serviser" imeKorisnika="Marko J.">
+    <AppShell uloga="serviser" imeKorisnika={imeKorisnika}>
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-2xl font-bold tracking-tight" style={{ color: 'var(--first-octonary)' }}>
-          Dobro jutro, Marko!
+          Dobro jutro, {imeZaPozdrav}!
         </h1>
         <p className="mt-1 text-sm" style={{ color: 'var(--first-nonary)' }}>
           {danas} — imate {MOCK_ZADACI.filter((z) => z.status !== 'zavrsen').length} aktivnih zadataka

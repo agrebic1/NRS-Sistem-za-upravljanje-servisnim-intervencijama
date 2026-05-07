@@ -63,6 +63,6 @@ Zavisnosti:
 | SBI-06-19 | Zahtjev za premium/hitnom uslugom (US-33)                                     | Frontend + backend + baza               | Done        | Usklađen korak Hitnost/Premium sa US-05; backend validira premium status i dispečerski override razloga. U MVP-u naplata ostaje simulirana.                                                   |
 | SBI-06-21 | Aktivacija premium usluge (US-34)                                             | Frontend + backend + baza               | Done        | Implementiran premium lifecycle (`inactive`, `pending_payment`, `active`, `expired`, `cancelled`), API tok (`start/confirm/cancel/renew`), audit log (`premium_events`) i cron expiry obrada. |
 | SBI-06-20 | Testiranje toka prijave kvara i onboarding procesa                            | Testeri / QA                            | Done | Pokriveni su ključni ručni scenariji; potrebno finalno formalno sign-off test matrice.                                                                                                        |
-| SBI-06-22 | Podnosenje zahtjeva za internu ulogu (dispecer/serviser) sa statusom na_cekanju (US-35) | Product owner + QA + Solution architect | Done |                   |
+| SBI-06-22 | Podnosenje zahtjeva za internu ulogu (dispecer/serviser) sa statusom na_cekanju (US-35) | Product owner + QA + Solution architect | Done | Implementirano da korisnik moze poslati zahtjev da postane serviser ili dispecer. |
 
 

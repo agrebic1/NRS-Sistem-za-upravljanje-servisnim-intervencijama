@@ -31,6 +31,7 @@ export default function DispecerPage() {
   const [ucitava,  setUcitava]  = useState(true);
   const [greska,   setGreska]   = useState<string | null>(null);
   const [toast,    setToast]    = useState<ToastPoruka | null>(null);
+  const [imeKorisnika, setImeKorisnika] = useState('Dispečer');
   const toastTimerRef           = useRef<ReturnType<typeof setTimeout>>();
 
   const zahtjeviCekajuObradu = zahtjevi
@@ -124,13 +125,45 @@ export default function DispecerPage() {
 
   useEffect(() => { ucitajZahtjeve(); }, []);
 
+  useEffect(() => {
+    const supabase = kreirajKlijenta();
+    let mounted = true;
+
+    const ucitajImeKorisnika = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!mounted || !user) return;
+
+      const { data: profil } = await supabase
+        .from('osoba')
+        .select('ime, prezime')
+        .eq('id_osobe', user.id)
+        .maybeSingle();
+
+      const imeIzProfila = [profil?.ime, profil?.prezime].filter(Boolean).join(' ').trim();
+      const imeIzMeta = [user.user_metadata?.ime, user.user_metadata?.prezime]
+        .filter(Boolean)
+        .join(' ')
+        .trim();
+
+      setImeKorisnika(imeIzProfila || imeIzMeta || user.email || 'Dispečer');
+    };
+
+    void ucitajImeKorisnika();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   const naCekanju = zahtjevi.filter((z) => JE_PENDING(z.status)).length;
   const potvrdeno = zahtjevi.filter((z) => z.status === 'potvrdeno').length;
   const aktivnih  = zahtjevi.filter((z) => !['zavrseno', 'otkazano', 'odbijeno'].includes(z.status)).length;
 
   return (
     <>
-    <AppShell uloga="dispecer" imeKorisnika="Dispečer">
+    <AppShell uloga="dispecer" imeKorisnika={imeKorisnika}>
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight" style={{ color: 'var(--first-octonary)' }}>
