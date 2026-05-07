@@ -2,8 +2,6 @@
 ## Sprint 6 
 
 Datum: 07/05/2026  
-Stavka: SB-06-20  
-Okruzenje: production
 
 ## Obuhvat
 
