@@ -16,6 +16,7 @@ const ADMIN_PREFIX = '/admin';
 const SERVISER_PREFIX = '/serviser';
 const DISPECER_PREFIX = '/dispecer';
 const KORISNIK_PREFIX = '/korisnik';
+const PARTNER_APPLICATIONS_API = '/api/partner-applications';
 
 function mapirajNazivUloge(naziv: string | null | undefined): UserRole | null {
   const normalizovanNaziv = naziv?.toLowerCase();
@@ -41,6 +42,7 @@ function mapirajNazivUloge(naziv: string | null | undefined): UserRole | null {
 export async function middleware(zahtjev: NextRequest) {
   let supabaseResponse = NextResponse.next({ request: zahtjev });
   const { pathname } = zahtjev.nextUrl;
+  const { method } = zahtjev;
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -135,8 +137,11 @@ export async function middleware(zahtjev: NextRequest) {
   const jeJavnaRuta = JAVNE_RUTE.some(
     (ruta) => pathname === ruta || pathname.startsWith(ruta + '/')
   );
+  const jeJavniApiZaPartnerAplikaciju =
+    method === 'POST' &&
+    (pathname === PARTNER_APPLICATIONS_API || pathname.startsWith(`${PARTNER_APPLICATIONS_API}/`));
 
-  if (!user && !jeJavnaRuta) {
+  if (!user && !jeJavnaRuta && !jeJavniApiZaPartnerAplikaciju) {
     const loginUrl = new URL('/auth/login', zahtjev.url);
     loginUrl.searchParams.set('redirectTo', pathname);
     return NextResponse.redirect(loginUrl);
