@@ -20,6 +20,7 @@ import { StatusBadge } from '@/components/servisirane/ZahtjevKartica';
 import type { ServisniZahtjev } from '@/domain/types/servisirane';
 import { formatirajDatumPrikaz } from '@/lib/format/datumi';
 import { labelKategorije } from '@/lib/servisirane/kategorije';
+import { kreirajKlijenta } from '@/lib/supabase/klijent';
 
 interface ZahtjevSaPodnosiocem extends ServisniZahtjev {
   podnosilac: { ime: string; prezime: string; broj_telefona: string | null } | null;
@@ -29,6 +30,7 @@ export default function ServiserPage() {
   const [zahtjevi, setZahtjevi] = useState<ZahtjevSaPodnosiocem[]>([]);
   const [ucitava, setUcitava] = useState(true);
   const [greska, setGreska] = useState<string | null>(null);
+  const [imeKorisnika, setImeKorisnika] = useState('Korisnik');
 
   async function ucitajZahtjeve() {
     setUcitava(true);
@@ -53,7 +55,40 @@ export default function ServiserPage() {
     ucitajZahtjeve();
   }, []);
 
+  useEffect(() => {
+    const supabase = kreirajKlijenta();
+    let mounted = true;
+
+    const ucitajImeKorisnika = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!mounted || !user) return;
+
+      const { data: profil } = await supabase
+        .from('osoba')
+        .select('ime, prezime')
+        .eq('id_osobe', user.id)
+        .maybeSingle();
+
+      const imeIzProfila = [profil?.ime, profil?.prezime].filter(Boolean).join(' ').trim();
+      const imeIzMeta = [user.user_metadata?.ime, user.user_metadata?.prezime]
+        .filter(Boolean)
+        .join(' ')
+        .trim();
+
+      setImeKorisnika(imeIzProfila || imeIzMeta || user.email || 'Korisnik');
+    };
+
+    void ucitajImeKorisnika();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   const datumDanas = formatirajDatumPrikaz(new Date());
+  const imeZaPozdrav = imeKorisnika.split(' ')[0]?.trim() || imeKorisnika;
   const aktivniZadaci = zahtjevi.filter((z) => !['zavrseno', 'otkazano', 'odbijeno'].includes(z.status)).length;
   const danasnji = zahtjevi.filter((z) => {
     const d = new Date(z.created_at);
@@ -63,10 +98,10 @@ export default function ServiserPage() {
   const zavrseni = zahtjevi.filter((z) => z.status === 'zavrseno').length;
 
   return (
-    <AppShell uloga="serviser" imeKorisnika="Marko J.">
+    <AppShell uloga="serviser" imeKorisnika={imeKorisnika}>
       <div className="mb-8">
         <h1 className="text-2xl font-bold tracking-tight" style={{ color: 'var(--first-octonary)' }}>
-          Dobro jutro, Marko!
+          Dobro jutro, {imeZaPozdrav}!
         </h1>
         <p className="mt-1 text-sm" style={{ color: 'var(--first-nonary)' }}>
           {datumDanas} — imate {aktivniZadaci} aktivnih zadataka
