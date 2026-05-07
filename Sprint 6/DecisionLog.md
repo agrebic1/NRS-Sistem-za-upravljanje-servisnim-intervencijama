@@ -286,16 +286,16 @@ Ovaj pristup:
 
 ---
 
-# Odluka #005 – Hijerarhija kategorija sa opcionom potkategorijom
+# Odluka #005 – Hijerarhija kategorija sa potkategorijom
 
 | Polje | Opis |
 |---|---|
 | ID odluke | DLI-005 |
 | Datum | 03.05.2026. |
-| Kratak naziv odluke | Main + optional sub kategorije |
+| Kratak naziv odluke | Main + sub kategorije |
 | Opis problema | Kako omogućiti precizan izbor vrste kvara bez preopterećenja korisnika? |
-| Razmatrane opcije | 1. Slobodan unos teksta  <br> 2. Jedna velika lista svih kvarova  <br> 3. Glavna kategorija + opcionalna potkategorija |
-| Odabrana opcija | Glavna kategorija + opciona potkategorija |
+| Razmatrane opcije | 1. Slobodan unos teksta  <br> 2. Jedna velika lista svih kvarova  <br> 3. Glavna kategorija + potkategorija |
+| Odabrana opcija | Glavna kategorija + potkategorija |
 | Razlog izbora | Balans između preciznosti podataka i jednostavnosti korištenja |
 | Posljedice odluke | Potrebna centralna kategorijska konfiguracija i validacija kombinacija |
 | Status odluke | aktivna |
@@ -326,14 +326,14 @@ Ovaj pristup:
 
 ## Sažetak odluke
 
-### Krajnja odluka: Main + optional sub model
+### Krajnja odluka: Main + sub model
 
 | Stavka | Objašnjenje |
 |---|---|
 | Razlog izbora | Precizan unos bez komplikovanja korisničkog toka |
 | Prednosti | Bolja organizacija podataka, jednostavniji UX |
 | Nedostaci | Potrebna dodatna validaciona logika |
-| Napomena | Potkategorija je obavezna samo kada postoji |
+| Napomena | Potkategorija je obavezna |
 | Implementacija | Centralni katalog kategorija + validacija kombinacija |
 
 ---
@@ -342,13 +342,13 @@ Ovaj pristup:
 
 Slobodan unos teksta dovodi do nekonzistentnih podataka i otežava automatizaciju sistema. Jedna velika lista svih kvarova stvara preveliko kognitivno opterećenje i otežava pronalazak odgovarajuće opcije.
 
-Zbog toga je uveden model glavne kategorije sa opcionom potkategorijom.
+Zbog toga je uveden model glavne kategorije sa potkategorijom.
 
 Sistem funkcioniše po principu:
 
 - korisnik prvo bira glavnu kategoriju
-- ako kategorija ima podkategorije, izbor podkategorije postaje obavezan
-- ako ne postoje podkategorije, proces se nastavlja bez dodatnog koraka
+- ako kategorija ima potkategorije, izbor podkategorije postaje obavezan
+- ako ne postoje potkategorije, proces se nastavlja bez dodatnog koraka
 
 Ovakav model omogućava:
 
