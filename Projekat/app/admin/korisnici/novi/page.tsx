@@ -25,6 +25,12 @@ const inicijalnoStanje: FormState = {
   role: '',
 };
 
+type ApiResponseBody = {
+  error?: string;
+  user?: { email?: string };
+  privremena_lozinka?: string | null;
+};
+
 function mapirajPoljaGreske(message: string): FormErrors {
   const greske: FormErrors = {};
   if (message.includes('Ime')) greske.first_name = message;
@@ -32,6 +38,19 @@ function mapirajPoljaGreske(message: string): FormErrors {
   if (message.includes('email')) greske.email = message;
   if (message.includes('ulogu')) greske.role = message;
   return greske;
+}
+
+async function procitajApiBody(response: Response): Promise<ApiResponseBody> {
+  const contentType = response.headers.get('content-type') ?? '';
+  if (!contentType.toLowerCase().includes('application/json')) {
+    return {};
+  }
+
+  try {
+    return (await response.json()) as ApiResponseBody;
+  } catch {
+    return {};
+  }
 }
 
 export default function NoviInterniKorisnikPage() {
@@ -57,10 +76,14 @@ export default function NoviInterniKorisnikPage() {
         body: JSON.stringify(forma),
       });
 
-      const body = await response.json();
+      const body = await procitajApiBody(response);
 
       if (!response.ok) {
-        const poruka = body.error ?? 'Kreiranje internog naloga nije uspjelo.';
+        const poruka =
+          body.error ??
+          (response.status === 401 || response.status === 403
+            ? 'Sesija je istekla ili nemate dozvolu. Prijavite se ponovo.'
+            : 'Kreiranje internog naloga nije uspjelo.');
         setServerGreska(poruka);
         setGreske(mapirajPoljaGreske(poruka));
         return;

@@ -38,6 +38,10 @@ const shema = z.object({
 
 type PartnerFormData = z.infer<typeof shema>;
 
+type PartnerApiResponse = {
+  error?: string;
+};
+
 // ─── Uloge — Action kartice ───────────────────────────────────────────────────
 
 const ULOGE = [
@@ -77,6 +81,19 @@ const OBRAZOVANJE = [
   { value: 'VSS',                  label: 'VSS' },
   { value: 'Certifikovani majstor', label: 'Cert.' },
 ];
+
+async function procitajPartnerApiResponse(odgovor: Response): Promise<PartnerApiResponse> {
+  const contentType = odgovor.headers.get('content-type') ?? '';
+  if (!contentType.toLowerCase().includes('application/json')) {
+    return {};
+  }
+
+  try {
+    return (await odgovor.json()) as PartnerApiResponse;
+  } catch {
+    return {};
+  }
+}
 
 // ─── Input s ikonom ───────────────────────────────────────────────────────────
 
@@ -200,8 +217,15 @@ export function PartnerApplicationForm() {
         }),
       });
 
-      const rezultat = await odgovor.json();
-      if (!odgovor.ok) throw new Error(rezultat.error ?? 'Greška pri slanju aplikacije.');
+      const rezultat = await procitajPartnerApiResponse(odgovor);
+      if (!odgovor.ok) {
+        throw new Error(
+          rezultat.error ??
+            (odgovor.status === 401 || odgovor.status === 403
+              ? 'Sesija je istekla ili nemate dozvolu. Prijavite se ponovo.'
+              : 'Greška pri slanju aplikacije.')
+        );
+      }
       setJeUspjelo(true);
     } catch (err) {
       setGreska(err instanceof Error ? err.message : 'Greška pri slanju aplikacije.');
