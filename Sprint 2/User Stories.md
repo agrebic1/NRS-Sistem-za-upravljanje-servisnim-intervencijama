@@ -47,6 +47,7 @@ THEME (Tema)
     │   │
     │   └── FEATURE: Upravljanje korisničkim nalozima (PBI-003)
     │       │
+    │       ├── Story: US-35 Podnosenje zahtjeva za internu ulogu (dispecer/serviser)
     │       ├── Story: US-18 Administrativno kreiranje internog korisničkog naloga
     │       ├── Story: US-19 Pregled postojećih korisničkih naloga
     │       ├── Story: US-20 Promjena korisničke uloge
@@ -168,6 +169,7 @@ Sažeti pregled user story-a u okviru MVP-a:
 | US-15 | Pregled dodijeljenih intervencija | Kao serviser, želim pregledati intervencije koje su mi dodijeljene, kako bih znao koje zadatke trebam izvršiti i kojim redoslijedom ih trebam obrađivati. | - pregled zadataka<br>- lakša organizacija rada<br>- manje propuštenih intervencija | Visok |
 | US-16 | Pregled detalja zadatka na terenu | Kao serviser, želim pregledati detalje zadatka na terenu, kako bih imao sve potrebne informacije za njegovo pravilno i efikasno izvršavanje. | - manje grešaka<br>- bolja priprema<br>- efikasnije izvršenje | Visok |
 | US-17 | Evidentiranje izvršenog rada | Kao serviser, želim evidentirati izvršeni rad, kako bi sistem sadržavao tačan zapis o aktivnostima obavljenim tokom intervencije. | - evidencija rada<br>- transparentnost procesa<br>- pregled izvršenja | Srednji |
+| US-35 | Podnosenje zahtjeva za internu ulogu (dispecer/serviser) | Kao kandidat za internu ulogu, zelim poslati aplikaciju sa trazenim podacima, kako bi administrator mogao pregledati zahtjev i odobriti pristup sistemu. | - standardizovan onboarding tok<br>- kontrolisana aktivacija internih naloga<br>- bolja sljedivost zahtjeva | Visok |
 | US-18 | Administrativno kreiranje internog korisničkog naloga | Kao administrator, želim kreirati korisnički nalog za internog korisnika sistema, kako bih mu omogućio pristup sistemu u skladu sa njegovom ulogom. | - uključivanje internih korisnika<br>- dodjela odgovornosti<br>- omogućavanje pristupa | Visok |
 | US-19 | Pregled postojećih korisničkih naloga | Kao administrator, želim pregledati postojeće korisničke naloge, kako bih imao uvid u korisnike sistema i mogao njima upravljati. | - pregled korisnika<br>- uvid u uloge<br>- osnova za upravljanje nalozima | Srednji |
 | US-20 | Promjena korisničke uloge | Kao administrator, želim promijeniti korisničku ulogu, kako bi korisnik imao pristup funkcionalnostima koje odgovaraju njegovoj novoj odgovornosti u sistemu. | - usklađivanje pristupa<br>- sigurnost sistema<br>- organizacija rada | Srednji |
@@ -206,6 +208,7 @@ U sljedećoj tabeli je prikazana povezanost konkretnog User Story-a sa itemima i
 | US-15      | Pregled dodijeljenih intervencija                     | **PBI-014 – Pregled dodijeljenih zadataka**                         | **Izvršenje intervencija od strane servisera**          |
 | US-16      | Pregled detalja zadatka na terenu                     | **PBI-014 – Pregled dodijeljenih zadataka**                         | **Izvršenje intervencija od strane servisera**          |
 | US-17      | Evidentiranje izvršenog rada                          | **PBI-017 – Evidentiranje izvršenog rada**                          | **Izvršenje intervencija od strane servisera**          |
+| US-35      | Podnosenje zahtjeva za internu ulogu (dispecer/serviser) | **PBI-003 – Upravljanje korisničkim nalozima**                      | **Upravljanje korisnicima i pravima pristupa**          |
 | US-18      | Administrativno kreiranje internog korisničkog naloga | **PBI-003 – Upravljanje korisničkim nalozima**                      | **Upravljanje korisnicima i pravima pristupa**          |
 | US-19      | Pregled postojećih korisničkih naloga                 | **PBI-003 – Upravljanje korisničkim nalozima**                      | **Upravljanje korisnicima i pravima pristupa**          |
 | US-20      | Promjena korisničke uloge                             | **PBI-003 – Upravljanje korisničkim nalozima**                      | **Upravljanje korisnicima i pravima pristupa**          |
@@ -1308,6 +1311,58 @@ Zavisi od storyja za pregled detalja zadatka na terenu (US-16) i povezan je sa s
 
 ---
 
+## US-35 — Podnosenje zahtjeva za internu ulogu (dispecer/serviser)
+
+**Opis:**  
+Kao kandidat za internu ulogu, želim putem forme poslati zahtjev za ulogu dispecera ili servisera, kako bi administrator mogao pregledati aplikaciju i donijeti odluku o odobravanju.
+
+**Poslovna vrijednost:**  
+Ovaj story uvodi kontrolisani onboarding tok u kojem se interni pristup ne dodjeljuje direktno, nego tek nakon administrativne provjere.
+
+**Prioritet:**  
+*Visok*
+
+**Planirani sprint implementacije:**  
+*Sprint 7*
+
+**Pretpostavke i otvorena pitanja:**  
+
+**Pretpostavka:** Dostupna je javna forma za podnosenje aplikacije, a zahtjev se cuva sa statusom `na_cekanju` do administratorske odluke.
+
+**Otvorena pitanja:** Da li se odbijanje zahtjeva vodi kroz poseban status ili samo kroz napomenu administracije?
+
+**Veze sa drugim storyjima:**  
+Povezano sa storyjima za prijavu korisnika u sistem (US-02), administrativno kreiranje internog korisnickog naloga (US-18) i kontrolu pristupa prema korisnickoj ulozi (US-04).
+
+**Acceptance Criteria:**
+
+- **AC1: Uspjesno podnosenje aplikacije**  
+  - **GIVEN** kandidat unese sva obavezna polja u formu za internu ulogu  
+  - **WHEN** potvrdi slanje aplikacije  
+  - **THEN** sistem kreira aplikaciju i postavlja status na `na_cekanju`.
+
+- **AC2: Validacija obaveznih podataka**  
+  - **GIVEN** kandidat nije unio sva obavezna ili validna polja  
+  - **WHEN** pokusa poslati aplikaciju  
+  - **THEN** sistem ne kreira aplikaciju i prikazuje validacione poruke.
+
+- **AC3: Administratorski pregled**  
+  - **GIVEN** aplikacija ima status `na_cekanju`  
+  - **WHEN** administrator otvori pregled aplikacija  
+  - **THEN** sistem prikazuje aplikaciju sa svim podacima potrebnim za odluku.
+
+- **AC4: Ogranicenje pristupa pregledu aplikacija**  
+  - **GIVEN** korisnik nije administrator  
+  - **WHEN** pokusa pristupiti administratorskom pregledu aplikacija  
+  - **THEN** sistem zabranjuje pristup.
+
+- **AC5: Odobravanje aplikacije i kreiranje internog naloga**  
+  - **GIVEN** administrator odobri aplikaciju  
+  - **WHEN** potvrdi odobravanje  
+  - **THEN** sistem pokrece tok kreiranja internog naloga kroz US-18 i dodjelu odgovarajuce uloge.
+
+---
+
 ## US-18 — Administrativno kreiranje internog korisničkog naloga
 
 **Opis:**  
@@ -1326,7 +1381,7 @@ Ovaj story je važan jer omogućava uključivanje internih korisnika u sistem i 
 **Otvorena pitanja:** Da li se korisnička uloga dodjeljuje odmah prilikom kreiranja naloga ili u posebnom koraku nakon toga?
 
 **Veze sa drugim storyjima:**  
-Povezano sa storyjima za pregled korisničkih naloga (US-19) i promjenu korisničke uloge (US-20).
+Zavisi od storyja za podnosenje zahtjeva za internu ulogu (US-35), a povezan je sa storyjima za pregled korisnickih naloga (US-19) i promjenu korisnicke uloge (US-20).
 
 **Acceptance Criteria:**
 
@@ -2097,6 +2152,8 @@ Ovaj plan je organizovan tako da se razvoj sistema odvija **postepeno, smisleno 
 - dodjeljivanje početnog statusa zahtjevu  (Dio logike kreiranja zahtjeva - **US-05**)
 - pregled vlastitog zahtjeva za korisnika  (**US-06**)
 - prikaz zahtjeva u dispečerovoj listi zahtjeva koji čekaju obradu (**US-07**)
+- podnosenje aplikacije za internu ulogu (dispecer/serviser) sa statusom `na_cekanju` (**US-35**)
+- administratorski pregled i odobravanje aplikacije uz pokretanje kreiranja internog naloga (**US-18**)
 - aktivacija Premium usluge (online aktivacija, status premium korisnika i period važenja) (**US-34**)
 - premium zahtjev unutar prijave kvara (Hitnost/Premium korak, validacija prava i prioritetna obrada) (**US-33**)
 

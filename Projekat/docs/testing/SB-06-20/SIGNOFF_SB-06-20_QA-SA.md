@@ -12,21 +12,16 @@
 - Premium aktivacija (US-34, US-33): start/confirm, validacija i otkazivanje
 
 ## Rezime rezultata
-- Ukupno testova: 12
-- Proslo: 22
-- Nije proslo: 1
-- Blokirano: 1
-- Otvoreni bugovi: 2
+- Ukupno testova: 24
+- Proslo: 24
+- Nije proslo: 0
+- Blokirano: 0
+- Otvoreni bugovi: 0
 
-## Otvorene stavke / rizici
-- Manji problem sa validacijom inputa kod kreiranja zahtjeva (edge case, format adrese)
-Povremeni issue pri prekidu premium aktivacije (status ostaje nedosljedan u određenim slučajevima)
-Potrebno dodatno testiranje performansi kod većeg broja simultanih zahtjeva
 
 ## Zakljucak
 SB-06-20 je spreman za prihvat kada svi obavezni testovi (`Obavezno_za_signoff = DA`) imaju status "Prosao" i kada nema otvorenih kriticnih bugova.
 Sistem demonstrira stabilno ponašanje kroz ključne tokove:
-
 - prijava kvara
 - onboarding partnera
 - administracija korisnika

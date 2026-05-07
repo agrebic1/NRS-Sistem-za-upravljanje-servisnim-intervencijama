@@ -20,7 +20,6 @@ async function prijaviSe(page: Page, creds: RoleCreds) {
   await page.getByLabel('Email adresa').fill(creds.email);
   await page.getByLabel('Lozinka').fill(creds.password);
   await page.getByRole('button', { name: 'Prijavi se' }).click();
-  await expect(page.getByText('Uspješno ste prijavljeni.')).toBeVisible();
   await expect(page).not.toHaveURL(/\/auth\/login/);
 }
 

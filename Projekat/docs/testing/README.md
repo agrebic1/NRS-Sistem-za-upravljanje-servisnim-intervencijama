@@ -1,117 +1,80 @@
 # Testiranje
 
-Ovaj folder sadrži **automatske** testove (pokretanje iz projekta) i **ručne** test planove po sprint stavkama (`SB-05-…`, `SB-06-…`). Za prvo čitanje: prvo pogledaj [Automatski testovi](#automatski-testovi), zatim [Ručno testiranje](#ručno-testiranje) za sprint koji te zanima.
+Ovaj dokument je jedinstven vodič za testiranje: šta je pokriveno, kada se testovi pokreću i kojim redoslijedom.
 
----
+## Šta je pokriveno
 
-## Sadržaj
+### Automatski testovi
 
-1. [Automatski testovi](#automatski-testovi) — komande, šta se mockuje, pokrivenost  
-2. [Ručno testiranje](#ručno-testiranje) — kako su fajlovi organizovani
-3. [Dokazi (screenshoti)](#dokazi-screenshoti)  
+- **Unit + Integration**
+  - autentifikacija i validacije (`LoginForm`, `RegisterForm`, auth validacija i auth servis)
+  - middleware i kontrola pristupa po ulogama (`/admin`, `/serviser`, `/dispecer`, `/korisnik`)
+  - API rute: `/api/auth/uloge` i `/api/admin/users` (GET/POST, autorizacija, duplikati, validacija, audit)
+- **E2E (Playwright)**
+  - auth smoke tokovi
+  - korisnik zahtjev smoke
+  - RBAC cross-access između uloga
+  - admin create-user tok (admin i non-admin scenariji)
 
----
+### Ručno testiranje
 
-## Automatski testovi
+- **SB-05-12**: `SB-05-12/TC_SB-05-12_AuthFlows.csv`, `EXEC`, `BUG`
+- **SB-05-13**: `ACCESS`, `SEC`, `SIGNOFF`
+- **SB-06-20**: `TC_SB-06-20_Sprint6_ManualFlows.csv`, `EXEC`, `BUG`, `SIGNOFF`
 
-Komande se pokreću iz **`Projekat/`** (gdje je `package.json`):
+## Kada se pokreće
 
-| Komanda | Šta radi |
-|--------|----------|
-| `npm run test` | Unit + integration testovi |
-| `npm run test:coverage` | Isti testovi + coverage izvještaj za kritične module |
-| `npm run test:e2e` | Playwright e2e (smoke) u browseru |
-| `npm run test:krajnje` | Jedna komanda za krajnje testiranje: pokreće coverage i generiše sažetak u `docs/testing/KRAJNJE_TESTIRANJE_IZVJESTAJ.md` |
+- prije merge/pull requesta
+- nakon većih izmjena auth, middleware, API ili RBAC logike
+- prije sprint sign-offa
 
-### E2E kredencijali
+## Kako se pokreće
 
-Neki e2e testovi koriste stvarne role naloge (admin, korisnik, serviser, dispecer).  
-Ako varijable ne postoje, ti testovi se automatski označe kao `skipped`.
+Sve komande pokretati iz `Projekat/`:
 
-Kopiraj ih u `.env.local` i po potrebi promijeni prema svom okruženju.  
-Potrebne su sve 4 uloge (`admin`, `dispecer`, `serviser`, `korisnik`) da bi svi e2e smoke testovi bili izvršeni bez `skipped` statusa.
+1. `npm test`
+2. `npm run test:coverage`
+3. `npm run test:e2e`
 
+Ako bilo koja komanda padne, release/sign-off se ne radi dok se ne popravi i ponovi isti redoslijed.
+
+# Jedna komanda za sve + automatski izvjestaj
+
+`npm run test:izvjestaj`
+
+Ova komanda:
+- pokrece `npm test`
+- pokrece `npm run test:coverage`
+- pokrece `npm run test:e2e -- --workers=1` (stabilnije za CI/lokalni batch run)
+- kreira folder `docs/testing/Izvjestaji/<datum_vrijeme>/`
+- upisuje `IZVJESTAJ.md` i logove (`unit_integration.log`, `coverage.log`, `e2e.log`)
+- kopira `coverage-summary.json` (ako postoji)
+
+## E2E preduslovi
+
+U `.env.local` moraju postojati kredencijali za sve 4 uloge:
+
+```env
 E2E_ADMIN_EMAIL=admin@nrs.local
 E2E_ADMIN_PASSWORD=Admin123!Strong
-
 E2E_DISPECER_EMAIL=dispecer@nrs.local
 E2E_DISPECER_PASSWORD=Dispecer123!Strong
-
 E2E_SERVISER_EMAIL=serviser@nrs.local
 E2E_SERVISER_PASSWORD=Serviser123!Strong
-
 E2E_KORISNIK_EMAIL=test@gmail.com
 E2E_KORISNIK_PASSWORD=123456789Aa@
+```
 
+## Trenutni status (07.05.2026)
 
-### Mockovi i backend
+- `npm test`: 58/58 passed
+- `npm run test:coverage`: Statements 99.61%, Lines 100%, Functions 100%, Branches 87.39%
+- `npm run test:e2e`: 11/11 passed
+- cilj pokrivenosti: **minimum 98%** (ispunjen)
 
-| Sloj | Ponašanje |
-|------|-----------|
-| **Unit** | Mock: Supabase klijent i auth, `next/navigation` router, servisne funkcije za forme |
-| **Integration** | API route logika kroz simulirane HTTP zahtjeve/odgovore |
-| **E2E** | Prava aplikacija u browseru; ključni tokovi i redirecti |
+## Izvještaji i artefakti
 
-### Šta automatski testovi pokrivaju (veza sa sprintovima)
-
-- **Sprint 5 (auth i uloge):** middleware (neprijavljeni, role-based pristup na `/admin`, `/serviser`, `/dispecer`, `/korisnik`), forme `LoginForm` i `RegisterForm`, e2e smoke na auth stranicama i redirect sa privatnih ruta na login.  
-- **Sprint 6 (servisni zahtjevi, korisnik, dispečer):** 
-  - **Unit:** validacija auth podataka, auth servis (login, rate-limit, registracija, verifikacijski email, mapiranje uloga, redirect logika, session helperi).
-  - **Integration:** API `/api/auth/uloge` i `/api/admin/users` (GET/POST), uključujući admin autorizaciju, premium fallback tokove, duplikate, validaciju payload-a, audit zapis i greške.
-  - **E2E:** smoke tokovi (`auth.smoke`, `korisnik.zahtjev.smoke`) + RBAC cross-access + admin create-user stranica (sa i bez admin privilegija).
-
-### Coverage cilj (99%)
-
-- Za kritične module postavljen je prag: **Statements >= 99%, Lines >= 99%, Functions >= 99%**.
-- Branches su ostavljene na 85% zbog velikog broja odbrambenih fallback grana u API sloju.
-- Trenutno stanje se vidi kroz:
-  1. terminal izlaz komande `npm run test:coverage`
-  2. fajl `docs/testing/KRAJNJE_TESTIRANJE_IZVJESTAJ.md` (generiše `npm run test:krajnje`)
-
-### Premium MVP test matrica 
-
-Napomena: u MVP-u je premium naplata **simulirana** (bez eksternog payment gateway-a). Testovi verifikuju lifecycle i prava korištenja, a ne realnu finansijsku transakciju.
-
-| Scenarij | Očekivanje |
-|----------|------------|
-| Aktivacija premiuma (success) | Korisnik prelazi u `premium_status=active`, upisuje se `premium_events` |
-| Aktivacija premiuma (fail) | Status ostaje neaktivan, korisnik dobija poruku greške |
-| Slanje premium zahtjeva sa `active` statusom | Zahtjev prolazi validaciju i kreira se `is_premium=true` |
-| Slanje premium zahtjeva sa `expired` statusom | Zahtjev se odbija uz poruku za obnovu/aktivaciju |
-| Slanje premium zahtjeva sa `pending_payment` statusom | Zahtjev se odbija uz poruku da aktivacija nije dovršena |
-| Cron istek premiuma | `active -> expired`, `is_premium=false`, upis `premium_expired` događaja |
-
----
-
-## Ručno testiranje
-
-### Tipičan tok za QA
-
-1. Otvori **`TC_*.csv`** — katalog slučajeva (preduslovi, koraci, očekivani rezultat).  
-2. Tokom izvršenja popunjavaj **`EXEC_*.csv`** — okruženje, datum, izvršilac, stvarni rezultat, status, putanja dokaza.  
-3. Greške bilježi u **`BUG_*.csv`** i poveži ih s ID testa.  
-4. Na kraju ciklusa: **`SIGNOFF_*_QA-SA.md`** (predložak ili popunjen sign-off).
-
-### Sprint 5 — autentifikacija i kontrola pristupa
-
-| Stavka | Fajl | Namjena |
-|--------|------|--------|
-| **SB-05-12** | `SB-05-12/TC_SB-05-12_AuthFlows.csv` | Katalog: registracija, login, odjava, sesija, uloge, zaštita ruta (15 testova) |
-| | `SB-05-12/EXEC_SB-05-12_AuthFlows.csv` | Izvršenje tih testova |
-| | `SB-05-12/BUG_SB-05-12_AuthFlows.csv` | Evidencija grešaka |
-| **SB-05-13** | `SB-05-13/ACCESS_SB-05-13_MatricaPristupa.csv` | Matrica: koja uloga smije na koju rutu |
-| | `SB-05-13/SEC_SB-05-13_ValidacijaPristupa.csv` | Sigurnosni scenariji (npr. neautorizovan pristup, sesija) |
-| | `SB-05-13/SIGNOFF_SB-05-13_QA-SA.md` | Završni QA/SA sign-off za tu stavku |
-
-### Sprint 6 — administrativni onboarding internog korisnika
-
-| Stavka | Fajl | Namjena |
-|--------|------|--------|
-| **SB-06-20** | `SB-06-20/TC_SB-06-20_Sprint6_ManualFlows.csv` | Ručna test matrica za Sprint 6 tokove (prijava kvara, onboarding partnera, admin kreiranje naloga, premium aktivacija) |
-| | `SB-06-20/EXEC_SB-06-20_Sprint6_ManualFlows.csv` | Evidencija izvršenja manualnih testova za SB-06-20 |
-| | `SB-06-20/BUG_SB-06-20_Sprint6_ManualFlows.csv` | Evidencija bugova za SB-06-20 |
-| | `SB-06-20/SIGNOFF_SB-06-20_QA-SA.md` | Formalni QA/SA sign-off za SB-06-20 |
-
-
-Imenovanje: po dogovoru tima, npr. `TC-042_KratkiOpis.png`, da se mapira na `ID_testa` u `EXEC` fajlu.
+- sprint izvještaj: `docs/testing/SB-06-20/IZVJESTAJ_SB-06-20_Sprint6_Testiranje.md`
+- sprint sign-off: `docs/testing/SB-06-20/SIGNOFF_SB-06-20_QA-SA.md`
+- manual execution: `docs/testing/SB-06-20/EXEC_SB-06-20_Sprint6_ManualFlows.csv`
 

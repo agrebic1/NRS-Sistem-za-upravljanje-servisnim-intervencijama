@@ -181,7 +181,7 @@ function AplikacijaRed({
               </button>
             </div>
             <p className="mt-1 text-xs opacity-70" style={{ color: 'var(--first-senary)' }}>
-              Proslijedite korisniku — nije pohranjena!
+              Podaci su automatski poslani korisniku odmah nakon odobravanja.
             </p>
           </div>
         )}

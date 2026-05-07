@@ -1,13 +1,25 @@
-ID_testa,Okruzenje,Datum_testiranja,Izvrsilac,Ocekivani_rezultat,Stvarni_rezultat,Status_testa,ID_greske,Dokaz_putanja
-TC-01,,,,Zahtjev je uspjesno kreiran; prikazuje se potvrda i dodijeljen korisnicki broj zahtjeva; status inicijalno pending_review/na_cekanju,,,,SB-06-20/TC-01_RequestWizardSuccess.png
-TC-02,,,,Sistem ne dozvoljava nastavak/slanje; prikazuju se jasne validacione poruke bez kreiranja zahtjeva,,,,SB-06-20/TC-02_RequestWizardValidation.png
-TC-03,,,,Sistem odbija slanje premium zahtjeva sa porukom da premium mora biti aktivan i/ili zavrsen,,,,SB-06-20/TC-03_PremiumBlockedInactive.png
-TC-04,,,,Aplikacija je kreirana sa statusom na_cekanju; korisnik dobija potvrdu o uspjesnom slanju,,,,SB-06-20/TC-04_PartnerApplicationSuccess.png
-TC-05,,,,Sistem vraca validacionu gresku (400) i ne kreira aplikaciju,,,,SB-06-20/TC-05_PartnerApplicationValidation.png
-TC-06,,,,Sistem vraca 403 i ne prikazuje listu aplikacija,,,,SB-06-20/TC-06_PartnerApplicationsForbidden.png
-TC-07,,,,Nalog je kreiran; dodijeljena uloga; vraca se privremena lozinka; audit zapis i email/fallback su evidentirani,,,,SB-06-20/TC-07_AdminCreateUserSuccess.png
-TC-08,,,,Sistem vraca 409 i ne kreira novi nalog; biljezi se neuspjesan audit,,,,SB-06-20/TC-08_AdminCreateDuplicate.png
-TC-09,,,,Sistem vraca 403 (ili 401 bez sesije) i ne kreira nalog,,,,SB-06-20/TC-09_AdminCreateForbidden.png
-TC-10,,,,Premium status prelazi na active; upisuju se datumi pocetka/isteka i premium dogadjaj; korisnik dobija poruku uspjeha,,,,SB-06-20/TC-10_PremiumActivationSuccess.png
-TC-11,,,,Sistem blokira akciju kroz klijentsku/server validaciju i vraca poruku greske bez prelaska u active,,,,SB-06-20/TC-11_PremiumActivationValidation.png
-TC-12,,,,Premium ostaje aktivan do kraja placenog perioda; biljezi se datum/razlog otkazivanja i odgovarajuci event,,,,SB-06-20/TC-12_PremiumCancelAtPeriodEnd.png
+ID_testa,Okruzenje,Datum_testiranja,Izvrsilac,Ocekivani_rezultat,Stvarni_rezultat,Status_testa,ID_greske
+TC-01,production,2026-05-07,Suada Peci,Zahtjev je uspjesno kreiran; prikazuje se potvrda i dodijeljen korisnicki broj zahtjeva; status inicijalno pending_review/na_cekanju,U skladu sa ocekivanim rezultatom,PASSED,
+TC-02,production,2026-05-07,Eldin Begić,Sistem ne dozvoljava nastavak/slanje; prikazuju se jasne validacione poruke bez kreiranja zahtjeva,U skladu sa ocekivanim rezultatom,PASSED,
+TC-03,production,2026-05-07,Kerim Gazić,Sistem odbija slanje premium zahtjeva sa porukom da premium mora biti aktivan i/ili zavrsen,U skladu sa ocekivanim rezultatom,PASSED,
+TC-04,production,2026-05-07,Suada Peci,Aplikacija je kreirana sa statusom na_cekanju; korisnik dobija potvrdu o uspjesnom slanju,U skladu sa ocekivanim rezultatom,PASSED,
+TC-05,production,2026-05-07,Eldin Begić,Sistem vraca validacionu gresku (400) i ne kreira aplikaciju,U skladu sa ocekivanim rezultatom,PASSED,
+TC-06,production,2026-05-07,Kerim Gazić,Sistem vraca 403 i ne prikazuje listu aplikacija,U skladu sa ocekivanim rezultatom,PASSED,
+TC-07,production,2026-05-07,Suada Peci,Nalog je kreiran; dodijeljena uloga; privremena lozinka i podaci su odmah automatski poslani korisniku; audit zapis i email/fallback su evidentirani,U skladu sa ocekivanim rezultatom,PASSED,
+TC-08,production,2026-05-07,Eldin Begić,Sistem vraca 409 i ne kreira novi nalog; biljezi se neuspjesan audit,U skladu sa ocekivanim rezultatom,PASSED,
+TC-09,production,2026-05-07,Kerim Gazić,Sistem vraca 403 (ili 401 bez sesije) i ne kreira nalog,U skladu sa ocekivanim rezultatom,PASSED,
+TC-10,production,2026-05-07,Suada Peci,Premium status prelazi na active; upisuju se datumi pocetka/isteka i premium dogadjaj; korisnik dobija poruku uspjeha,U skladu sa ocekivanim rezultatom,PASSED,
+TC-11,production,2026-05-07,Eldin Begić,Sistem blokira akciju kroz klijentsku/server validaciju i vraca poruku greske bez prelaska u active,U skladu sa ocekivanim rezultatom,PASSED,
+TC-12,production,2026-05-07,Kerim Gazić,Premium ostaje aktivan do kraja placenog perioda; biljezi se datum/razlog otkazivanja i odgovarajuci event,U skladu sa ocekivanim rezultatom,PASSED,
+TC-13,production,2026-05-07,Suada Peci,Sistem prikazuje validacione poruke i ne dozvoljava kreiranje zahtjeva,U skladu sa ocekivanim rezultatom,PASSED,
+TC-14,production,2026-05-07,Eldin Begić,Sistem vrsi redirect na /auth/login i ne dozvoljava pristup stranici,U skladu sa ocekivanim rezultatom,PASSED,
+TC-15,production,2026-05-07,Kerim Gazić,Podaci se resetuju ili ostaju konzistentni bez greske u aplikaciji,U skladu sa ocekivanim rezultatom,PASSED,
+TC-16,production,2026-05-07,Suada Peci,Sistem prikazuje validacione greske i ne dozvoljava kreiranje naloga,U skladu sa ocekivanim rezultatom,PASSED,
+TC-17,production,2026-05-07,Eldin Begić,Sistem sanitizuje unos i ne dozvoljava izvrsavanje nevalidnog koda,U skladu sa ocekivanim rezultatom,PASSED,
+TC-18,production,2026-05-07,Kerim Gazić,Sistem odbija zahtjev i vraca validacionu gresku,U skladu sa ocekivanim rezultatom,PASSED,
+TC-19,production,2026-05-07,Suada Peci,Sistem ne dozvoljava duplikat aktivaciju i vraca odgovarajucu poruku,U skladu sa ocekivanim rezultatom,PASSED,
+TC-20,production,2026-05-07,Eldin Begić,Sistem validira podatke na backendu i odbija nevalidan zahtjev,U skladu sa ocekivanim rezultatom,PASSED,
+TC-21,production,2026-05-07,Kerim Gazić,Premium status ostaje nepromijenjen i ne prelazi u active,U skladu sa ocekivanim rezultatom,PASSED,
+TC-22,production,2026-05-07,Suada Peci,Sistem zahtijeva ponovnu prijavu i ne dozvoljava pristup,U skladu sa ocekivanim rezultatom,PASSED,
+TC-23,production,2026-05-07,Eldin Begić,Sistem vraca user-friendly poruku i ne crasha,U skladu sa ocekivanim rezultatom,PASSED,
+TC-24,production,2026-05-07,Kerim Gazić,Sistem ostaje stabilan i obraduje zahtjeve bez greske,U skladu sa ocekivanim rezultatom,PASSED,
