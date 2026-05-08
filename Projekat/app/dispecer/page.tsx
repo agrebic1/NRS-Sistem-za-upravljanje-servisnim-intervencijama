@@ -180,23 +180,26 @@ export default function DispecerPage() {
       </div>
 
       <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
-        {[
-          { oznaka: 'Čeka obradu',  vrijednost: naCekanju, boja: '#D97706', Ikona: ClipboardList },
-          { oznaka: 'Potvrđeno',   vrijednost: potvrdeno, boja: '#2563EB', Ikona: Clock },
-          { oznaka: 'Svi aktivni', vrijednost: aktivnih,  boja: '#059669', Ikona: Wrench },
-        ].map(({ oznaka, vrijednost, boja, Ikona }) => (
-          <div key={oznaka} className="flex items-center gap-4 rounded-2xl p-5 shadow-card"
-            style={{ backgroundColor: 'rgb(var(--first-quinary-rgb) / 0.22)', border: '1px solid rgb(var(--first-quaternary-rgb) / 0.35)' }}>
-            <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl" style={{ backgroundColor: `${boja}18` }}>
-              <Ikona className="h-5 w-5" style={{ color: boja }} />
-            </div>
-            <div>
-              <p className="text-2xl font-bold" style={{ color: boja }}>{vrijednost}</p>
-              <p className="text-xs" style={{ color: 'var(--first-nonary)' }}>{oznaka}</p>
-            </div>
-          </div>
-        ))}
+     {[
+  { oznaka: 'Čeka obradu',  vrijednost: naCekanju, boja: '#D97706', Ikona: ClipboardList, href: '/dispecer/zahtjevi?status=na_cekanju' },
+  { oznaka: 'Potvrđeno',   vrijednost: potvrdeno, boja: '#2563EB', Ikona: Clock,         href: '/dispecer/zahtjevi?status=potvrdeno' },
+  { oznaka: 'Svi aktivni', vrijednost: aktivnih,  boja: '#059669', Ikona: Wrench,        href: '/dispecer/zahtjevi?status=svi' },
+].map(({ oznaka, vrijednost, boja, Ikona, href }) => (
+  <Link key={oznaka} href={href}>
+    <div className="flex items-center gap-4 rounded-2xl p-5 shadow-card cursor-pointer transition-opacity hover:opacity-80"
+      style={{ backgroundColor: 'rgb(var(--first-quinary-rgb) / 0.22)', border: '1px solid rgb(var(--first-quaternary-rgb) / 0.35)' }}>
+      <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl" style={{ backgroundColor: `${boja}18` }}>
+        <Ikona className="h-5 w-5" style={{ color: boja }} />
       </div>
+      <div>
+        <p className="text-2xl font-bold" style={{ color: boja }}>{vrijednost}</p>
+        <p className="text-xs" style={{ color: 'var(--first-nonary)' }}>{oznaka}</p>
+      </div>
+    </div>
+  </Link>
+))}
+      </div>
+
 
       {greska && <div className="mb-6"><AlertMessage variant="error" message={greska} /></div>}
 
