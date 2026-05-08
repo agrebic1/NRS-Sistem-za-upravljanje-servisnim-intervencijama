@@ -42,6 +42,10 @@ function mapirajNazivUloge(naziv: string | null | undefined): UserRole | null {
 export async function middleware(zahtjev: NextRequest) {
   let supabaseResponse = NextResponse.next({ request: zahtjev });
   const { pathname } = zahtjev.nextUrl;
+  // TEMP: dozvoli pristup dispecer rutama za testiranje
+//if (pathname.startsWith('/dispecer')) {
+  //return NextResponse.next();
+//}
   const { method } = zahtjev;
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
