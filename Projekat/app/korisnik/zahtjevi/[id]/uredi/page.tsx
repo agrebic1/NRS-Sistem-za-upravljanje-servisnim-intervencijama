@@ -16,6 +16,7 @@ import type { ServisniZahtjev } from '@/domain/types/servisirane';
 import { brojZahtjevaZaPrikaz } from '@/lib/servisirane/korisnickiBrojZahtjeva';
 
 const PHONE_REGEX = /^[0-9+\-\/ ]*$/;
+const ZABRANJENI_STATUSI = ['dodijeljeno', 'u_toku', 'zavrseno', 'otkazano'];
 
 // ─── Forma za izmjenu ─────────────────────────────────────────────────────────
 
@@ -76,11 +77,11 @@ export default function UrediZahtjevPage() {
         if (!r.ok) throw new Error(d.error ?? 'Zahtjev nije pronađen.');
         const z: ServisniZahtjev = d.zahtjev;
 
-        if (z.status !== 'na_cekanju' && z.status !== 'pending_review') {
-          setGreska('Zahtjev se može izmijeniti samo dok je u statusu "Čeka obradu".');
-          setUcitava(false);
-          return;
-        }
+        if (ZABRANJENI_STATUSI.includes(z.status)) {
+  setGreska(`Izmjena nije dozvoljena jer je zahtjev u statusu: ${z.status.replace('_', ' ')}.`);
+  setUcitava(false);
+  return;
+}
 
         setZahtjev(z);
         const ps = z.preferred_schedule;
@@ -134,11 +135,12 @@ export default function UrediZahtjevPage() {
       const r = await fetch(`/api/service-requests/${id}`, {
         method:  'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({
-          address:       editState.address.trim(),
-          description:   editState.description.trim(),
+        body: JSON.stringify({
+          address: editState.address.trim(),
+          description: editState.description.trim(),
           contact_phone: editState.contactPhone.trim() || undefined,
-          preferred_schedule: editState.noPreferredTime
+          updated_at: new Date().toISOString(), 
+          preferred_schedule: editState.noPreferredTime 
             ? { termini: [], no_preferred_time: true }
             : {
                 termini: [
@@ -278,11 +280,15 @@ export default function UrediZahtjevPage() {
                 </span>
               </div>
               <input
-                type="text"
-                value={editState.address}
-                onChange={(e) => azurirajPolje({ address: e.target.value })}
-                placeholder="Unesite adresu..."
-                className="w-full rounded-xl border px-4 py-2.5 text-sm focus:outline-none focus:ring-2"
+  type="text"
+
+  disabled={zahtjev?.status === 'pending_review'} 
+  value={editState.address}
+  onChange={(e) => azurirajPolje({ address: e.target.value })}
+  placeholder="Unesite adresu..."
+  className={`w-full rounded-xl border px-4 py-2.5 text-sm focus:outline-none focus:ring-2 ${
+    zahtjev?.status === 'pending_review' ? 'opacity-50 cursor-not-allowed' : ''
+  }`}
                 style={{
                   borderColor:     'rgb(var(--first-quaternary-rgb) / 0.45)',
                   backgroundColor: 'rgb(255 255 255 / 0.8)',
@@ -366,6 +372,18 @@ export default function UrediZahtjevPage() {
                   Odustani
                 </Button>
               </Link>
+              <Button 
+  type="button" 
+  variant="secondary" 
+  className="bg-red-50 text-red-600 hover:bg-red-100 border-red-200"
+  onClick={() => {
+    if(confirm("Jeste li sigurni da želite otkazati ovaj zahtjev?")) {
+      console.log("Zahtjev se otkazuje...");
+    }
+  }}
+>
+  Otkaži zahtjev
+</Button>
               <Button
                 type="button"
                 size="md"
