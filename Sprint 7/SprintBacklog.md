@@ -1,29 +1,27 @@
 # Sprint Goal
 
-## Sprint broj 7
+### Sprint broj 7
 
 ### Sprint cilj
 
 Omogućiti dispečerima centralizovan operativni pregled svih aktivnih intervencija kroz dashboard, statusne liste i detaljne prikaze zahtjeva, uz uspostavljanje mehanizma za određivanje operativnog prioriteta intervencija i dodatno unapređenje upravljanja korisničkim zahtjevima kroz validiranu izmjenu i otkazivanje zahtjeva.
 
----
 
-# Ključne stavke koje tim želi završiti
+### Ključne stavke koje tim želi završiti
 
-- implementacija dispečerskog pregleda otvorenih intervencija (US-07): lista aktivnih zahtjeva sa osnovnim podacima, indikatorima priloga i map lokacije te filtriranjem po statusu
-- implementacija detaljnog prikaza pojedinačne intervencije (US-08): kompletan pregled korisničkih i operativnih podataka potrebnih za obradu zahtjeva
-- pregled statusa intervencija za dispečere (US-13): statusni pregled aktivnih zahtjeva sa automatskim osvježavanjem podataka
-- implementacija operativnog dashboarda (US-31): agregirani prikaz broja intervencija po statusima i prelazak na filtrirane liste
-- određivanje operativnog prioriteta intervencija (US-12): dodjela i izmjena prioriteta od strane dispečera uz jasno razdvajanje korisničke hitnosti i operativnog prioriteta
-- dorada izmjene vlastitog zahtjeva (US-26): dodatna ograničenja izmjene po statusima i validacija dozvoljenih polja
-- dorada otkazivanja vlastitog zahtjeva (US-27): obavezni razlog otkazivanja, validacija statusa i uklanjanje iz aktivnih dispečerskih lista
+- implementacija dispečerskog pregleda otvorenih intervencija (US-07): *lista aktivnih zahtjeva sa osnovnim podacima, indikatorima priloga i map lokacije te filtriranjem po statusu*
+- implementacija detaljnog prikaza pojedinačne intervencije (US-08): *kompletan pregled korisničkih i operativnih podataka potrebnih za obradu zahtjeva*
+- pregled statusa intervencija za dispečere (US-13): *statusni pregled aktivnih zahtjeva sa automatskim osvježavanjem podataka*
+- implementacija operativnog dashboarda (US-31): *agregirani prikaz broja intervencija po statusima i prelazak na filtrirane liste*
+- određivanje operativnog prioriteta intervencija (US-12): *dodjela i izmjena prioriteta od strane dispečera uz jasno razdvajanje korisničke hitnosti i operativnog prioriteta*
+- dorada izmjene vlastitog zahtjeva (US-26): *dodatna ograničenja izmjene po statusima i validacija dozvoljenih polja*
+- dorada otkazivanja vlastitog zahtjeva (US-27): *obavezni razlog otkazivanja, validacija statusa i uklanjanje iz aktivnih dispečerskih lista*
 - usklađivanje statusa između korisničkog i dispečerskog dijela sistema
 - implementacija role-based zaštite za sve dispečerske funkcionalnosti
-- testiranje kompletnog toka: korisnik kreira zahtjev → dispečer vidi zahtjev → otvara detalje → određuje prioritet → zahtjev postaje spreman za dodjelu u narednom sprintu
+- testiranje kompletnog toka: *korisnik kreira zahtjev → dispečer vidi zahtjev → otvara detalje → određuje prioritet → zahtjev postaje spreman za dodjelu u narednom sprintu*
 
----
 
-# Rizici i zavisnosti
+### Rizici i zavisnosti
 
 Sprint 7 uvodi centralnu operativnu logiku za rad dispečera i predstavlja osnovu za buduću dodjelu intervencija serviserima. Ako statusni pregledi, prioriteti i detalji intervencija nisu pravilno implementirani:
 
@@ -32,14 +30,14 @@ Sprint 7 uvodi centralnu operativnu logiku za rad dispečera i predstavlja osnov
 - prioritet intervencije može biti pogrešno interpretiran ako nije jasno odvojen od korisničke hitnosti
 - zahtjevi koji su otkazani ili zatvoreni mogu ostati vidljivi u aktivnim operativnim listama
 
-## Postoji rizik:
+### Postoji rizik:
 
-- state management: kompleksnost sinhronizacije statusa i prioriteta između više ekrana
-- sigurnost: neadekvatna zaštita dispečerskih ruta i API endpointa
-- konzistentnost podataka: mogućnost da statusi i prioriteti ostanu neusklađeni između baze i korisničkog interfejsa
-- UX kompleksnost: veliki broj operativnih podataka može otežati preglednost dashboarda i detalja intervencije
+- **state management**: kompleksnost sinhronizacije statusa i prioriteta između više ekrana
+- **sigurnost**: neadekvatna zaštita dispečerskih ruta i API endpointa
+- **konzistentnost podataka**: mogućnost da statusi i prioriteti ostanu neusklađeni između baze i korisničkog interfejsa
+- **UX kompleksnost**: veliki broj operativnih podataka može otežati preglednost dashboarda i detalja intervencije
 
-## Zavisnosti:
+### Zavisnosti:
 
 - stabilan sistem autentifikacije i role-based pristupa iz prethodnih sprintova
 - ispravno evidentiranje zahtjeva i statusa iz Sprinta 6
