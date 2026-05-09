@@ -32,7 +32,10 @@ export default function DispecerZahtjevDetaljPage() {
   const [greska, setGreska] = useState<string | null>(null);
   const [akcijaGreska, setAkcijaGreska] = useState<string | null>(null);
   const [jeSlanje, setJeSlanje] = useState(false);
-  const [prioritet, setPrioritet] = useState<'NISKO' | 'SREDNJE' | 'VISOKO' | 'KRITIČNO' | 'HITNO'>('SREDNJE');
+
+  
+  const [prioritet, setPrioritet] = useState<'NISKO' | 'SREDNJE' | 'VISOKO' | 'HITNO'>('SREDNJE');
+
   const [downgradeRazlog, setDowngradeRazlog] = useState('');
   const kategorija = zahtjev ? labelKategorije(zahtjev) : null;
   const kategorijaPrikaz = kategorija
@@ -46,7 +49,10 @@ export default function DispecerZahtjevDetaljPage() {
         const d = await r.json();
         if (!r.ok) throw new Error(d.error ?? 'Zahtjev nije pronađen.');
         setZahtjev(d.zahtjev);
+
+        
         if (d.zahtjev?.is_premium) setPrioritet('HITNO');
+        
       } catch (err) {
         setGreska(err instanceof Error ? err.message : 'Greška pri učitavanju.');
       } finally {
@@ -103,17 +109,16 @@ export default function DispecerZahtjevDetaljPage() {
               {akcijaGreska && <div className="mt-2"><AlertMessage variant="error" message={akcijaGreska} /></div>}
               <label className="mt-3 block text-xs font-medium" style={{ color: 'var(--first-nonary)' }}>Operativni prioritet</label>
               <select
-                className="mt-1 w-full rounded-lg border px-3 py-2 text-sm"
-                style={{ borderColor: 'rgb(var(--first-quaternary-rgb) / 0.45)' }}
-                value={prioritet}
-                onChange={(e) => setPrioritet(e.target.value as typeof prioritet)}
-              >
-                <option value="NISKO">NISKO</option>
-                <option value="SREDNJE">SREDNJE</option>
-                <option value="VISOKO">VISOKO</option>
-                <option value="KRITIČNO">KRITIČNO</option>
-                <option value="HITNO">HITNO</option>
-              </select>
+  className="mt-1 w-full rounded-lg border px-3 py-2 text-sm"
+  style={{ borderColor: 'rgb(var(--first-quaternary-rgb) / 0.45)' }}
+  value={prioritet}
+  onChange={(e) => setPrioritet(e.target.value as typeof prioritet)}
+>
+  <option value="NISKO">Nizak</option>
+  <option value="SREDNJE">Srednji</option>
+  <option value="VISOKO">Visok</option>
+  <option value="HITNO">Hitno</option>
+</select>
               {zahtjev.is_premium && prioritet !== 'HITNO' && (
                 <>
                   <label className="mt-3 block text-xs font-medium" style={{ color: 'var(--first-nonary)' }}>
