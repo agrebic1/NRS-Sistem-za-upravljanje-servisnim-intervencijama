@@ -6,6 +6,8 @@ export type StatusZahtjeva = 'novi' | 'u_obradi' | 'zavrsen';
 
 export type StatusIntervencije = 'planirana' | 'u_toku' | 'zavrsena';
 
+export type PrioritetIntervencije = 'nizak' | 'srednji' | 'visok' | 'hitno';
+
 // ─── Konstante ────────────────────────────────────────────────────────────────
 
 export const PREUSMJERANJE_PO_ULOZI: Record<UserRole, string> = {
@@ -47,5 +49,6 @@ export interface Zahtjev {
   je_otkazan: boolean | null;
   razlog_otkazivanja: string | null;
   vrijeme: string | null;
+  prioritet: PrioritetIntervencije | null;
 }
 

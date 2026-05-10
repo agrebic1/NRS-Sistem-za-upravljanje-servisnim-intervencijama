@@ -375,8 +375,20 @@ export function DispecerskaZahtjevKartica({ zahtjev }: DispecerskaZahtjevKartica
               </span>
               {formatPrijavljeno(zahtjev.created_at)}
             </dd>
+            <dd className="mt-2">
+  {zahtjev.final_priority && (
+    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+      zahtjev.final_priority === 'HITNO' ? 'bg-red-600 text-white' : 
+      zahtjev.final_priority === 'VISOKO' ? 'bg-orange-500 text-white' : 
+      'bg-slate-200 text-slate-700'
+    }`}>
+      {zahtjev.final_priority}
+    </span>
+  )}
+</dd>
           </div>
         </div>
+        
         <div className="flex items-start gap-2">
           <Clock className="mt-0.5 h-4 w-4 flex-shrink-0 opacity-70" style={{ color: 'var(--first-nonary)' }} />
           <div className="min-w-0">
