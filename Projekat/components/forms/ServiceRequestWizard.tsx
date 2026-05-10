@@ -17,6 +17,8 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { AlertMessage } from '@/components/ui/AlertMessage';
+import { PreciznaLokacijaChip } from '@/components/servisirane/zahtjevBadgeovi';
+import { OkvirGalerije } from '@/components/servisirane/PrilogGalerija';
 import { KorakKategorija } from '@/components/wizard/KorakKategorija';
 import { KorakLokacija }    from '@/components/wizard/KorakLokacija';
 import { KorakTermin }      from '@/components/wizard/KorakTermin';
@@ -265,6 +267,9 @@ function validirajKorak(k: number, s: WizardState): string | null {
     if (s.premiumRequested && !s.premiumTermsAccepted) {
       return 'Za premium hitnu intervenciju potrebno je potvrditi uslove i dodatne troškove.';
     }
+    if (s.premiumRequested && s.isPremiumUser && s.premiumTermsAccepted) {
+      return null;
+    }
     const r = wizardKorak3Schema.safeParse(s.triage);
     return r.success ? null : r.error.errors[0].message;
   }
@@ -336,7 +341,12 @@ function formatirajTermin(state: WizardState): string {
 }
 
 function formatirajStatusZaPrikaz(status: string): string {
-  if (status === 'pending_review' || status === 'na_cekanju') return 'Čeka obradu';
+  const s = status.toLowerCase();
+  if (s === 'pending_review' || s === 'na_cekanju') return 'Novi';
+  if (s === 'in_review') return 'U čarobnjaku';
+  if (s === 'potvrdeno') return 'Potvrđeno';
+  if (s === 'dodijeljeno') return 'Dodijeljeno serviseru';
+  if (s === 'u_radu' || s === 'u_izvrsenju') return 'Na terenu';
   return status;
 }
 
@@ -352,14 +362,17 @@ function PregledFotografije({ file }: { file: File }) {
   if (!previewUrl) return null;
 
   return (
-    // Blob preview is generated client-side from selected file.
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
-      src={previewUrl}
-      alt="Pregled fotografije zahtjeva"
-      className="mt-2 h-32 w-full max-w-xs rounded-lg border object-cover"
-      style={{ borderColor: 'rgb(var(--first-quaternary-rgb) / 0.35)' }}
-    />
+    <div className="mt-2 max-w-md">
+      <OkvirGalerije>
+        {/* Blob preview is generated client-side from selected file. */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={previewUrl}
+          alt="Pregled fotografije zahtjeva"
+          className="aspect-[4/3] w-full max-h-44 object-cover sm:max-h-48"
+        />
+      </OkvirGalerije>
+    </div>
   );
 }
 
@@ -370,7 +383,10 @@ function PregledZahtjevaKorak({
   state: WizardState;
   onEditStep: (step: number) => void;
 }) {
-  const hitnost = oznakaHitnostiZaKorisnika(izracunajUrgency(state.triage as TriageOdgovori));
+  const hitnost =
+    state.premiumRequested && state.isPremiumUser
+      ? 'Hitna intervencija (premium)'
+      : oznakaHitnostiZaKorisnika(izracunajUrgency(state.triage as TriageOdgovori));
   const kategorija = labelKategorije({
     category_main: state.selectedCategory,
     category_sub: state.selectedSubcategory,
@@ -413,9 +429,9 @@ function PregledZahtjevaKorak({
           {state.address}
         </p>
         {imaKoordinate && (
-          <p className="mt-1 text-xs" style={{ color: 'var(--first-nonary)' }}>
-            Precizna lokacija je dodana (koordinate).
-          </p>
+          <div className="mt-2">
+            <PreciznaLokacijaChip />
+          </div>
         )}
       </div>
 
@@ -474,9 +490,9 @@ function PregledZahtjevaKorak({
           <Button type="button" variant="ghost" size="sm" onClick={() => onEditStep(5)}>Uredi</Button>
         </div>
         <p className="text-sm font-semibold" style={{ color: 'var(--first-octonary)' }}>{hitnost}</p>
-        {state.premiumRequested && (
-          <p className="mt-2 text-xs font-semibold" style={{ color: '#B91C1C' }}>
-            Hitna intervencija (premium) je zatražena.
+        {state.premiumRequested && state.isPremiumUser && (
+          <p className="mt-2 text-xs" style={{ color: 'var(--first-nonary)' }}>
+            Trijaža nije potrebna — prioritet određuje premium paket.
           </p>
         )}
       </div>
@@ -698,7 +714,8 @@ export function ServiceRequestWizard({
                   ? { preferred_time_label: state.preferredTimeLabel }
                   : {}),
               },
-          triage: state.triage as TriageOdgovori,
+          triage:
+            state.premiumRequested && state.isPremiumUser ? null : (state.triage as TriageOdgovori),
         }),
       });
 
@@ -820,6 +837,7 @@ export function ServiceRequestWizard({
             azuriraj({
               premiumRequested: value,
               premiumTermsAccepted: value ? state.premiumTermsAccepted : false,
+              ...(value && state.isPremiumUser ? { triage: INITIAL_TRIAGE } : {}),
             })
           }
           onPremiumTermsAcceptedChange={(value) => azuriraj({ premiumTermsAccepted: value })}

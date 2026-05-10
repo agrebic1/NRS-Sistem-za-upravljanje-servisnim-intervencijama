@@ -1,9 +1,10 @@
 // ─── Statusi zahtjeva — životni ciklus ───────────────────────────────────────
 
 export type StatusZahtjeva =
-  | 'pending_review' // 🟡 Čeka obradu — preporučeni inicijalni status (Sprint 7)
-  | 'na_cekanju'    // 🟡 Žuta  — inicijalni status, korisnik može editovati
-  | 'potvrdeno'     // 🔵 Plava — dispečer potvrdio termin i prioritet
+  | 'pending_review' // 🟡 Novi — prije dispečerskog čarobnjaka (Sprint 7)
+  | 'na_cekanju'    // 🟡 Novi — korisnik može uređivati do ulaska u čarobnjak
+  | 'in_review'     // 🟡 U čarobnjaku — dispečer u koracima Pregled … Potvrda; korisnik ne smije mijenjati
+  | 'potvrdeno'     // 🟢 Potvrđeno u čarobnjaku — prioritet i termin; sljedeće dodjela / teren
   | 'dodijeljeno'   // backward compat
   | 'u_radu'        // backward compat
   | 'u_izvrsenju'   // 🟢 Zelena — serviser krenuo na teren
@@ -68,6 +69,12 @@ export interface ServisniZahtjev {
   description:          string;
   contact_phone:        string;
   photo_url:            string | null;
+  /** Dodatne slike uz zahtjev (opcionalno; API/DB mogu još ne vraćati). */
+  attachment_image_urls?: string[] | null;
+  /** Alternativna polja ako backend koristi drugačije nazive (npr. JSON kolona). */
+  images?: string[] | null;
+  photos?: string[] | null;
+  attachment_urls?: string[] | null;
   is_premium:           boolean;
   premium_terms_accepted: boolean;
   premium_requested_at: string | null;
@@ -80,7 +87,17 @@ export interface ServisniZahtjev {
   triage_json:          TriageOdgovori | null;
   preferred_schedule:   PreferredSchedule | null;
   cancel_reason:        string | null;
+  /** Postavljeno pri otkazivanju od strane korisnika. */
+  cancelled_at:         string | null;
+  /** `true` kad je serviser potvrdio dogovoreni termin — u pregledu zahtjeva prelazi iz „Novi“ u „U obradi“. */
   is_verified_assigned: boolean;
+  /**
+   * Dogovoreni termin u čarobnjaku (dispečer); NULL dok termin nije potvrđen u koraku „Termin i serviser“.
+   * Isti oblik kao `preferred_schedule` gdje je primjereno.
+   */
+  dispecer_agreed_schedule?: PreferredSchedule | null;
+  /** Serviser dodijeljen u čarobnjaku (`osoba.id_osobe`); NULL dok nije odabran. */
+  serviser_dodijeljen_id?: string | null;
   created_at:           string;
   updated_at:           string;
 }

@@ -1,15 +1,11 @@
 import { NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { createClient as createServerClient } from '@/lib/supabase/server';
+import { assertDispatcherAccess } from '@/lib/servisirane/dispecerPristup';
+import { dispecerSmijeMijenjatiOperativniPrioritet } from '@/lib/servisirane/statusZahtjeva';
 import { z } from 'zod';
 
 export const dynamic = 'force-dynamic';
-
-function getUlogaNaziv(uloga: unknown): string {
-  if (!uloga) return '';
-  if (Array.isArray(uloga)) return (uloga[0] as { naziv?: string })?.naziv ?? '';
-  return (uloga as { naziv?: string })?.naziv ?? '';
-}
 
 const potvrdiSchema = z.object({
   action:         z.literal('potvrdi'),
@@ -22,8 +18,22 @@ const odbijSchema = z.object({
   rejection_reason: z.string().min(5, 'Objasnite razlog odbijanja (min. 5 karaktera)').max(500),
 });
 
-const actionSchema = z.discriminatedUnion('action', [potvrdiSchema, odbijSchema]);
-const PENDING_STATUSES = new Set(['na_cekanju', 'pending_review']);
+const promijeniPrioritetSchema = z.object({
+  action:                   z.literal('promijeni_prioritet'),
+  final_priority:           potvrdiSchema.shape.final_priority,
+  premium_downgrade_reason: z.string().max(500).optional(),
+});
+
+const actionSchema = z.discriminatedUnion('action', [
+  potvrdiSchema,
+  odbijSchema,
+  promijeniPrioritetSchema,
+]);
+/** Statusi u kojima dispečer može potvrditi/odbiti (MVP: uključuje in_review ako je u inboxu). */
+const PENDING_STATUSES = new Set(['na_cekanju', 'pending_review', 'in_review']);
+
+/** Kad dispečer prvi put snimi operativni prioritet, zahtjev prelazi u čarobnjak — korisnik više ne smije uređivati. */
+const STATUS_PRE_CAROBNJAKA = new Set(['na_cekanju', 'pending_review']);
 type RouteParams = { id: string } | Promise<{ id: string }>;
 
 async function resolveRequestId(params: RouteParams): Promise<number | null> {
@@ -31,17 +41,6 @@ async function resolveRequestId(params: RouteParams): Promise<number | null> {
   const parsed = Number.parseInt(resolved.id, 10);
   if (!Number.isFinite(parsed) || parsed <= 0) return null;
   return parsed;
-}
-
-async function assertDispatcherAccess(supabase: ReturnType<typeof createAdminClient>, userId: string) {
-  const { data: uposlenik } = await supabase
-    .from('uposlenici')
-    .select('uloga(naziv)')
-    .eq('id_uposlenika', userId)
-    .maybeSingle();
-
-  const naziv = getUlogaNaziv(uposlenik?.uloga).toLowerCase();
-  return ['dispečer', 'dispecer', 'administrator', 'admin'].includes(naziv);
 }
 
 export async function GET(
@@ -139,15 +138,56 @@ export async function PATCH(
       return NextResponse.json({ error: 'Zahtjev nije pronađen.' }, { status: 404 });
     }
 
+    const podaci = rezultat.data;
+
+    if (podaci.action === 'promijeni_prioritet') {
+      if (!dispecerSmijeMijenjatiOperativniPrioritet(zahtjev.status)) {
+        return NextResponse.json(
+          { error: 'Operativni prioritet se ne može mijenjati u ovom statusu.' },
+          { status: 400 },
+        );
+      }
+      if (
+        zahtjev.is_premium === true &&
+        podaci.final_priority !== 'HITNO' &&
+        (!podaci.premium_downgrade_reason || podaci.premium_downgrade_reason.trim().length < 10)
+      ) {
+        return NextResponse.json(
+          {
+            error: 'Premium zahtjev mora ostati HITNO ili unesite obrazloženje (min. 10 karaktera).',
+          },
+          { status: 400 },
+        );
+      }
+      const izmjena: {
+        final_priority: string;
+        premium_priority_override_reason: string | null;
+        status?: 'in_review';
+      } = {
+        final_priority: podaci.final_priority,
+        premium_priority_override_reason:
+          zahtjev.is_premium === true && podaci.final_priority !== 'HITNO'
+            ? podaci.premium_downgrade_reason?.trim() ?? null
+            : null,
+      };
+      if (STATUS_PRE_CAROBNJAKA.has(zahtjev.status)) {
+        izmjena.status = 'in_review';
+      }
+
+      const { error } = await supabase.from('service_requests').update(izmjena).eq('id', requestId);
+
+      if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ success: true });
+    }
+
     if (!PENDING_STATUSES.has(zahtjev.status)) {
       return NextResponse.json(
-        { error: 'Akcija je moguća samo za zahtjeve sa statusom "Čeka obradu".' },
+        { error: 'Akcija je moguća samo za zahtjeve koji još nisu potvrđeni ili odbijeni.' },
         { status: 400 }
       );
     }
 
-    const podaci = rezultat.data;
-
+    // US-12: operativni prioritet uz potvrdu (status → potvrdeno).
     if (podaci.action === 'potvrdi') {
       if (
         zahtjev.is_premium === true &&

@@ -77,7 +77,7 @@ export default function UrediZahtjevPage() {
         const z: ServisniZahtjev = d.zahtjev;
 
         if (z.status !== 'na_cekanju' && z.status !== 'pending_review') {
-          setGreska('Zahtjev se može izmijeniti samo dok je u statusu "Čeka obradu".');
+          setGreska('Zahtjev se može izmijeniti samo dok je u statusu "Novi zahtjev".');
           setUcitava(false);
           return;
         }

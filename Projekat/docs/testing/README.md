@@ -21,6 +21,7 @@ Ovaj dokument je jedinstven vodič za testiranje: šta je pokriveno, kada se tes
 - **SB-05-12**: `SB-05-12/TC_SB-05-12_AuthFlows.csv`, `EXEC`, `BUG`
 - **SB-05-13**: `ACCESS`, `SEC`, `SIGNOFF`
 - **SB-06-20**: `TC_SB-06-20_Sprint6_ManualFlows.csv`, `EXEC`, `BUG`, `SIGNOFF`
+- **SB-07-35**: `TC_SB-07-35_Sprint7_DispecerManualFlows.csv`, `EXEC`, `BUG`, `SIGNOFF`
 
 ## Kada se pokreće
 
@@ -37,6 +38,8 @@ Sve komande pokretati iz `Projekat/`:
 3. `npm run test:e2e`
 
 Ako bilo koja komanda padne, release/sign-off se ne radi dok se ne popravi i ponovi isti redoslijed.
+
+Napomena: `npm run test:e2e` koristi jedan Playwright worker radi stabilnog login/RBAC toka.
 
 # Jedna komanda za sve + automatski izvjestaj
 
@@ -65,11 +68,11 @@ E2E_KORISNIK_EMAIL=test@gmail.com
 E2E_KORISNIK_PASSWORD=123456789Aa@
 ```
 
-## Trenutni status (07.05.2026)
+## Trenutni status (10.05.2026)
 
-- `npm test`: 58/58 passed
+- `npm test`: 95/95 passed
 - `npm run test:coverage`: Statements 99.61%, Lines 100%, Functions 100%, Branches 87.39%
-- `npm run test:e2e`: 11/11 passed
+- `npm run test:e2e`: 16/16 passed
 - cilj pokrivenosti: **minimum 98%** (ispunjen)
 
 ## Izvještaji i artefakti
@@ -77,4 +80,7 @@ E2E_KORISNIK_PASSWORD=123456789Aa@
 - sprint izvještaj: `docs/testing/SB-06-20/IZVJESTAJ_SB-06-20_Sprint6_Testiranje.md`
 - sprint sign-off: `docs/testing/SB-06-20/SIGNOFF_SB-06-20_QA-SA.md`
 - manual execution: `docs/testing/SB-06-20/EXEC_SB-06-20_Sprint6_ManualFlows.csv`
+- Sprint 7 izvještaj: `docs/testing/SB-07-35/IZVJESTAJ_SB-07-35_Sprint7_Testiranje.md`
+- Sprint 7 sign-off: `docs/testing/SB-07-35/SIGNOFF_SB-07-35_QA-SA.md`
+- Sprint 7 manual execution: `docs/testing/SB-07-35/EXEC_SB-07-35_Sprint7_DispecerManualFlows.csv`
 

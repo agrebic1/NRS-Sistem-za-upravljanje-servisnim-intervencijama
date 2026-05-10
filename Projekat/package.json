@@ -11,10 +11,11 @@
     "test": "npm run test:unit && npm run test:integration",
     "test:unit": "jest --config jest.config.js --runInBand tests/unit",
     "test:integration": "jest --config jest.config.js --runInBand tests/integration",
-    "test:e2e": "playwright test",
+    "test:e2e": "playwright test --workers=1",
     "test:coverage": "jest --config jest.config.js --coverage --runInBand",
     "test:krajnje": "npm run test:coverage && node tools/krajnjeTestiranjeReport.mjs",
-    "test:izvjestaj": "node tools/pokreniSveTestoveIzvjestaj.mjs"
+    "test:izvjestaj": "node tools/pokreniSveTestoveIzvjestaj.mjs",
+    "seed:demo-zahtjevi": "node scripts/seed-demo-zahtjevi.mjs"
   },
   "dependencies": {
     "@babel/runtime": "^7.29.2",

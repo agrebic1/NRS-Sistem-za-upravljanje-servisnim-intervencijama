@@ -32,6 +32,59 @@ function ensureDir(dirPath) {
   fs.mkdirSync(dirPath, { recursive: true });
 }
 
+function parseJestCountForMarker(output, marker) {
+  let lastTestsCount = null;
+
+  for (const line of output.split(/\r?\n/)) {
+    const testsMatch = line.match(/Tests:\s+(\d+)\s+passed,\s+(\d+)\s+total/);
+    if (testsMatch) {
+      lastTestsCount = {
+        passed: Number(testsMatch[1]),
+        total:  Number(testsMatch[2]),
+      };
+    }
+
+    if (line.includes('Ran all test suites matching') && line.includes(marker)) {
+      return lastTestsCount;
+    }
+  }
+
+  return null;
+}
+
+function parseLastJestCount(output) {
+  const matches = [...output.matchAll(/Tests:\s+(\d+)\s+passed,\s+(\d+)\s+total/g)];
+  const last = matches.at(-1);
+  if (!last) return null;
+
+  return {
+    passed: Number(last[1]),
+    total:  Number(last[2]),
+  };
+}
+
+function parsePlaywrightCount(output) {
+  const counts = { passed: 0, failed: 0, skipped: 0 };
+  for (const match of output.matchAll(/^\s*(\d+)\s+(passed|failed|skipped)\b/gm)) {
+    counts[match[2]] += Number(match[1]);
+  }
+
+  const total = counts.passed + counts.failed + counts.skipped;
+  return total > 0 ? { ...counts, total } : null;
+}
+
+function formatCount(count) {
+  if (!count) return 'nije dostupno';
+  if ('failed' in count || 'skipped' in count) {
+    const details = [];
+    if (count.failed) details.push(`${count.failed} failed`);
+    if (count.skipped) details.push(`${count.skipped} skipped`);
+    const suffix = details.length > 0 ? ` (${details.join(', ')})` : '';
+    return `${count.passed}/${count.total} passed${suffix}`;
+  }
+  return `${count.passed}/${count.total} passed`;
+}
+
 const startedAt = new Date();
 const runId = timestampForFolder(startedAt);
 const runDir = path.join(reportsRootDir, runId);
@@ -40,8 +93,20 @@ ensureDir(runDir);
 const steps = [
   { id: 'unit_integration', label: 'Unit + Integration', command: 'npm', args: ['run', 'test'] },
   { id: 'coverage', label: 'Coverage', command: 'npm', args: ['run', 'test:coverage'] },
-  { id: 'e2e', label: 'E2E', command: 'npm', args: ['run', 'test:e2e', '--', '--workers=1'] },
+  { id: 'e2e', label: 'E2E', command: 'npm', args: ['run', 'test:e2e'] },
 ];
+
+const sprintBreakdown = [
+  'Sprint 5: auth/RBAC osnova, registracija, prijava, odjava, sesija, role redirect i kontrola pristupa.',
+  'Sprint 6: korisnicki zahtjevi, admin kreiranje korisnika, onboarding partnera i premium tokovi.',
+  'Sprint 7: dispecerski dashboard, liste, detalj intervencije, carobnjak, operativni prioritet, statusi i RBAC API provjere.',
+];
+
+const sprint7AddedTests = {
+  automatic: 42,
+  manual:    26,
+  note:      'Automatski zbir je porastao sa 69 u Sprintu 6 na 111 u Sprintu 7.',
+};
 
 const results = [];
 let overallSuccess = true;
@@ -66,6 +131,17 @@ if (fs.existsSync(coverageSummaryPath)) {
   fs.copyFileSync(coverageSummaryPath, path.join(runDir, 'coverage-summary.json'));
 }
 
+const unitIntegrationResult = results.find((result) => result.id === 'unit_integration');
+const coverageResult = results.find((result) => result.id === 'coverage');
+const e2eResult = results.find((result) => result.id === 'e2e');
+
+const testCounts = {
+  unit:       parseJestCountForMarker(unitIntegrationResult?.output ?? '', 'unit'),
+  integration: parseJestCountForMarker(unitIntegrationResult?.output ?? '', 'integration'),
+  coverage:  parseLastJestCount(coverageResult?.output ?? ''),
+  e2e:       parsePlaywrightCount(e2eResult?.output ?? ''),
+};
+
 const finishedAt = new Date();
 
 const summaryLines = [
@@ -85,6 +161,25 @@ for (const result of results) {
     `- ${result.label}: ${result.exitCode === 0 ? 'PASS' : 'FAIL'} (exit code ${result.exitCode})`
   );
 }
+
+summaryLines.push(
+  '',
+  '## Podjela po sprintovima',
+  '',
+  ...sprintBreakdown.map((line) => `- ${line}`),
+  '',
+  '## Dodano u Sprintu 7',
+  '',
+  `- Automatski testovi: +${sprint7AddedTests.automatic} (${sprint7AddedTests.note})`,
+  `- Manuelni test scenariji: +${sprint7AddedTests.manual} za SB-07-35`,
+  '',
+  '## Broj pokrenutih testova',
+  '',
+  `- Unit testovi: ${formatCount(testCounts.unit)}`,
+  `- Integration testovi: ${formatCount(testCounts.integration)}`,
+  `- Coverage run: ${formatCount(testCounts.coverage)}`,
+  `- E2E testovi: ${formatCount(testCounts.e2e)}`
+);
 
 summaryLines.push('', '## Pokrivenost');
 
@@ -117,7 +212,20 @@ fs.writeFileSync(path.join(runDir, 'IZVJESTAJ.md'), `${summaryLines.join('\n')}\
 const latestPointerPath = path.join(reportsRootDir, 'ZADNJI_RUN.txt');
 fs.writeFileSync(
   latestPointerPath,
-  `Zadnji run: ${runId}\nLokacija: docs/testing/Izvjestaji/${runId}\nStatus: ${overallSuccess ? 'PASS' : 'FAIL'}\n`,
+  [
+    `Zadnji run: ${runId}`,
+    `Lokacija: docs/testing/Izvjestaji/${runId}`,
+    `Status: ${overallSuccess ? 'PASS' : 'FAIL'}`,
+    'Sprint 5: auth/RBAC osnova',
+    'Sprint 6: korisnicki/admin/premium tokovi',
+    'Sprint 7: dispecerski operativni tok',
+    `Dodano u Sprintu 7: +${sprint7AddedTests.automatic} automatska testa; +${sprint7AddedTests.manual} manuelnih scenarija`,
+    `Unit testovi: ${formatCount(testCounts.unit)}`,
+    `Integration testovi: ${formatCount(testCounts.integration)}`,
+    `Coverage run: ${formatCount(testCounts.coverage)}`,
+    `E2E testovi: ${formatCount(testCounts.e2e)}`,
+    '',
+  ].join('\n'),
   'utf8'
 );
 

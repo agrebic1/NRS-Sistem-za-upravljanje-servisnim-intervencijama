@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import {
-  ArrowLeft, Calendar, Clock, MapPin, Phone, Tag,
+  ArrowLeft, MapPin, Phone, Tag,
   Pencil, X, AlertTriangle,
 } from 'lucide-react';
 import Link from 'next/link';
@@ -14,10 +14,21 @@ import { Textarea } from '@/components/ui/Textarea';
 import { Select } from '@/components/ui/Select';
 import { AlertMessage } from '@/components/ui/AlertMessage';
 import { UrgencyBadge } from '@/components/servisirane/UrgencyBadge';
+import { PreciznaLokacijaChip, PremiumHitnaBadge } from '@/components/servisirane/zahtjevBadgeovi';
+import {
+  ZahtjevKorisnickaPorukaBubble,
+  ZahtjevMiniTimeline,
+} from '@/components/servisirane/ZahtjevTimelineIPoruka';
 import type { ServisniZahtjev, StatusZahtjeva } from '@/domain/types/servisirane';
-import { formatirajDatumPrikaz } from '@/lib/format/datumi';
 import { brojZahtjevaZaPrikaz } from '@/lib/servisirane/korisnickiBrojZahtjeva';
 import { labelKategorije } from '@/lib/servisirane/kategorije';
+import {
+  formatPrijavljenoDatumVrijeme,
+  preferiraniTerminZaDispecera,
+} from '@/lib/servisirane/zahtjevPrikaz';
+import { urlsPrilozenihSlika } from '@/lib/servisirane/slikeZahtjeva';
+import { efektivniKorisnickiUrgencyScore } from '@/lib/servisirane/urgency';
+import { PrilogGalerija } from '@/components/servisirane/PrilogGalerija';
 
 // ─── Status badge ─────────────────────────────────────────────────────────────
 
@@ -25,12 +36,13 @@ const STATUS_CONFIG: Record<
   StatusZahtjeva,
   { oznaka: string; pozadina: string; boja: string }
 > = {
-  pending_review: { oznaka: 'Čeka obradu', pozadina: 'rgb(var(--first-quaternary-rgb) / 0.2)',  boja: 'var(--first-nonary)' },
-  na_cekanju:  { oznaka: 'Na čekanju',  pozadina: 'rgb(var(--first-quaternary-rgb) / 0.2)',  boja: 'var(--first-nonary)' },
+  pending_review: { oznaka: 'Novi', pozadina: 'rgb(var(--first-quaternary-rgb) / 0.2)',  boja: 'var(--first-nonary)' },
+  na_cekanju:  { oznaka: 'Novi',  pozadina: 'rgb(var(--first-quaternary-rgb) / 0.2)',  boja: 'var(--first-nonary)' },
+  in_review:   { oznaka: 'U čarobnjaku', pozadina: 'rgba(202,138,4,0.12)', boja: '#A16207' },
   potvrdeno:   { oznaka: 'Potvrđeno',   pozadina: 'rgb(var(--first-secondary-rgb) / 0.12)',  boja: 'var(--first-secondary)' },
-  dodijeljeno: { oznaka: 'Dodijeljeno', pozadina: 'rgb(var(--first-secondary-rgb) / 0.12)',  boja: 'var(--first-secondary)' },
-  u_radu:      { oznaka: 'U radu',      pozadina: 'rgb(var(--first-septenary-rgb) / 0.2)',   boja: 'var(--first-senary)' },
-  u_izvrsenju: { oznaka: 'U izvršenju', pozadina: 'rgb(var(--first-septenary-rgb) / 0.2)',   boja: 'var(--first-senary)' },
+  dodijeljeno: { oznaka: 'Dodijeljeno serviseru', pozadina: 'rgb(var(--first-secondary-rgb) / 0.12)',  boja: 'var(--first-secondary)' },
+  u_radu:      { oznaka: 'Na terenu',      pozadina: 'rgb(var(--first-septenary-rgb) / 0.2)',   boja: 'var(--first-senary)' },
+  u_izvrsenju: { oznaka: 'Na terenu', pozadina: 'rgb(var(--first-septenary-rgb) / 0.2)',   boja: 'var(--first-senary)' },
   zavrseno:    { oznaka: 'Završeno',    pozadina: 'rgb(var(--first-secondary-rgb) / 0.15)',  boja: 'var(--first-secondary)' },
   otkazano:    { oznaka: 'Otkazano',    pozadina: 'rgb(var(--first-quinary-rgb) / 0.3)',     boja: 'var(--first-nonary)' },
   odbijeno:    { oznaka: 'Odbijeno',    pozadina: 'rgb(var(--first-senary-rgb) / 0.2)',      boja: 'var(--first-senary)' },
@@ -43,16 +55,6 @@ const RAZLOZI_OTKAZIVANJA = [
   { value: 'Angažovao/la drugog servisera', label: 'Angažovao/la drugog servisera' },
   { value: 'Ostalo',                        label: 'Ostalo' },
 ];
-
-function formatirajPreferiraniTermin(zahtjev: ServisniZahtjev): string {
-  const schedule = zahtjev.preferred_schedule;
-  if (!schedule || schedule.no_preferred_time || (schedule.termini?.length ?? 0) === 0) {
-    return 'Nema preferirani termin — dispečer će vas kontaktirati radi dogovora.';
-  }
-  const prvi = schedule.termini[0];
-  if (!prvi) return 'Nema preferirani termin — dispečer će vas kontaktirati radi dogovora.';
-  return `${formatirajDatumPrikaz(prvi.date)} (${prvi.from} - ${prvi.to})`;
-}
 
 // ─── Panel za izmjenu ─────────────────────────────────────────────────────────
 
@@ -301,11 +303,14 @@ export default function ZahtjevDetaljPage() {
 
   const status        = STATUS_CONFIG[zahtjev.status];
   const mozeBitMijenjan = zahtjev.status === 'na_cekanju' || zahtjev.status === 'pending_review';
-  const datum = formatirajDatumPrikaz(zahtjev.created_at);
+  const { tekstCijeli: terminTekst } = preferiraniTerminZaDispecera(zahtjev);
   const kategorija = labelKategorije(zahtjev);
   const kategorijaPrikaz = kategorija.podkategorija
     ? `${kategorija.glavna} — ${kategorija.podkategorija}`
     : kategorija.glavna;
+  const prilogSlike = urlsPrilozenihSlika(
+    zahtjev as unknown as Parameters<typeof urlsPrilozenihSlika>[0],
+  );
 
   return (
     <AppShell uloga="korisnik">
@@ -354,18 +359,8 @@ export default function ZahtjevDetaljPage() {
             >
               {status.oznaka}
             </span>
-            <UrgencyBadge score={zahtjev.urgency_score} korisnickiPrikaz size="md" />
-            {zahtjev.is_premium && (
-              <span
-                className="rounded-full px-3 py-1 text-sm font-semibold"
-                style={{
-                  backgroundColor: 'rgba(220,38,38,0.12)',
-                  color: '#B91C1C',
-                }}
-              >
-                Hitna intervencija (premium)
-              </span>
-            )}
+            <UrgencyBadge score={efektivniKorisnickiUrgencyScore(zahtjev)} korisnickiPrikaz size="md" />
+            {zahtjev.is_premium && <PremiumHitnaBadge className="text-sm" />}
           </div>
 
           {/* Podaci */}
@@ -387,45 +382,44 @@ export default function ZahtjevDetaljPage() {
                 className="mb-1 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider"
                 style={{ color: 'var(--first-nonary)' }}
               >
-                Opis zahtjeva
-              </dt>
-              <dd className="text-sm leading-relaxed" style={{ color: 'var(--first-octonary)' }}>
-                {zahtjev.description}
-              </dd>
-            </div>
-
-            <div>
-              <dt
-                className="mb-1 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider"
-                style={{ color: 'var(--first-nonary)' }}
-              >
                 <MapPin className="h-3 w-3" /> Adresa
               </dt>
               <dd className="text-sm" style={{ color: 'var(--first-octonary)' }}>
                 {zahtjev.address}
               </dd>
               {zahtjev.latitude !== null && zahtjev.longitude !== null && (
-                <dd className="mt-1 text-xs" style={{ color: 'var(--first-nonary)' }}>
-                  Precizna lokacija je dodana (koordinate).
+                <dd className="mt-2">
+                  <PreciznaLokacijaChip />
                 </dd>
               )}
             </div>
+          </dl>
 
-            <div>
-              <dt
-                className="mb-1 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider"
-                style={{ color: 'var(--first-nonary)' }}
-              >
-                <Clock className="h-3 w-3" /> Preferirani termin
-              </dt>
-              <dd className="text-sm" style={{ color: 'var(--first-octonary)' }}>
-                {formatirajPreferiraniTermin(zahtjev)}
-              </dd>
-              <dd className="mt-1 text-xs" style={{ color: 'var(--first-nonary)' }}>
-                Konačan termin potvrđuje dispečer.
-              </dd>
-            </div>
+          <ZahtjevMiniTimeline
+            className="min-w-0"
+            prijavljenoTekst={formatPrijavljenoDatumVrijeme(zahtjev.created_at)}
+            terminTekst={terminTekst}
+            napomenaIspod="Konačan termin potvrđuje dispečer."
+          />
 
+          {zahtjev.updated_at &&
+            zahtjev.updated_at !== zahtjev.created_at && (
+              <p className="mt-3 text-xs" style={{ color: 'var(--first-nonary)' }}>
+                Zadnja izmjena podataka: {formatPrijavljenoDatumVrijeme(zahtjev.updated_at)}
+              </p>
+            )}
+
+          {zahtjev.status === 'otkazano' && zahtjev.cancelled_at && (
+            <p className="mt-1 text-xs font-medium" style={{ color: 'var(--first-nonary)' }}>
+              Otkazano: {formatPrijavljenoDatumVrijeme(zahtjev.cancelled_at)}
+            </p>
+          )}
+
+          <div className="mt-4 min-w-0">
+            <ZahtjevKorisnickaPorukaBubble tekst={zahtjev.description ?? ''} />
+          </div>
+
+          <dl className="mt-4 flex flex-col gap-4">
             <div>
               <dt
                 className="mb-1 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider"
@@ -443,32 +437,19 @@ export default function ZahtjevDetaljPage() {
                 className="mb-1 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider"
                 style={{ color: 'var(--first-nonary)' }}
               >
-                <Calendar className="h-3 w-3" /> Datum prijave
+                Priložene slike
               </dt>
               <dd className="text-sm" style={{ color: 'var(--first-octonary)' }}>
-                {datum}
+                {prilogSlike.length === 0
+                  ? 'Nema priloženih slika.'
+                  : prilogSlike.length === 1
+                    ? 'Jedna slika je priložena.'
+                    : `${prilogSlike.length} priloženih slika.`}
               </dd>
-            </div>
-
-            <div>
-              <dt
-                className="mb-1 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider"
-                style={{ color: 'var(--first-nonary)' }}
-              >
-                Fotografija
-              </dt>
-              <dd className="text-sm" style={{ color: 'var(--first-octonary)' }}>
-                {zahtjev.photo_url ? 'Fotografija je dodana.' : 'Fotografija nije dodana.'}
-              </dd>
-              {zahtjev.photo_url && (
-                // External image URL comes from Supabase storage public URL.
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={zahtjev.photo_url}
-                  alt="Fotografija prijavljenog zahtjeva"
-                  className="mt-2 h-36 w-full max-w-sm rounded-xl border object-cover"
-                  style={{ borderColor: 'rgb(var(--first-quaternary-rgb) / 0.35)' }}
-                />
+              {prilogSlike.length > 0 && (
+                <div className="mt-3 max-w-2xl">
+                  <PrilogGalerija urls={prilogSlike} />
+                </div>
               )}
             </div>
 
@@ -487,7 +468,7 @@ export default function ZahtjevDetaljPage() {
             )}
           </dl>
 
-          {/* Akcije — samo dok je na_cekanju */}
+          {/* Akcije — samo dok je pending_review / na_cekanju (vidi STATUSI_ZA_KORISNICKU_IZMJENU na API-ju) */}
           {mozeBitMijenjan && aktivniPanel === null && (
             <div
               className="mt-6 flex flex-wrap gap-3 border-t pt-6"
@@ -544,7 +525,9 @@ export default function ZahtjevDetaljPage() {
                 color:           'var(--first-nonary)',
               }}
             >
-              Zahtjev je preuzet — izmjena i otkazivanje više nisu mogući.
+              {zahtjev.status === 'in_review'
+                ? 'Dispečer je u čarobnjaku obrade — izmjena i otkazivanje nisu mogući dok traje obrada.'
+                : 'Zahtjev je dalje u procesu — izmjena i otkazivanje više nisu mogući.'}
             </div>
           )}
         </div>

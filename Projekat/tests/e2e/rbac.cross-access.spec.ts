@@ -48,4 +48,24 @@ test.describe('RBAC cross-access', () => {
     await page.goto('/serviser');
     await expect(page).toHaveURL('/');
   });
+
+  test('serviser dobija 403 na GET /api/dispecer/zahtjevi', async ({ page }) => {
+    await prijaviSe(page, serviser as RoleCreds);
+    await page.goto('/korisnik');
+    const status = await page.evaluate(async () => {
+      const r = await fetch('/api/dispecer/zahtjevi', { cache: 'no-store' });
+      return r.status;
+    });
+    expect(status).toBe(403);
+  });
+
+  test('dispecer dobija 200 na GET /api/dispecer/zahtjevi', async ({ page }) => {
+    await prijaviSe(page, dispecer as RoleCreds);
+    await page.goto('/dispecer');
+    const status = await page.evaluate(async () => {
+      const r = await fetch('/api/dispecer/zahtjevi', { cache: 'no-store' });
+      return r.status;
+    });
+    expect(status).toBe(200);
+  });
 });

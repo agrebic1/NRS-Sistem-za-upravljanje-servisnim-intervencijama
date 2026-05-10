@@ -3,11 +3,11 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { createClient as createServerClient } from '@/lib/supabase/server';
 import { cancelRequestSchema, updateRequestSchema } from '@/lib/validations/servisirane';
 import { korisnickiBrojZahtjevaZaId } from '@/lib/servisirane/korisnickiBrojZahtjeva';
+import { korisnikSmijeMijenjatiIliOtkazatiZahtjev } from '@/lib/servisirane/statusZahtjeva';
 
 export const dynamic = 'force-dynamic';
 
 type RouteParams = { id: string } | Promise<{ id: string }>;
-const EDITABLE_STATUSES = new Set(['na_cekanju', 'pending_review']);
 
 async function resolveRequestId(params: RouteParams): Promise<number | null> {
   const resolved = await params;
@@ -104,9 +104,12 @@ export async function PATCH(
     if (zahtjev.user_id !== user.id) {
       return NextResponse.json({ error: 'Pristup odbijen.' }, { status: 403 });
     }
-    if (!EDITABLE_STATUSES.has(zahtjev.status)) {
+    if (!korisnikSmijeMijenjatiIliOtkazatiZahtjev(zahtjev.status)) {
       return NextResponse.json(
-        { error: 'Zahtjev se može mijenjati samo dok je "Čeka obradu".' },
+        {
+          error:
+            'Zahtjev se može mijenjati samo dok je na čekanju dispečera (prije nego što pregled počne).',
+        },
         { status: 400 }
       );
     }
@@ -125,7 +128,11 @@ export async function PATCH(
 
       const { error } = await supabase
         .from('service_requests')
-        .update({ status: 'otkazano', cancel_reason: rezultat.data.cancel_reason })
+        .update({
+          status:         'otkazano',
+          cancel_reason:  rezultat.data.cancel_reason,
+          cancelled_at:   new Date().toISOString(),
+        })
         .eq('id', requestId);
 
       if (error) return NextResponse.json({ error: error.message }, { status: 500 });

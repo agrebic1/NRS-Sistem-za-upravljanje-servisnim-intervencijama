@@ -4,8 +4,6 @@ import Link from 'next/link';
 import {
   ChevronLeft,
   Clock,
-  CheckCircle,
-  AlertTriangle,
   MapPin,
   Phone,
   User,
@@ -14,54 +12,54 @@ import {
 } from 'lucide-react';
 import { AppShell } from '@/components/layout/AppShell';
 import { Button } from '@/components/ui/Button';
+import { DispecerStatusBadge, PremiumHitnaBadge } from '@/components/servisirane/zahtjevBadgeovi';
+import type { StatusZahtjeva } from '@/domain/types/servisirane';
 
-// ─── Mock data ────────────────────────────────────────────────────────────────
-
-const MOCK_INTERVENCIJA = {
-  id: '1',
-  naslov: 'Električni kvar u dnevnoj sobi',
-  opisProblema: 'Struja nestala u dnevnoj sobi i hodniku. Osigurač se vraća ali struja ne proradi. Problem nastao jučer u večernjim satima.',
-  status: 'u_toku' as const,
-  prioritet: 'hitno' as const,
-  lokacija: 'Ul. Ferhadija 8, Stan 304, Sarajevo',
-  kontaktTelefon: '+387 61 234 567',
-  datumKreiranja: '23. 04. 2026. 09:15',
-  datumIntervencije: '24. 04. 2026.',
-  serviser: {
-    ime: 'Marko',
-    prezime: 'Jovanović',
-    telefon: '+387 61 987 654',
-  },
-  historija: [
-    { naziv: 'Zahtjev primljen',       datum: '23. 04. 2026. 09:15', napomena: '' },
-    { naziv: 'Pregled od strane dispečera', datum: '23. 04. 2026. 10:00', napomena: 'Zahtjev pregledan i odobren.' },
-    { naziv: 'Dodijeljen serviseru',  datum: '23. 04. 2026. 10:30', napomena: 'Dodijeljeno: Marko Jovanović' },
-    { naziv: 'Intervencija u toku',   datum: '24. 04. 2026. 08:00', napomena: 'Serviser stigao na lokaciju.' },
-  ],
-};
-
-type IntervencijaStatus = 'novi' | 'u_toku' | 'zavrsen' | 'hitno';
-
-const STATUS_CONFIG: Record<string, { label: string; bg: string; color: string; Icon: React.ComponentType<{ className?: string }> }> = {
-  novi:    { label: 'Novi',    bg: 'rgb(var(--first-quaternary-rgb) / 0.2)',  color: 'var(--first-nonary)', Icon: Clock },
-  u_toku:  { label: 'U toku', bg: 'rgb(var(--first-secondary-rgb) / 0.15)',  color: 'var(--first-secondary)', Icon: Clock },
-  zavrsen: { label: 'Završen',bg: 'rgb(var(--first-septenary-rgb) / 0.2)',  color: 'var(--first-septenary)', Icon: CheckCircle },
-  hitno:   { label: 'Hitno',  bg: 'rgb(var(--first-senary-rgb) / 0.12)',   color: 'var(--first-senary)', Icon: AlertTriangle },
-};
-
-// ─── Page ─────────────────────────────────────────────────────────────────────
+/**
+ * Probni sadržaj usklađen s `ServisniZahtjev`: status iz `StatusZahtjeva`,
+ * operativni prioritet NISKO…HITNO, kategorije kvara kao u čarobnjaku.
+ */
+function mockIntervencijaZaZahtjev(zahtjevId: string) {
+  return {
+    zahtjevId,
+    naslov: 'Elektro i rasvjeta — Osigurači iskaču',
+    opisProblema:
+      'Osigurači u razvodnoj kutiji iskaču pri uključivanju štednjaka u kuhinji. Dogodilo se prvi put jučer u večernjim satima; nema mirisa paljevine.',
+    status: 'u_izvrsenju' as StatusZahtjeva,
+    finalPriority: 'VISOKO' as const,
+    isPremium: false,
+    lokacija: 'Ul. Maršala Tita 12, Stan 5, Sarajevo',
+    kontaktTelefon: '+387 61 234 567',
+    datumKreiranja: '08. 05. 2026. 09:15',
+    planiraniTermin: '12. 05. 2026. 08:30',
+    serviser: {
+      ime: 'Marko',
+      prezime: 'Horvat',
+      telefon: '+387 61 987 654',
+    },
+    historija: [
+      { naziv: 'Zahtjev zaprimljen', datum: '08. 05. 2026. 09:15', napomena: 'Status: novi zahtjev (pending_review).' },
+      { naziv: 'U čarobnjaku', datum: '08. 05. 2026. 10:00', napomena: 'Dispečer u čarobnjaku obrade (in_review).' },
+      { naziv: 'Potvrđeno', datum: '08. 05. 2026. 11:20', napomena: 'Prioritet i termin potvrđeni u čarobnjaku (potvrdeno).' },
+      { naziv: 'Dodijeljeno serviseru', datum: '09. 05. 2026. 08:45', napomena: 'Marko Horvat (dodijeljeno).' },
+      {
+        naziv: 'U toku — serviser na terenu',
+        datum: '10. 05. 2026. 08:05',
+        napomena: 'Serviser na lokaciji (u_izvrsenju).',
+      },
+    ],
+  };
+}
 
 export default function IntervencijaDetaljePage({
   params,
 }: {
   params: { id: string };
 }) {
-  const intervencija = MOCK_INTERVENCIJA;
-  const statusCfg = STATUS_CONFIG[intervencija.status];
+  const intervencija = mockIntervencijaZaZahtjev(params.id);
 
   return (
-    <AppShell uloga="korisnik" imeKorisnika="Amina H.">
-      {/* Back link */}
+    <AppShell uloga="korisnik" imeKorisnika="Korisnik">
       <Link
         href="/korisnik/dashboard"
         className="mb-5 flex items-center gap-1.5 text-sm font-medium transition-opacity hover:opacity-70"
@@ -72,9 +70,7 @@ export default function IntervencijaDetaljePage({
       </Link>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        {/* Main content — left 2/3 */}
         <div className="flex flex-col gap-6 lg:col-span-2">
-          {/* Header card */}
           <div
             className="rounded-2xl p-6 shadow-card"
             style={{
@@ -83,16 +79,18 @@ export default function IntervencijaDetaljePage({
             }}
           >
             <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
-              <h1 className="text-xl font-bold" style={{ color: 'var(--first-octonary)' }}>
-                {intervencija.naslov}
-              </h1>
-              <span
-                className="flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-semibold"
-                style={{ backgroundColor: statusCfg.bg, color: statusCfg.color }}
-              >
-                <statusCfg.Icon className="h-3.5 w-3.5" />
-                {statusCfg.label}
-              </span>
+              <div className="min-w-0 space-y-1">
+                <p className="text-xs font-semibold tabular-nums" style={{ color: 'var(--first-nonary)' }}>
+                  Zahtjev #{intervencija.zahtjevId}
+                </p>
+                <h1 className="text-xl font-bold" style={{ color: 'var(--first-octonary)' }}>
+                  {intervencija.naslov}
+                </h1>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <DispecerStatusBadge status={intervencija.status} />
+                {intervencija.isPremium ? <PremiumHitnaBadge /> : null}
+              </div>
             </div>
 
             <p className="mb-4 text-sm leading-relaxed" style={{ color: 'var(--first-nonary)' }}>
@@ -111,7 +109,6 @@ export default function IntervencijaDetaljePage({
             </div>
           </div>
 
-          {/* Timeline */}
           <div
             className="rounded-2xl p-6 shadow-card"
             style={{
@@ -127,14 +124,12 @@ export default function IntervencijaDetaljePage({
                 const isLast = i === intervencija.historija.length - 1;
                 return (
                   <li key={i} className="relative flex gap-4 pb-5 last:pb-0">
-                    {/* Connector line */}
                     {!isLast && (
                       <div
                         className="absolute left-[9px] top-5 h-full w-px"
                         style={{ backgroundColor: 'rgb(var(--first-quaternary-rgb) / 0.5)' }}
                       />
                     )}
-                    {/* Dot */}
                     <div
                       className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full border-2"
                       style={{
@@ -142,22 +137,20 @@ export default function IntervencijaDetaljePage({
                         backgroundColor: isLast ? 'var(--first-primary)' : 'var(--first-tertiary)',
                       }}
                     >
-                      {isLast && (
-                        <div className="h-1.5 w-1.5 rounded-full bg-white" />
-                      )}
+                      {isLast ? <div className="h-1.5 w-1.5 rounded-full bg-white" /> : null}
                     </div>
                     <div>
-                      <p className="font-medium text-sm" style={{ color: 'var(--first-octonary)' }}>
+                      <p className="text-sm font-medium" style={{ color: 'var(--first-octonary)' }}>
                         {event.naziv}
                       </p>
                       <p className="text-xs" style={{ color: 'var(--first-nonary)' }}>
                         {event.datum}
                       </p>
-                      {event.napomena && (
+                      {event.napomena ? (
                         <p className="mt-1 text-xs" style={{ color: 'var(--first-nonary)' }}>
                           {event.napomena}
                         </p>
-                      )}
+                      ) : null}
                     </div>
                   </li>
                 );
@@ -165,7 +158,6 @@ export default function IntervencijaDetaljePage({
             </ol>
           </div>
 
-          {/* Notes */}
           <div
             className="rounded-2xl p-6 shadow-card"
             style={{
@@ -182,7 +174,7 @@ export default function IntervencijaDetaljePage({
             <textarea
               className="w-full resize-none rounded-xl border px-4 py-3 text-sm transition-all duration-200 focus:outline-none focus:ring-2"
               rows={3}
-              placeholder="Dodajte napomenu ili poruku serviseru..."
+              placeholder="Dodajte napomenu ili poruku serviseru…"
               style={{
                 borderColor: 'var(--first-quaternary)',
                 backgroundColor: 'rgb(255 255 255 / 0.5)',
@@ -197,10 +189,8 @@ export default function IntervencijaDetaljePage({
           </div>
         </div>
 
-        {/* Sidebar — right 1/3 */}
         <div className="flex flex-col gap-5">
-          {/* Assigned technician */}
-          {intervencija.serviser && (
+          {intervencija.serviser ? (
             <div
               className="rounded-2xl p-5 shadow-card"
               style={{
@@ -222,7 +212,7 @@ export default function IntervencijaDetaljePage({
                   <User className="h-5 w-5" style={{ color: 'var(--first-primary)' }} />
                 </div>
                 <div>
-                  <p className="font-semibold text-sm" style={{ color: 'var(--first-octonary)' }}>
+                  <p className="text-sm font-semibold" style={{ color: 'var(--first-octonary)' }}>
                     {intervencija.serviser.ime} {intervencija.serviser.prezime}
                   </p>
                   <a
@@ -236,9 +226,8 @@ export default function IntervencijaDetaljePage({
                 </div>
               </div>
             </div>
-          )}
+          ) : null}
 
-          {/* Info card */}
           <div
             className="rounded-2xl p-5 shadow-card"
             style={{
@@ -254,20 +243,21 @@ export default function IntervencijaDetaljePage({
             </h3>
             <dl className="flex flex-col gap-3 text-sm">
               {[
-                { label: 'Prioritet',         value: intervencija.prioritet === 'hitno' ? 'Hitno' : 'Normalno' },
-                { label: 'Datum kreiranja',   value: intervencija.datumKreiranja },
-                { label: 'Planirani datum',   value: intervencija.datumIntervencije },
-                { label: 'Kontakt telefon',   value: intervencija.kontaktTelefon },
+                { label: 'Operativni prioritet', value: intervencija.finalPriority },
+                { label: 'Datum kreiranja', value: intervencija.datumKreiranja },
+                { label: 'Planirani termin', value: intervencija.planiraniTermin },
+                { label: 'Kontakt telefon', value: intervencija.kontaktTelefon },
               ].map(({ label, value }) => (
                 <div key={label} className="flex justify-between gap-2">
                   <dt style={{ color: 'var(--first-nonary)' }}>{label}</dt>
-                  <dd className="text-right font-medium" style={{ color: 'var(--first-octonary)' }}>{value}</dd>
+                  <dd className="text-right font-medium tabular-nums" style={{ color: 'var(--first-octonary)' }}>
+                    {value}
+                  </dd>
                 </div>
               ))}
             </dl>
           </div>
 
-          {/* Actions */}
           <div
             className="rounded-2xl p-5 shadow-card"
             style={{

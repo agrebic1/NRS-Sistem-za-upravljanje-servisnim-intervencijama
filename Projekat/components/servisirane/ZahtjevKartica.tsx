@@ -3,8 +3,6 @@
 import type { ComponentType, CSSProperties } from 'react';
 import Link from 'next/link';
 import {
-  Calendar,
-  CalendarClock,
   MapPin,
   Clock,
   CheckCircle2,
@@ -13,14 +11,22 @@ import {
   Pencil,
   Ban,
   ImageIcon,
-  Crosshair,
   ChevronRight,
 } from 'lucide-react';
 import type { ServisniZahtjev, StatusZahtjeva } from '@/domain/types/servisirane';
-import { formatirajDatumPrikaz } from '@/lib/format/datumi';
 import { brojZahtjevaZaPrikaz } from '@/lib/servisirane/korisnickiBrojZahtjeva';
-import { oznakaHitnostiZaKorisnika } from '@/lib/servisirane/urgency';
+import { efektivniKorisnickiUrgencyScore, oznakaKorisnickeHitnostiTriRazine } from '@/lib/servisirane/urgency';
 import { labelKategorije } from '@/lib/servisirane/kategorije';
+import {
+  formatPrijavljenoDatumVrijeme,
+  preferiraniTerminZaDispecera,
+} from '@/lib/servisirane/zahtjevPrikaz';
+import { PreciznaLokacijaChip } from '@/components/servisirane/zahtjevBadgeovi';
+import { OkvirGalerije } from '@/components/servisirane/PrilogGalerija';
+import {
+  ZahtjevKorisnickaPorukaBubble,
+  ZahtjevMiniTimeline,
+} from '@/components/servisirane/ZahtjevTimelineIPoruka';
 
 // ─── Životni ciklus statusa — Triple Coding ───────────────────────────────────
 
@@ -35,17 +41,24 @@ export const STATUS_LIFECYCLE: Record<
   }
 > = {
   pending_review: {
-    oznaka: 'Čeka obradu',
+    oznaka: 'Novi',
     boja: '#D97706',
     pozadina: 'rgba(217,119,6,0.12)',
     border: 'rgba(217,119,6,0.3)',
     Ikona: Clock,
   },
   na_cekanju: {
-    oznaka: 'Na čekanju',
+    oznaka: 'Novi',
     boja: '#D97706',
     pozadina: 'rgba(217,119,6,0.12)',
     border: 'rgba(217,119,6,0.3)',
+    Ikona: Clock,
+  },
+  in_review: {
+    oznaka: 'U čarobnjaku',
+    boja: '#CA8A04',
+    pozadina: 'rgba(202,138,4,0.12)',
+    border: 'rgba(202,138,4,0.3)',
     Ikona: Clock,
   },
   potvrdeno: {
@@ -56,21 +69,21 @@ export const STATUS_LIFECYCLE: Record<
     Ikona: CheckCircle2,
   },
   dodijeljeno: {
-    oznaka: 'Dodijeljeno',
+    oznaka: 'Dodijeljeno serviseru',
     boja: '#2563EB',
     pozadina: 'rgba(37,99,235,0.1)',
     border: 'rgba(37,99,235,0.25)',
     Ikona: CheckCircle2,
   },
   u_radu: {
-    oznaka: 'U radu',
+    oznaka: 'Na terenu',
     boja: '#059669',
     pozadina: 'rgba(5,150,105,0.1)',
     border: 'rgba(5,150,105,0.25)',
     Ikona: Truck,
   },
   u_izvrsenju: {
-    oznaka: 'U izvršenju',
+    oznaka: 'Na terenu',
     boja: '#059669',
     pozadina: 'rgba(5,150,105,0.1)',
     border: 'rgba(5,150,105,0.25)',
@@ -132,26 +145,6 @@ export function StatusBadge({ status }: { status: StatusZahtjeva | string }) {
 
 // ─── Pomoćne funkcije za sadržaj kartice ───────────────────────────────────────
 
-function terminZaKarticu(zahtjev: ServisniZahtjev): { label: string; vrijednost: string } {
-  const schedule = zahtjev.preferred_schedule;
-  const nemaTermina =
-    !schedule ||
-    schedule.no_preferred_time === true ||
-    (schedule.termini?.length ?? 0) === 0;
-  if (nemaTermina) {
-    return { label: 'Termin', vrijednost: 'Dogovor naknadno' };
-  }
-  const prvi = schedule.termini[0];
-  if (!prvi?.date) {
-    return { label: 'Termin', vrijednost: 'Dogovor naknadno' };
-  }
-  const datum = formatirajDatumPrikaz(prvi.date);
-  if (prvi.from && prvi.to) {
-    return { label: 'Preferirani termin', vrijednost: `${datum}, ${prvi.from}–${prvi.to}` };
-  }
-  return { label: 'Preferirani termin', vrijednost: datum };
-}
-
 function skracenOpis(tekst: string, maxLen = 140): string {
   const t = (tekst ?? '').trim();
   if (!t) return '';
@@ -169,9 +162,8 @@ interface ZahtjevKarticaProps {
 
 export function ZahtjevKartica({ zahtjev, onUredi, onOtkazi }: ZahtjevKarticaProps) {
   const { glavna, podkategorija } = labelKategorije(zahtjev);
-  const datumPrijave = formatirajDatumPrikaz(zahtjev.created_at);
-  const { label: terminLabel, vrijednost: terminVrijednost } = terminZaKarticu(zahtjev);
-  const hitnost = oznakaHitnostiZaKorisnika(zahtjev.urgency_score);
+  const { tekstCijeli: terminTekst } = preferiraniTerminZaDispecera(zahtjev);
+  const hitnost = oznakaKorisnickeHitnostiTriRazine(efektivniKorisnickiUrgencyScore(zahtjev));
   const imaKoordinate = zahtjev.latitude != null && zahtjev.longitude != null;
   const imaFotografiju = Boolean(zahtjev.photo_url?.trim());
   const opisSažetak = skracenOpis(zahtjev.description);
@@ -253,59 +245,35 @@ export function ZahtjevKartica({ zahtjev, onUredi, onOtkazi }: ZahtjevKarticaPro
           </div>
         </div>
         <div className="flex items-start gap-2">
-          <Calendar className="mt-0.5 h-4 w-4 flex-shrink-0 opacity-70" style={{ color: 'var(--first-nonary)' }} />
-          <div>
-            <dt className="sr-only">Datum prijave</dt>
-            <dd style={{ color: 'var(--first-octonary)' }}>
-              <span className="font-medium" style={{ color: 'var(--first-nonary)' }}>
-                Prijavljeno:{' '}
-              </span>
-              {datumPrijave}
-            </dd>
-          </div>
-        </div>
-        <div className="flex items-start gap-2">
           <Clock className="mt-0.5 h-4 w-4 flex-shrink-0 opacity-70" style={{ color: 'var(--first-nonary)' }} />
           <div className="min-w-0">
-            <dt className="sr-only">Hitnost</dt>
+            <dt className="sr-only">Korisnička hitnost</dt>
             <dd style={{ color: 'var(--first-octonary)' }}>
               <span className="font-medium" style={{ color: 'var(--first-nonary)' }}>
-                Hitnost:{' '}
+                Korisnička hitnost:{' '}
               </span>
               {hitnost}
             </dd>
           </div>
         </div>
-        <div className="flex items-start gap-2 sm:col-span-2">
-          <CalendarClock className="mt-0.5 h-4 w-4 flex-shrink-0 opacity-70" style={{ color: 'var(--first-nonary)' }} />
-          <div className="min-w-0">
-            <dt className="sr-only">{terminLabel}</dt>
-            <dd style={{ color: 'var(--first-octonary)' }}>
-              <span className="font-medium" style={{ color: 'var(--first-nonary)' }}>
-                {terminLabel}:{' '}
-              </span>
-              {terminVrijednost}
-            </dd>
-          </div>
-        </div>
       </dl>
+
+      <ZahtjevMiniTimeline
+        className="mb-3 min-w-0"
+        prijavljenoTekst={formatPrijavljenoDatumVrijeme(zahtjev.created_at)}
+        terminTekst={terminTekst}
+      />
+
+      <ZahtjevKorisnickaPorukaBubble
+        tekst={opisSažetak}
+        lineClamp
+        className="mb-4 min-w-0"
+      />
 
       {/* Indikatori */}
       {(imaFotografiju || imaKoordinate) && (
         <div className="mb-3 flex flex-wrap gap-2">
-          {imaKoordinate && (
-            <span
-              className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold"
-              style={{
-                backgroundColor: 'rgb(var(--first-primary-rgb) / 0.08)',
-                color: 'var(--first-primary)',
-                border: '1px solid rgb(var(--first-primary-rgb) / 0.2)',
-              }}
-            >
-              <Crosshair className="h-3 w-3" />
-              Precizna lokacija
-            </span>
-          )}
+          {imaKoordinate && <PreciznaLokacijaChip />}
           {imaFotografiju && (
             <span
               className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold"
@@ -322,27 +290,18 @@ export function ZahtjevKartica({ zahtjev, onUredi, onOtkazi }: ZahtjevKarticaPro
         </div>
       )}
 
-      {/* Mini pregled fotografije */}
+      {/* Mini pregled fotografije (uokvireno kao galerija) */}
       {imaFotografiju && zahtjev.photo_url && (
-        <div className="mb-3">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={zahtjev.photo_url}
-            alt=""
-            className="h-20 w-full max-w-xs rounded-lg border object-cover"
-            style={{ borderColor: 'rgb(var(--first-quaternary-rgb) / 0.3)' }}
-          />
+        <div className="mb-3 max-w-xs">
+          <OkvirGalerije>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={zahtjev.photo_url}
+              alt=""
+              className="aspect-[4/3] w-full max-h-[5.75rem] object-cover sm:max-h-24"
+            />
+          </OkvirGalerije>
         </div>
-      )}
-
-      {/* Kratak opis */}
-      {opisSažetak && (
-        <p
-          className="mb-4 line-clamp-2 text-sm leading-relaxed"
-          style={{ color: 'var(--first-nonary)' }}
-        >
-          {opisSažetak}
-        </p>
       )}
 
       {/* Akcije */}

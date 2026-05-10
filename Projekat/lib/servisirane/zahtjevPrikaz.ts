@@ -1,0 +1,147 @@
+import type { ServisniZahtjev } from '@/domain/types/servisirane';
+import { formatirajDatumPrikaz } from '@/lib/format/datumi';
+
+export function skracenTekst(tekst: string, maxLen = 150): string {
+  const t = (tekst ?? '').trim();
+  if (!t) return '';
+  if (t.length <= maxLen) return t;
+  return `${t.slice(0, maxLen).trim()}…`;
+}
+
+export function uRecenicu(tekst: string): string {
+  const t = (tekst ?? '').trim();
+  if (!t) return '';
+  const lower = t.toLocaleLowerCase('hr-HR');
+  return lower.charAt(0).toLocaleUpperCase('hr-HR') + lower.slice(1);
+}
+
+export function hrefZaTelefon(prikaz: string): string | null {
+  const očišćeno = prikaz.replace(/[^\d+]/g, '');
+  if (!očišćeno) return null;
+  return `tel:${očišćeno}`;
+}
+
+function formatKratkiDatum(datumStr: string): string {
+  const d = formatirajDatumPrikaz(datumStr, '');
+  if (!d) return '';
+  return d.replace(/\s+/g, '').replace(/\.$/, '');
+}
+
+export function preferiraniTerminZaDispecera(zahtjev: ServisniZahtjev): {
+  tekstCijeli: string;
+  imaPreferirani: boolean;
+} {
+  const schedule = zahtjev.preferred_schedule;
+  const nema =
+    !schedule ||
+    schedule.no_preferred_time === true ||
+    (schedule.termini?.length ?? 0) === 0;
+  if (nema) {
+    return { tekstCijeli: 'Dogovor naknadno', imaPreferirani: false };
+  }
+  const prvi = schedule.termini[0];
+  if (!prvi?.date) {
+    return { tekstCijeli: 'Dogovor naknadno', imaPreferirani: false };
+  }
+  const datum = formatKratkiDatum(prvi.date);
+  if (prvi.from && prvi.to) {
+    return {
+      tekstCijeli: `${datum}, ${prvi.from}–${prvi.to}`,
+      imaPreferirani: true,
+    };
+  }
+  return {
+    tekstCijeli: datum,
+    imaPreferirani: true,
+  };
+}
+
+export function formatPrijavljenoDatumVrijeme(iso: string): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '—';
+  const dd = String(d.getDate()).padStart(2, '0');
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const yyyy = String(d.getFullYear());
+  const hh = String(d.getHours()).padStart(2, '0');
+  const min = String(d.getMinutes()).padStart(2, '0');
+  return `${dd}.${mm}.${yyyy}, ${hh}:${min}`;
+}
+
+const MS_MIN = 60_000;
+const MS_HOUR = 3_600_000;
+const MS_DAY = 86_400_000;
+
+function brojSatiHrvatski(n: number): string {
+  const mod10 = n % 10;
+  const mod100 = n % 100;
+  if (mod10 === 1 && mod100 !== 11) return `${n} sat`;
+  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return `${n} sata`;
+  return `${n} sati`;
+}
+
+function brojDanaHrvatski(n: number): string {
+  if (n === 1) return '1 dan';
+  return `${n} dana`;
+}
+
+export type RelativnoPrijavljenoTonDispecer = 'fresh' | 'yesterday' | 'stale';
+
+/** Relativno vrijeme prijave za red dispečerske liste (tooltip = puni datum iz `formatPrijavljenoDatumVrijeme`). */
+export function relativnoPrijavljenoZaDispecera(
+  iso: string,
+  referenca: Date = new Date(),
+): { label: string; ton: RelativnoPrijavljenoTonDispecer; tooltipApsolutno: string } {
+  const kreirano = new Date(iso);
+  const tooltipApsolutno = formatPrijavljenoDatumVrijeme(iso);
+  if (Number.isNaN(kreirano.getTime())) {
+    return { label: '—', ton: 'fresh', tooltipApsolutno };
+  }
+
+  const diffMs = referenca.getTime() - kreirano.getTime();
+  if (diffMs < 0) {
+    return { label: tooltipApsolutno, ton: 'fresh', tooltipApsolutno };
+  }
+
+  if (diffMs < MS_DAY) {
+    if (diffMs < MS_MIN) {
+      return { label: 'upravo sada', ton: 'fresh', tooltipApsolutno };
+    }
+    if (diffMs < MS_HOUR) {
+      const m = Math.max(1, Math.floor(diffMs / MS_MIN));
+      return { label: `prije ${m} min`, ton: 'fresh', tooltipApsolutno };
+    }
+    const h = Math.max(1, Math.min(23, Math.floor(diffMs / MS_HOUR)));
+    return { label: `prije ${brojSatiHrvatski(h)}`, ton: 'fresh', tooltipApsolutno };
+  }
+
+  if (diffMs <= 2 * MS_DAY) {
+    const hh = String(kreirano.getHours()).padStart(2, '0');
+    const min = String(kreirano.getMinutes()).padStart(2, '0');
+    return { label: `jučer u ${hh}:${min}`, ton: 'yesterday', tooltipApsolutno };
+  }
+
+  const d = Math.max(1, Math.floor(diffMs / MS_DAY));
+  return { label: `prije ${brojDanaHrvatski(d)}`, ton: 'stale', tooltipApsolutno };
+}
+
+/**
+ * Puno ime podnosioca za prikaz. Sprječava „Nepoznato Nepoznato“ kad API
+ * u oba polja stavi isti placeholder.
+ */
+export function imePrezimePodnosioca(
+  podnosilac: { ime: string; prezime: string } | null | undefined,
+): string {
+  if (!podnosilac) return 'Nepoznato';
+  const i = (podnosilac.ime ?? '').trim();
+  const p = (podnosilac.prezime ?? '').trim();
+  const nep = (s: string) => {
+    const l = s.toLowerCase();
+    return l === 'nepoznato' || l === 'n/a' || l === '-' || l === 'unknown';
+  };
+  if (!i && !p) return 'Nepoznato';
+  if (nep(i) && nep(p)) return 'Nepoznato';
+  if (nep(i) && p) return p;
+  if (nep(p) && i) return i;
+  const puno = `${i} ${p}`.trim();
+  return puno || 'Nepoznato';
+}

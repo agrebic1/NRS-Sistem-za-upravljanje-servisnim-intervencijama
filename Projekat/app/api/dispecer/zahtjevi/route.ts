@@ -1,16 +1,22 @@
 import { NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { createClient as createServerClient } from '@/lib/supabase/server';
+import { assertDispatcherAccess } from '@/lib/servisirane/dispecerPristup';
 
 export const dynamic = 'force-dynamic';
 
-function getUlogaNaziv(uloga: unknown): string {
-  if (!uloga) return '';
-  if (Array.isArray(uloga)) return (uloga[0] as { naziv?: string })?.naziv ?? '';
-  return (uloga as { naziv?: string })?.naziv ?? '';
+function parsirajStatuseIzUpita(request: Request): string[] | null {
+  const { searchParams } = new URL(request.url);
+  const raw = searchParams.get('status');
+  if (raw == null || raw.trim() === '') return null;
+  const lista = raw
+    .split(',')
+    .map((s) => s.trim().toLowerCase())
+    .filter(Boolean);
+  return lista.length > 0 ? lista : null;
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     const supabaseSesija = createServerClient();
     const {
@@ -23,35 +29,35 @@ export async function GET() {
 
     const supabase = createAdminClient();
 
-    // Provjeri ulogu (dispečer, serviser ili admin)
-    const { data: uposlenik } = await supabase
-      .from('uposlenici')
-      .select('uloga(naziv)')
-      .eq('id_uposlenika', user.id)
-      .maybeSingle();
-
-    const naziv = getUlogaNaziv(uposlenik?.uloga).toLowerCase();
-    const imaPrivilegirani = ['dispečer', 'dispecer', 'serviser', 'administrator', 'admin'].includes(naziv);
-
-    if (!imaPrivilegirani) {
+    const imaPriv = await assertDispatcherAccess(supabase, user.id);
+    if (!imaPriv) {
       return NextResponse.json({ error: 'Pristup odbijen.' }, { status: 403 });
     }
 
-    // Dohvati sve zahtjeve sa podacima podnosioca
-    let { data, error } = await supabase
+    const statusFiltar = parsirajStatuseIzUpita(request);
+
+    // Dohvati zahtjeve sa podacima podnosioca (opciono: ?status=a,b,c)
+    let upit = supabase
       .from('service_requests')
       .select('*')
-      .not('status', 'in', '("zavrseno","otkazano","odbijeno")')
+      .not('status', 'in', '("zavrseno","otkazano","odbijeno")');
+
+    if (statusFiltar) {
+      upit = upit.in('status', statusFiltar);
+    }
+
+    let { data, error } = await upit
       .order('is_premium', { ascending: false })
-      .order('urgency_score', { ascending: false })
       .order('created_at', { ascending: true });
     if (error?.message?.includes("'is_premium' column")) {
-      const fallback = await supabase
+      let fb = supabase
         .from('service_requests')
         .select('*')
-        .not('status', 'in', '("zavrseno","otkazano","odbijeno")')
-        .order('urgency_score', { ascending: false })
-        .order('created_at', { ascending: true });
+        .not('status', 'in', '("zavrseno","otkazano","odbijeno")');
+      if (statusFiltar) {
+        fb = fb.in('status', statusFiltar);
+      }
+      const fallback = await fb.order('created_at', { ascending: true });
       data = fallback.data;
       error = fallback.error;
     }
