@@ -96,12 +96,25 @@ const FALLBACK_DISPECER_STATUS: StatusCfg = {
   Ikona: Clock,
 };
 
-export function DispecerStatusBadge({ status }: { status: StatusZahtjeva | string }) {
+export function DispecerStatusBadge({
+  status,
+  variant = 'dispecer',
+}: {
+  status: StatusZahtjeva | string;
+  /** Korisnički prikaz: npr. `in_review` → „Dispečer obrađuje“ umjesto „U čarobnjaku“. */
+  variant?: 'dispecer' | 'korisnik';
+}) {
   const cfg = DISPECER_STATUS_BADGE[status] ?? FALLBACK_DISPECER_STATUS;
   const Ikona = cfg.Ikona;
+  const oznaka =
+    variant === 'korisnik' && status === 'in_review' ? 'Dispečer obrađuje' : cfg.oznaka;
+  const title =
+    variant === 'korisnik' && status === 'in_review'
+      ? 'Dispečer obrađuje zahtjev (prioritet, termin, serviser).'
+      : cfg.title;
   return (
     <span
-      title={cfg.title}
+      title={title}
       className="inline-flex max-w-[min(100%,16rem)] shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold sm:max-w-none"
       style={{
         backgroundColor: cfg.pozadina,
@@ -110,7 +123,7 @@ export function DispecerStatusBadge({ status }: { status: StatusZahtjeva | strin
       }}
     >
       <Ikona className="h-3 w-3 flex-shrink-0" />
-      <span className="truncate">{cfg.oznaka}</span>
+      <span className="truncate">{oznaka}</span>
     </span>
   );
 }
@@ -266,17 +279,38 @@ export function NivoHitnostiOutlinedChip({ nivo }: { nivo: NivoHitnosti }) {
 }
 
 /** Isti stil svugdje gdje se označava da su koordinate/GPS dodani. */
-export function PreciznaLokacijaChip({ className = '' }: { className?: string }) {
+export function PreciznaLokacijaChip({
+  className = '',
+  compact = false,
+}: {
+  className?: string;
+  /** Suptilniji prikaz (npr. korisnički detalj zahtjeva). */
+  compact?: boolean;
+}) {
   return (
     <span
-      className={`inline-flex w-fit max-w-full items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold leading-tight ${className}`}
+      className={[
+        'inline-flex w-fit max-w-full items-center rounded-full font-medium leading-tight',
+        compact
+          ? 'gap-0.5 px-1.5 py-0.5 text-[10px]'
+          : 'gap-1 px-2 py-0.5 text-[11px] font-semibold',
+        className,
+      ]
+        .filter(Boolean)
+        .join(' ')}
       style={{
-        backgroundColor: 'rgb(255 255 255 / 0.55)',
+        backgroundColor: compact
+          ? 'rgb(var(--first-quinary-rgb) / 0.35)'
+          : 'rgb(255 255 255 / 0.55)',
         color: 'var(--first-octonary)',
-        border: '1px solid rgb(var(--first-quaternary-rgb) / 0.45)',
+        border: '1px solid rgb(var(--first-quaternary-rgb) / 0.35)',
       }}
     >
-      <MapPin className="h-3 w-3 flex-shrink-0" style={{ color: 'var(--first-secondary)' }} aria-hidden />
+      <MapPin
+        className={compact ? 'h-2.5 w-2.5 flex-shrink-0' : 'h-3 w-3 flex-shrink-0'}
+        style={{ color: 'var(--first-secondary)' }}
+        aria-hidden
+      />
       Precizna lokacija dodana
     </span>
   );

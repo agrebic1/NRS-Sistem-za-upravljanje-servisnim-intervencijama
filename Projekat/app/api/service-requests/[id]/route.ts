@@ -94,7 +94,7 @@ export async function PATCH(
     // Provjeri vlasništvo i status
     const { data: zahtjev } = await supabase
       .from('service_requests')
-      .select('status, user_id')
+      .select('status, user_id, final_priority')
       .eq('id', requestId)
       .single();
 
@@ -104,11 +104,11 @@ export async function PATCH(
     if (zahtjev.user_id !== user.id) {
       return NextResponse.json({ error: 'Pristup odbijen.' }, { status: 403 });
     }
-    if (!korisnikSmijeMijenjatiIliOtkazatiZahtjev(zahtjev.status)) {
+    if (!korisnikSmijeMijenjatiIliOtkazatiZahtjev(zahtjev.status, zahtjev.final_priority)) {
       return NextResponse.json(
         {
           error:
-            'Zahtjev se može mijenjati samo dok je na čekanju dispečera (prije nego što pregled počne).',
+            'Zahtjev se može mijenjati ili otkazati samo dok je „novi“ i dok dispečer još nije snimio operativni prioritet.',
         },
         { status: 400 }
       );

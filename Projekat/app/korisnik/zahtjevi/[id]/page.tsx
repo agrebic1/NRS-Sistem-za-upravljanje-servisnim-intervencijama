@@ -2,10 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import {
-  ArrowLeft, MapPin, Phone, Tag,
-  Pencil, X, AlertTriangle,
-} from 'lucide-react';
+import { ArrowLeft, Pencil, X, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
 import { AppShell } from '@/components/layout/AppShell';
 import { Button } from '@/components/ui/Button';
@@ -13,40 +10,22 @@ import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
 import { Select } from '@/components/ui/Select';
 import { AlertMessage } from '@/components/ui/AlertMessage';
-import { UrgencyBadge } from '@/components/servisirane/UrgencyBadge';
-import { PreciznaLokacijaChip, PremiumHitnaBadge } from '@/components/servisirane/zahtjevBadgeovi';
 import {
-  ZahtjevKorisnickaPorukaBubble,
-  ZahtjevMiniTimeline,
-} from '@/components/servisirane/ZahtjevTimelineIPoruka';
-import type { ServisniZahtjev, StatusZahtjeva } from '@/domain/types/servisirane';
+  InlineNotice,
+  KorisnikZahtjevDetaljPanel,
+  KorisnikZahtjevDonjaNapomena,
+} from '@/components/korisnik/KorisnikZahtjevDetaljPregled';
+import { korisnikDonjiStatusObjasnjenje } from '@/lib/servisirane/korisnickiDetaljTekstovi';
+import type { ServisniZahtjev } from '@/domain/types/servisirane';
 import { brojZahtjevaZaPrikaz } from '@/lib/servisirane/korisnickiBrojZahtjeva';
 import { labelKategorije } from '@/lib/servisirane/kategorije';
+import { formatPrijavljenoDatumVrijeme } from '@/lib/servisirane/zahtjevPrikaz';
+import { korisnikSmijeMijenjatiIliOtkazatiZahtjev } from '@/lib/servisirane/statusZahtjeva';
+import { inboxGrupaIzKorisnickeProcjene } from '@/lib/servisirane/urgency';
 import {
-  formatPrijavljenoDatumVrijeme,
-  preferiraniTerminZaDispecera,
-} from '@/lib/servisirane/zahtjevPrikaz';
-import { urlsPrilozenihSlika } from '@/lib/servisirane/slikeZahtjeva';
-import { efektivniKorisnickiUrgencyScore } from '@/lib/servisirane/urgency';
-import { PrilogGalerija } from '@/components/servisirane/PrilogGalerija';
-
-// ─── Status badge ─────────────────────────────────────────────────────────────
-
-const STATUS_CONFIG: Record<
-  StatusZahtjeva,
-  { oznaka: string; pozadina: string; boja: string }
-> = {
-  pending_review: { oznaka: 'Novi', pozadina: 'rgb(var(--first-quaternary-rgb) / 0.2)',  boja: 'var(--first-nonary)' },
-  na_cekanju:  { oznaka: 'Novi',  pozadina: 'rgb(var(--first-quaternary-rgb) / 0.2)',  boja: 'var(--first-nonary)' },
-  in_review:   { oznaka: 'U čarobnjaku', pozadina: 'rgba(202,138,4,0.12)', boja: '#A16207' },
-  potvrdeno:   { oznaka: 'Potvrđeno',   pozadina: 'rgb(var(--first-secondary-rgb) / 0.12)',  boja: 'var(--first-secondary)' },
-  dodijeljeno: { oznaka: 'Dodijeljeno serviseru', pozadina: 'rgb(var(--first-secondary-rgb) / 0.12)',  boja: 'var(--first-secondary)' },
-  u_radu:      { oznaka: 'Na terenu',      pozadina: 'rgb(var(--first-septenary-rgb) / 0.2)',   boja: 'var(--first-senary)' },
-  u_izvrsenju: { oznaka: 'Na terenu', pozadina: 'rgb(var(--first-septenary-rgb) / 0.2)',   boja: 'var(--first-senary)' },
-  zavrseno:    { oznaka: 'Završeno',    pozadina: 'rgb(var(--first-secondary-rgb) / 0.15)',  boja: 'var(--first-secondary)' },
-  otkazano:    { oznaka: 'Otkazano',    pozadina: 'rgb(var(--first-quinary-rgb) / 0.3)',     boja: 'var(--first-nonary)' },
-  odbijeno:    { oznaka: 'Odbijeno',    pozadina: 'rgb(var(--first-senary-rgb) / 0.2)',      boja: 'var(--first-senary)' },
-};
+  DISPECER_PALETA_HITNOST,
+  DISPECER_PALETA_PREMIUM,
+} from '@/lib/servisirane/dispecerPaleta';
 
 const RAZLOZI_OTKAZIVANJA = [
   { value: 'Kvar otklonjen samostalno',     label: 'Kvar otklonjen samostalno' },
@@ -56,7 +35,7 @@ const RAZLOZI_OTKAZIVANJA = [
   { value: 'Ostalo',                        label: 'Ostalo' },
 ];
 
-// ─── Panel za izmjenu ─────────────────────────────────────────────────────────
+// ─── Inline panel za izmjenu ──────────────────────────────────────────────────
 
 function PanelZaIzmjenu({
   zahtjev,
@@ -97,13 +76,13 @@ function PanelZaIzmjenu({
 
   return (
     <div
-      className="flex flex-col gap-5 rounded-2xl p-6"
-      style={{
-        backgroundColor: 'rgb(var(--first-secondary-rgb) / 0.05)',
-        border:          '1px solid rgb(var(--first-secondary-rgb) / 0.2)',
-      }}
+      className="flex flex-col gap-5 rounded-xl border p-5"
+      style={{ borderColor: 'rgb(var(--first-quaternary-rgb) / 0.4)' }}
     >
-      <h3 className="font-semibold" style={{ color: 'var(--first-octonary)' }}>
+      <h3
+        className="text-[10px] font-semibold uppercase tracking-[0.12em]"
+        style={{ color: 'rgb(var(--first-nonary-rgb) / 0.72)' }}
+      >
         Izmjena zahtjeva
       </h3>
       {greska && <AlertMessage variant="error" message={greska} />}
@@ -130,31 +109,34 @@ function PanelZaIzmjenu({
         value={contactPhone}
         onChange={(e) => setContactPhone(e.target.value)}
       />
-      <div className="flex gap-3">
+      <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-end sm:gap-3">
         <Button
           type="button"
+          variant="ghost"
           size="md"
+          className="w-full sm:w-auto"
+          onClick={onOdustanak}
+          disabled={jeSlanje}
+        >
+          Odustani
+        </Button>
+        <Button
+          type="button"
+          variant="primary"
+          size="md"
+          className="w-full sm:w-auto"
           onClick={spremi}
           isLoading={jeSlanje}
           loadingText="Spremanje..."
         >
           Spremi izmjene
         </Button>
-        <Button
-          type="button"
-          variant="ghost"
-          size="md"
-          onClick={onOdustanak}
-          disabled={jeSlanje}
-        >
-          Odustani
-        </Button>
       </div>
     </div>
   );
 }
 
-// ─── Panel za otkazivanje ─────────────────────────────────────────────────────
+// ─── Inline panel za otkazivanje ──────────────────────────────────────────────
 
 function PanelZaOtkazivanje({
   zahtjevId,
@@ -192,15 +174,15 @@ function PanelZaOtkazivanje({
 
   return (
     <div
-      className="flex flex-col gap-5 rounded-2xl p-6"
-      style={{
-        backgroundColor: 'rgb(var(--first-senary-rgb) / 0.05)',
-        border:          '1px solid rgb(var(--first-senary-rgb) / 0.2)',
-      }}
+      className="flex flex-col gap-5 rounded-xl border p-5"
+      style={{ borderColor: 'rgba(220,38,38,0.3)' }}
     >
       <div className="flex items-center gap-2">
-        <AlertTriangle className="h-5 w-5" style={{ color: 'var(--first-senary)' }} />
-        <h3 className="font-semibold" style={{ color: 'var(--first-senary)' }}>
+        <AlertTriangle className="h-4 w-4" style={{ color: 'var(--first-senary)' }} />
+        <h3
+          className="text-[10px] font-semibold uppercase tracking-[0.12em]"
+          style={{ color: 'var(--first-senary)' }}
+        >
           Otkazivanje zahtjeva
         </h3>
       </div>
@@ -214,28 +196,50 @@ function PanelZaOtkazivanje({
         onChange={(e) => setRazlog(e.target.value)}
         error={!razlog && greska ? 'Razlog je obavezan' : undefined}
       />
-      <div className="flex gap-3">
+      <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-end sm:gap-3">
+        <Button
+          type="button"
+          variant="ghost"
+          size="md"
+          className="w-full sm:w-auto"
+          onClick={onOdustanak}
+          disabled={jeSlanje}
+        >
+          Odustani
+        </Button>
         <Button
           type="button"
           variant="danger"
           size="md"
+          className="w-full sm:w-auto"
           onClick={potvrdiOtkazivanje}
           isLoading={jeSlanje}
           loadingText="Otkazivanje..."
         >
           Potvrdi otkazivanje
         </Button>
-        <Button
-          type="button"
-          variant="ghost"
-          size="md"
-          onClick={onOdustanak}
-          disabled={jeSlanje}
-        >
-          Odustani
-        </Button>
       </div>
     </div>
+  );
+}
+
+// ─── Otkazi dugme za footer (border-only crveni outline bez !important) ───────
+
+function OtkaziFooterDugme({ onClick }: { onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="inline-flex w-full items-center justify-center gap-2 rounded-xl border-2 px-5 py-2 text-sm font-semibold transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-300/50 focus:ring-offset-2 hover:bg-red-50 sm:w-auto"
+      style={{
+        borderColor: 'rgba(220,38,38,0.4)',
+        color: '#B91C1C',
+        backgroundColor: 'transparent',
+      }}
+    >
+      <X className="h-4 w-4" />
+      Otkaži zahtjev
+    </button>
   );
 }
 
@@ -246,11 +250,12 @@ export default function ZahtjevDetaljPage() {
   const router = useRouter();
   const id     = params.id as string;
 
-  const [zahtjev,       setZahtjev]       = useState<ServisniZahtjev | null>(null);
-  const [ucitava,       setUcitava]       = useState(true);
-  const [greska,        setGreska]        = useState<string | null>(null);
-  const [aktivniPanel,  setAktivniPanel]  = useState<'izmjena' | 'otkazivanje' | null>(null);
-  const [jeAkcijaDone,  setJeAkcijaDone] = useState(false);
+  const [zahtjev,          setZahtjev]          = useState<ServisniZahtjev | null>(null);
+  const [ucitava,          setUcitava]          = useState(true);
+  const [greska,           setGreska]           = useState<string | null>(null);
+  const [aktivniPanel,     setAktivniPanel]     = useState<'izmjena' | 'otkazivanje' | null>(null);
+  const [jeAkcijaDone,     setJeAkcijaDone]     = useState(false);
+  const [porukaProširena,  setPorukaProširena]  = useState(false);
 
   const ucitajZahtjev = useCallback(async () => {
     setUcitava(true);
@@ -268,6 +273,10 @@ export default function ZahtjevDetaljPage() {
   }, [id]);
 
   useEffect(() => { ucitajZahtjev(); }, [ucitajZahtjev]);
+
+  useEffect(() => {
+    setPorukaProširena(false);
+  }, [id]);
 
   function onUspjehAkcije() {
     setJeAkcijaDone(true);
@@ -301,235 +310,203 @@ export default function ZahtjevDetaljPage() {
     );
   }
 
-  const status        = STATUS_CONFIG[zahtjev.status];
-  const mozeBitMijenjan = zahtjev.status === 'na_cekanju' || zahtjev.status === 'pending_review';
-  const { tekstCijeli: terminTekst } = preferiraniTerminZaDispecera(zahtjev);
-  const kategorija = labelKategorije(zahtjev);
-  const kategorijaPrikaz = kategorija.podkategorija
-    ? `${kategorija.glavna} — ${kategorija.podkategorija}`
-    : kategorija.glavna;
-  const prilogSlike = urlsPrilozenihSlika(
-    zahtjev as unknown as Parameters<typeof urlsPrilozenihSlika>[0],
+  const mozeBitMijenjan = korisnikSmijeMijenjatiIliOtkazatiZahtjev(
+    zahtjev.status,
+    zahtjev.final_priority,
   );
+  const uAktivnojDispecerskojObradi =
+    zahtjev.status === 'in_review' ||
+    (((zahtjev.status === 'na_cekanju' || zahtjev.status === 'pending_review') &&
+      Boolean((zahtjev.final_priority ?? '').trim())));
+
+  const kategorija = labelKategorije(zahtjev);
+  const naslovZahtjeva = kategorija.podkategorija || kategorija.glavna;
+
+  const opisSirovo = (zahtjev.description ?? '').trim();
+  const porukaTrebaSkracivanje = opisSirovo.length > 180;
+
+  const donjiObjasnjenje = korisnikDonjiStatusObjasnjenje(
+    uAktivnojDispecerskojObradi,
+    mozeBitMijenjan,
+  );
+
+  const ribBoja = zahtjev.is_premium
+    ? DISPECER_PALETA_PREMIUM.akcent
+    : DISPECER_PALETA_HITNOST[inboxGrupaIzKorisnickeProcjene(zahtjev)].border;
+
+  const imaRazlogOdbijanja =
+    zahtjev.status === 'odbijeno' && Boolean(zahtjev.rejection_reason?.trim());
+  const imaRazlogOtkazivanja = Boolean(zahtjev.cancel_reason);
+  const imaIzmjenuOdKreiranja =
+    Boolean(zahtjev.updated_at) && zahtjev.updated_at !== zahtjev.created_at;
+  const imaOtkazaniDatum = zahtjev.status === 'otkazano' && Boolean(zahtjev.cancelled_at);
+  const prikaziDonjuNapomenu =
+    !mozeBitMijenjan &&
+    zahtjev.status !== 'otkazano' &&
+    zahtjev.status !== 'odbijeno' &&
+    zahtjev.status !== 'zavrseno' &&
+    Boolean(donjiObjasnjenje);
+
+  const imaBilokojuNapomenu =
+    imaRazlogOdbijanja ||
+    imaRazlogOtkazivanja ||
+    imaIzmjenuOdKreiranja ||
+    imaOtkazaniDatum ||
+    prikaziDonjuNapomenu;
 
   return (
     <AppShell uloga="korisnik">
-      <div className="mx-auto max-w-2xl">
-        {/* Zaglavlje */}
-        <div className="mb-6 flex items-center gap-3">
+      <div className="mx-auto max-w-5xl">
+        {/* Breadcrumb (isti pattern kao dispečerski detalj) */}
+        <nav
+          className="mb-4 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm"
+          aria-label="Navigacija"
+        >
+          <Link
+            href="/korisnik"
+            className="font-medium transition-opacity hover:opacity-70"
+            style={{ color: 'var(--first-secondary)' }}
+          >
+            Pregled
+          </Link>
+          <span style={{ color: 'var(--first-nonary)' }}>/</span>
           <Link
             href="/korisnik/zahtjevi"
-            className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg transition-colors hover:bg-soft-beige/30"
-            style={{ color: 'var(--first-nonary)' }}
+            className="font-medium transition-opacity hover:opacity-70"
+            style={{ color: 'var(--first-secondary)' }}
           >
-            <ArrowLeft className="h-5 w-5" />
+            Moji zahtjevi
           </Link>
-          <div className="min-w-0">
-            <h1
-              className="truncate text-xl font-bold"
-              style={{ color: 'var(--first-octonary)' }}
-            >
-              {kategorijaPrikaz}
-            </h1>
-            <p className="text-sm" style={{ color: 'var(--first-nonary)' }}>
-              Zahtjev #{brojZahtjevaZaPrikaz(zahtjev)}
-            </p>
-          </div>
-        </div>
+          <span style={{ color: 'var(--first-nonary)' }}>/</span>
+          <span className="font-medium" style={{ color: 'var(--first-octonary)' }}>
+            #{brojZahtjevaZaPrikaz(zahtjev)} {naslovZahtjeva}
+          </span>
+        </nav>
 
-        {jeAkcijaDone && (
-          <div className="mb-5">
-            <AlertMessage variant="success" message="Izmjena je uspješno sačuvana." />
-          </div>
-        )}
-
-        {/* Kartica detalja */}
-        <div
-          className="rounded-2xl p-6 shadow-card sm:p-8"
+        {/* Bijela kartica + lijevi rib (premium / hitnost) — isti vizuelni jezik kao liste */}
+        <article
+          className="flex min-w-0 flex-col overflow-hidden rounded-2xl shadow-sm"
           style={{
-            backgroundColor: 'rgb(var(--first-quinary-rgb) / 0.22)',
-            border:          '1px solid rgb(var(--first-quaternary-rgb) / 0.4)',
+            backgroundColor: 'rgb(255 255 255 / 0.72)',
+            borderStyle: 'solid',
+            borderColor: 'rgb(var(--first-quaternary-rgb) / 0.35)',
+            borderWidth: 1,
+            borderLeftWidth: 4,
+            borderLeftColor: ribBoja,
           }}
         >
-          {/* Status i hitnost */}
-          <div className="mb-6 flex flex-wrap items-center gap-2">
-            <span
-              className="rounded-full px-3 py-1 text-sm font-semibold"
-              style={{ backgroundColor: status.pozadina, color: status.boja }}
-            >
-              {status.oznaka}
-            </span>
-            <UrgencyBadge score={efektivniKorisnickiUrgencyScore(zahtjev)} korisnickiPrikaz size="md" />
-            {zahtjev.is_premium && <PremiumHitnaBadge className="text-sm" />}
-          </div>
-
-          {/* Podaci */}
-          <dl className="flex flex-col gap-4">
-            <div>
-              <dt
-                className="mb-1 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider"
-                style={{ color: 'var(--first-nonary)' }}
-              >
-                <Tag className="h-3 w-3" /> Kategorija
-              </dt>
-              <dd className="text-sm font-medium" style={{ color: 'var(--first-octonary)' }}>
-                {kategorijaPrikaz}
-              </dd>
-            </div>
-
-            <div>
-              <dt
-                className="mb-1 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider"
-                style={{ color: 'var(--first-nonary)' }}
-              >
-                <MapPin className="h-3 w-3" /> Adresa
-              </dt>
-              <dd className="text-sm" style={{ color: 'var(--first-octonary)' }}>
-                {zahtjev.address}
-              </dd>
-              {zahtjev.latitude !== null && zahtjev.longitude !== null && (
-                <dd className="mt-2">
-                  <PreciznaLokacijaChip />
-                </dd>
-              )}
-            </div>
-          </dl>
-
-          <ZahtjevMiniTimeline
-            className="min-w-0"
-            prijavljenoTekst={formatPrijavljenoDatumVrijeme(zahtjev.created_at)}
-            terminTekst={terminTekst}
-            napomenaIspod="Konačan termin potvrđuje dispečer."
-          />
-
-          {zahtjev.updated_at &&
-            zahtjev.updated_at !== zahtjev.created_at && (
-              <p className="mt-3 text-xs" style={{ color: 'var(--first-nonary)' }}>
-                Zadnja izmjena podataka: {formatPrijavljenoDatumVrijeme(zahtjev.updated_at)}
-              </p>
-            )}
-
-          {zahtjev.status === 'otkazano' && zahtjev.cancelled_at && (
-            <p className="mt-1 text-xs font-medium" style={{ color: 'var(--first-nonary)' }}>
-              Otkazano: {formatPrijavljenoDatumVrijeme(zahtjev.cancelled_at)}
-            </p>
-          )}
-
-          <div className="mt-4 min-w-0">
-            <ZahtjevKorisnickaPorukaBubble tekst={zahtjev.description ?? ''} />
-          </div>
-
-          <dl className="mt-4 flex flex-col gap-4">
-            <div>
-              <dt
-                className="mb-1 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider"
-                style={{ color: 'var(--first-nonary)' }}
-              >
-                <Phone className="h-3 w-3" /> Kontakt
-              </dt>
-              <dd className="text-sm" style={{ color: 'var(--first-octonary)' }}>
-                {zahtjev.contact_phone}
-              </dd>
-            </div>
-
-            <div>
-              <dt
-                className="mb-1 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider"
-                style={{ color: 'var(--first-nonary)' }}
-              >
-                Priložene slike
-              </dt>
-              <dd className="text-sm" style={{ color: 'var(--first-octonary)' }}>
-                {prilogSlike.length === 0
-                  ? 'Nema priloženih slika.'
-                  : prilogSlike.length === 1
-                    ? 'Jedna slika je priložena.'
-                    : `${prilogSlike.length} priloženih slika.`}
-              </dd>
-              {prilogSlike.length > 0 && (
-                <div className="mt-3 max-w-2xl">
-                  <PrilogGalerija urls={prilogSlike} />
-                </div>
-              )}
-            </div>
-
-            {zahtjev.cancel_reason && (
-              <div>
-                <dt
-                  className="mb-1 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider"
-                  style={{ color: 'var(--first-senary)' }}
-                >
-                  Razlog otkazivanja
-                </dt>
-                <dd className="text-sm" style={{ color: 'var(--first-senary)' }}>
-                  {zahtjev.cancel_reason}
-                </dd>
+          <div className="px-5 py-6 sm:px-7 sm:py-7">
+            {jeAkcijaDone ? (
+              <div className="mb-5">
+                <AlertMessage variant="success" message="Izmjena je uspješno sačuvana." />
               </div>
-            )}
-          </dl>
+            ) : null}
 
-          {/* Akcije — samo dok je pending_review / na_cekanju (vidi STATUSI_ZA_KORISNICKU_IZMJENU na API-ju) */}
-          {mozeBitMijenjan && aktivniPanel === null && (
+            <KorisnikZahtjevDetaljPanel
+              zahtjev={zahtjev}
+              mozeBitMijenjan={mozeBitMijenjan}
+              uAktivnojDispecerskojObradi={uAktivnojDispecerskojObradi}
+              porukaProširena={porukaProširena}
+              porukaTrebaSkracivanje={porukaTrebaSkracivanje}
+              onTogglePoruku={() => setPorukaProširena((v) => !v)}
+            />
+
+            {/* Inline notices (border-only kalup, jedinstven stil) */}
+            {imaBilokojuNapomenu ? (
+              <div className="mt-5 space-y-3">
+                {imaRazlogOdbijanja ? (
+                  <InlineNotice ton="danger">
+                    <p className="font-semibold">Razlog odbijanja</p>
+                    <p className="mt-1 leading-relaxed">{zahtjev.rejection_reason!.trim()}</p>
+                  </InlineNotice>
+                ) : null}
+
+                {imaRazlogOtkazivanja ? (
+                  <InlineNotice>
+                    <span className="font-semibold">Razlog otkazivanja: </span>
+                    {zahtjev.cancel_reason}
+                  </InlineNotice>
+                ) : null}
+
+                {imaIzmjenuOdKreiranja || imaOtkazaniDatum ? (
+                  <InlineNotice>
+                    {imaIzmjenuOdKreiranja ? (
+                      <p>
+                        <span className="font-semibold">Zadnja izmjena: </span>
+                        {formatPrijavljenoDatumVrijeme(zahtjev.updated_at!)}
+                      </p>
+                    ) : null}
+                    {imaOtkazaniDatum ? (
+                      <p className={imaIzmjenuOdKreiranja ? 'mt-1' : ''}>
+                        <span className="font-semibold">Otkazano: </span>
+                        {formatPrijavljenoDatumVrijeme(zahtjev.cancelled_at!)}
+                      </p>
+                    ) : null}
+                  </InlineNotice>
+                ) : null}
+
+                {prikaziDonjuNapomenu && donjiObjasnjenje ? (
+                  <KorisnikZahtjevDonjaNapomena>{donjiObjasnjenje}</KorisnikZahtjevDonjaNapomena>
+                ) : null}
+              </div>
+            ) : null}
+
+            {/* Inline paneli za izmjenu / otkazivanje */}
+            {aktivniPanel === 'izmjena' ? (
+              <div className="mt-6">
+                <PanelZaIzmjenu
+                  zahtjev={zahtjev}
+                  onUspjeh={onUspjehAkcije}
+                  onOdustanak={() => setAktivniPanel(null)}
+                />
+              </div>
+            ) : null}
+
+            {aktivniPanel === 'otkazivanje' ? (
+              <div className="mt-6">
+                <PanelZaOtkazivanje
+                  zahtjevId={zahtjev.id}
+                  onUspjeh={() => {
+                    onUspjehAkcije();
+                    router.push('/korisnik/zahtjevi');
+                  }}
+                  onOdustanak={() => setAktivniPanel(null)}
+                />
+              </div>
+            ) : null}
+          </div>
+
+          {/* Footer akcije (border-top, isti pattern kao dispečerski step footer) */}
+          {mozeBitMijenjan && aktivniPanel === null ? (
             <div
-              className="mt-6 flex flex-wrap gap-3 border-t pt-6"
-              style={{ borderColor: 'rgb(var(--first-quaternary-rgb) / 0.3)' }}
+              className="flex flex-col gap-2 border-t px-5 py-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-end sm:gap-3 sm:px-7"
+              style={{ borderColor: 'rgb(var(--first-quaternary-rgb) / 0.22)' }}
             >
+              <OtkaziFooterDugme onClick={() => setAktivniPanel('otkazivanje')} />
               <Button
                 type="button"
-                variant="secondary"
+                variant="primary"
                 size="md"
+                className="w-full sm:w-auto"
                 onClick={() => setAktivniPanel('izmjena')}
               >
                 <Pencil className="h-4 w-4" />
                 Izmijeni zahtjev
               </Button>
-              <Button
-                type="button"
-                variant="danger"
-                size="md"
-                onClick={() => setAktivniPanel('otkazivanje')}
-              >
-                <X className="h-4 w-4" />
-                Otkaži zahtjev
-              </Button>
             </div>
-          )}
+          ) : null}
+        </article>
 
-          {/* Paneli za akcije */}
-          {aktivniPanel === 'izmjena' && (
-            <div className="mt-6">
-              <PanelZaIzmjenu
-                zahtjev={zahtjev}
-                onUspjeh={onUspjehAkcije}
-                onOdustanak={() => setAktivniPanel(null)}
-              />
-            </div>
-          )}
-
-          {aktivniPanel === 'otkazivanje' && (
-            <div className="mt-6">
-              <PanelZaOtkazivanje
-                zahtjevId={zahtjev.id}
-                onUspjeh={() => { onUspjehAkcije(); router.push('/korisnik/zahtjevi'); }}
-                onOdustanak={() => setAktivniPanel(null)}
-              />
-            </div>
-          )}
-
-          {!mozeBitMijenjan && zahtjev.status !== 'otkazano' && (
-            <div
-              className="mt-6 rounded-xl border px-4 py-3 text-xs"
-              style={{
-                borderColor:     'rgb(var(--first-secondary-rgb) / 0.2)',
-                backgroundColor: 'rgb(var(--first-secondary-rgb) / 0.06)',
-                color:           'var(--first-nonary)',
-              }}
-            >
-              {zahtjev.status === 'in_review'
-                ? 'Dispečer je u čarobnjaku obrade — izmjena i otkazivanje nisu mogući dok traje obrada.'
-                : 'Zahtjev je dalje u procesu — izmjena i otkazivanje više nisu mogući.'}
-            </div>
-          )}
+        {/* Tekstualni „Povratak" link (kao na uredi/page.tsx) */}
+        <div className="mt-4">
+          <Link
+            href="/korisnik/zahtjevi"
+            className="inline-flex items-center gap-1.5 text-sm font-medium transition-opacity hover:opacity-70"
+            style={{ color: 'var(--first-nonary)' }}
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            Povratak na listu zahtjeva
+          </Link>
         </div>
       </div>
     </AppShell>

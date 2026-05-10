@@ -14,6 +14,7 @@ import {
 import { KorakTermin } from '@/components/wizard/KorakTermin';
 import type { ServisniZahtjev } from '@/domain/types/servisirane';
 import { brojZahtjevaZaPrikaz } from '@/lib/servisirane/korisnickiBrojZahtjeva';
+import { korisnikSmijeMijenjatiIliOtkazatiZahtjev } from '@/lib/servisirane/statusZahtjeva';
 
 const PHONE_REGEX = /^[0-9+\-\/ ]*$/;
 
@@ -76,8 +77,10 @@ export default function UrediZahtjevPage() {
         if (!r.ok) throw new Error(d.error ?? 'Zahtjev nije pronađen.');
         const z: ServisniZahtjev = d.zahtjev;
 
-        if (z.status !== 'na_cekanju' && z.status !== 'pending_review') {
-          setGreska('Zahtjev se može izmijeniti samo dok je u statusu "Novi zahtjev".');
+        if (!korisnikSmijeMijenjatiIliOtkazatiZahtjev(z.status, z.final_priority)) {
+          setGreska(
+            'Zahtjev se može izmijeniti samo dok dispečer još nije započeo obradu (nema snimljenog operativnog prioriteta).',
+          );
           setUcitava(false);
           return;
         }

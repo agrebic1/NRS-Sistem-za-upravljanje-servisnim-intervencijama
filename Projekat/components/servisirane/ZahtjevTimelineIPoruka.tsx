@@ -1,9 +1,11 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { Calendar, CalendarClock, User } from 'lucide-react';
+import { Calendar, CalendarClock, ChevronRight, Info, User } from 'lucide-react';
+import { DISPECER_PALETA_HITNOST } from '@/lib/servisirane/dispecerPaleta';
 
-const TIMELINE_IKONA_BOJA = { color: 'var(--first-senary)' } as const;
+/** Amber iz hitnosne palete — usklađeno s dispečerskim inboxom (srednji sloj). */
+const TIMELINE_IKONA_BOJA = { color: DISPECER_PALETA_HITNOST.Srednja.tekst } as const;
 const TIMELINE_IKONA_KLASA = 'h-4 w-4 shrink-0';
 const TIMELINE_DATUM_KLASA = 'm-0 text-[14px] font-bold tabular-nums leading-tight';
 const TIMELINE_OZNAKA_KLASA = 'm-0 text-[11px] font-normal leading-tight';
@@ -101,6 +103,59 @@ export function ZahtjevMiniTimeline({
           {napomenaIspod}
         </div>
       ) : null}
+    </div>
+  );
+}
+
+/** Dva čita bloka (prijavljeno / preferirani termin) za kompaktan korisnički detalj. */
+export function ZahtjevTerminDetaljBlokovi({
+  prijavljenoTekst,
+  terminTekst,
+}: {
+  prijavljenoTekst: string;
+  terminTekst: string;
+}) {
+  const labelCls = 'mb-0.5 text-[10px] font-semibold uppercase tracking-[0.12em]';
+  const labelStyle = { color: 'rgb(var(--first-nonary-rgb) / 0.84)' } as const;
+  const valCls = 'text-[15px] font-semibold tabular-nums leading-snug tracking-tight';
+
+  return (
+    <div className="min-w-0">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] sm:items-center sm:gap-2">
+        <div className="min-w-0">
+          <p className={labelCls} style={labelStyle}>
+            Prijavljeno
+          </p>
+          <p className={valCls} style={{ color: 'var(--first-octonary)' }}>
+            {prijavljenoTekst}
+          </p>
+        </div>
+
+        <div className="hidden justify-center sm:flex" aria-hidden>
+          <ChevronRight
+            className="h-4 w-4 shrink-0 opacity-[0.4]"
+            style={{ color: 'var(--first-nonary)' }}
+            strokeWidth={2}
+          />
+        </div>
+
+        <div className="min-w-0 border-t border-black/[0.12] pt-3 sm:border-t-0 sm:pt-0 sm:text-right">
+          <p className={`${labelCls} sm:text-right`} style={labelStyle}>
+            Preferirani termin
+          </p>
+          <p className={`${valCls} break-words sm:text-right`} style={{ color: 'var(--first-octonary)' }}>
+            {terminTekst}
+          </p>
+        </div>
+      </div>
+
+      <div
+        className="mt-3 flex gap-1.5 text-[11px] leading-snug"
+        style={{ color: 'rgb(var(--first-nonary-rgb) / 0.88)' }}
+      >
+        <Info className="mt-0.5 h-3.5 w-3.5 shrink-0 opacity-85" aria-hidden />
+        <span>Konačan termin potvrđuje dispečer.</span>
+      </div>
     </div>
   );
 }

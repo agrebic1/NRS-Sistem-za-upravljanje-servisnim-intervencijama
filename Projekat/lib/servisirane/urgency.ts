@@ -60,6 +60,18 @@ export function oznakaKorisnickeHitnostiTriRazine(score: number): 'Visoka' | 'Sr
   return 'Visoka';
 }
 
+/**
+ * Tekst bedža na korisničkoj listi dok zahtjev čeka dispečera (umjesto „Novi“).
+ * Tri razine kao inbox — usklađeno s {@link oznakaKorisnickeHitnostiTriRazine}.
+ */
+export function oznakaInboxHitnostiCekaObradu(zahtjev: {
+  is_premium: boolean;
+  urgency_score: number;
+}): string {
+  const tri = oznakaKorisnickeHitnostiTriRazine(efektivniKorisnickiUrgencyScore(zahtjev));
+  return `${tri} hitnost (čeka obradu)`;
+}
+
 /** Tri inbox grupe na kontrolnoj tabli — iz korisničke procjene (upitnik + premium), ne iz `final_priority`. */
 export type DispecerskaInboxGrupaPoKorisniku = 'Hitno' | 'Srednja' | 'Niska';
 
