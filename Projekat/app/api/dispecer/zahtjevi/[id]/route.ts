@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { createClient as createServerClient } from '@/lib/supabase/server';
 import { assertDispatcherAccess } from '@/lib/servisirane/dispecerPristup';
+import { premiumZahtijevaObrazlozenjeSmanjenjaPrioriteta } from '@/lib/servisirane/operativniPrioritet';
 import { dispecerSmijeMijenjatiOperativniPrioritet } from '@/lib/servisirane/statusZahtjeva';
 import { z } from 'zod';
 
@@ -149,12 +150,13 @@ export async function PATCH(
       }
       if (
         zahtjev.is_premium === true &&
-        podaci.final_priority !== 'HITNO' &&
+        premiumZahtijevaObrazlozenjeSmanjenjaPrioriteta(podaci.final_priority) &&
         (!podaci.premium_downgrade_reason || podaci.premium_downgrade_reason.trim().length < 10)
       ) {
         return NextResponse.json(
           {
-            error: 'Premium zahtjev mora ostati HITNO ili unesite obrazloženje (min. 10 karaktera).',
+            error:
+              'Premium zahtjev mora ostati u hitnoj operativnoj grupi (HITNO, KRITIČNO ili VISOKO) ili unesite obrazloženje (min. 10 karaktera).',
           },
           { status: 400 },
         );
@@ -166,7 +168,8 @@ export async function PATCH(
       } = {
         final_priority: podaci.final_priority,
         premium_priority_override_reason:
-          zahtjev.is_premium === true && podaci.final_priority !== 'HITNO'
+          zahtjev.is_premium === true &&
+          premiumZahtijevaObrazlozenjeSmanjenjaPrioriteta(podaci.final_priority)
             ? podaci.premium_downgrade_reason?.trim() ?? null
             : null,
       };
@@ -191,12 +194,13 @@ export async function PATCH(
     if (podaci.action === 'potvrdi') {
       if (
         zahtjev.is_premium === true &&
-        podaci.final_priority !== 'HITNO' &&
+        premiumZahtijevaObrazlozenjeSmanjenjaPrioriteta(podaci.final_priority) &&
         (!podaci.premium_downgrade_reason || podaci.premium_downgrade_reason.trim().length < 10)
       ) {
         return NextResponse.json(
           {
-            error: 'Premium zahtjev mora ostati HITNO ili unesite obrazloženje (min. 10 karaktera).',
+            error:
+              'Premium zahtjev mora ostati u hitnoj operativnoj grupi (HITNO, KRITIČNO ili VISOKO) ili unesite obrazloženje (min. 10 karaktera).',
           },
           { status: 400 }
         );
@@ -207,7 +211,8 @@ export async function PATCH(
           status:         'potvrdeno',
           final_priority: podaci.final_priority,
           premium_priority_override_reason:
-            zahtjev.is_premium === true && podaci.final_priority !== 'HITNO'
+            zahtjev.is_premium === true &&
+            premiumZahtijevaObrazlozenjeSmanjenjaPrioriteta(podaci.final_priority)
               ? podaci.premium_downgrade_reason?.trim() ?? null
               : null,
         })

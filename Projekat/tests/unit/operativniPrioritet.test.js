@@ -1,6 +1,7 @@
 const {
   operativnaGrupaIzFinalnogPrioriteta,
   rangOperativnogPrioriteta,
+  premiumZahtijevaObrazlozenjeSmanjenjaPrioriteta,
 } = require('@/lib/servisirane/operativniPrioritet');
 
 describe('operativni prioritet dispecera', () => {
@@ -26,4 +27,18 @@ describe('operativni prioritet dispecera', () => {
     expect(operativnaGrupaIzFinalnogPrioriteta('  visoko ')).toBe('Hitno');
     expect(operativnaGrupaIzFinalnogPrioriteta('  nisko ')).toBe('Niska');
   });
+
+  test.each(['HITNO', 'KRITIČNO', 'VISOKO', '  visoko '])(
+    'premium ne traži obrazloženje za hitnu grupu (%s)',
+    (p) => {
+      expect(premiumZahtijevaObrazlozenjeSmanjenjaPrioriteta(p)).toBe(false);
+    },
+  );
+
+  test.each(['SREDNJE', 'NISKO', '', null])(
+    'premium traži obrazloženje izvan hitne grupe (%s)',
+    (p) => {
+      expect(premiumZahtijevaObrazlozenjeSmanjenjaPrioriteta(p)).toBe(true);
+    },
+  );
 });
