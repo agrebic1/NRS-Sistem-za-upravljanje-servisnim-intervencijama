@@ -376,13 +376,44 @@ export default function UrediZahtjevPage() {
   type="button" 
   variant="secondary" 
   className="bg-red-50 text-red-600 hover:bg-red-100 border-red-200"
-  onClick={() => {
-    if(confirm("Jeste li sigurni da želite otkazati ovaj zahtjev?")) {
-      console.log("Zahtjev se otkazuje...");
+  disabled={jeSlanje}
+  onClick={async () => {
+    // 1. Zahtijevaj unos razloga (US-27)
+    const razlog = prompt("Molimo unesite razlog otkazivanja zahtjeva:");
+    
+    if (razlog === null) return; // Korisnik kliknuo 'Odustani'
+    
+    if (razlog.trim().length < 5) {
+      alert("Morate unijeti obrazloženje od najmanje 5 karaktera.");
+      return;
+    }
+
+    // 2. Potvrda i slanje
+    if(confirm(`Jeste li sigurni da želite otkazati zahtjev? Razlog: ${razlog}`)) {
+      try {
+        setJeSlanje(true);
+        const r = await fetch(`/api/service-requests/${id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            status: 'otkazano', // Mijenjamo status u "Otkazano"
+            cancellation_reason: razlog.trim(), // Čuvamo razlog
+            cancelled_at: new Date().toISOString() // Bilježimo vrijeme otkazivanja
+          }),
+        });
+
+        if (!r.ok) throw new Error("Greška pri komunikaciji sa serverom.");
+        
+        setJeUspjelo(true); // Prikazuje ekran za uspjeh koji već imaš u kodu
+      } catch (err) {
+        setGreska(err instanceof Error ? err.message : "Neuspješno otkazivanje.");
+      } finally {
+        setJeSlanje(false);
+      }
     }
   }}
 >
-  Otkaži zahtjev
+  {jeSlanje ? "Otkazivanje..." : "Otkaži zahtjev"}
 </Button>
               <Button
                 type="button"
