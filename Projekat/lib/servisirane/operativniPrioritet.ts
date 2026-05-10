@@ -22,3 +22,14 @@ export function rangOperativnogPrioriteta(finalPriority: string | null | undefin
   if (g === 'Srednja') return 1;
   return 2;
 }
+
+/**
+ * Premium zahtjevi imaju ugovorenu „hitnu“ obradu u smislu operativne grupe inboxa
+ * (`HITNO`, `KRITIČNO`, `VISOKO` → {@link operativnaGrupaIzFinalnogPrioriteta} `Hitno`).
+ * Obrazloženje je obavezno tek ako se prioritet spusti u srednju ili nisku grupu.
+ */
+export function premiumZahtijevaObrazlozenjeSmanjenjaPrioriteta(
+  finalPriority: string | null | undefined,
+): boolean {
+  return operativnaGrupaIzFinalnogPrioriteta(finalPriority) !== 'Hitno';
+}

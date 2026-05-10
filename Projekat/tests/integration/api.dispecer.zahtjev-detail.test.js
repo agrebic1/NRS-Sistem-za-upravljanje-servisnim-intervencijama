@@ -175,6 +175,35 @@ describe('/api/dispecer/zahtjevi/[id] route', () => {
     expect(body.error).toContain('Premium zahtjev');
   });
 
+  test('PATCH allows premium potvrdi u hitnoj grupi (VISOKO) bez obrazloženja', async () => {
+    mockSessionGetUser.mockResolvedValue({ data: { user: { id: 'd1' } } });
+    mockAssertDispatcherAccess.mockResolvedValue(true);
+
+    const onUpdate = jest.fn();
+    let serviceCalls = 0;
+    mockFrom.mockImplementation((table) => {
+      if (table !== 'service_requests') return singleQuery({ data: null, error: null });
+      serviceCalls += 1;
+      if (serviceCalls === 1) {
+        return singleQuery({ data: { status: 'pending_review', is_premium: true }, error: null });
+      }
+      return updateQuery({ error: null }, onUpdate);
+    });
+
+    const response = await PATCH(jsonRequest({ action: 'potvrdi', final_priority: 'VISOKO' }), {
+      params: { id: '1' },
+    });
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body.novi_status).toBe('potvrdeno');
+    expect(onUpdate).toHaveBeenCalledWith({
+      status: 'potvrdeno',
+      final_priority: 'VISOKO',
+      premium_priority_override_reason: null,
+    });
+  });
+
   test('PATCH changes priority and moves new request into review', async () => {
     mockSessionGetUser.mockResolvedValue({ data: { user: { id: 'd1' } } });
     mockAssertDispatcherAccess.mockResolvedValue(true);

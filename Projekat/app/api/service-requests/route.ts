@@ -204,8 +204,10 @@ export async function POST(request: Request) {
       triage_json,
       urgency_score,
       system_score:       urgency_score,   // identical to urgency_score initially
-      status:             premiumZahtjev ? 'in_review' : 'pending_review',
-      final_priority:     premiumZahtjev ? 'HITNO' : null,
+      // Premium i dalje ima visoku hitnost u inboxu (urgency / is_premium), ali status i operativni
+      // prioritet ostaju „novi“ dok dispečer ne potvrdi internu obradu (kao kod običnog zahtjeva).
+      status:             'pending_review',
+      final_priority:     null,
       preferred_schedule: scheduleResult.data,
     };
 
@@ -280,7 +282,7 @@ export async function POST(request: Request) {
     if (error?.message?.toLowerCase().includes('status')) {
       const legacyPayload = {
         ...insertPayload,
-        status: (premiumZahtjev ? 'in_review' : 'na_cekanju') as 'in_review' | 'na_cekanju',
+        status: 'na_cekanju' as const,
       };
       const legacyRetry = await supabase
         .from('service_requests')

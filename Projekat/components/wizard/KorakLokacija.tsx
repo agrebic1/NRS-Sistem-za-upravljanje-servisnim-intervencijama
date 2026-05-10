@@ -333,13 +333,18 @@ function AddressAutocomplete({
     if (e.key === 'Escape') setOtvoreno(false);
   }
 
+  const listaOtvorena = otvoreno && sugestije.length > 0;
+
   return (
-    <div ref={containerRef} className="flex flex-col gap-1.5">
+    <div
+      ref={containerRef}
+      className={`flex flex-col gap-1.5${listaOtvorena ? ' relative z-50' : ''}`}
+    >
       <label className="text-sm font-medium" style={{ color: 'var(--first-octonary)' }}>
         {label}
       </label>
-      {/* Dropdown odmah ispod polja — ne smije vizuelno prekriti GPS/map dugmad ispod. */}
-      <div className="relative z-10">
+      {/* Kad je lista otvorena, cijeli blok mora biti iznad GPS/map reda (z-30) da padajući panel ne izgleda „providno“. */}
+      <div className="relative">
         <textarea
           id="wizard-adresa"
           placeholder="Unesite adresu intervencije…"
@@ -365,12 +370,12 @@ function AddressAutocomplete({
           </div>
         )}
 
-        {otvoreno && sugestije.length > 0 && (
+        {listaOtvorena && (
           <div
-            className="absolute left-0 right-0 top-full z-20 mt-1.5 max-h-56 overflow-y-auto overflow-x-hidden rounded-xl shadow-card-lg"
+            className="absolute left-0 right-0 top-full z-20 mt-1.5 max-h-56 overflow-y-auto overflow-x-hidden rounded-xl
+              border bg-white shadow-xl ring-1 ring-[rgb(var(--first-primary-rgb)/0.08)]"
             style={{
-              backgroundColor: 'var(--first-tertiary)',
-              border:          '1px solid rgb(var(--first-quaternary-rgb) / 0.4)',
+              borderColor: 'rgb(var(--first-quaternary-rgb) / 0.45)',
             }}
           >
             {sugestije.map((s, i) => (
@@ -378,8 +383,10 @@ function AddressAutocomplete({
                 key={i}
                 type="button"
                 onClick={() => { onSelect(s); setOtvoreno(false); }}
-                className="flex w-full items-start gap-2 px-4 py-3 text-left transition-colors hover:bg-soft-beige/30"
-                style={{ backgroundColor: i === aktivan ? 'rgb(var(--first-quaternary-rgb) / 0.2)' : 'transparent' }}
+                className="flex w-full items-start gap-2 px-4 py-3 text-left transition-colors hover:bg-soft-beige/50"
+                style={{
+                  backgroundColor: i === aktivan ? 'rgb(var(--first-quaternary-rgb) / 0.28)' : undefined,
+                }}
               >
                 <MapPin className="mt-0.5 h-3.5 w-3.5 flex-shrink-0" style={{ color: '#DC2626' }} />
                 <span className="text-sm" style={{ color: 'var(--first-octonary)' }}>

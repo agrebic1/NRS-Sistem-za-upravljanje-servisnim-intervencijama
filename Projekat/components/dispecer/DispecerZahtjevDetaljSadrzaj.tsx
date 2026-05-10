@@ -24,6 +24,7 @@ import {
   DISPECER_OPERATIVNI_SELECT_NASLOV,
   DISPECER_OPERATIVNI_SELECT_OPIS,
 } from '@/lib/servisirane/dispecerPojmovi';
+import { premiumZahtijevaObrazlozenjeSmanjenjaPrioriteta } from '@/lib/servisirane/operativniPrioritet';
 import { dispecerSmijeMijenjatiOperativniPrioritet } from '@/lib/servisirane/statusZahtjeva';
 import { efektivniKorisnickiUrgencyScore } from '@/lib/servisirane/urgency';
 
@@ -246,10 +247,10 @@ export function DispecerZahtjevDetaljSadrzaj({
   const prioritetIzmijenjen = prioritet !== (fpNaServeru ?? '');
 
   const razlogNaServeru = (zahtjev.premium_priority_override_reason ?? '').trim();
+  const trebaPremiumObrazlozenje = zahtjev.is_premium && premiumZahtijevaObrazlozenjeSmanjenjaPrioriteta(prioritet);
+
   const razlogDowngradeIzmijenjen =
-    zahtjev.is_premium &&
-    prioritet !== 'HITNO' &&
-    downgradeRazlog.trim() !== razlogNaServeru;
+    trebaPremiumObrazlozenje && downgradeRazlog.trim() !== razlogNaServeru;
 
   const formaNijeSinhronizirana =
     mozeMijenjatiPrioritet && (prioritetIzmijenjen || razlogDowngradeIzmijenjen);
@@ -261,12 +262,11 @@ export function DispecerZahtjevDetaljSadrzaj({
 
   const referencaZaSmanjenje = referencniPrioritetZaSmanjenje(zahtjev, fpNaServeru);
   const prikaziPoljeObrazlozenjaSmanjenja =
-    (zahtjev.is_premium && prioritet !== 'HITNO') ||
-    jeOperativniPrioritetSmanjen(prioritet, referencaZaSmanjenje);
+    trebaPremiumObrazlozenje || jeOperativniPrioritetSmanjen(prioritet, referencaZaSmanjenje);
 
   const labelObrazlozenjaSmanjenja =
-    zahtjev.is_premium && prioritet !== 'HITNO'
-      ? 'Obrazloženje za operativni prioritet ispod HITNO (obavezno za premium zahtjeve)'
+    trebaPremiumObrazlozenje
+      ? 'Obrazloženje za smanjenje ispod hitne operativne grupe (obavezno za premium zahtjeve)'
       : 'Obrazloženje za smanjenje operativnog prioriteta';
 
   useEffect(() => {

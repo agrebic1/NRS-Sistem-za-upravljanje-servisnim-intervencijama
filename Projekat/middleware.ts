@@ -140,8 +140,10 @@ export async function middleware(zahtjev: NextRequest) {
   const jeJavniApiZaPartnerAplikaciju =
     method === 'POST' &&
     (pathname === PARTNER_APPLICATIONS_API || pathname.startsWith(`${PARTNER_APPLICATIONS_API}/`));
+  /** API rute moraju vratiti JSON (401/403), ne HTML redirect — inače klijent baca „Unexpected token '<'”. */
+  const jeApiRuta = pathname.startsWith('/api/');
 
-  if (!user && !jeJavnaRuta && !jeJavniApiZaPartnerAplikaciju) {
+  if (!user && !jeJavnaRuta && !jeJavniApiZaPartnerAplikaciju && !jeApiRuta) {
     const loginUrl = new URL('/auth/login', zahtjev.url);
     loginUrl.searchParams.set('redirectTo', pathname);
     return NextResponse.redirect(loginUrl);
