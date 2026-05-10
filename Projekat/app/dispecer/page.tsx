@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ClipboardList, ChevronRight,
   RefreshCw, XCircle, BellOff,
@@ -57,7 +57,7 @@ interface ToastPoruka {
   boja:    string;
 }
 
-export default function DispecerPage() {
+function DispecerPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const zIzUrl = searchParams.get('z');
@@ -616,5 +616,21 @@ export default function DispecerPage() {
         </div>
       )}
     </>
+  );
+}
+
+export default function DispecerPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-[50vh] items-center justify-center p-8">
+          <p className="text-sm" style={{ color: 'var(--first-nonary)' }}>
+            Učitavanje...
+          </p>
+        </div>
+      }
+    >
+      <DispecerPageContent />
+    </Suspense>
   );
 }

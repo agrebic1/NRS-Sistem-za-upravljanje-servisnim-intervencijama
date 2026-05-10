@@ -10,7 +10,9 @@ import {
 } from '@/lib/servisirane/dispecerskeFaze';
 import { zahtjevCekaObraduUInboxuDispecera } from '@/lib/servisirane/statusZahtjeva';
 
-function stilBedza(pal: (typeof DISPECER_PALETA_STATUS)['inbox']) {
+type DispecerPaletaStatus = (typeof DISPECER_PALETA_STATUS)[keyof typeof DISPECER_PALETA_STATUS];
+
+function stilBedza(pal: DispecerPaletaStatus) {
   return {
     color: pal.tekst,
     backgroundColor: pal.pozadina,
