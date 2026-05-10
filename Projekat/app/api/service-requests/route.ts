@@ -6,7 +6,8 @@ import {
   preferredScheduleSchema,
   serviceRequestSchema,
 } from '@/lib/validations/servisirane';
-import { izracunajUrgency } from '@/lib/servisirane/urgency';
+import { izracunajUrgency, URGENCY_SCORE_MAKS } from '@/lib/servisirane/urgency';
+import type { TriageOdgovori } from '@/domain/types/servisirane';
 import { labelKategorije, serializujKategoriju, validnaKombinacijaKategorije } from '@/lib/servisirane/kategorije';
 import { dodijeliKorisnickeBrojeveZahtjeva } from '@/lib/servisirane/korisnickiBrojZahtjeva';
 import { z } from 'zod';
@@ -183,7 +184,11 @@ export async function POST(request: Request) {
       );
     }
     const legacy = labelKategorije({ category });
-    const urgency_score = izracunajUrgency(triage);
+    const premiumZahtjev = is_premium === true;
+    const urgency_score = premiumZahtjev
+      ? URGENCY_SCORE_MAKS
+      : izracunajUrgency(triage as TriageOdgovori);
+    const triage_json = premiumZahtjev ? null : (triage as TriageOdgovori);
 
     const insertPayload = {
       user_id:            user.id,
@@ -191,16 +196,16 @@ export async function POST(request: Request) {
       category:           resolvedCategory?.category ?? category,
       category_main:      resolvedCategory?.category_main ?? null,
       category_sub:       resolvedCategory?.category_sub ?? null,
-      is_premium:         is_premium === true,
-      premium_terms_accepted: is_premium === true ? true : false,
-      premium_requested_at: is_premium === true ? new Date().toISOString() : null,
-      urgent_requested:   is_premium === true,
-      urgent_requested_at: is_premium === true ? new Date().toISOString() : null,
-      triage_json:        triage,
+      is_premium:         premiumZahtjev,
+      premium_terms_accepted: premiumZahtjev ? true : false,
+      premium_requested_at: premiumZahtjev ? new Date().toISOString() : null,
+      urgent_requested:   premiumZahtjev,
+      urgent_requested_at: premiumZahtjev ? new Date().toISOString() : null,
+      triage_json,
       urgency_score,
       system_score:       urgency_score,   // identical to urgency_score initially
-      status:             'pending_review',
-      final_priority:     is_premium === true ? 'HITNO' : null,
+      status:             premiumZahtjev ? 'in_review' : 'pending_review',
+      final_priority:     premiumZahtjev ? 'HITNO' : null,
       preferred_schedule: scheduleResult.data,
     };
 
@@ -275,7 +280,7 @@ export async function POST(request: Request) {
     if (error?.message?.toLowerCase().includes('status')) {
       const legacyPayload = {
         ...insertPayload,
-        status: 'na_cekanju',
+        status: (premiumZahtjev ? 'in_review' : 'na_cekanju') as 'in_review' | 'na_cekanju',
       };
       const legacyRetry = await supabase
         .from('service_requests')

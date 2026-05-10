@@ -110,26 +110,39 @@ export const wizardKorak3Schema = z.object({
   obuhvat:   z.boolean({ required_error: 'Odgovorite na pitanje o obimu uticaja' }),
 });
 
-export const serviceRequestSchema = z.object({
-  category:      z.string().min(1),
-  category_main: z.string().min(1).optional(),
-  category_sub:  z.string().min(1).optional(),
-  address:       z.string().min(5).max(500),
-  description:   z.string().min(20).max(2000),
-  // Usklađeno s wizardom (PHONE_REGEX): 8–20 znakova
-  contact_phone: z
-    .string()
-    .min(8, 'Unesite ispravan kontakt telefon.')
-    .max(20, 'Kontakt telefon je predugačak.')
-    .regex(/^[+]?[0-9\s\-()]{8,20}$/, 'Unesite ispravan kontakt telefon.'),
-  photo_url:     z.string().url().optional().nullable(),
-  /** Opcionalno: GPS / mapa (AC15) */
-  latitude:      z.number().min(-90).max(90).optional().nullable(),
-  longitude:     z.number().min(-180).max(180).optional().nullable(),
-  is_premium:    z.boolean().optional(),
-  premium_terms_accepted: z.boolean().optional(),
-  triage:        wizardKorak3Schema,
-});
+export const serviceRequestSchema = z
+  .object({
+    category:      z.string().min(1),
+    category_main: z.string().min(1).optional(),
+    category_sub:  z.string().min(1).optional(),
+    address:       z.string().min(5).max(500),
+    description:   z.string().min(20).max(2000),
+    // Usklađeno s wizardom (PHONE_REGEX): 8–20 znakova
+    contact_phone: z
+      .string()
+      .min(8, 'Unesite ispravan kontakt telefon.')
+      .max(20, 'Kontakt telefon je predugačak.')
+      .regex(/^[+]?[0-9\s\-()]{8,20}$/, 'Unesite ispravan kontakt telefon.'),
+    photo_url:     z.string().url().optional().nullable(),
+    /** Opcionalno: GPS / mapa (AC15) */
+    latitude:      z.number().min(-90).max(90).optional().nullable(),
+    longitude:     z.number().min(-180).max(180).optional().nullable(),
+    is_premium:    z.boolean().optional(),
+    premium_terms_accepted: z.boolean().optional(),
+    /** Za premium hitnu može biti `null` / izostavljeno — trijaža se ne primjenjuje. */
+    triage:        z.union([wizardKorak3Schema, z.null()]).optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.is_premium === true) return;
+    const r = wizardKorak3Schema.safeParse(data.triage);
+    if (!r.success) {
+      ctx.addIssue({
+        code:    z.ZodIssueCode.custom,
+        message: r.error.errors[0]?.message ?? 'Odgovorite na sva pitanja trijaže.',
+        path:    ['triage'],
+      });
+    }
+  });
 
 export const cancelRequestSchema = z.object({
   cancel_reason: z.string().min(1, 'Odaberite razlog otkazivanja').max(500),

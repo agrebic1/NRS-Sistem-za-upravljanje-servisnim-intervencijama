@@ -1,23 +1,54 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
-  ClipboardList, Clock, Wrench, ChevronRight,
+  ClipboardList, ChevronRight,
   RefreshCw, XCircle, BellOff,
 } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { AppShell } from '@/components/layout/AppShell';
 import { Button } from '@/components/ui/Button';
 import { AlertMessage } from '@/components/ui/AlertMessage';
+import { DispecerKontrolnaTablaSažetak } from '@/components/dispecer/DispecerKontrolnaTablaSažetak';
 import {
   DispecerskaZahtjevKartica,
-  zahtjevCekaObraduSprint7,
   type ZahtjevZaDispecerskuKarticu,
 } from '@/components/dispecer/DispecerskaZahtjevKartica';
 import { kreirajKlijenta } from '@/lib/supabase/klijent';
+import { zahtjevCekaObraduUInboxuDispecera } from '@/lib/servisirane/statusZahtjeva';
+import {
+  zahtjevJeNoviUPregleduDispecera,
+  zahtjevJeUObradiUPregleduDispecera,
+} from '@/lib/servisirane/dispecerskeFaze';
+import {
+  DISPECER_INBOX_GRUPA_HITNO_NASLOV,
+  DISPECER_INBOX_GRUPA_HITNO_TITLE,
+  DISPECER_INBOX_GRUPA_SREDNJE_NASLOV,
+  DISPECER_INBOX_GRUPA_SREDNJE_TITLE,
+  DISPECER_INBOX_GRUPA_NISKO_NASLOV,
+  DISPECER_INBOX_GRUPA_NISKO_TITLE,
+} from '@/lib/servisirane/dispecerPojmovi';
+import {
+  DISPECER_PALETA_HITNOST,
+  DISPECER_PALETA_PREMIUM,
+  DISPECER_PALETA_STATUS,
+} from '@/lib/servisirane/dispecerPaleta';
+import { inboxGrupaIzKorisnickeProcjene, sastaviDispecerskiInboxRedoslijed } from '@/lib/servisirane/urgency';
 
-const JE_PENDING = (status: string) =>
-  status === 'na_cekanju' || status === 'pending_review' || status === 'in_review';
+const JE_PENDING = zahtjevCekaObraduUInboxuDispecera;
+
+const NASLOV_INBOX_GRUPE: Record<'Hitno' | 'Srednja' | 'Niska', string> = {
+  Hitno: DISPECER_INBOX_GRUPA_HITNO_NASLOV,
+  Srednja: DISPECER_INBOX_GRUPA_SREDNJE_NASLOV,
+  Niska: DISPECER_INBOX_GRUPA_NISKO_NASLOV,
+};
+
+const TITLE_INBOX_GRUPE: Record<'Hitno' | 'Srednja' | 'Niska', string> = {
+  Hitno: DISPECER_INBOX_GRUPA_HITNO_TITLE,
+  Srednja: DISPECER_INBOX_GRUPA_SREDNJE_TITLE,
+  Niska: DISPECER_INBOX_GRUPA_NISKO_TITLE,
+};
 
 interface ToastPoruka {
   id:      number;
@@ -26,26 +57,74 @@ interface ToastPoruka {
   boja:    string;
 }
 
-export default function DispecerPage() {
+function DispecerPageContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const zIzUrl = searchParams.get('z');
   const [zahtjevi, setZahtjevi] = useState<ZahtjevZaDispecerskuKarticu[]>([]);
   const [ucitava,  setUcitava]  = useState(true);
   const [greska,   setGreska]   = useState<string | null>(null);
   const [toast,    setToast]    = useState<ToastPoruka | null>(null);
+  const [odabraniZahtjevId, setOdabraniZahtjevId] = useState<number | null>(null);
+  const [splitPanelAktivan, setSplitPanelAktivan] = useState(false);
   const [imeKorisnika, setImeKorisnika] = useState('Dispečer');
   const toastTimerRef           = useRef<ReturnType<typeof setTimeout>>();
 
-  const zahtjeviCekajuObradu = zahtjevi
-    .filter((z) => zahtjevCekaObraduSprint7(z.status))
-    .sort((a, b) => {
-      if (Boolean(a.is_premium) !== Boolean(b.is_premium)) {
-        return a.is_premium ? -1 : 1;
-      }
-      const t = new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
-      if (t !== 0) return t;
-      return a.id - b.id;
-    });
+  const noviInboxPodaci = useMemo(() => {
+    const pending = zahtjevi.filter(
+      (z) => JE_PENDING(z.status) && zahtjevJeNoviUPregleduDispecera(z),
+    );
+    return sastaviDispecerskiInboxRedoslijed(pending);
+  }, [zahtjevi]);
 
-  function prikaziToast(tekst: string, boja = '#DC2626', naslov = 'Obavještenje') {
+  const uObradiInboxPodaci = useMemo(() => {
+    const pending = zahtjevi.filter(
+      (z) => JE_PENDING(z.status) && zahtjevJeUObradiUPregleduDispecera(z),
+    );
+    return sastaviDispecerskiInboxRedoslijed(pending);
+  }, [zahtjevi]);
+
+  const zahtjeviCekajuObradu = useMemo(
+    () => [...noviInboxPodaci.uredjeni, ...uObradiInboxPodaci.uredjeni],
+    [noviInboxPodaci.uredjeni, uObradiInboxPodaci.uredjeni],
+  );
+
+  const zahtjevPoId = new Map(zahtjeviCekajuObradu.map((z) => [z.id, z] as const));
+
+  /**
+   * Lijeva lista: ?z= ili stanje ako je u inboxu; inače prvo po hitnosti u **Novi**, pa u **U obradi**.
+   */
+  const prikazaniZahtjevId = useMemo(() => {
+    if (zahtjeviCekajuObradu.length === 0) return null;
+    const map = new Map(zahtjeviCekajuObradu.map((z) => [z.id, z] as const));
+    const parsed = zIzUrl != null && zIzUrl !== '' ? parseInt(zIzUrl, 10) : NaN;
+    if (!Number.isNaN(parsed) && map.has(parsed)) return parsed;
+    if (odabraniZahtjevId != null && map.has(odabraniZahtjevId)) return odabraniZahtjevId;
+
+    const prviPoHitnosti = (red: ZahtjevZaDispecerskuKarticu[]) => {
+      for (const g of ['Hitno', 'Srednja', 'Niska'] as const) {
+        const prvi = red.find((z) => inboxGrupaIzKorisnickeProcjene(z) === g);
+        if (prvi) return prvi.id;
+      }
+      return red[0]?.id ?? null;
+    };
+
+    if (noviInboxPodaci.uredjeni.length > 0) {
+      return prviPoHitnosti(noviInboxPodaci.uredjeni);
+    }
+    return prviPoHitnosti(uObradiInboxPodaci.uredjeni);
+  }, [
+    zahtjeviCekajuObradu,
+    noviInboxPodaci.uredjeni,
+    uObradiInboxPodaci.uredjeni,
+    zIzUrl,
+    odabraniZahtjevId,
+  ]);
+
+  const odabraniZahtjev =
+    prikazaniZahtjevId != null ? (zahtjevPoId.get(prikazaniZahtjevId) ?? null) : null;
+
+  function prikaziToast(tekst: string, boja: string = DISPECER_PALETA_STATUS.neutral.kpi, naslov = 'Obavijest') {
     clearTimeout(toastTimerRef.current);
     setToast({ id: Date.now(), naslov, tekst, boja });
     toastTimerRef.current = setTimeout(() => setToast(null), 6000);
@@ -66,7 +145,11 @@ export default function DispecerPage() {
         (payload) => {
           const z = payload.new as { id: number; category?: string; status: string };
           const naziv = z.category ?? 'Nepoznat zahtjev';
-          prikaziToast(`Zahtjev "${naziv}" je upravo otkazan od strane korisnika.`, '#DC2626', 'Zahtjev otkazan');
+          prikaziToast(
+            `Zahtjev "${naziv}" je upravo otkazan od strane korisnika.`,
+            DISPECER_PALETA_STATUS.neutral.kpi,
+            'Zahtjev je otkazan',
+          );
           setZahtjevi((prev) => prev.filter((x) => x.id !== z.id));
         }
       )
@@ -94,9 +177,9 @@ export default function DispecerPage() {
           (payload) => {
             const a = payload.new as { message?: string };
             prikaziToast(
-              a.message ?? 'Novi premium zahtjev čeka prioritetnu obradu.',
-              '#B91C1C',
-              'Premium zahtjev'
+              a.message ?? 'Novi premium zahtjev čeka prioritetnu obradu u sistemu.',
+              DISPECER_PALETA_PREMIUM.toast,
+              'Premium zahtjev',
             );
           }
         )
@@ -108,22 +191,58 @@ export default function DispecerPage() {
     };
   }, []);
 
-  async function ucitajZahtjeve() {
-    setUcitava(true);
-    setGreska(null);
+  const ucitajZahtjeve = useCallback(async (tiho = false) => {
+    if (!tiho) {
+      setUcitava(true);
+      setGreska(null);
+    }
     try {
       const r = await fetch('/api/dispecer/zahtjevi', { cache: 'no-store' });
       const d = await r.json();
-      if (!r.ok) throw new Error(d.error ?? 'Greška pri učitavanju.');
+      if (!r.ok) throw new Error(d.error ?? 'Greška pri učitavanju podataka.');
       setZahtjevi(d.zahtjevi ?? []);
     } catch (err) {
-      setGreska(err instanceof Error ? err.message : 'Greška.');
+      if (!tiho) {
+        setGreska(err instanceof Error ? err.message : 'Došlo je do greške.');
+      }
     } finally {
-      setUcitava(false);
+      if (!tiho) {
+        setUcitava(false);
+      }
     }
-  }
+  }, []);
 
-  useEffect(() => { ucitajZahtjeve(); }, []);
+  useEffect(() => {
+    void ucitajZahtjeve(false);
+  }, [ucitajZahtjeve]);
+
+  useEffect(() => {
+    const t = setInterval(() => {
+      void ucitajZahtjeve(true);
+    }, 25_000);
+    return () => clearInterval(t);
+  }, [ucitajZahtjeve]);
+
+  useEffect(() => {
+    if (prikazaniZahtjevId === odabraniZahtjevId) return;
+    setOdabraniZahtjevId(prikazaniZahtjevId);
+  }, [prikazaniZahtjevId, odabraniZahtjevId]);
+
+  /** Samo ukloni ?z kad inbox postane prazan — bez stalnog replace() koji uzrokuje trešnju. */
+  useEffect(() => {
+    if (!splitPanelAktivan || ucitava) return;
+    if (zahtjeviCekajuObradu.length === 0 && zIzUrl) {
+      router.replace('/dispecer', { scroll: false });
+    }
+  }, [splitPanelAktivan, ucitava, zahtjeviCekajuObradu.length, zIzUrl, router]);
+
+  useEffect(() => {
+    const media = window.matchMedia('(min-width: 1024px)');
+    const primijeni = () => setSplitPanelAktivan(media.matches);
+    primijeni();
+    media.addEventListener('change', primijeni);
+    return () => media.removeEventListener('change', primijeni);
+  }, []);
 
   useEffect(() => {
     const supabase = kreirajKlijenta();
@@ -157,9 +276,10 @@ export default function DispecerPage() {
     };
   }, []);
 
-  const naCekanju = zahtjevi.filter((z) => JE_PENDING(z.status)).length;
-  const potvrdeno = zahtjevi.filter((z) => z.status === 'potvrdeno').length;
-  const aktivnih  = zahtjevi.filter((z) => !['zavrseno', 'otkazano', 'odbijeno'].includes(z.status)).length;
+  const uInboxu = zahtjevi.filter((z) => JE_PENDING(z.status));
+  const noviPregledBr = uInboxu.filter((z) => zahtjevJeNoviUPregleduDispecera(z)).length;
+  const uObradiPregledBr = uInboxu.filter((z) => zahtjevJeUObradiUPregleduDispecera(z)).length;
+  const potvrdenoBr = zahtjevi.filter((z) => z.status === 'potvrdeno').length;
 
   return (
     <>
@@ -167,50 +287,79 @@ export default function DispecerPage() {
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight" style={{ color: 'var(--first-octonary)' }}>
-            Upravljanje zahtjevima
+            Kontrolna ploča
           </h1>
-          <p className="mt-1 text-sm" style={{ color: 'var(--first-nonary)' }}>
-            Pregled zahtjeva u redu za obradu. Redoslijed: prvo ranije prijavljeni.
-          </p>
         </div>
-        <Button type="button" variant="secondary" size="md" onClick={ucitajZahtjeve} isLoading={ucitava} loadingText="Osvježavanje...">
+        <Button
+          type="button"
+          variant="secondary"
+          size="md"
+          onClick={() => void ucitajZahtjeve(false)}
+          isLoading={ucitava}
+          loadingText="Osvježavanje..."
+        >
           <RefreshCw className="h-4 w-4" />
           Osvježi
         </Button>
       </div>
 
-      <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {[
-          { oznaka: 'Čeka obradu',  vrijednost: naCekanju, boja: '#D97706', Ikona: ClipboardList },
-          { oznaka: 'Potvrđeno',   vrijednost: potvrdeno, boja: '#2563EB', Ikona: Clock },
-          { oznaka: 'Svi aktivni', vrijednost: aktivnih,  boja: '#059669', Ikona: Wrench },
-        ].map(({ oznaka, vrijednost, boja, Ikona }) => (
-          <div key={oznaka} className="flex items-center gap-4 rounded-2xl p-5 shadow-card"
-            style={{ backgroundColor: 'rgb(var(--first-quinary-rgb) / 0.22)', border: '1px solid rgb(var(--first-quaternary-rgb) / 0.35)' }}>
+          {
+            oznaka:    'Novi',
+            vrijednost: noviPregledBr,
+            boja:      DISPECER_PALETA_STATUS.inbox.kpi,
+            Ikona:     ClipboardList,
+            href:      '/dispecer/zahtjevi?filter=novi',
+          },
+          {
+            oznaka:    'U obradi',
+            vrijednost: uObradiPregledBr,
+            boja:      DISPECER_PALETA_STATUS.uObradi.kpi,
+            Ikona:     ClipboardList,
+            href:      '/dispecer/zahtjevi?filter=u_obradi',
+          },
+          {
+            oznaka:    'Potvrđeno',
+            vrijednost: potvrdenoBr,
+            boja:      DISPECER_PALETA_STATUS.terminPotvrden.kpi,
+            Ikona:     ClipboardList,
+            href:      '/dispecer/zahtjevi?filter=potvrdeno',
+          },
+        ].map(({ oznaka, vrijednost, boja, Ikona, href }) => (
+          <Link
+            key={oznaka}
+            href={href}
+            className="flex items-center gap-4 rounded-2xl p-5 shadow-card transition-opacity hover:opacity-90"
+            style={{ backgroundColor: 'rgb(var(--first-quinary-rgb) / 0.22)', border: '1px solid rgb(var(--first-quaternary-rgb) / 0.35)' }}
+          >
             <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl" style={{ backgroundColor: `${boja}18` }}>
               <Ikona className="h-5 w-5" style={{ color: boja }} />
             </div>
             <div>
-              <p className="text-2xl font-bold" style={{ color: boja }}>{vrijednost}</p>
-              <p className="text-xs" style={{ color: 'var(--first-nonary)' }}>{oznaka}</p>
+              <p className="text-3xl font-extrabold leading-none" style={{ color: boja }}>{vrijednost}</p>
+              <p className="mt-1 text-xs font-medium" style={{ color: 'rgb(var(--first-nonary-rgb) / 0.86)' }}>{oznaka}</p>
+              <p className="mt-1 text-[11px] font-medium" style={{ color: 'rgb(var(--first-nonary-rgb) / 0.62)' }}>
+                Otvori filtrirani pregled
+              </p>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
 
       {greska && <div className="mb-6"><AlertMessage variant="error" message={greska} /></div>}
 
-      <div className="rounded-2xl shadow-card"
+      <div className="min-w-0 overflow-x-clip rounded-2xl shadow-card"
         style={{ backgroundColor: 'rgb(var(--first-quinary-rgb) / 0.22)', border: '1px solid rgb(var(--first-quaternary-rgb) / 0.35)' }}>
         <div className="flex items-center justify-between px-5 py-4"
           style={{ borderBottom: '1px solid rgb(var(--first-quaternary-rgb) / 0.3)' }}>
           <h2 className="font-semibold" style={{ color: 'var(--first-octonary)' }}>
-            Zahtjevi koji čekaju obradu ({zahtjeviCekajuObradu.length})
+            Inbox ({zahtjeviCekajuObradu.length})
           </h2>
           <Link href="/dispecer/zahtjevi"
             className="flex items-center gap-1 text-sm font-medium transition-opacity hover:opacity-70"
             style={{ color: 'var(--first-secondary)' }}>
-            Upravljanje <ChevronRight className="h-4 w-4" />
+            Pregled zahtjeva <ChevronRight className="h-4 w-4" />
           </Link>
         </div>
 
@@ -225,29 +374,208 @@ export default function DispecerPage() {
               Nema aktivnih zahtjeva
             </p>
             <p className="mt-1 text-sm" style={{ color: 'var(--first-nonary)' }}>
-              Kada korisnik pošalje zahtjev, pojavit će se ovdje.
+              Kada korisnik pošalje zahtjev, pojaviće se ovdje.
             </p>
           </div>
         )}
         {!ucitava && zahtjevi.length > 0 && zahtjeviCekajuObradu.length === 0 && (
           <div className="px-5 py-10 text-center">
             <p className="text-sm font-medium" style={{ color: 'var(--first-octonary)' }}>
-              Nema zahtjeva koji čekaju obradu
+              Inbox je prazan
             </p>
             <p className="mt-1 text-sm" style={{ color: 'var(--first-nonary)' }}>
-              Svi trenutni zahtjevi su dalje u obradi. Pregled svih zahtjeva: Upravljanje.
+              Nema zahtjeva koji čekaju prioritet ili čarobnjak. Ostali aktivni zahtjevi: lista zahtjeva.
             </p>
           </div>
         )}
         {!ucitava && zahtjeviCekajuObradu.length > 0 && (
-          <div className="p-4 sm:p-5">
-            <ul className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-              {zahtjeviCekajuObradu.map((z) => (
-                <li key={z.id}>
-                  <DispecerskaZahtjevKartica zahtjev={z} />
-                </li>
-              ))}
-            </ul>
+          <div className="min-w-0 p-4 sm:p-5">
+            {splitPanelAktivan ? (
+              <div
+                className="grid min-h-0 min-w-0 grid-cols-[minmax(20rem,24rem)_minmax(0,1fr)] items-stretch gap-4
+                  h-[min(56rem,calc(100vh-13rem))] max-h-[calc(100vh-13rem)]"
+              >
+                <section className="min-h-0 min-w-0 overflow-y-auto overflow-x-hidden pr-1">
+                  <div className="flex min-w-0 flex-col gap-6 pb-1">
+                    <div className="min-w-0">
+                      <p
+                        className="mb-3 text-sm font-bold tracking-tight"
+                        style={{ color: DISPECER_PALETA_STATUS.inbox.kpi }}
+                      >
+                        Novi ({noviInboxPodaci.uredjeni.length})
+                      </p>
+                      {noviInboxPodaci.uredjeni.length === 0 ? (
+                        <p className="text-xs leading-relaxed" style={{ color: 'var(--first-nonary)' }}>
+                          Nema novih — svi imaju potvrđen operativni prioritet.
+                        </p>
+                      ) : (
+                        <div className="flex min-w-0 flex-col gap-4">
+                          {(['Hitno', 'Srednja', 'Niska'] as const).map((grupa) => {
+                            const stavke = noviInboxPodaci.grupisani[grupa];
+                            if (stavke.length === 0) return null;
+                            return (
+                              <div key={`novi-${grupa}`} className="min-w-0">
+                                <p
+                                  className="mb-2 text-xs font-semibold uppercase tracking-wide"
+                                  title={TITLE_INBOX_GRUPE[grupa]}
+                                  style={{ color: DISPECER_PALETA_HITNOST[grupa].grupaNaslov }}
+                                >
+                                  {NASLOV_INBOX_GRUPE[grupa]} ({stavke.length})
+                                </p>
+                                <ul className="flex min-w-0 flex-col gap-2.5">
+                                  {stavke.map((z) => (
+                                    <li key={z.id} className="min-w-0">
+                                      <DispecerskaZahtjevKartica
+                                        zahtjev={z}
+                                        expanded={false}
+                                        selected={prikazaniZahtjevId === z.id}
+                                        onExpandToggle={() => {
+                                          setOdabraniZahtjevId(z.id);
+                                          router.replace(`/dispecer?z=${z.id}`, { scroll: false });
+                                        }}
+                                      />
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+
+                    <div
+                      className="min-w-0 border-t pt-5"
+                      style={{ borderColor: 'rgb(var(--first-quaternary-rgb) / 0.28)' }}
+                    >
+                      <p
+                        className="mb-3 text-sm font-bold tracking-tight"
+                        style={{ color: DISPECER_PALETA_STATUS.uObradi.kpi }}
+                      >
+                        U obradi ({uObradiInboxPodaci.uredjeni.length})
+                      </p>
+                      {uObradiInboxPodaci.uredjeni.length === 0 ? (
+                        <p className="text-xs leading-relaxed" style={{ color: 'var(--first-nonary)' }}>
+                          Nema zahtjeva u čarobnjaku — svi još čekaju prioritet (Novi).
+                        </p>
+                      ) : (
+                        <div className="flex min-w-0 flex-col gap-4">
+                          {(['Hitno', 'Srednja', 'Niska'] as const).map((grupa) => {
+                            const stavke = uObradiInboxPodaci.grupisani[grupa];
+                            if (stavke.length === 0) return null;
+                            return (
+                              <div key={`uobradi-${grupa}`} className="min-w-0">
+                                <p
+                                  className="mb-2 text-xs font-semibold uppercase tracking-wide"
+                                  title={TITLE_INBOX_GRUPE[grupa]}
+                                  style={{ color: DISPECER_PALETA_HITNOST[grupa].grupaNaslov }}
+                                >
+                                  {NASLOV_INBOX_GRUPE[grupa]} ({stavke.length})
+                                </p>
+                                <ul className="flex min-w-0 flex-col gap-2.5">
+                                  {stavke.map((z) => (
+                                    <li key={z.id} className="min-w-0">
+                                      <DispecerskaZahtjevKartica
+                                        zahtjev={z}
+                                        expanded={false}
+                                        selected={prikazaniZahtjevId === z.id}
+                                        onExpandToggle={() => {
+                                          setOdabraniZahtjevId(z.id);
+                                          router.replace(`/dispecer?z=${z.id}`, { scroll: false });
+                                        }}
+                                      />
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </section>
+
+                <section className="min-h-0 min-w-0 overflow-y-auto">
+                  {odabraniZahtjev ? (
+                    <DispecerKontrolnaTablaSažetak zahtjev={odabraniZahtjev} />
+                  ) : (
+                    <div
+                      className="flex min-h-[280px] flex-col items-center justify-center rounded-2xl px-6 py-12 text-center"
+                      style={{
+                        backgroundColor: 'rgb(var(--first-quinary-rgb) / 0.22)',
+                        border: '1px solid rgb(var(--first-quaternary-rgb) / 0.35)',
+                      }}
+                    >
+                      <ClipboardList
+                        className="h-12 w-12"
+                        style={{ color: 'rgb(var(--first-nonary-rgb) / 0.45)' }}
+                        aria-hidden
+                      />
+                      <p className="mt-4 max-w-sm text-sm font-medium leading-snug" style={{ color: 'var(--first-octonary)' }}>
+                        Odaberite zahtjev za pregled detalja
+                      </p>
+                    </div>
+                  )}
+                </section>
+              </div>
+            ) : (
+              <div className="flex min-w-0 flex-col gap-6">
+                <div className="min-w-0">
+                  <p
+                    className="mb-2 text-sm font-bold"
+                    style={{ color: DISPECER_PALETA_STATUS.inbox.kpi }}
+                  >
+                    Novi ({noviInboxPodaci.uredjeni.length})
+                  </p>
+                  {noviInboxPodaci.uredjeni.length === 0 ? (
+                    <p className="text-xs" style={{ color: 'var(--first-nonary)' }}>
+                      Nema novih zahtjeva bez prioriteta.
+                    </p>
+                  ) : (
+                    <ul className="flex min-w-0 flex-col gap-3">
+                      {noviInboxPodaci.uredjeni.map((z) => (
+                        <li key={z.id} className="min-w-0">
+                          <DispecerskaZahtjevKartica
+                            zahtjev={z}
+                            expanded={false}
+                            onExpandToggle={() => router.push(`/dispecer/zahtjevi/${z.id}`)}
+                          />
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+                <div
+                  className="min-w-0 border-t pt-5"
+                  style={{ borderColor: 'rgb(var(--first-quaternary-rgb) / 0.28)' }}
+                >
+                  <p
+                    className="mb-2 text-sm font-bold"
+                    style={{ color: DISPECER_PALETA_STATUS.uObradi.kpi }}
+                  >
+                    U obradi ({uObradiInboxPodaci.uredjeni.length})
+                  </p>
+                  {uObradiInboxPodaci.uredjeni.length === 0 ? (
+                    <p className="text-xs" style={{ color: 'var(--first-nonary)' }}>
+                      Nema zahtjeva u čarobnjaku.
+                    </p>
+                  ) : (
+                    <ul className="flex min-w-0 flex-col gap-3">
+                      {uObradiInboxPodaci.uredjeni.map((z) => (
+                        <li key={z.id} className="min-w-0">
+                          <DispecerskaZahtjevKartica
+                            zahtjev={z}
+                            expanded={false}
+                            onExpandToggle={() => router.push(`/dispecer/zahtjevi/${z.id}`)}
+                          />
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -288,5 +616,21 @@ export default function DispecerPage() {
         </div>
       )}
     </>
+  );
+}
+
+export default function DispecerPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-[50vh] items-center justify-center p-8">
+          <p className="text-sm" style={{ color: 'var(--first-nonary)' }}>
+            Učitavanje...
+          </p>
+        </div>
+      }
+    >
+      <DispecerPageContent />
+    </Suspense>
   );
 }

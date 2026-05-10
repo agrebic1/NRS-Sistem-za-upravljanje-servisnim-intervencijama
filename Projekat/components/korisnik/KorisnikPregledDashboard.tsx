@@ -13,14 +13,14 @@ import {
   ClipboardList,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
-type StatusZahtjeva = 'novi' | 'u_toku' | 'zavrsen' | 'hitno';
+import type { KorisnickiDashboardStatus } from '@/lib/servisirane/statusZahtjeva';
 
 export interface KorisnikDashboardZahtjev {
   id: string;
   /** Redni broj zahtjeva korisnika (1 = najstariji). */
   korisnickiBroj: number;
   naslov: string;
-  status: StatusZahtjeva;
+  status: KorisnickiDashboardStatus;
   datum: string;
   lokacija: string;
 }
@@ -30,15 +30,37 @@ interface KorisnikPregledDashboardProps {
   zahtjevi: KorisnikDashboardZahtjev[];
 }
 
-const BADGE_STATUSA: Record<StatusZahtjeva, { oznaka: string; pozadina: string; boja: string }> = {
+const BADGE_STATUSA: Record<
+  KorisnickiDashboardStatus,
+  { oznaka: string; pozadina: string; boja: string }
+> = {
   novi: { oznaka: 'Novi', pozadina: 'rgb(var(--first-quaternary-rgb) / 0.22)', boja: 'var(--first-nonary)' },
-  u_toku: { oznaka: 'U toku', pozadina: 'rgb(var(--first-secondary-rgb) / 0.14)', boja: 'var(--first-secondary)' },
-  zavrsen: { oznaka: 'Završen', pozadina: 'rgb(var(--first-septenary-rgb) / 0.18)', boja: 'var(--first-septenary)' },
-  hitno: { oznaka: 'Hitno', pozadina: 'rgb(var(--first-senary-rgb) / 0.12)', boja: 'var(--first-senary)' },
+  u_obradi: {
+    oznaka: 'U čarobnjaku',
+    pozadina: 'rgba(202,138,4,0.12)',
+    boja: '#A16207',
+  },
+  u_toku: { oznaka: 'Na terenu', pozadina: 'rgb(var(--first-secondary-rgb) / 0.14)', boja: 'var(--first-secondary)' },
+  zavrseno: { oznaka: 'Završeno', pozadina: 'rgb(var(--first-septenary-rgb) / 0.18)', boja: 'var(--first-septenary)' },
+  otkazano: { oznaka: 'Otkazano', pozadina: 'rgb(var(--first-quinary-rgb) / 0.3)', boja: 'var(--first-nonary)' },
+  odbijeno: { oznaka: 'Odbijeno', pozadina: 'rgb(var(--first-senary-rgb) / 0.2)', boja: 'var(--first-senary)' },
+  hitno: {
+    oznaka: 'Visoka hitnost (vaša procjena)',
+    pozadina: 'rgb(var(--first-senary-rgb) / 0.12)',
+    boja: 'var(--first-senary)',
+  },
 };
 
+function jeZavrsenKaoIntervencija(status: KorisnickiDashboardStatus) {
+  return status === 'zavrseno';
+}
+
+function jeTerminalniKorisnicki(status: KorisnickiDashboardStatus) {
+  return status === 'zavrseno' || status === 'otkazano' || status === 'odbijeno';
+}
+
 function brojAktivnih(zahtjevi: KorisnikDashboardZahtjev[]) {
-  return zahtjevi.filter((z) => z.status !== 'zavrsen').length;
+  return zahtjevi.filter((z) => !jeTerminalniKorisnicki(z.status)).length;
 }
 
 function brojHitnih(zahtjevi: KorisnikDashboardZahtjev[]) {
@@ -52,11 +74,23 @@ function brojNovih(zahtjevi: KorisnikDashboardZahtjev[]) {
 function sljedeciZahtjev(zahtjevi: KorisnikDashboardZahtjev[]): KorisnikDashboardZahtjev | null {
   const hitni = zahtjevi.find((z) => z.status === 'hitno');
   if (hitni) return hitni;
-  return zahtjevi.find((z) => z.status === 'u_toku' || z.status === 'novi') ?? null;
+  const uObradi = zahtjevi.find((z) => z.status === 'u_obradi');
+  if (uObradi) return uObradi;
+  const uToku = zahtjevi.find((z) => z.status === 'u_toku');
+  if (uToku) return uToku;
+  return zahtjevi.find((z) => z.status === 'novi') ?? null;
 }
 
 function sortirajZahtjeve(zahtjevi: KorisnikDashboardZahtjev[]) {
-  const prioritet: Record<StatusZahtjeva, number> = { hitno: 0, u_toku: 1, novi: 2, zavrsen: 3 };
+  const prioritet: Record<KorisnickiDashboardStatus, number> = {
+    hitno: 0,
+    u_obradi: 1,
+    u_toku: 2,
+    novi: 3,
+    zavrseno: 4,
+    otkazano: 5,
+    odbijeno: 6,
+  };
   return [...zahtjevi].sort((a, b) => prioritet[a.status] - prioritet[b.status]);
 }
 
@@ -76,11 +110,16 @@ export function KorisnikPregledDashboard({
   const sljedeci = sljedeciZahtjev(zahtjevi);
   const lista = sortirajZahtjeve(zahtjevi);
   const hitniLista = zahtjevi.filter((z) => z.status === 'hitno');
-  const zavrsenih = zahtjevi.filter((z) => z.status === 'zavrsen').length;
+  const zavrsenih = zahtjevi.filter((z) => jeZavrsenKaoIntervencija(z.status)).length;
 
   const KPI = [
     { oznaka: 'Aktivnih zahtjeva', vrijednost: aktivnih, boja: 'var(--first-secondary)', Ikona: ClipboardList },
-    { oznaka: 'Hitnih slučajeva', vrijednost: hitnih, boja: 'var(--first-senary)', Ikona: AlertTriangle },
+    {
+      oznaka: 'Visoka hitnost (vaša procjena)',
+      vrijednost: hitnih,
+      boja: 'var(--first-senary)',
+      Ikona: AlertTriangle,
+    },
     { oznaka: 'Novih (na čekanju)', vrijednost: novih, boja: 'var(--first-nonary)', Ikona: Clock },
     { oznaka: 'Završenih intervencija', vrijednost: zavrsenih, boja: 'var(--first-septenary)', Ikona: CheckCircle },
   ];
@@ -156,7 +195,7 @@ export function KorisnikPregledDashboard({
                 <div className="flex flex-wrap items-center gap-2">
                   <AlertTriangle className="h-4 w-4 shrink-0" style={{ color: 'var(--first-senary)' }} />
                   <p className="text-sm font-semibold" style={{ color: 'var(--first-octonary)' }}>
-                    Hitni slučajevi
+                    Visoka hitnost (vaša procjena)
                   </p>
                   <span
                     className="rounded-full px-2 py-0.5 text-xs font-semibold"
@@ -198,7 +237,7 @@ export function KorisnikPregledDashboard({
                     Moji zahtjevi
                   </h2>
                   <p className="mt-0.5 text-xs" style={{ color: 'var(--first-nonary)' }}>
-                    Sortirano: prvo hitno, zatim u toku i novi.
+                    Sortirano: prvo visoka hitnost, zatim u obradi, u toku i novi.
                   </p>
                 </div>
                 <Link

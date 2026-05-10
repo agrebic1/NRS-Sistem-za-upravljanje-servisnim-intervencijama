@@ -159,6 +159,7 @@ export function KorakTrijaza({
 
   const odgovoreno = Object.values(triage).filter((v) => v !== null).length;
   const ukupno     = PITANJA.length;
+  const trijažaPreskočena = isPremium && premiumRequested;
 
   return (
     <div className="flex flex-col gap-5">
@@ -167,31 +168,35 @@ export function KorakTrijaza({
           Procjena hitnosti
         </h2>
         <p className="text-sm" style={{ color: 'var(--first-nonary)' }}>
-          Odgovorite na sva pitanja — sistem automatski određuje prioritet zahtjeva.
+          {trijažaPreskočena
+            ? 'Uz uključenu premium hitnu intervenciju upitnik se ne popunjava — zahtjev se obrađuje kao hitan prema pravilima paketa.'
+            : 'Odgovorite na sva pitanja — sistem automatski određuje prioritet zahtjeva.'}
         </p>
       </div>
 
       {/* Traka napretka */}
-      <div className="flex items-center gap-3">
-        <div
-          className="h-1.5 flex-1 overflow-hidden rounded-full"
-          style={{ backgroundColor: 'rgb(var(--first-quaternary-rgb) / 0.25)' }}
-        >
+      {!trijažaPreskočena && (
+        <div className="flex items-center gap-3">
           <div
-            className="h-full rounded-full transition-all duration-500"
-            style={{
-              width:           `${(odgovoreno / ukupno) * 100}%`,
-              backgroundColor: odgovoreno === ukupno ? 'var(--first-secondary)' : 'var(--first-primary)',
-            }}
-          />
+            className="h-1.5 flex-1 overflow-hidden rounded-full"
+            style={{ backgroundColor: 'rgb(var(--first-quaternary-rgb) / 0.25)' }}
+          >
+            <div
+              className="h-full rounded-full transition-all duration-500"
+              style={{
+                width:           `${(odgovoreno / ukupno) * 100}%`,
+                backgroundColor: odgovoreno === ukupno ? 'var(--first-secondary)' : 'var(--first-primary)',
+              }}
+            />
+          </div>
+          <span
+            className="shrink-0 text-xs font-medium tabular-nums"
+            style={{ color: 'var(--first-nonary)' }}
+          >
+            {odgovoreno}/{ukupno}
+          </span>
         </div>
-        <span
-          className="shrink-0 text-xs font-medium tabular-nums"
-          style={{ color: 'var(--first-nonary)' }}
-        >
-          {odgovoreno}/{ukupno}
-        </span>
-      </div>
+      )}
 
       {triageError && <AlertMessage variant="error" message={triageError} />}
 
@@ -277,7 +282,10 @@ export function KorakTrijaza({
       </div>
 
       {/* Lista pitanja */}
-      <div className="flex flex-col gap-3">
+      <div
+        className={`relative flex flex-col gap-3 ${trijažaPreskočena ? 'pointer-events-none select-none rounded-xl' : ''}`}
+        style={trijažaPreskočena ? { opacity: 0.45 } : undefined}
+      >
         {PITANJA.map(({ id, naslov, pitanje, Ikona, ikonaStil, opcije }, index) => {
           const odabrana     = getOdabrana(id);
           const jeOdgovoreno = odabrana !== undefined;

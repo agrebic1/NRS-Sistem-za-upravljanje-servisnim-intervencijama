@@ -71,8 +71,8 @@ const NAVIGACIJA_PO_ULOZI: Record<UserRole, StavkaNavigacije[]> = {
     { href: '/serviser/intervencije',  oznaka: 'Intervencije',  Ikona: Wrench },
   ],
   dispecer: [
-    { href: '/dispecer',               oznaka: 'Pregled',       Ikona: LayoutDashboard },
-    { href: '/dispecer/zahtjevi',      oznaka: 'Zahtjevi',      Ikona: ClipboardList },
+    { href: '/dispecer',               oznaka: 'Kontrolna ploča', Ikona: LayoutDashboard },
+    { href: '/dispecer/zahtjevi',      oznaka: 'Pregled zahtjeva', Ikona: ClipboardList },
     { href: '/dispecer/intervencije',  oznaka: 'Intervencije',  Ikona: Wrench },
   ],
   admin: [

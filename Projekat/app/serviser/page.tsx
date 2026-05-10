@@ -21,6 +21,7 @@ import type { ServisniZahtjev } from '@/domain/types/servisirane';
 import { formatirajDatumPrikaz } from '@/lib/format/datumi';
 import { labelKategorije } from '@/lib/servisirane/kategorije';
 import { kreirajKlijenta } from '@/lib/supabase/klijent';
+import { efektivniKorisnickiUrgencyScore } from '@/lib/servisirane/urgency';
 
 interface ZahtjevSaPodnosiocem extends ServisniZahtjev {
   podnosilac: { ime: string; prezime: string; broj_telefona: string | null } | null;
@@ -169,6 +170,7 @@ export default function ServiserPage() {
           {zahtjevi.map((zadatak) => {
             const kat = labelKategorije(zadatak);
             const naslov = kat.podkategorija ? `${kat.glavna} — ${kat.podkategorija}` : kat.glavna;
+            const scoreZaPrikaz = efektivniKorisnickiUrgencyScore(zadatak);
             return (
               <li key={zadatak.id}>
                 <Link
@@ -176,7 +178,7 @@ export default function ServiserPage() {
                   className="flex items-start gap-4 px-5 py-4 transition-colors duration-150 hover:bg-soft-beige/10"
                 >
                   <div className="mt-1 flex-shrink-0">
-                    {(zadatak.urgency_score ?? 0) >= 75
+                    {(scoreZaPrikaz ?? 0) >= 75
                       ? <AlertTriangle className="h-4 w-4" style={{ color: 'var(--first-senary)' }} />
                       : <Clock className="h-4 w-4" style={{ color: 'var(--first-quinary)' }} />}
                   </div>
@@ -184,7 +186,7 @@ export default function ServiserPage() {
                     <div className="flex flex-wrap items-center gap-2">
                       <p className="font-medium" style={{ color: 'var(--first-octonary)' }}>{naslov}</p>
                       <StatusBadge status={zadatak.status} />
-                      <UrgencyBadge score={zadatak.urgency_score} />
+                      <UrgencyBadge score={scoreZaPrikaz} />
                       {zadatak.is_premium && (
                         <span
                           className="rounded-full px-2.5 py-0.5 text-xs font-semibold"

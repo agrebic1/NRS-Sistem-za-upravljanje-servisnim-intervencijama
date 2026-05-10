@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Upload, X, AlertCircle, FileText, Phone } from 'lucide-react';
 import { Textarea } from '@/components/ui/Textarea';
+import { OkvirGalerije } from '@/components/servisirane/PrilogGalerija';
 
 const PHONE_REGEX = /^[+]?[0-9\s\-()]{8,20}$/;
 const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
@@ -211,36 +212,39 @@ export function KorakOpis({
 
         {photoFile ? (
           <div
-            className="flex items-center justify-between gap-3 rounded-xl border px-4 py-3"
+            className="flex flex-col gap-3 rounded-xl border px-4 py-4"
             style={{
               borderColor:     'rgb(var(--first-secondary-rgb) / 0.4)',
               backgroundColor: 'rgb(var(--first-secondary-rgb) / 0.06)',
             }}
           >
-            <div className="flex min-w-0 items-center gap-3">
-              {previewUrl && (
-                // Blob preview is client-generated; keep native img for local preview.
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={previewUrl}
-                  alt="Pregled fotografije zahtjeva"
-                  className="h-14 w-14 flex-shrink-0 rounded-lg object-cover"
-                />
-              )}
-              <span className="truncate text-sm" style={{ color: 'var(--first-octonary)' }}>
+            {previewUrl && (
+              <div className="max-w-md">
+                <OkvirGalerije>
+                  {/* Blob preview is client-generated; keep native img for local preview. */}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={previewUrl}
+                    alt="Pregled fotografije zahtjeva"
+                    className="aspect-[4/3] w-full max-h-48 object-cover sm:max-h-52"
+                  />
+                </OkvirGalerije>
+              </div>
+            )}
+            <div className="flex items-center justify-between gap-3">
+              <span className="min-w-0 truncate text-sm" style={{ color: 'var(--first-octonary)' }}>
                 {photoFile.name}
               </span>
+              <button
+                type="button"
+                onClick={() => handleFile(null)}
+                className="inline-flex flex-shrink-0 items-center gap-1 text-xs font-medium transition-opacity hover:opacity-70"
+                style={{ color: 'var(--first-nonary)' }}
+              >
+                <X className="h-4 w-4" />
+                Ukloni fotografiju
+              </button>
             </div>
-            <button
-              type="button"
-              onClick={() => handleFile(null)}
-              className="ml-3 inline-flex flex-shrink-0 items-center gap-1 text-xs font-medium
-                transition-opacity hover:opacity-70"
-              style={{ color: 'var(--first-nonary)' }}
-            >
-              <X className="h-4 w-4" />
-              Ukloni fotografiju
-            </button>
           </div>
         ) : (
           <div

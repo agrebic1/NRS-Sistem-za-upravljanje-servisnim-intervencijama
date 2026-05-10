@@ -9,7 +9,7 @@ Omogućiti dispečerima centralizovan operativni pregled svih aktivnih intervenc
 
 ### Ključne stavke koje tim želi završiti
 
-- implementacija dispečerskog pregleda otvorenih intervencija (US-07): *lista aktivnih zahtjeva sa osnovnim podacima, indikatorima priloga i map lokacije te filtriranjem po statusu*
+- implementacija dispečerskog pregleda otvorenih intervencija (US-07): *lista aktivnih zahtjeva sa osnovnim podacima, indikatorima priloga i lokacije (detalj/expand); grid kartica je sažetak; filtri po operativnim fazama i `potvrdeno`*
 - implementacija detaljnog prikaza pojedinačne intervencije (US-08): *kompletan pregled korisničkih i operativnih podataka potrebnih za obradu zahtjeva*
 - pregled statusa intervencija za dispečere (US-13): *statusni pregled aktivnih zahtjeva sa automatskim osvježavanjem podataka*
 - implementacija operativnog dashboarda (US-31): *agregirani prikaz broja intervencija po statusima i prelazak na filtrirane liste*
@@ -18,7 +18,7 @@ Omogućiti dispečerima centralizovan operativni pregled svih aktivnih intervenc
 - dorada otkazivanja vlastitog zahtjeva (US-27): *obavezni razlog otkazivanja, validacija statusa i uklanjanje iz aktivnih dispečerskih lista*
 - usklađivanje statusa između korisničkog i dispečerskog dijela sistema
 - implementacija role-based zaštite za sve dispečerske funkcionalnosti
-- testiranje kompletnog toka: *korisnik kreira zahtjev → dispečer vidi zahtjev → otvara detalje → određuje prioritet → zahtjev postaje spreman za dodjelu u narednom sprintu*
+- testiranje kompletnog toka: *korisnik kreira zahtjev → dispečer vidi zahtjev → otvara detalje → postavlja operativni prioritet (čarobnjak: termin, serviser, završna potvrda) → status `potvrdeno` → spremno za dodjelu serviseru u narednom sprintu*
 
 
 ### Rizici i zavisnosti
@@ -66,22 +66,22 @@ Sprint 7 uvodi centralnu operativnu logiku za rad dispečera i predstavlja osnov
 | SBI-06-14 | Prijava zahtjeva za servisnu intervenciju (US-05) | Frontend + backend | Done | Implementiran wizard sa kategorijama/potkategorijama, mapom, terminima i trijažom; validacija usklađena sa API slojem. |
 | SBI-06-15 | Pregled vlastitog zahtjeva (US-06) | Frontend + backend + baza | Done | Implementiran pregled liste i detalja vlastitih zahtjeva sa statusima i premium oznakama. |
 | SBI-06-16 | Administrativno kreiranje internog korisničkog naloga (US-18) | Frontend + backend + baza | Done | Administrativni onboarding internih korisnika i dodjela uloga implementirani kroz admin tok. |
-| SBI-06-17 | Izmjena vlastitog zahtjeva (US-26) | Frontend + backend + baza | In Progress | Potrebno dodatno ograničiti izmjene po statusima zahtjeva i validirati dozvoljena polja. |
-| SBI-06-18 | Otkazivanje vlastitog zahtjeva (US-27) | Frontend + backend + baza | In Progress | Potrebno dodati razlog otkazivanja, validaciju statusa i uklanjanje iz aktivnih lista. |
+| SBI-06-17 | Izmjena vlastitog zahtjeva (US-26) | Frontend + backend + baza | Done | PATCH `/api/service-requests/[id]`: samo `na_cekanju` / `pending_review`; Zod ograničava polja; nakon dispečerskog čarobnjaka (`in_review`) izmjena je blokirana. |
+| SBI-06-18 | Otkazivanje vlastitog zahtjeva (US-27) | Frontend + backend + baza | Done | Obavezan `cancel_reason`, `cancelled_at`; ista pravila statusa kao izmjena; dispečerski pregled isključuje terminalne statuse; realtime uklanja otkazane iz inboxa. |
 | SBI-06-19 | Zahtjev za premium/hitnom uslugom (US-33) | Frontend + backend + baza | Done | Usklađen korak Hitnost/Premium sa US-05; backend validira premium status i dispečerski override razloga. U MVP-u naplata ostaje simulirana. |
 | SBI-06-20 | Testiranje toka prijave kvara i onboarding procesa | Testeri / QA | Done | Pokriveni su ključni ručni scenariji; potrebno finalno formalno sign-off test matrice. |
 | SBI-06-21 | Aktivacija premium usluge (US-34) | Frontend + backend + baza | Done | Implementiran premium lifecycle (inactive, pending_payment, active, expired, cancelled), API tok (start/confirm/cancel/renew), audit log (premium_events) i cron expiry obrada. |
 | SBI-06-22 | Podnosenje zahtjeva za internu ulogu (dispecer/serviser) sa statusom na_cekanju (US-35) | Product owner + QA + Solution architect | Done | Implementirano da korisnik moze poslati zahtjev da postane serviser ili dispecer. |
-| SBI-07-23 | Dispečerski pregled otvorenih zahtjeva / intervencija (US-07) | Frontend + backend | To Do | Implementirati ekran/listu otvorenih i aktivnih zahtjeva sa osnovnim podacima, indikatorima priloga i GPS/map lokacije, filtriranjem po statusu i prelaskom na detalje intervencije. |
-| SBI-07-24 | Pregled detalja pojedinačne intervencije (US-08) | Frontend + backend | To Do | Implementirati detaljni prikaz zahtjeva sa kompletnim informacijama potrebnim za obradu intervencije i operativno planiranje. |
-| SBI-07-25 | Pregled statusa intervencija od strane dispečera (US-13) | Frontend + backend | To Do | Omogućiti pregled aktivnih intervencija po statusima uz automatsko ažuriranje i prelazak na detalje zahtjeva. |
-| SBI-07-26 | Operativni dashboard / sažeti status (US-31) | Frontend + backend | To Do | Implementirati dashboard sa agregiranim prikazom broja intervencija po ključnim statusima i filtriranim pregledima. |
-| SBI-07-27 | Određivanje prioriteta intervencije (US-12) | Frontend + backend + baza | To Do | Omogućiti postavljanje i izmjenu operativnog prioriteta intervencije uz prikaz prioriteta u listama i detaljima zahtjeva. |
-| SBI-07-28 | Izmjena vlastitog zahtjeva – dorada poslovnih pravila (US-26) | Frontend + backend + baza | To Do | Omogućiti izmjenu samo dozvoljenih polja dok zahtjev nije dodijeljen ili u obradi, uz validaciju izmjena i evidentiranje vremena izmjene. |
-| SBI-07-29 | Otkazivanje vlastitog zahtjeva – dorada poslovnih pravila (US-27) | Frontend + backend + baza | To Do | Omogućiti otkazivanje zahtjeva samo dok nije u aktivnoj obradi, uz obavezan razlog otkazivanja i evidentiranje vremena otkazivanja. |
-| SBI-07-30 | Usklađivanje statusa između korisničkog i dispečerskog pregleda | Backend + baza | To Do | Osigurati konzistentnost statusa između korisničkog modula, dispečerskog pregleda i baze podataka. |
-| SBI-07-31 | Dodavanje filtriranja po statusu za dispečerske liste | Frontend + backend | To Do | Implementirati filtriranje otvorenih intervencija po statusima i osvježavanje prikaza nakon promjene statusa. |
-| SBI-07-32 | Provjera role-based pristupa za dispečerske funkcionalnosti | Backend / security support | To Do | Ograničiti dashboard, liste i detalje intervencija samo na ovlaštene korisničke uloge. |
-| SBI-07-33 | Validacija izmjene i otkazivanja zahtjeva prema statusima | Backend + frontend | To Do | Implementirati backend i frontend validacije za izmjenu i otkazivanje zahtjeva prema životnom ciklusu intervencije. |
-| SBI-07-34 | Razdvajanje korisničke hitnosti i operativnog prioriteta | Backend + frontend + baza | To Do | Osigurati da korisnička hitnost ostane informativna vrijednost, dok operativni prioritet određuje dispečer. |
-| SBI-07-35 | Testiranje operativnog toka dispečera | Testeri / QA | To Do | Testirati tok: korisnik kreira zahtjev → dispečer vidi zahtjev → otvara detalje → postavlja prioritet → zahtjev spreman za dodjelu u narednom sprintu. |
+| SBI-07-23 | Dispečerski pregled otvorenih zahtjeva / intervencija (US-07) | Frontend + backend | Done | Implementirani kontrolna ploča i pregled liste aktivnih zahtjeva sa osnovnim podacima; indikatori priloga i lokacije u proširenom prikazu i na detalju; mreža kartica daje sažetiji pregled; filtriranje po operativnim fazama i statusu potvrđeno; prelazak na detalj intervencije. |
+| SBI-07-24 | Pregled detalja pojedinačne intervencije (US-08) | Frontend + backend | Done | Implementiran detaljni prikaz zahtjeva sa informacijama potrebnim za obradu i operativno planiranje; vođenje kroz korake dispečerskog čarobnjaka; dio koraka još nije potpuno povezan sa svim poslovnim podacima. |
+| SBI-07-25 | Pregled statusa intervencija od strane dispečera (US-13) | Frontend + backend | Done | Omogućen pregled aktivnih intervencija po fazama uz povremeno osvježavanje podataka i obavještenja o relevantnim promjenama (npr. otkazivanje, premium); jasni vizuelni indikatori trenutne faze obrade. |
+| SBI-07-26 | Operativni dashboard / sažeti status (US-31) | Frontend + backend | Done | Implementiran sažeti prikaz broja zahtjeva u ključnim fazama (Novi, U obradi, Potvrđeno) sa prelaskom na filtrirane liste; inbox sa podijeljenim prikazom na većim ekranima. |
+| SBI-07-27 | Određivanje prioriteta intervencije (US-12) | Frontend + backend + baza | Done | Omogućeno postavljanje i izmjena operativnog prioriteta od strane dispečera, uključujući posebna pravila za premium zahtjeve; prioritet je vidljiv u listama i detaljima; usklađeno sa životnim ciklusom statusa u inboxu. |
+| SBI-07-28 | Izmjena vlastitog zahtjeva – dorada poslovnih pravila (US-26) | Frontend + backend + baza | Done | Izmjena je dozvoljena samo prije početka dispečerske obrade zahtjeva, uz validaciju dozvoljenih polja i bilježenje vremena izmjene u sistemu. |
+| SBI-07-29 | Otkazivanje vlastitog zahtjeva – dorada poslovnih pravila (US-27) | Frontend + backend + baza | Done | Otkazivanje je moguće uz obavezan razlog i bilježenje vremena otkazivanja, dok zahtjev nije u aktivnoj dispečerskoj obradi; otkazani zahtjevi više nisu dio aktivnih operativnih lista. |
+| SBI-07-30 | Usklađivanje statusa između korisničkog i dispečerskog pregleda | Backend + baza | Done | Osigurana konzistentnost prikaza statusa i faza između korisničkog modula, dispečerskih ekrana i stanja u bazi podataka. |
+| SBI-07-31 | Dodavanje filtriranja po statusu za dispečerske liste | Frontend + backend | Done | Implementirano filtriranje otvorenih intervencija po statusima i pod-fazama obrade uz osvježavanje prikaza nakon promjene podataka. |
+| SBI-07-32 | Provjera role-based pristupa za dispečerske funkcionalnosti | Backend / security support | Done | Dispečerske stranice i prateće operacije na serveru dostupne su samo ovlaštenim korisnicima sa ulogom dispečera. |
+| SBI-07-33 | Validacija izmjene i otkazivanja zahtjeva prema statusima | Backend + frontend | Done | Implementirane provjere na backendu i jasne poruke u interfejsu kako bi izmjena i otkazivanje bili mogući samo u dozvoljenim statusima životnog ciklusa zahtjeva. |
+| SBI-07-34 | Razdvajanje korisničke hitnosti i operativnog prioriteta | Backend + frontend + baza | Done | Korisnička procjena hitnosti ostaje informativna; operativni prioritet koji određuje dispečer jasno je odvojen u prikazu i u redoslijedu obrade u inboxu. |
+| SBI-07-35 | Testiranje operativnog toka dispečera | Testeri / QA | In Progress | Potrebno završiti formalno testiranje i sign-off cjelokupnog toka uključujući dispečerski čarobnjak do statusa potvrđeno, uključujući rubne slučajeve (premium, otkazivanje tokom inboxa). |

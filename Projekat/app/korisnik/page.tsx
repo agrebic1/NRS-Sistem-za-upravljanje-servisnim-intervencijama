@@ -5,14 +5,23 @@ import {
   type KorisnikDashboardZahtjev,
 } from '@/components/korisnik/KorisnikPregledDashboard';
 import { createClient } from '@/lib/supabase/server';
-import type { Tables } from '@/domain/types/supabase';
 import { formatirajDatumPrikaz } from '@/lib/format/datumi';
 import { dodijeliKorisnickeBrojeveZahtjeva } from '@/lib/servisirane/korisnickiBrojZahtjeva';
+import { korisnickiDashboardStatus } from '@/lib/servisirane/statusZahtjeva';
+import { efektivniKorisnickiUrgencyScore } from '@/lib/servisirane/urgency';
 
-type KorisnikZahtjev = Pick<
-  Tables<'service_requests'>,
-  'id' | 'category' | 'description' | 'address' | 'created_at' | 'status' | 'urgency_score'
->;
+/** Red sa liste zahtjeva (polja koja UI zaista koristi). */
+type KorisnikZahtjev = {
+  id: number;
+  category: string;
+  description: string | null;
+  address: string | null;
+  created_at: string;
+  status: string;
+  urgency_score: number;
+  is_premium: boolean;
+  final_priority: string | null;
+};
 
 function izvuciPunoImeIzProfila(profil: unknown): string {
   if (!profil || typeof profil !== 'object') return '';
@@ -22,30 +31,6 @@ function izvuciPunoImeIzProfila(profil: unknown): string {
   const prezime = typeof zapis.prezime === 'string' ? zapis.prezime.trim() : '';
 
   return [ime, prezime].filter(Boolean).join(' ').trim();
-}
-
-function mapirajStatus(
-  status: string | null | undefined,
-  urgencyScore: number | null | undefined
-): KorisnikDashboardZahtjev['status'] {
-  const normalizovano = (status ?? '').toLowerCase();
-  const score = Number(urgencyScore ?? 0);
-
-  if (normalizovano === 'zavrseno' || normalizovano === 'otkazano' || normalizovano === 'odbijeno') {
-    return 'zavrsen';
-  }
-  if (score >= 80) return 'hitno';
-  if (
-    normalizovano === 'pending_review' ||
-    normalizovano === 'potvrdeno' ||
-    normalizovano === 'dodijeljeno' ||
-    normalizovano === 'u_radu' ||
-    normalizovano === 'u_izvrsenju'
-  ) {
-    if (normalizovano === 'pending_review') return 'novi';
-    return 'u_toku';
-  }
-  return 'novi';
 }
 
 function izvuciNaslov(opisKvara: string | null) {
@@ -72,7 +57,7 @@ export default async function KorisnikPage() {
 
   const { data: zahtjeviRaw, error: zahtjeviGreska } = await supabase
     .from('service_requests')
-    .select('id, category, description, address, created_at, status, urgency_score')
+    .select('id, category, description, address, created_at, status, urgency_score, is_premium, final_priority')
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
     .returns<KorisnikZahtjev[]>();
@@ -98,7 +83,14 @@ export default async function KorisnikPage() {
       id: String(zahtjev.id),
       korisnickiBroj: zahtjev.korisnicki_broj_zahtjeva,
       naslov: (zahtjev.category ?? '').trim() || izvuciNaslov(zahtjev.description),
-      status: mapirajStatus(zahtjev.status, zahtjev.urgency_score),
+      status: korisnickiDashboardStatus(
+        zahtjev.status,
+        efektivniKorisnickiUrgencyScore({
+          is_premium: Boolean(zahtjev.is_premium),
+          urgency_score: Number(zahtjev.urgency_score ?? 0),
+        }),
+        zahtjev.final_priority,
+      ),
       datum: formatirajDatumPrikaz(zahtjev.created_at, '-'),
       lokacija: zahtjev.address ?? 'Lokacija nije unesena',
     };
