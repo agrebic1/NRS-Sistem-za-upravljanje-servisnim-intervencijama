@@ -38,6 +38,14 @@ U ovom sprintu demonstrirane su sljedeće funkcionalnosti i artefakti:
   
 ## Glavni problemi i blokeri
 
+- Inicijalna konfiguracija Supabase autentifikacije zahtijevala je dodatno usklađivanje frontend i backend logike zbog upravljanja sesijama i role-based pristupa.
+- Postojala je kompleksnost u implementaciji podrške za više korisničkih uloga po jednom nalogu, posebno u dijelu aktivne uloge i role-based preusmjeravanja.
+- Zaštita ruta prema autentifikaciji i ulozi zahtijevala je dodatnu validaciju middleware logike kako bi se spriječio neautorizovan pristup putem URL manipulacije.
+- Upravljanje korisničkom sesijom nakon refresh-a aplikacije predstavljalo je izazov zbog sinhronizacije klijentskog i serverskog stanja.
+- Neutralne poruke greške pri prijavi morale su biti pažljivo implementirane kako bi se spriječio user enumeration napad uz zadržavanje dovoljno jasnog korisničkog feedbacka.
+- Postojao je rizik nekonzistentnosti između frontend validacija i backend pravila autentifikacije, zbog čega su uvedene dodatne validacije i testiranje edge-case scenarija.
+- Role-based dashboard preusmjeravanje zahtijevalo je dodatno testiranje kako bi se osiguralo da korisnici sa više uloga uvijek budu usmjereni u ispravan kontekst rada.
+
 ## Ključne uloge donesene u sprintu
 - Centralizovana landing stranica sa više ulaznih tokova - tim je odlučio da se koristi centralizovana landing stranica zbog jednostavnijeg korisničkog iskustva i jasne strukture ulaza u sistem
 - Javna registracija kreira samo korisnika usluge - odlučeno je da javna registracija kreira nalog samo za korisnika usluge zbog balansa između dostupnosti sistema i sigurnosnog okvira.
