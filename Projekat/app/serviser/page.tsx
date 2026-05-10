@@ -17,6 +17,7 @@ import { Button } from '@/components/ui/Button';
 import { AlertMessage } from '@/components/ui/AlertMessage';
 import { UrgencyBadge } from '@/components/servisirane/UrgencyBadge';
 import { StatusBadge } from '@/components/servisirane/ZahtjevKartica';
+import { AdresaProsiriva } from '@/components/servisirane/AdresaProsiriva';
 import type { ServisniZahtjev } from '@/domain/types/servisirane';
 import { formatirajDatumPrikaz } from '@/lib/format/datumi';
 import { labelKategorije } from '@/lib/servisirane/kategorije';
@@ -201,7 +202,10 @@ export default function ServiserPage() {
                       )}
                     </div>
                     <div className="mt-1.5 flex flex-wrap gap-x-4 text-xs" style={{ color: 'var(--first-nonary)' }}>
-                      <span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{zadatak.address}</span>
+                      <span className="flex min-w-0 items-center gap-1">
+                        <MapPin className="h-3 w-3 shrink-0" />
+                        <AdresaProsiriva address={zadatak.address} variant="lista" />
+                      </span>
                       <span className="flex items-center gap-1">
                         <Clock className="h-3 w-3" />
                         {formatirajDatumPrikaz(zadatak.created_at)}

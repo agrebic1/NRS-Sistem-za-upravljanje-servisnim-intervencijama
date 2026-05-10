@@ -1,6 +1,6 @@
 'use client';
 
-import { useId, useState, type CSSProperties } from 'react';
+import { useId, type CSSProperties } from 'react';
 import Link from 'next/link';
 import { MapPin, Phone, User } from 'lucide-react';
 import type { ServisniZahtjev } from '@/domain/types/servisirane';
@@ -31,6 +31,7 @@ import {
   ZahtjevMiniTimeline,
 } from '@/components/servisirane/ZahtjevTimelineIPoruka';
 import { PrilogGalerija } from '@/components/servisirane/PrilogGalerija';
+import { AdresaProsiriva } from '@/components/servisirane/AdresaProsiriva';
 
 export type ZahtjevZaExpand = ServisniZahtjev & {
   podnosilac: { ime: string; prezime: string; broj_telefona: string | null } | null;
@@ -77,7 +78,6 @@ export function ZahtjevExpandSadrzaj({
   className = '',
 }: ZahtjevExpandSadrzajProps) {
   const podnosilac = zahtjev.podnosilac;
-  const [prikaziCjeluAdresu, setPrikaziCjeluAdresu] = useState(false);
   const hitnostGrupaId = useId();
 
   const { glavna, podkategorija } = labelKategorije(zahtjev);
@@ -90,8 +90,6 @@ export function ZahtjevExpandSadrzaj({
   const telefon = telefonSirovo || '—';
   const telefonHref = telefonSirovo ? hrefZaTelefon(telefonSirovo) : null;
   const imePrezime = imePrezimePodnosioca(podnosilac);
-  const adresaPuna = zahtjev.address?.trim() || '—';
-  const adresaDuga = adresaPuna.length > 60;
   const imaOperativni = Boolean(zahtjev.final_priority?.trim());
   const fp = zahtjev.final_priority?.trim() ?? '';
   const operativniStil = imaOperativni ? stilOperativnogPrioriteta(fp) : null;
@@ -163,12 +161,7 @@ export function ZahtjevExpandSadrzaj({
                     <p className={POLJE_OZNAKA_KLASA} style={POLJE_OZNAKA_BOJA}>
                       Adresa
                     </p>
-                    <p
-                      className="break-words font-medium leading-snug"
-                      style={{ color: 'var(--first-octonary)' }}
-                    >
-                      {adresaPuna}
-                    </p>
+                    <AdresaProsiriva address={zahtjev.address} variant="panel" />
                     {imaKoordinate && (
                       <div className="mt-1">
                         <ExpandPanelPreciznaLokacijaChip />
@@ -299,33 +292,11 @@ export function ZahtjevExpandSadrzaj({
                 <p className={POLJE_OZNAKA_KLASA} style={POLJE_OZNAKA_BOJA}>
                   Adresa
                 </p>
-                <p
-                  className={
-                    prikaziCjeluAdresu || !adresaDuga
-                      ? 'break-words font-medium leading-snug'
-                      : 'truncate font-medium leading-snug'
-                  }
-                  style={{ color: 'var(--first-octonary)' }}
-                  title={adresaDuga && !prikaziCjeluAdresu ? adresaPuna : undefined}
-                >
-                  {!prikaziCjeluAdresu && adresaDuga
-                    ? `${adresaPuna.slice(0, 60).trim()}…`
-                    : adresaPuna}
-                </p>
+                <AdresaProsiriva address={zahtjev.address} variant="panel" />
                 {imaKoordinate && (
                   <div className="mt-1">
                     <ExpandPanelPreciznaLokacijaChip />
                   </div>
-                )}
-                {adresaDuga && (
-                  <button
-                    type="button"
-                    onClick={() => setPrikaziCjeluAdresu((v) => !v)}
-                    className="mt-1 self-start text-xs font-semibold underline-offset-2 hover:underline"
-                    style={{ color: 'var(--first-secondary)' }}
-                  >
-                    {prikaziCjeluAdresu ? 'Prikaži manje' : 'Prikaži više'}
-                  </button>
                 )}
               </div>
             </div>

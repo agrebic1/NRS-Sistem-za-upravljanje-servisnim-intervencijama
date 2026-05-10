@@ -3,7 +3,6 @@
 import type { ComponentType, CSSProperties } from 'react';
 import Link from 'next/link';
 import {
-  MapPin,
   Clock,
   CheckCircle2,
   Truck,
@@ -15,18 +14,19 @@ import {
 } from 'lucide-react';
 import type { ServisniZahtjev, StatusZahtjeva } from '@/domain/types/servisirane';
 import { brojZahtjevaZaPrikaz } from '@/lib/servisirane/korisnickiBrojZahtjeva';
-import { efektivniKorisnickiUrgencyScore, oznakaKorisnickeHitnostiTriRazine } from '@/lib/servisirane/urgency';
+import { korisnikSmijeMijenjatiIliOtkazatiZahtjev } from '@/lib/servisirane/statusZahtjeva';
+import { efektivniKorisnickiUrgencyScore, inboxGrupaIzKorisnickeProcjene } from '@/lib/servisirane/urgency';
 import { labelKategorije } from '@/lib/servisirane/kategorije';
+import { preferiraniTerminZaDispecera, relativnoPrijavljenoZaDispecera } from '@/lib/servisirane/zahtjevPrikaz';
 import {
-  formatPrijavljenoDatumVrijeme,
-  preferiraniTerminZaDispecera,
-} from '@/lib/servisirane/zahtjevPrikaz';
-import { PreciznaLokacijaChip } from '@/components/servisirane/zahtjevBadgeovi';
-import { OkvirGalerije } from '@/components/servisirane/PrilogGalerija';
-import {
-  ZahtjevKorisnickaPorukaBubble,
-  ZahtjevMiniTimeline,
-} from '@/components/servisirane/ZahtjevTimelineIPoruka';
+  bojaRelativnogPrijaveDispecera,
+  DISPECER_PALETA_HITNOST,
+  DISPECER_PALETA_PREMIUM,
+} from '@/lib/servisirane/dispecerPaleta';
+import { DISPECER_HITNOST_KORISNIK_CHIP_TITLE } from '@/lib/servisirane/dispecerPojmovi';
+import { PreciznaLokacijaChip, DispecerPremiumKruna, KorisnickaHitnostOutlinedChip } from '@/components/servisirane/zahtjevBadgeovi';
+import { KorisnikPregledTokaBadzevi } from '@/components/korisnik/KorisnikPregledTokaBadzevi';
+import { AdresaProsiriva } from '@/components/servisirane/AdresaProsiriva';
 
 // ─── Životni ciklus statusa — Triple Coding ───────────────────────────────────
 
@@ -120,14 +120,22 @@ const FALLBACK_STATUS = {
   Ikona: Clock,
 } as const;
 
-// ─── Status badge ─────────────────────────────────────────────────────────────
+// ─── Status badge (serviser / admin; korisnička lista koristi Dispecer paletu + tok) ─
 
-export function StatusBadge({ status }: { status: StatusZahtjeva | string }) {
+export function StatusBadge({
+  status,
+  prikazZaKorisnika = false,
+}: {
+  status: StatusZahtjeva | string;
+  prikazZaKorisnika?: boolean;
+}) {
   const cfg =
     status in STATUS_LIFECYCLE
       ? STATUS_LIFECYCLE[status as StatusZahtjeva]
       : FALLBACK_STATUS;
   const Ikona = cfg.Ikona;
+  const oznaka =
+    prikazZaKorisnika && status === 'in_review' ? 'Dispečer obrađuje' : cfg.oznaka;
   return (
     <span
       className="inline-flex max-w-[min(100%,14rem)] shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold sm:max-w-none"
@@ -138,21 +146,12 @@ export function StatusBadge({ status }: { status: StatusZahtjeva | string }) {
       }}
     >
       <Ikona className="h-3 w-3 flex-shrink-0" />
-      <span className="truncate">{cfg.oznaka}</span>
+      <span className="truncate">{oznaka}</span>
     </span>
   );
 }
 
-// ─── Pomoćne funkcije za sadržaj kartice ───────────────────────────────────────
-
-function skracenOpis(tekst: string, maxLen = 140): string {
-  const t = (tekst ?? '').trim();
-  if (!t) return '';
-  if (t.length <= maxLen) return t;
-  return `${t.slice(0, maxLen).trim()}…`;
-}
-
-// ─── Kartica zahtjeva ─────────────────────────────────────────────────────────
+// ─── Kartica zahtjeva — isti raspored kao DispecerskaZahtjevKartica (rub, chipovi, datum) ─
 
 interface ZahtjevKarticaProps {
   zahtjev: ServisniZahtjev;
@@ -163,151 +162,123 @@ interface ZahtjevKarticaProps {
 export function ZahtjevKartica({ zahtjev, onUredi, onOtkazi }: ZahtjevKarticaProps) {
   const { glavna, podkategorija } = labelKategorije(zahtjev);
   const { tekstCijeli: terminTekst } = preferiraniTerminZaDispecera(zahtjev);
-  const hitnost = oznakaKorisnickeHitnostiTriRazine(efektivniKorisnickiUrgencyScore(zahtjev));
+  const scoreZaPrikaz = efektivniKorisnickiUrgencyScore(zahtjev);
+  const grupaInboxaPoKorisniku = inboxGrupaIzKorisnickeProcjene(zahtjev);
+  const datumZaKarticu = terminTekst.includes(',')
+    ? terminTekst.split(',')[0].trim()
+    : terminTekst;
+  const prijavljenoRel = relativnoPrijavljenoZaDispecera(zahtjev.created_at);
+  const prijavljenoBoja = bojaRelativnogPrijaveDispecera(prijavljenoRel.ton);
+
   const imaKoordinate = zahtjev.latitude != null && zahtjev.longitude != null;
   const imaFotografiju = Boolean(zahtjev.photo_url?.trim());
-  const opisSažetak = skracenOpis(zahtjev.description);
 
-  const jeNaCekanju = zahtjev.status === 'na_cekanju' || zahtjev.status === 'pending_review';
+  const mozeKorisnikUrediti = korisnikSmijeMijenjatiIliOtkazatiZahtjev(
+    zahtjev.status,
+    zahtjev.final_priority,
+  );
   const jeOtkazano = zahtjev.status === 'otkazano';
 
   return (
     <article
-      className="flex h-full flex-col rounded-2xl border p-4 shadow-sm transition-shadow duration-200 hover:shadow-md sm:p-5"
+      className="flex min-w-0 flex-col overflow-hidden rounded-2xl shadow-sm transition-[box-shadow,border-color] duration-200 ease-out hover:shadow-md"
       style={{
         opacity: jeOtkazano ? 0.72 : 1,
         backgroundColor: 'rgb(255 255 255 / 0.72)',
+        borderStyle: 'solid',
         borderColor: 'rgb(var(--first-quaternary-rgb) / 0.35)',
+        borderWidth: 1,
+        borderLeftWidth: 4,
+        borderLeftColor: zahtjev.is_premium
+          ? DISPECER_PALETA_PREMIUM.akcent
+          : DISPECER_PALETA_HITNOST[grupaInboxaPoKorisniku].border,
       }}
     >
-      {/* Header: broj lijevo, status desno */}
-      <header className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-        <p
-          className="text-sm font-semibold tabular-nums"
-          style={{ color: 'var(--first-octonary)' }}
-        >
-          Zahtjev #{brojZahtjevaZaPrikaz(zahtjev)}
-        </p>
-        <div className="sm:ml-auto sm:text-right">
-          <StatusBadge status={zahtjev.status} />
+      <div className="flex min-w-0 flex-col gap-0 px-3 py-3 sm:px-4">
+        <div className="flex min-w-0 items-start justify-between gap-2">
+          <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1.5">
+            <span className="inline-flex max-w-full shrink-0 items-center gap-1.5">
+              <span
+                className="inline-flex w-fit items-center rounded-md px-2 py-0.5 text-[11px] font-bold tabular-nums"
+                style={{
+                  backgroundColor: 'rgb(var(--first-quaternary-rgb) / 0.2)',
+                  color: 'var(--first-octonary)',
+                  border: '1px solid rgb(var(--first-quaternary-rgb) / 0.35)',
+                }}
+              >
+                #{brojZahtjevaZaPrikaz(zahtjev)}
+              </span>
+              {zahtjev.is_premium ? <DispecerPremiumKruna className="translate-y-px" /> : null}
+            </span>
+            <div className="min-w-0 max-w-full">
+              <KorisnikPregledTokaBadzevi zahtjev={zahtjev} />
+            </div>
+          </div>
+          <div className="shrink-0 pt-0.5" title={DISPECER_HITNOST_KORISNIK_CHIP_TITLE}>
+            <KorisnickaHitnostOutlinedChip score={scoreZaPrikaz} />
+          </div>
         </div>
-      </header>
-      {zahtjev.is_premium && (
-        <p className="mb-3">
-          <span
-            className="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold"
-            style={{
-              backgroundColor: 'rgba(220,38,38,0.12)',
-              color: '#B91C1C',
-              border: '1px solid rgba(220,38,38,0.25)',
-            }}
-          >
-            Hitna intervencija (premium)
-          </span>
-        </p>
-      )}
 
-      {/* Naslov + podkategorija */}
-      <div className="mb-3 min-w-0">
-        <h3
-          className="text-base font-bold leading-snug sm:text-lg"
-          style={{ color: 'var(--first-octonary)' }}
-        >
-          {glavna}
-        </h3>
-        {podkategorija && (
-          <p className="mt-1 text-xs font-medium" style={{ color: 'var(--first-nonary)' }}>
-            <span
-              className="mr-1.5 inline-block rounded-md px-2 py-0.5"
-              style={{
-                backgroundColor: 'rgb(var(--first-quinary-rgb) / 0.35)',
-                color: 'var(--first-octonary)',
-              }}
+        <div className="mt-3 min-w-0 space-y-1">
+          <p
+            className="break-words text-sm font-semibold leading-snug"
+            style={{ color: 'var(--first-octonary)' }}
+            title={glavna}
+          >
+            {glavna}
+          </p>
+          {podkategorija ? (
+            <p
+              className="break-words text-sm font-bold leading-snug"
+              style={{ color: 'var(--first-octonary)' }}
+              title={podkategorija}
             >
-              Podkategorija: {podkategorija}
+              {podkategorija}
+            </p>
+          ) : null}
+          <AdresaProsiriva address={zahtjev.address} variant="kartica" />
+        </div>
+
+        <div className="mt-3 flex min-w-0 items-center justify-between gap-2">
+          <p
+            suppressHydrationWarning
+            className="min-w-0 truncate text-xs font-medium leading-snug tabular-nums"
+            title={`${datumZaKarticu} · ${prijavljenoRel.label} (${terminTekst})`}
+          >
+            <span style={{ color: 'var(--first-nonary)' }}>{datumZaKarticu}</span>
+            <span style={{ color: 'rgb(var(--first-nonary-rgb) / 0.45)' }}> · </span>
+            <span
+              className={prijavljenoRel.ton === 'stale' ? 'font-bold' : 'font-semibold'}
+              style={{ color: prijavljenoBoja }}
+            >
+              {prijavljenoRel.label}
             </span>
           </p>
+        </div>
+
+        {(imaKoordinate || imaFotografiju) && (
+          <div className="mt-2 flex flex-wrap gap-2">
+            {imaKoordinate && <PreciznaLokacijaChip />}
+            {imaFotografiju && (
+              <span
+                className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold"
+                style={{
+                  backgroundColor: 'rgb(var(--first-secondary-rgb) / 0.1)',
+                  color: 'var(--first-secondary)',
+                  border: '1px solid rgb(var(--first-secondary-rgb) / 0.25)',
+                }}
+              >
+                <ImageIcon className="h-3 w-3" />
+                Fotografija dodana
+              </span>
+            )}
+          </div>
         )}
       </div>
 
-      {/* Osnovne informacije — 2 kolone na širem ekranu */}
-      <dl className="mb-3 grid grid-cols-1 gap-x-6 gap-y-2 text-sm sm:grid-cols-2">
-        <div className="flex gap-2 sm:col-span-2">
-          <MapPin className="mt-0.5 h-4 w-4 flex-shrink-0 opacity-70" style={{ color: 'var(--first-nonary)' }} />
-          <div className="min-w-0">
-            <dt className="sr-only">Adresa</dt>
-            <dd style={{ color: 'var(--first-octonary)' }}>
-              <span className="font-medium" style={{ color: 'var(--first-nonary)' }}>
-                Adresa:{' '}
-              </span>
-              <span className="break-words">{zahtjev.address || '—'}</span>
-            </dd>
-          </div>
-        </div>
-        <div className="flex items-start gap-2">
-          <Clock className="mt-0.5 h-4 w-4 flex-shrink-0 opacity-70" style={{ color: 'var(--first-nonary)' }} />
-          <div className="min-w-0">
-            <dt className="sr-only">Korisnička hitnost</dt>
-            <dd style={{ color: 'var(--first-octonary)' }}>
-              <span className="font-medium" style={{ color: 'var(--first-nonary)' }}>
-                Korisnička hitnost:{' '}
-              </span>
-              {hitnost}
-            </dd>
-          </div>
-        </div>
-      </dl>
-
-      <ZahtjevMiniTimeline
-        className="mb-3 min-w-0"
-        prijavljenoTekst={formatPrijavljenoDatumVrijeme(zahtjev.created_at)}
-        terminTekst={terminTekst}
-      />
-
-      <ZahtjevKorisnickaPorukaBubble
-        tekst={opisSažetak}
-        lineClamp
-        className="mb-4 min-w-0"
-      />
-
-      {/* Indikatori */}
-      {(imaFotografiju || imaKoordinate) && (
-        <div className="mb-3 flex flex-wrap gap-2">
-          {imaKoordinate && <PreciznaLokacijaChip />}
-          {imaFotografiju && (
-            <span
-              className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold"
-              style={{
-                backgroundColor: 'rgb(var(--first-secondary-rgb) / 0.1)',
-                color: 'var(--first-secondary)',
-                border: '1px solid rgb(var(--first-secondary-rgb) / 0.25)',
-              }}
-            >
-              <ImageIcon className="h-3 w-3" />
-              Fotografija dodana
-            </span>
-          )}
-        </div>
-      )}
-
-      {/* Mini pregled fotografije (uokvireno kao galerija) */}
-      {imaFotografiju && zahtjev.photo_url && (
-        <div className="mb-3 max-w-xs">
-          <OkvirGalerije>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={zahtjev.photo_url}
-              alt=""
-              className="aspect-[4/3] w-full max-h-[5.75rem] object-cover sm:max-h-24"
-            />
-          </OkvirGalerije>
-        </div>
-      )}
-
-      {/* Akcije */}
       <div
-        className="mt-auto flex flex-col gap-2 border-t pt-3 sm:flex-row sm:items-center sm:justify-between"
-        style={{ borderColor: 'rgb(var(--first-quaternary-rgb) / 0.25)' }}
+        className="flex min-w-0 flex-col gap-2 border-t px-3 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-4"
+        style={{ borderColor: 'rgb(var(--first-quaternary-rgb) / 0.22)' }}
       >
         <Link
           href={`/korisnik/zahtjevi/${zahtjev.id}`}
@@ -316,7 +287,7 @@ export function ZahtjevKartica({ zahtjev, onUredi, onOtkazi }: ZahtjevKarticaPro
           Detalji
           <ChevronRight className="h-4 w-4" />
         </Link>
-        {jeNaCekanju && (onUredi || onOtkazi) && (
+        {mozeKorisnikUrediti && (onUredi || onOtkazi) && (
           <div className="flex justify-end gap-1 sm:justify-end">
             {onUredi && (
               <button

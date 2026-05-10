@@ -1,4 +1,4 @@
-import type { ServisniZahtjev } from '@/domain/types/servisirane';
+import type { PreferredSchedule, ServisniZahtjev } from '@/domain/types/servisirane';
 import { formatirajDatumPrikaz } from '@/lib/format/datumi';
 
 export function skracenTekst(tekst: string, maxLen = 150): string {
@@ -144,4 +144,16 @@ export function imePrezimePodnosioca(
   if (nep(p) && i) return i;
   const puno = `${i} ${p}`.trim();
   return puno || 'Nepoznato';
+}
+
+/** Prvi slot: dogovoreni termin dispečera, inače korisnikov preferirani. */
+export function prviZakazaniTerminSlot(
+  agreed: PreferredSchedule | null | undefined,
+  preferred: PreferredSchedule | null | undefined,
+): { date: string; from?: string; to?: string } | null {
+  const a = agreed?.termini?.[0];
+  if (a?.date) return { date: a.date, from: a.from, to: a.to };
+  const p = preferred?.termini?.[0];
+  if (p?.date) return { date: p.date, from: p.from, to: p.to };
+  return null;
 }

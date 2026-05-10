@@ -84,8 +84,21 @@ export function jeZahtjevAktivan(status: string): boolean {
   return !TERMINALNI_STATUSI_ZAHTJEVA.has(status);
 }
 
-export function korisnikSmijeMijenjatiIliOtkazatiZahtjev(status: string): boolean {
-  return STATUSI_ZA_KORISNICKU_IZMJENU.has(status as StatusZahtjeva);
+/**
+ * Korisnik smije uređivati/otkazati samo dok zahtjev još nije u aktivnoj dispečerskoj obradi:
+ * status mora biti `na_cekanju` / `pending_review` i **ne smije** biti snimljen operativni prioritet.
+ */
+export function korisnikSmijeMijenjatiIliOtkazatiZahtjev(
+  status: string,
+  finalPriority?: string | null,
+): boolean {
+  if (!STATUSI_ZA_KORISNICKU_IZMJENU.has(status as StatusZahtjeva)) {
+    return false;
+  }
+  if (Boolean((finalPriority ?? '').trim())) {
+    return false;
+  }
+  return true;
 }
 
 /** Zahtjev dodijeljen serviseru ili aktivno u izvršenju (sažetak kontrolne table). */

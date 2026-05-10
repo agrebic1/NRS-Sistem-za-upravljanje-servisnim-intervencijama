@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, type CSSProperties } from 'react';
+import type { CSSProperties } from 'react';
 import { MapPin, Phone, User } from 'lucide-react';
 import type { ServisniZahtjev } from '@/domain/types/servisirane';
 import { labelKategorije } from '@/lib/servisirane/kategorije';
@@ -23,6 +23,7 @@ import {
   ZahtjevKorisnickaPorukaBubble,
   ZahtjevMiniTimeline,
 } from '@/components/servisirane/ZahtjevTimelineIPoruka';
+import { AdresaProsiriva } from '@/components/servisirane/AdresaProsiriva';
 import { PrilogGalerija } from '@/components/servisirane/PrilogGalerija';
 
 type ZahtjevZaKarticu = ServisniZahtjev & {
@@ -53,7 +54,6 @@ function stilOperativnogPrioriteta(vrijednost: string): { className: string; sty
 /** Lijeva kartica „Detalji zahtjeva” na stranici detalja dispečera. */
 export function DispecerDetaljiZahtjevaKartica({ zahtjev }: { zahtjev: ZahtjevZaKarticu }) {
   const podnosilac = zahtjev.podnosilac;
-  const [prikaziCjeluAdresu, setPrikaziCjeluAdresu] = useState(false);
 
   const { glavna, podkategorija } = labelKategorije(zahtjev);
   const { tekstCijeli: terminTekst } = preferiraniTerminZaDispecera(zahtjev);
@@ -64,8 +64,6 @@ export function DispecerDetaljiZahtjevaKartica({ zahtjev }: { zahtjev: ZahtjevZa
   const telefon = telefonSirovo || '—';
   const telefonHref = telefonSirovo ? hrefZaTelefon(telefonSirovo) : null;
   const imePrezime = imePrezimePodnosioca(podnosilac);
-  const adresaPuna = zahtjev.address?.trim() || '—';
-  const adresaVjerojatnoDvijeLinije = adresaPuna.length > 72;
   const imaOperativni = Boolean(zahtjev.final_priority?.trim());
   const fp = zahtjev.final_priority?.trim() ?? '';
   const operativniStil = imaOperativni ? stilOperativnogPrioriteta(fp) : null;
@@ -124,27 +122,7 @@ export function DispecerDetaljiZahtjevaKartica({ zahtjev }: { zahtjev: ZahtjevZa
                 <p className={POLJE_OZNAKA_KLASA} style={POLJE_OZNAKA_BOJA}>
                   Adresa
                 </p>
-                <p
-                  className={[
-                    'font-medium leading-snug',
-                    prikaziCjeluAdresu ? 'break-words' : 'line-clamp-2 break-words',
-                  ].join(' ')}
-                  style={{ color: 'var(--first-octonary)' }}
-                >
-                  {adresaPuna}
-                </p>
-                {adresaVjerojatnoDvijeLinije && (
-                  <div className="mt-1">
-                    <button
-                      type="button"
-                      onClick={() => setPrikaziCjeluAdresu((v) => !v)}
-                      className="text-xs font-semibold underline-offset-2 hover:underline"
-                      style={{ color: 'var(--first-secondary)' }}
-                    >
-                      {prikaziCjeluAdresu ? 'Prikaži manje' : 'Prikaži više'}
-                    </button>
-                  </div>
-                )}
+                <AdresaProsiriva address={zahtjev.address} variant="panel" />
               </div>
             </div>
           </div>

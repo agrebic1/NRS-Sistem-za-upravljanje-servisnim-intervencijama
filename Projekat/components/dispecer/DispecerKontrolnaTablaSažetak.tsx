@@ -14,6 +14,7 @@ import { DispecerPregledTokaBadzevi } from '@/components/dispecer/DispecerPregle
 import { DispecerPremiumKruna, KorisnickaHitnostOutlinedChip } from '@/components/servisirane/zahtjevBadgeovi';
 import { efektivniKorisnickiUrgencyScore } from '@/lib/servisirane/urgency';
 import { ZahtjevKorisnickaPorukaBubble } from '@/components/servisirane/ZahtjevTimelineIPoruka';
+import { AdresaProsiriva } from '@/components/servisirane/AdresaProsiriva';
 
 const POLJE_OZNAKA_KLASA =
   'mb-0.5 text-[11px] font-medium uppercase [letter-spacing:0.4px]';
@@ -33,7 +34,6 @@ export function DispecerKontrolnaTablaSažetak({ zahtjev }: { zahtjev: ZahtjevZa
   const telefon = telefonSirovo || '—';
   const telefonHref = telefonSirovo ? hrefZaTelefon(telefonSirovo) : null;
   const imePrezime = imePrezimePodnosioca(podnosilac);
-  const adresaPuna = zahtjev.address?.trim() || '—';
   const opisSirovo = (zahtjev.description ?? '').trim();
   const opis = uRecenicu(opisSirovo);
   const opisUNavodnicima = opis ? `„${opis}“` : '';
@@ -118,9 +118,7 @@ export function DispecerKontrolnaTablaSažetak({ zahtjev }: { zahtjev: ZahtjevZa
           <p className={POLJE_OZNAKA_KLASA} style={POLJE_OZNAKA_BOJA}>
             Adresa
           </p>
-          <p className="break-words text-sm font-medium leading-snug" style={{ color: 'var(--first-octonary)' }}>
-            {adresaPuna}
-          </p>
+          <AdresaProsiriva address={zahtjev.address} variant="panel" />
         </div>
 
         <div className="mt-5 min-w-0">
