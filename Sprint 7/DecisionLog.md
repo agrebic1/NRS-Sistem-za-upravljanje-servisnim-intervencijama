@@ -1,54 +1,5 @@
 # Decision Log
 
-## Odluka #001 – 
-
-| Polje | Opis |
-|-------|------|
-| ID odluke | DLI-001 |
-| Datum | .05.2026. |
-| Kratak naziv odluke | |
-| Opis problema |  |
-| Razmatrane opcije | |
-| Odabrana opcija | |
-| Razlog izbora | |
-| Posljedice odluke |  |
-| Status odluke | aktivna |
-
----
-
-## Trade-off analiza (Decision Matrix)
-
-### Težine kriterija
-
-| Kriterij | Težina |
-|----------|--------|
-
-
-### Ocjenjivanje i rezultat
-
-| Opcija | Stabilnost | Skalabilnost | Održivost | Rizik regresije | Kompleksnost | Ukupno |
-|--------|------------|--------------|-----------|-----------------|--------------|--------|
-
----
-
-### Sažetak odluke
-
-### Krajnja odluka: 
-
-| Stavka | Objašnjenje |
-|--------|-------------|
-| Razlog izbora | 
-| Prednosti | 
-| Nedostaci | 
-| Napomena | 
-| Implementacija | 
-
----
-
-### Detaljno obrazloženje
----
-
-
 ## Odluka #001 – Početni dashboard dispečera kao operativni pregled, ne kao zamjena za module
 
 | Polje | Opis |
@@ -705,3 +656,231 @@ Historijski i završeni zapisi imaju drugačiju svrhu: analizu, audit, pregled p
 Zbog toga je donesena odluka da sistem odvojeno prikazuje aktivne i historijske zapise.
 
 Ovakav pristup poboljšava preglednost sistema, smanjuje kognitivno opterećenje i omogućava brži operativni rad.
+
+---
+
+## Odluka #010 - Automatsko određivanje prioriteta za hitne premium intervencije
+
+| Polje | Opis |
+|-------|------|
+| ID odluke | DLI-010 |
+| Datum | 29.04.2026. |
+| Kratak naziv odluke | Automatski prioritet za premium hitne zahtjeve |
+| Opis problema ili pitanja | Kako tretirati korisnike koji odaberu hitnu premium uslugu i očekuju ubrzanu reakciju sistema? |
+| Razmatrane opcije | 1. Dispečer ručno određuje prioritet za sve zahtjeve <br> 2. Korisnik samostalno određuje prioritet <br> 3. Sistem automatski postavlja prioritet za premium hitne zahtjeve uz mogućnost korekcije od strane dispečera |
+| Odabrana opcija | Sistem automatski dodjeljuje prioritet „hitno“ za premium hitne zahtjeve, uz mogućnost izmjene od strane dispečera |
+| Razlog izbora | Balans između automatizacije, očekivanja korisnika i profesionalne kontrole dispečera |
+| Posljedice odluke | Potrebno evidentirati promjene prioriteta i obrazloženje izmjene |
+| Status odluke | aktivna |
+
+## Trade-off analiza (Decision Matrix)
+
+### Težine kriterija
+
+| Kriterij | Težina |
+|---|---|
+| Stabilnost sistema | 5 |
+| Skalabilnost | 5 |
+| Održivost koda | 4 |
+| Rizik regresionih grešaka | 5 |
+| Implementacijska kompleksnost | 3 |
+
+### Ocjenjivanje i rezultat
+
+| Opcija | Stabilnost | Skalabilnost | Održivost | Rizik regresije | Kompleksnost | Ukupno |
+|---|---|---|---|---|---|---|
+| Dispečer ručno određuje sve | 4 | 4 | 4 | 4 | 4 | 76 |
+| Korisnik određuje prioritet | 1 | 2 | 2 | 1 | 5 | 41 |
+| Automatski premium prioritet + dispečer potvrđuje | 5 | 5 | 5 | 5 | 3 | 92 |
+
+### Sažetak odluke
+
+Krajnja odluka: **Automatski prioritet za premium hitne zahtjeve uz mogućnost korekcije**
+
+| Stavka | Objašnjenje |
+|---|---|
+| Razlog izbora | Premium korisnici očekuju ubrzanu obradu, ali operativna kontrola mora ostati kod dispečera |
+| Prednosti | Brža obrada, bolji UX, automatizacija i zadržavanje ljudske kontrole |
+| Nedostaci | Potrebna evidencija izmjene prioriteta |
+| Napomena | Dispečer može promijeniti prioritet uz obavezno obrazloženje |
+| Implementacija | Automatsko postavljanje prioriteta + audit log izmjena |
+
+### Detaljno obrazloženje
+
+U standardnom toku sistema korisnicima nije dozvoljeno da direktno određuju prioritet servisne intervencije, jer korisnici često nemaju dovoljno tehničkog znanja niti operativnog konteksta da bi mogli objektivno procijeniti hitnost problema.
+
+Međutim, premium hitna usluga predstavlja poseban poslovni scenario. Korisnik koji odabere premium hitnu opciju svjesno bira ubrzani model obrade zahtjeva i očekuje prioritetnu reakciju sistema.
+
+Zbog toga je donesena odluka da sistem automatski postavlja prioritet zahtjeva na „hitno“ kada korisnik odabere premium hitnu uslugu. Time premium zahtjev odmah ulazi u ubrzani operativni tok bez dodatnog čekanja na manuelnu procjenu.
+
+Ipak, sistem ne smije potpuno izgubiti profesionalnu kontrolu nad operativnim procesom. Moguće su situacije u kojima:
+- korisnik odabere premium opciju za problem koji objektivno nije kritičan,
+- postoje važniji sigurnosni problemi,
+- sistem je trenutno preopterećen,
+- postoje intervencije višeg operativnog prioriteta.
+
+Zbog toga dispečer zadržava pravo da promijeni prioritet zahtjeva, ali uz obavezno obrazloženje razloga izmjene.
+
+Na taj način sistem kombinuje:
+- automatizaciju,
+- poslovna pravila,
+- korisnička očekivanja,
+- i profesionalnu operativnu kontrolu.
+
+Ovakav pristup omogućava:
+- bržu obradu premium zahtjeva,
+- bolji korisnički osjećaj hitne usluge,
+- transparentnost izmjena prioriteta,
+- audit trag operativnih odluka,
+- fleksibilnost u realnim situacijama.
+
+Iako ovakav model zahtijeva dodatnu logiku za evidenciju izmjena prioriteta i audit zapis, dugoročno predstavlja najrealnije i operativno najstabilnije rješenje.
+
+---
+
+## Odluka #011 - Dinamičko preskakanje koraka prioriteta za premium hitne zahtjeve
+
+| Polje | Opis |
+|-------|------|
+| ID odluke | DLI-011 |
+| Datum | 29.04.2026. |
+| Kratak naziv odluke | Dinamički wizard za premium zahtjeve |
+| Opis problema ili pitanja | Da li korisniku koji odabere premium hitnu uslugu prikazivati dodatni korak za određivanje hitnosti unutar wizard forme? |
+| Razmatrane opcije | 1. Prikazivati sve korake svim korisnicima <br> 2. Dinamički preskakati korak hitnosti za premium zahtjeve |
+| Odabrana opcija | Korak za određivanje hitnosti se automatski preskače za premium hitne zahtjeve |
+| Razlog izbora | Izbjegavanje dupliranja logike, očuvanje konzistentnosti podataka i jednostavniji korisnički tok |
+| Posljedice odluke | Wizard mora podržavati dinamičko prikazivanje i preskakanje koraka |
+| Status odluke | aktivna |
+
+## Trade-off analiza (Decision Matrix)
+
+### Težine kriterija
+
+| Kriterij | Težina |
+|---|---|
+| Stabilnost sistema | 5 |
+| Skalabilnost | 5 |
+| Održivost koda | 4 |
+| Rizik regresionih grešaka | 5 |
+| Implementacijska kompleksnost | 3 |
+
+### Ocjenjivanje i rezultat
+
+| Opcija | Stabilnost | Skalabilnost | Održivost | Rizik regresije | Kompleksnost | Ukupno |
+|---|---|---|---|---|---|---|
+| Svi korisnici prolaze iste korake | 3 | 3 | 3 | 3 | 5 | 69 |
+| Dinamički wizard | 5 | 5 | 5 | 5 | 4 | 92 |
+
+### Sažetak odluke
+
+Krajnja odluka: **Dinamičko preskakanje koraka prioriteta za premium zahtjeve**
+
+| Stavka | Objašnjenje |
+|---|---|
+| Razlog izbora | Nema potrebe ponovo pitati informacije koje su već određene poslovnom logikom |
+| Prednosti | Brži UX, manje konfuzije i veća konzistentnost sistema |
+| Nedostaci | Veća kompleksnost wizard logike |
+| Napomena | Premium hitna usluga već definiše početni prioritet |
+| Implementacija | Conditional rendering i dinamičko upravljanje koracima wizarda |
+
+### Detaljno obrazloženje
+
+U standardnom toku prijave servisne intervencije korisnik prolazi kroz više koraka unutar wizard forme, uključujući i dio koji se odnosi na procjenu hitnosti zahtjeva.
+
+Međutim, kod premium hitnih zahtjeva sistem već automatski određuje početni prioritet na osnovu poslovnih pravila. Zbog toga bi ponovno prikazivanje pitanja o hitnosti predstavljalo nepotrebno ponavljanje iste logike.
+
+Takav pristup bi mogao dovesti i do nekonzistentnosti podataka. Mogla bi nastati situacija u kojoj korisnik odabere premium hitnu uslugu, a zatim u narednom koraku označi nizak nivo hitnosti. Time bi sistem dobio kontradiktorne informacije.
+
+Pored toga, dodatni nepotrebni koraci:
+- povećavaju kognitivno opterećenje,
+- usporavaju korisnički tok,
+- narušavaju osjećaj inteligentnog sistema,
+- i smanjuju kvalitet korisničkog iskustva.
+
+Zbog toga je donesena odluka da wizard dinamički preskače korak određivanja hitnosti kada korisnik odabere premium hitnu uslugu.
+
+Na taj način sistem:
+- prilagođava tok forme kontekstu korisnika,
+- ne postavlja redundantna pitanja,
+- održava konzistentnost poslovne logike,
+- i pruža osjećaj pametnog i adaptivnog interfejsa.
+
+Iako ovaj pristup zahtijeva složeniju logiku wizard toka i conditional rendering mehanizme, dugoročno donosi čistiji UX i stabilniji operativni proces.
+
+---
+
+## Odluka #012 - Step-by-step wizard za određivanje prioriteta od strane dispečera
+
+| Polje | Opis |
+|-------|------|
+| ID odluke | DLI-012 |
+| Datum | 29.04.2026. |
+| Kratak naziv odluke | Wizard za određivanje prioriteta |
+| Opis problema ili pitanja | Kako dispečeru omogućiti jasno, dosljedno i kontrolisano određivanje prioriteta zahtjeva? |
+| Razmatrane opcije | 1. Statička forma sa svim poljima odjednom <br> 2. Direktno ručno biranje prioriteta <br> 3. Step-by-step wizard za vođeno određivanje prioriteta |
+| Odabrana opcija | Step-by-step wizard za dispečera |
+| Razlog izbora | Manje grešaka, bolja dosljednost odluka i jednostavniji rad dispečera |
+| Posljedice odluke | Potrebno implementirati višekoračnu formu i logiku pamćenja odgovora kroz korake |
+| Status odluke | aktivna |
+
+## Trade-off analiza (Decision Matrix)
+
+### Težine kriterija
+
+| Kriterij | Težina |
+|---|---|
+| Stabilnost sistema | 5 |
+| Skalabilnost | 5 |
+| Održivost koda | 4 |
+| Rizik regresionih grešaka | 5 |
+| Implementacijska kompleksnost | 3 |
+
+### Ocjenjivanje i rezultat
+
+| Opcija | Stabilnost | Skalabilnost | Održivost | Rizik regresije | Kompleksnost | Ukupno |
+|---|---|---|---|---|---|---|
+| Statička forma | 3 | 3 | 3 | 3 | 5 | 69 |
+| Ručno određivanje prioriteta | 4 | 4 | 4 | 4 | 4 | 76 |
+| Step-by-step wizard | 5 | 5 | 5 | 5 | 4 | 92 |
+
+### Sažetak odluke
+
+Krajnja odluka: **Step-by-step wizard za određivanje prioriteta**
+
+| Stavka | Objašnjenje |
+|---|---|
+| Razlog izbora | Prioritet predstavlja važnu operativnu odluku i zahtijeva strukturisan proces |
+| Prednosti | Manje grešaka, bolja konzistentnost i jednostavniji operativni rad |
+| Nedostaci | Veća kompleksnost implementacije |
+| Napomena | Wizard vodi dispečera kroz procjenu umjesto direktnog nasumičnog odabira prioriteta |
+| Implementacija | Višekoračna forma sa validacijom i poslovnim pravilima |
+
+### Detaljno obrazloženje
+
+Određivanje prioriteta servisne intervencije nije običan unos podatka, nego važna operativna odluka koja direktno utiče na raspodjelu resursa, brzinu reakcije i organizaciju rada sistema.
+
+Razmatrana opcija bila je statička forma sa svim poljima prikazanim odjednom. Iako je jednostavnija za implementaciju, takav pristup može postati nepregledan i opterećujući za dispečera, posebno kada sistem sadrži veliki broj operativnih informacija.
+
+Druga opcija bila je da dispečer direktno ručno odabere prioritet bez dodatnog vođenja kroz proces. Takav pristup jeste brz, ali povećava subjektivnost i mogućnost nekonzistentnih odluka između različitih dispečera.
+
+Zbog toga je donesena odluka da određivanje prioriteta koristi step-by-step wizard pristup.
+
+Wizard vodi dispečera kroz strukturisan proces procjene:
+- vrsta problema,
+- sigurnosni rizik,
+- broj pogođenih korisnika,
+- mogućnost dodatne štete,
+- hitnost reakcije,
+- poslovni kontekst,
+- trenutno stanje sistema.
+
+Na taj način sistem ne prepušta cijeli proces intuiciji pojedinca, nego pomaže dispečeru da odluku donese kroz konzistentan i kontrolisan tok.
+
+Ovakav pristup:
+- smanjuje kognitivno opterećenje,
+- smanjuje mogućnost greške,
+- povećava konzistentnost prioritizacije,
+- olakšava onboarding novih dispečera,
+- i doprinosi profesionalnijem operativnom radu.
+
+Iako step-by-step wizard zahtijeva složeniju implementaciju i upravljanje stanjem kroz više koraka, dugoročno predstavlja stabilnije i skalabilnije rješenje za sistem ovog tipa.
