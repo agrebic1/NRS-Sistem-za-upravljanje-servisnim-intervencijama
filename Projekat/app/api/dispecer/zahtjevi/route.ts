@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { createClient as createServerClient } from '@/lib/supabase/server';
 import { assertDispatcherAccess } from '@/lib/servisirane/dispecerPristup';
+import { korisnickiBrojeviMapPoKorisniku } from '@/lib/servisirane/korisnickiBrojZahtjeva';
 
 export const dynamic = 'force-dynamic';
 
@@ -68,7 +69,16 @@ export async function GET(request: Request) {
     const userIds = [...new Set((data ?? []).map((z) => z.user_id))];
     let profili: Record<string, { ime: string; prezime: string; broj_telefona: string | null }> = {};
 
+    let idDoKorisnickogBroja = new Map<number, number>();
     if (userIds.length > 0) {
+      const { data: sviZaKorisnike, error: brojErr } = await supabase
+        .from('service_requests')
+        .select('id, user_id, created_at')
+        .in('user_id', userIds);
+      if (!brojErr && sviZaKorisnike) {
+        idDoKorisnickogBroja = korisnickiBrojeviMapPoKorisniku(sviZaKorisnike);
+      }
+
       const { data: osobeData } = await supabase
         .from('osoba')
         .select('id_osobe, ime, prezime, broj_telefona')
@@ -83,9 +93,11 @@ export async function GET(request: Request) {
       }
     }
 
-    const zahtjeviSaPodnosiocima = (data ?? []).map((z) => ({
+    const zahtjeviSaPodnosiocima = (data ?? []).map((z, indeks) => ({
       ...z,
       podnosilac: profili[z.user_id] ?? null,
+      korisnicki_broj_zahtjeva: idDoKorisnickogBroja.get(z.id),
+      dispecerski_redni_u_pregledu: indeks + 1,
     }));
 
     return NextResponse.json({ zahtjevi: zahtjeviSaPodnosiocima });

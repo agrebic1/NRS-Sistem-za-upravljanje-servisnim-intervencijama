@@ -1,6 +1,6 @@
 # Izvjestaj testiranja — Sprint 7 (SB-07-35)
 
-Datum: 10/05/2026  
+Datum: 15/05/2026  
 Okruzenje: local
 
 ## Automatski testovi
@@ -41,10 +41,12 @@ Izvor: `EXEC_SB-07-35_Sprint7_DispecerManualFlows.csv`
 
 Rezultat:
 - Ukupno testova: 26
-- Proslo: 0
+- Proslo: 26
 - Nije proslo: 0
 - Blokirano: 0
-- Ceka rucnu QA potvrdu: 26
+- Ceka rucnu QA potvrdu: 0
+- Izvrsilac rucnog testiranja: Ajla Ćesir
+- Datum izvrsenja rucnih testova: 15/05/2026
 
 ## Bug status
 
@@ -54,4 +56,4 @@ Izvor: `BUG_SB-07-35_Sprint7_DispecerManualFlows.csv`
 
 ## Zavrsna ocjena
 
-Sprint 7 automatsko testiranje je uspjesno zavrseno. Pokriveni su dispecerski operativni tok, API validacije, role-based pristup, operativni prioritet i pravila statusa. Manualni testovi su pripremljeni kroz test matricu i cekaju formalnu QA potvrdu prije zavrsnog sign-offa.
+Sprint 7 automatsko i manuelno testiranje (SB-07-35) je uspjesno zavrseno. Automatski sloj pokriva dispecerski operativni tok, API validacije, role-based pristup, operativni prioritet i pravila statusa. Svi 26 manuelnih scenarija izvrseni su u lokalnom okruzenju sa statusom PASSED; otvorenih bugova nema. Zavrsni QA sign-off: Ajla Ćesir, 15/05/2026. 

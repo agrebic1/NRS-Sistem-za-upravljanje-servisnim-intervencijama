@@ -426,7 +426,7 @@ function PregledZahtjevaKorak({
           <Button type="button" variant="ghost" size="sm" onClick={() => onEditStep(2)}>Uredi</Button>
         </div>
         <p className="text-sm break-words [overflow-wrap:anywhere]" style={{ color: 'var(--first-octonary)' }}>
-          {state.address}
+          {(state.address ?? '').trim() || '—'}
         </p>
         {imaKoordinate && (
           <div className="mt-2">

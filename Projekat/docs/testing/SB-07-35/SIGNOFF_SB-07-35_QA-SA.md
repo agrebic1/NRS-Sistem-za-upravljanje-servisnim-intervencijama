@@ -16,20 +16,19 @@
 
 ## Rezime rezultata
 - Ukupno manualnih testova: 26
-- Proslo: 0
+- Proslo: 26
 - Nije proslo: 0
 - Blokirano: 0
-- Ceka rucnu QA potvrdu: 26
+- Ceka rucnu QA potvrdu: 0
 - Automatski testovi: 111/111 passed
 - Coverage: Statements 99.61%, Branches 87.39%, Functions 100%, Lines 100%
 - Otvoreni bugovi: 0
 
 ## Zakljucak
-SB-07-35 ima zavrsenu automatsku regresiju i spreman je za formalni rucni QA prolaz. Formalni prihvat se radi nakon sto svi obavezni manualni testovi (`Obavezno_za_signoff = DA`) dobiju status `PASSED` i nema otvorenih kriticnih bugova.
+SB-07-35 ima zavrsenu automatsku regresiju i formalni rucni QA prolaz. Svi manualni testovi iz `EXEC_SB-07-35_Sprint7_DispecerManualFlows.csv` imaju status `PASSED` (ukljucujuci sve obavezne za sign-off, `Obavezno_za_signoff = DA`). Otvorenih kriticnih bugova nema.
 
-Automatski dio pokriva poslovna pravila dispecerskih faza, operativnog prioriteta, autorizacije, API validacija i E2E smoke tok dispecera. Rucni sign-off ostaje potreban za vizuelnu potvrdu dashboarda, kartica, carobnjaka i osvjezavanja podataka u stvarnom okruzenju.
+Automatski dio pokriva poslovna pravila dispecerskih faza, operativnog prioriteta, autorizacije, API validacija i E2E smoke tok dispecera. Rucni dio potvrdjuje dashboard, kartice, carobnjak, osvjezavanje podataka i sigurnosne scenarije u lokalnom okruzenju.
 
 ## Potpisnici
-- QA: TBD
-- Solution Architect: TBD
-- Datum: 10/05/2026
+- QA: Ajla Ćesir
+- Datum: 15/05/2026

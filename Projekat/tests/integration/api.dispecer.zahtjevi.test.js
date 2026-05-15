@@ -69,6 +69,7 @@ describe('/api/dispecer/zahtjevi route', () => {
   });
 
   test('returns active requests with requester profiles', async () => {
+    let serviceReqFromCalls = 0;
     mockSessionGetUser.mockResolvedValue({ data: { user: { id: 'd1' } } });
     mockAssertDispatcherAccess.mockResolvedValue(true);
 
@@ -79,7 +80,21 @@ describe('/api/dispecer/zahtjevi route', () => {
     const serviceQuery = serviceRequestsQuery({ data: zahtjevi, error: null });
 
     mockFrom.mockImplementation((table) => {
-      if (table === 'service_requests') return serviceQuery;
+      if (table === 'service_requests') {
+        serviceReqFromCalls += 1;
+        if (serviceReqFromCalls === 1) return serviceQuery;
+        return {
+          select: jest.fn().mockReturnThis(),
+          in: jest.fn().mockResolvedValue({
+            data: zahtjevi.map((z) => ({
+              id: z.id,
+              user_id: z.user_id,
+              created_at: z.created_at ?? '2026-05-10T00:00:00Z',
+            })),
+            error: null,
+          }),
+        };
+      }
       if (table === 'osoba') {
         return osobaQuery({
           data: [
@@ -103,6 +118,10 @@ describe('/api/dispecer/zahtjevi route', () => {
       prezime: 'B',
       broj_telefona: '061111111',
     });
+    expect(body.zahtjevi[0].korisnicki_broj_zahtjeva).toBe(1);
+    expect(body.zahtjevi[1].korisnicki_broj_zahtjeva).toBe(1);
+    expect(body.zahtjevi[0].dispecerski_redni_u_pregledu).toBe(1);
+    expect(body.zahtjevi[1].dispecerski_redni_u_pregledu).toBe(2);
   });
 
   test('applies status query filter when provided', async () => {
@@ -125,6 +144,7 @@ describe('/api/dispecer/zahtjevi route', () => {
   });
 
   test('falls back when is_premium ordering column is missing', async () => {
+    let serviceReqFromCalls = 0;
     mockSessionGetUser.mockResolvedValue({ data: { user: { id: 'd1' } } });
     mockAssertDispatcherAccess.mockResolvedValue(true);
 
@@ -132,13 +152,23 @@ describe('/api/dispecer/zahtjevi route', () => {
       data: null,
       error: { message: "'is_premium' column does not exist" },
     });
-    const fallbackQuery = serviceRequestsQuery({ data: [{ id: 1, user_id: 'u1' }], error: null }, 1);
-    let serviceCalls = 0;
+    const fallbackQuery = serviceRequestsQuery(
+      { data: [{ id: 1, user_id: 'u1', created_at: '2026-05-01T00:00:00Z' }], error: null },
+      1,
+    );
 
     mockFrom.mockImplementation((table) => {
       if (table === 'service_requests') {
-        serviceCalls += 1;
-        return serviceCalls === 1 ? firstQuery : fallbackQuery;
+        serviceReqFromCalls += 1;
+        if (serviceReqFromCalls === 1) return firstQuery;
+        if (serviceReqFromCalls === 2) return fallbackQuery;
+        return {
+          select: jest.fn().mockReturnThis(),
+          in: jest.fn().mockResolvedValue({
+            data: [{ id: 1, user_id: 'u1', created_at: '2026-05-01T00:00:00Z' }],
+            error: null,
+          }),
+        };
       }
       if (table === 'osoba') return osobaQuery({ data: [], error: null });
       return serviceRequestsQuery({ data: [], error: null });
@@ -149,5 +179,7 @@ describe('/api/dispecer/zahtjevi route', () => {
 
     expect(response.status).toBe(200);
     expect(body.zahtjevi).toHaveLength(1);
+    expect(body.zahtjevi[0].korisnicki_broj_zahtjeva).toBe(1);
+    expect(body.zahtjevi[0].dispecerski_redni_u_pregledu).toBe(1);
   });
 });

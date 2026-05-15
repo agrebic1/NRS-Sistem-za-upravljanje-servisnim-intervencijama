@@ -17,10 +17,8 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { korisnickaHitnostStil } from '@/components/servisirane/zahtjevBadgeovi';
-import { AdresaProsiriva } from '@/components/servisirane/AdresaProsiriva';
 import { DispecerPremiumKruna } from '@/components/servisirane/zahtjevBadgeovi';
 import type { KorisnickiDashboardStatus } from '@/lib/servisirane/statusZahtjeva';
-import { razloziAdresu } from '@/lib/servisirane/adresaPrikaz';
 import { formatirajDatumPrikaz } from '@/lib/format/datumi';
 import {
   DISPECER_PALETA_HITNOST,
@@ -146,47 +144,11 @@ function SljedeciDolazakAdresa({ lokacija }: { lokacija: string }) {
     );
   }
 
-  const r = razloziAdresu(puna);
-  const dijelovi = r.cjelovita.split(',').map((x) => x.trim()).filter(Boolean);
-  const linija1 = dijelovi[0] ?? r.skraceniPrikaz;
-  const linija2 =
-    dijelovi.length >= 4
-      ? dijelovi.slice(1, 3).join(', ')
-      : dijelovi.length === 3
-        ? [dijelovi[1], dijelovi[2]].filter(Boolean).join(', ')
-        : dijelovi.length === 2
-          ? dijelovi[1]
-          : null;
-
-  const prikazKratko = [linija1, linija2].filter(Boolean).join(', ');
-  const imaDetalja =
-    Boolean(r.administrativniNastavak?.trim()) ||
-    r.cjelovita.trim().length > prikazKratko.length + 2 ||
-    dijelovi.length > 3;
-
   return (
     <div className="mt-2">
-      <p className="text-sm font-semibold leading-snug" style={{ color: 'var(--first-octonary)' }}>
-        {linija1}
+      <p className="break-words text-sm font-semibold leading-snug" style={{ color: 'var(--first-octonary)' }}>
+        {puna}
       </p>
-      {linija2 ? (
-        <p className="mt-0.5 text-sm leading-snug" style={{ color: 'rgb(var(--first-nonary-rgb) / 0.92)' }}>
-          {linija2}
-        </p>
-      ) : null}
-      {imaDetalja ? (
-        <details className="mt-1.5">
-          <summary
-            className="cursor-pointer text-[11px] font-semibold underline-offset-2 hover:underline"
-            style={{ color: 'var(--first-secondary)' }}
-          >
-            Prikaži punu adresu
-          </summary>
-          <p className="mt-1.5 break-words text-xs leading-relaxed" style={{ color: 'var(--first-octonary)' }}>
-            {r.cjelovita}
-          </p>
-        </details>
-      ) : null}
     </div>
   );
 }
@@ -256,7 +218,9 @@ function ZahtjevPregledKartica({ zahtjev }: { zahtjev: KorisnikDashboardZahtjev 
           ) : null}
 
           <div className="mt-2 min-w-0">
-            <AdresaProsiriva address={zahtjev.lokacija} variant="kartica" />
+            <p className="break-words text-sm font-medium leading-snug" style={{ color: 'var(--first-nonary)' }}>
+              {(zahtjev.lokacija ?? '').trim() || '—'}
+            </p>
           </div>
 
           <div className="mt-3 flex min-w-0 items-center gap-1.5 text-xs" style={{ color: 'var(--first-nonary)' }}>

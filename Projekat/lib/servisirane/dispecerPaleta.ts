@@ -1,5 +1,5 @@
 /**
- * Dispečerska paleta — dva odvojena sustava da se vizualno ne miješaju:
+ * Dispečerska paleta — odvojeni sustavi da se vizualno ne miješaju:
  *
  * 1. **STATUS** (životni ciklus) — `DispecerStatusBadge` i KPI na tabli dijele iste slotove:
  *    **plava** novi (prije čarobnjaka) → **ljubičasta** u obradi → **zelena** potvrđeno (nakon čarobnjaka) → nebo **dodijeljeno** → tamnija **ljubičasta** na terenu;
@@ -8,6 +8,8 @@
  * 2. **HITNOST** (korisnička procjena): crvena → amber → slate.
  *
  * 3. **PREMIUM** — zaseban akcent.
+ *
+ * 4. **OPERATIVNI PRIORITET** (`final_priority`) — dispečerova trijaža: teal → indigo → narančasta → magenta → tamnocrveni „maks“ (`vizuelOperativnogPrioriteta`). Namjerno nije u istim hexovima kao (2) niti (1).
  */
 
 /** Korisnička procjena hitnosti — chip, rub kartice, boja naslova grupe u inboxu. */
@@ -103,6 +105,74 @@ export const DISPECER_PALETA_PREMIUM = {
   akcent: '#E11D48',
   toast: '#E11D48',
 } as const;
+
+export type OperativniPrioritetKljuc = 'NISKO' | 'SREDNJE' | 'VISOKO' | 'KRITIČNO' | 'HITNO';
+
+/**
+ * Boje isključivo za `final_priority` (trijaža dispečera).
+ * Nije `DISPECER_PALETA_HITNOST` (korisnik), niti `DISPECER_PALETA_STATUS` (životni ciklus).
+ */
+export const DISPECER_PALETA_OPERATIVNI_PRIORITET: Record<
+  OperativniPrioritetKljuc,
+  { tekst: string; pozadina: string; border: string; tamnaPozadina?: boolean }
+> = {
+  NISKO: {
+    tekst: '#0F766E',
+    pozadina: 'rgba(204, 251, 241, 0.92)',
+    border: 'rgba(15, 118, 110, 0.38)',
+  },
+  SREDNJE: {
+    tekst: '#3730A3',
+    pozadina: 'rgba(238, 242, 255, 0.96)',
+    border: 'rgba(67, 56, 202, 0.36)',
+  },
+  VISOKO: {
+    tekst: '#C2410C',
+    pozadina: 'rgba(255, 237, 213, 0.96)',
+    border: 'rgba(234, 88, 12, 0.42)',
+  },
+  'KRITIČNO': {
+    tekst: '#86198F',
+    pozadina: 'rgba(250, 232, 255, 0.95)',
+    border: 'rgba(134, 25, 143, 0.4)',
+  },
+  HITNO: {
+    tekst: '#FEF2F2',
+    pozadina: '#881337',
+    border: '#4C0519',
+    tamnaPozadina: true,
+  },
+} as const;
+
+/** Mapira vrijednost iz baze na ključ palete (ASCII / dijakritika). */
+export function normalizujKljucOperativnogPrioriteta(oznakaRaw: string): OperativniPrioritetKljuc {
+  const u = oznakaRaw.trim().toUpperCase();
+  if (u === 'NISKO') return 'NISKO';
+  if (u === 'SREDNJE') return 'SREDNJE';
+  if (u === 'VISOKO') return 'VISOKO';
+  if (u === 'HITNO') return 'HITNO';
+  if (u === 'KRITIČNO' || u === 'KRITICNO') return 'KRITIČNO';
+  return 'SREDNJE';
+}
+
+export function vizuelOperativnogPrioriteta(oznakaRaw: string) {
+  return DISPECER_PALETA_OPERATIVNI_PRIORITET[normalizujKljucOperativnogPrioriteta(oznakaRaw)];
+}
+
+/** Tekstualni prikaz vrijednosti (detalji / expand) — ista semantika boja kao chip. */
+export function stilTekstaOperativnogPrioriteta(vrijednost: string): {
+  className: string;
+  style: { color: string };
+} {
+  const slot = vizuelOperativnogPrioriteta(vrijednost);
+  const k = normalizujKljucOperativnogPrioriteta(vrijednost);
+  const naglasak = k === 'HITNO' || k === 'KRITIČNO' || k === 'VISOKO';
+  const bojaTeksta = slot.tamnaPozadina ? slot.pozadina : slot.tekst;
+  return {
+    className: ['text-sm leading-snug', naglasak ? 'font-bold' : 'font-semibold'].join(' '),
+    style: { color: bojaTeksta },
+  };
+}
 
 /**
  * Relativno vrijeme u listi — nije ista skala kao hitnost (stale = pažnja bez rose crvene).

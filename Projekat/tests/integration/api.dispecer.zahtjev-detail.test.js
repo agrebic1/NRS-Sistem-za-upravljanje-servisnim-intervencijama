@@ -97,12 +97,26 @@ describe('/api/dispecer/zahtjevi/[id] route', () => {
     mockSessionGetUser.mockResolvedValue({ data: { user: { id: 'd1' } } });
     mockAssertDispatcherAccess.mockResolvedValue(true);
 
+    let srCalls = 0;
     mockFrom.mockImplementation((table) => {
       if (table === 'service_requests') {
-        return singleQuery({
-          data: { id: 1, user_id: 'u1', status: 'pending_review' },
+        srCalls += 1;
+        if (srCalls === 1) {
+          return singleQuery({
+            data: { id: 1, user_id: 'u1', status: 'pending_review' },
+            error: null,
+          });
+        }
+        const chain = {
+          select: jest.fn().mockReturnThis(),
+          eq: jest.fn().mockReturnThis(),
+          order: jest.fn(),
+        };
+        chain.order.mockReturnValueOnce(chain).mockResolvedValueOnce({
+          data: [{ id: 1, created_at: '2026-01-01T00:00:00Z' }],
           error: null,
         });
+        return chain;
       }
       if (table === 'osoba') {
         return maybeSingleQuery({
@@ -124,6 +138,7 @@ describe('/api/dispecer/zahtjevi/[id] route', () => {
       prezime: 'Test',
       broj_telefona: '061111111',
     });
+    expect(body.zahtjev.korisnicki_broj_zahtjeva).toBe(1);
   });
 
   test('PATCH confirms request and stores operational priority', async () => {

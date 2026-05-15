@@ -1,6 +1,6 @@
 'use client';
 
-import { useId, type CSSProperties } from 'react';
+import { useId } from 'react';
 import Link from 'next/link';
 import { MapPin, Phone, User } from 'lucide-react';
 import type { ServisniZahtjev } from '@/domain/types/servisirane';
@@ -31,7 +31,7 @@ import {
   ZahtjevMiniTimeline,
 } from '@/components/servisirane/ZahtjevTimelineIPoruka';
 import { PrilogGalerija } from '@/components/servisirane/PrilogGalerija';
-import { AdresaProsiriva } from '@/components/servisirane/AdresaProsiriva';
+import { stilTekstaOperativnogPrioriteta } from '@/lib/servisirane/dispecerPaleta';
 
 export type ZahtjevZaExpand = ServisniZahtjev & {
   podnosilac: { ime: string; prezime: string; broj_telefona: string | null } | null;
@@ -61,14 +61,6 @@ const SEKCIJA_GRUPE_LABEL_KLASA =
 const SEKCIJA_GRUPE_BOJA = { color: 'rgb(var(--first-nonary-rgb) / 0.72)' } as const;
 const SEKCIJA_GRUPE_RAZDJELNIK_BOJA = 'rgb(var(--first-quaternary-rgb) / 0.22)';
 
-function stilOperativnogPrioriteta(vrijednost: string): { className: string; style: CSSProperties } {
-  const hitno = vrijednost.trim().toUpperCase() === 'HITNO';
-  return {
-    className: hitno ? 'text-sm font-bold leading-snug' : 'text-sm font-semibold leading-snug',
-    style: { color: hitno ? 'var(--first-senary)' : 'var(--first-octonary)' },
-  };
-}
-
 export function ZahtjevExpandSadrzaj({
   zahtjev,
   detaljiHref,
@@ -81,7 +73,9 @@ export function ZahtjevExpandSadrzaj({
   const hitnostGrupaId = useId();
 
   const { glavna, podkategorija } = labelKategorije(zahtjev);
-  const { tekstCijeli: terminTekst, imaPreferirani } = preferiraniTerminZaDispecera(zahtjev);
+  const { tekstCijeli: terminTekst, imaPreferirani } = preferiraniTerminZaDispecera(zahtjev, {
+    dispecerskiPregled: true,
+  });
   const imaKoordinate = zahtjev.latitude != null && zahtjev.longitude != null;
   const slike = urlsPrilozenihSlika(zahtjev as ZahtjevZaExpand & Record<string, unknown>);
   const opisSirovo = (zahtjev.description ?? '').trim();
@@ -92,7 +86,7 @@ export function ZahtjevExpandSadrzaj({
   const imePrezime = imePrezimePodnosioca(podnosilac);
   const imaOperativni = Boolean(zahtjev.final_priority?.trim());
   const fp = zahtjev.final_priority?.trim() ?? '';
-  const operativniStil = imaOperativni ? stilOperativnogPrioriteta(fp) : null;
+  const operativniStil = imaOperativni ? stilTekstaOperativnogPrioriteta(fp) : null;
   const korisnickiUrgencyZaPrikaz = efektivniKorisnickiUrgencyScore(zahtjev);
 
   return (
@@ -161,7 +155,9 @@ export function ZahtjevExpandSadrzaj({
                     <p className={POLJE_OZNAKA_KLASA} style={POLJE_OZNAKA_BOJA}>
                       Adresa
                     </p>
-                    <AdresaProsiriva address={zahtjev.address} variant="panel" />
+                    <p className="break-words font-medium leading-snug" style={{ color: 'var(--first-octonary)' }}>
+                      {(zahtjev.address ?? '').trim() || '—'}
+                    </p>
                     {imaKoordinate && (
                       <div className="mt-1">
                         <ExpandPanelPreciznaLokacijaChip />
@@ -292,7 +288,9 @@ export function ZahtjevExpandSadrzaj({
                 <p className={POLJE_OZNAKA_KLASA} style={POLJE_OZNAKA_BOJA}>
                   Adresa
                 </p>
-                <AdresaProsiriva address={zahtjev.address} variant="panel" />
+                <p className="break-words font-medium leading-snug" style={{ color: 'var(--first-octonary)' }}>
+                  {(zahtjev.address ?? '').trim() || '—'}
+                </p>
                 {imaKoordinate && (
                   <div className="mt-1">
                     <ExpandPanelPreciznaLokacijaChip />

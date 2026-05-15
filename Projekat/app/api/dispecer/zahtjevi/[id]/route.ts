@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { createClient as createServerClient } from '@/lib/supabase/server';
 import { assertDispatcherAccess } from '@/lib/servisirane/dispecerPristup';
+import { korisnickiBrojZahtjevaZaId } from '@/lib/servisirane/korisnickiBrojZahtjeva';
 import { premiumZahtijevaObrazlozenjeSmanjenjaPrioriteta } from '@/lib/servisirane/operativniPrioritet';
 import { dispecerSmijeMijenjatiOperativniPrioritet } from '@/lib/servisirane/statusZahtjeva';
 import { z } from 'zod';
@@ -85,10 +86,22 @@ export async function GET(
       .eq('id_osobe', zahtjev.user_id)
       .maybeSingle();
 
+    const { data: redoviAsc } = await supabase
+      .from('service_requests')
+      .select('id, created_at')
+      .eq('user_id', zahtjev.user_id)
+      .order('created_at', { ascending: true })
+      .order('id', { ascending: true });
+
+    const korisnicki_broj_zahtjeva = redoviAsc
+      ? korisnickiBrojZahtjevaZaId(redoviAsc, requestId)
+      : null;
+
     return NextResponse.json({
       zahtjev: {
         ...zahtjev,
         podnosilac: osoba ?? null,
+        korisnicki_broj_zahtjeva: korisnicki_broj_zahtjeva ?? undefined,
       },
     });
   } catch (err) {

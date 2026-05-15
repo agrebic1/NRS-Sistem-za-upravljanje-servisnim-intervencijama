@@ -204,7 +204,7 @@ export default function ServiserPage() {
                     <div className="mt-1.5 flex flex-wrap gap-x-4 text-xs" style={{ color: 'var(--first-nonary)' }}>
                       <span className="flex min-w-0 items-center gap-1">
                         <MapPin className="h-3 w-3 shrink-0" />
-                        <AdresaProsiriva address={zadatak.address} variant="lista" />
+                        <span className="min-w-0 break-words">{(zadatak.address ?? '').trim() || '—'}</span>
                       </span>
                       <span className="flex items-center gap-1">
                         <Clock className="h-3 w-3" />

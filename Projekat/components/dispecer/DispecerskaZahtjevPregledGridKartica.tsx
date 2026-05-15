@@ -1,94 +1,122 @@
 'use client';
 
 import Link from 'next/link';
+import { Calendar, Image as ImageLucide, MapPin, Phone } from 'lucide-react';
 import { labelKategorije } from '@/lib/servisirane/kategorije';
 import {
+  formatPrijavljenoDatumVrijeme,
+  hrefZaTelefon,
   imePrezimePodnosioca,
   preferiraniTerminZaDispecera,
   relativnoPrijavljenoZaDispecera,
+  skracenTekst,
 } from '@/lib/servisirane/zahtjevPrikaz';
-import {
-  bojaRelativnogPrijaveDispecera,
-  DISPECER_PALETA_HITNOST,
-  DISPECER_PALETA_PREMIUM,
-} from '@/lib/servisirane/dispecerPaleta';
+import { urlsPrilozenihSlika } from '@/lib/servisirane/slikeZahtjeva';
+import { bojaRelativnogPrijaveDispecera, DISPECER_PALETA_HITNOST, DISPECER_PALETA_PREMIUM } from '@/lib/servisirane/dispecerPaleta';
 import { DispecerPregledTokaBadzevi } from '@/components/dispecer/DispecerPregledTokaBadzevi';
-import { DispecerPremiumKruna, KorisnickaHitnostOutlinedChip } from '@/components/servisirane/zahtjevBadgeovi';
+import { DispecerPremiumKruna, KorisnickaHitnostOutlinedChip, OperativniPrioritetChip } from '@/components/servisirane/zahtjevBadgeovi';
 import type { ZahtjevZaDispecerskuKarticu } from '@/components/dispecer/DispecerskaZahtjevKartica';
+import type { ServisniZahtjev } from '@/domain/types/servisirane';
+import { inboxGrupaIzKorisnickeProcjene, efektivniKorisnickiUrgencyScore } from '@/lib/servisirane/urgency';
+import { oznakaZaDispecerskiPrikazBroja } from '@/lib/servisirane/korisnickiBrojZahtjeva';
+import { DISPECER_HITNOST_KORISNIK_CHIP_TITLE } from '@/lib/servisirane/dispecerPojmovi';
 import {
-  DISPECER_HITNOST_KORISNIK_NASLOV,
-  DISPECER_OPERATIVNI_NASLOV,
-} from '@/lib/servisirane/dispecerPojmovi';
-import { efektivniKorisnickiUrgencyScore, inboxGrupaIzKorisnickeProcjene } from '@/lib/servisirane/urgency';
+  zahtjevCekaDogovorTerminaDispecera,
+  zahtjevCekaDodjeluServiseraDispecera,
+  zahtjevCekaZavrsnuPotvrduCarobnjaka,
+  zahtjevJeNoviUPregleduDispecera,
+} from '@/lib/servisirane/dispecerskeFaze';
+import { zahtjevCekaObraduUInboxuDispecera } from '@/lib/servisirane/statusZahtjeva';
 
-/** Kartica za Pregled zahtjeva — isti sadržaj kao red u listi, bez expand panela. */
+function sljedecaAkcijaZaOperatera(zahtjev: ServisniZahtjev): string {
+  if (zahtjevCekaObraduUInboxuDispecera(zahtjev.status)) {
+    if (zahtjevJeNoviUPregleduDispecera(zahtjev)) return 'Sljedeće: postavite operativni prioritet.';
+    if (zahtjevCekaDogovorTerminaDispecera(zahtjev)) return 'Sljedeće: dogovorite termin s korisnikom.';
+    if (zahtjevCekaDodjeluServiseraDispecera(zahtjev)) return 'Sljedeće: odaberite servisera.';
+    if (zahtjevCekaZavrsnuPotvrduCarobnjaka(zahtjev)) return 'Sljedeće: završite potvrdu u čarobnjaku.';
+    return 'Sljedeće: nastavite obradu u čarobnjaku.';
+  }
+  if (zahtjev.status === 'potvrdeno') return 'Sljedeće: dodjela serviseru ili start intervencije.';
+  return 'Sljedeće: pregledajte detalje i historiju.';
+}
+
+/** Mrežna kartica za dispečera — brz operativni pregled (US-07, US-12, US-13). */
 export function DispecerskaZahtjevPregledGridKartica({ zahtjev }: { zahtjev: ZahtjevZaDispecerskuKarticu }) {
   const podnosilac = zahtjev.podnosilac;
-  const { glavna } = labelKategorije(zahtjev);
-  const { tekstCijeli: terminTekst } = preferiraniTerminZaDispecera(zahtjev);
+  const { glavna, podkategorija } = labelKategorije(zahtjev);
+  const opis = (zahtjev.description ?? '').trim();
+  const problem = podkategorija || (opis ? skracenTekst(opis, 96) : 'Opis nije unesen');
+
+  const termin = preferiraniTerminZaDispecera(zahtjev, { dispecerskiPregled: true });
   const imePrezime = imePrezimePodnosioca(podnosilac);
   const prijavljenoRel = relativnoPrijavljenoZaDispecera(zahtjev.created_at);
   const prijavljenoBoja = bojaRelativnogPrijaveDispecera(prijavljenoRel.ton);
+  const grupaInboxa = inboxGrupaIzKorisnickeProcjene(zahtjev);
   const scoreZaPrikaz = efektivniKorisnickiUrgencyScore(zahtjev);
-  const grupaInboxaPoKorisniku = inboxGrupaIzKorisnickeProcjene(zahtjev);
-  const accentBoja = zahtjev.is_premium
+  const prijavljenoDatumPuno = formatPrijavljenoDatumVrijeme(zahtjev.created_at);
+  const operativniPrioritetSirovo = (zahtjev.final_priority ?? '').trim();
+  /** Isti vizuelni jezik kao {@link DispecerskaZahtjevKartica}: premium ili rub po korisničkoj hitnosti. */
+  const lijeviRubKartice = zahtjev.is_premium
     ? DISPECER_PALETA_PREMIUM.akcent
-    : DISPECER_PALETA_HITNOST[grupaInboxaPoKorisniku].border;
+    : DISPECER_PALETA_HITNOST[grupaInboxa].border;
+  const telefonSirovo = podnosilac?.broj_telefona?.trim() || zahtjev.contact_phone?.trim() || '';
+  const telefonHref = telefonSirovo ? hrefZaTelefon(telefonSirovo) : null;
+  const imaKoordinate = zahtjev.latitude != null && zahtjev.longitude != null;
+  const brojPrilozenihSlika = urlsPrilozenihSlika(
+    zahtjev as ZahtjevZaDispecerskuKarticu & Record<string, unknown>,
+  ).length;
+  const korisnikJePrilozioSliku = brojPrilozenihSlika > 0;
+
+  const detaljHref = `/dispecer/zahtjevi/${zahtjev.id}`;
 
   return (
     <article
-      className="flex h-full min-w-0 w-full flex-col overflow-hidden rounded-2xl shadow-sm transition-[box-shadow,border-color] duration-200 ease-out hover:shadow-md"
+      className="relative flex h-full min-w-0 w-full flex-col overflow-hidden rounded-2xl shadow-sm transition-[box-shadow,border-color] duration-200 ease-out hover:shadow-md"
       style={{
         backgroundColor: 'rgb(255 255 255 / 0.72)',
         borderStyle: 'solid',
         borderColor: 'rgb(var(--first-quaternary-rgb) / 0.35)',
         borderWidth: 1,
         borderLeftWidth: 4,
-        borderLeftColor: accentBoja,
+        borderLeftColor: lijeviRubKartice,
       }}
     >
       <Link
-        href={`/dispecer/zahtjevi/${zahtjev.id}`}
-        className="flex min-h-[60px] min-w-0 flex-col gap-2 px-3 py-3 text-left transition-colors hover:bg-black/[0.02] focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--first-secondary-rgb)/0.45)] focus-visible:ring-offset-2 sm:px-4"
-        style={{ backgroundColor: '#ffffff' }}
-      >
-        <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start sm:gap-x-3">
-          <div className="flex min-w-0 flex-col gap-1">
-            <span className="inline-flex max-w-full items-center gap-1.5">
-              <span
-                className="inline-flex w-fit items-center rounded-md px-2 py-0.5 text-[11px] font-bold tabular-nums"
-                style={{
-                  backgroundColor: 'rgb(var(--first-quaternary-rgb) / 0.2)',
-                  color: 'var(--first-octonary)',
-                  border: '1px solid rgb(var(--first-quaternary-rgb) / 0.35)',
-                }}
-              >
-                #{zahtjev.id}
-              </span>
-              {zahtjev.is_premium ? <DispecerPremiumKruna className="translate-y-px" /> : null}
-            </span>
-            <div className="max-w-full">
-              <DispecerPregledTokaBadzevi zahtjev={zahtjev} />
-            </div>
-            <p className="text-[11px] font-semibold leading-tight" style={{ color: 'var(--first-octonary)' }}>
-              <span style={{ color: 'rgb(var(--first-nonary-rgb) / 0.78)' }}>{DISPECER_OPERATIVNI_NASLOV}: </span>
-              {zahtjev.final_priority?.trim() || '—'}
-            </p>
-          </div>
-          <div className="flex min-w-0 max-w-[10rem] flex-shrink-0 flex-col items-start gap-1 text-left sm:items-end sm:text-right">
+        href={detaljHref}
+        className="absolute inset-0 z-0 rounded-2xl"
+        aria-label={`Otvori zahtjev #${oznakaZaDispecerskiPrikazBroja(zahtjev)}, ${glavna}`}
+      />
+
+      <div className="relative z-10 flex min-h-0 min-w-0 flex-1 flex-col gap-0 p-4 text-left pointer-events-none">
+        {/* Identitet + datum prijave (US-07 AC9) */}
+        <div className="flex min-w-0 items-start justify-between gap-3">
+          <span className="inline-flex min-w-0 items-center gap-1.5">
             <span
-              className="text-[10px] font-semibold uppercase leading-tight tracking-wide"
-              style={{ color: 'rgb(var(--first-nonary-rgb) / 0.78)' }}
+              className="inline-flex w-fit shrink-0 items-center rounded-md px-2 py-0.5 text-[11px] font-bold tabular-nums leading-none"
+              style={{
+                backgroundColor: 'rgb(var(--first-quaternary-rgb) / 0.2)',
+                color: 'var(--first-octonary)',
+                border: '1px solid rgb(var(--first-quaternary-rgb) / 0.35)',
+              }}
             >
-              {DISPECER_HITNOST_KORISNIK_NASLOV}
+              #{oznakaZaDispecerskiPrikazBroja(zahtjev)}
             </span>
-            <KorisnickaHitnostOutlinedChip score={scoreZaPrikaz} />
+            {zahtjev.is_premium ? <DispecerPremiumKruna className="translate-y-px shrink-0" /> : null}
+          </span>
+          <div className="shrink-0 text-right">
+            <p className="text-[10px] font-semibold uppercase tracking-wide" style={{ color: 'rgb(var(--first-nonary-rgb) / 0.78)' }}>
+              Datum prijave
+            </p>
+            <p
+              className="mt-0.5 text-xs font-semibold tabular-nums leading-snug sm:text-sm"
+              style={{ color: 'var(--first-octonary)' }}
+              title={prijavljenoRel.tooltipApsolutno}
+            >
+              {prijavljenoDatumPuno}
+            </p>
             <p
               suppressHydrationWarning
-              className={[
-                'max-w-full text-right text-[12px] leading-tight',
-                prijavljenoRel.ton === 'stale' ? 'font-bold' : 'font-semibold',
-              ].join(' ')}
+              className={['mt-0.5 text-xs font-semibold leading-snug', prijavljenoRel.ton === 'stale' ? 'font-bold' : ''].join(' ')}
               style={{ color: prijavljenoBoja }}
               title={prijavljenoRel.tooltipApsolutno}
             >
@@ -97,32 +125,163 @@ export function DispecerskaZahtjevPregledGridKartica({ zahtjev }: { zahtjev: Zah
           </div>
         </div>
 
-        <div className="min-w-0">
-          <p
-            className="truncate text-sm font-bold leading-tight"
+        {/* Status toka + operativni vs korisnička procjena (US-12, US-13, US-07 AC12) — usklađeno s kontrolnom tablom */}
+        <div
+          className="mt-3 min-w-0 space-y-2 border-t pt-3 pointer-events-auto"
+          style={{ borderColor: 'rgb(var(--first-quaternary-rgb) / 0.22)' }}
+        >
+          <div className="min-w-0">
+            <DispecerPregledTokaBadzevi zahtjev={zahtjev} />
+          </div>
+          <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-2">
+            {operativniPrioritetSirovo ? (
+              <OperativniPrioritetChip vrijednost={operativniPrioritetSirovo} />
+            ) : zahtjevCekaObraduUInboxuDispecera(zahtjev.status) ? (
+              <span
+                className="inline-flex max-w-full shrink-0 rounded-full border border-dashed px-2.5 py-1 text-xs font-semibold"
+                style={{
+                  color: 'rgb(var(--first-nonary-rgb) / 0.92)',
+                  borderColor: 'rgb(var(--first-quaternary-rgb) / 0.45)',
+                  backgroundColor: 'rgb(var(--first-quinary-rgb) / 0.2)',
+                }}
+                title="Operativni prioritet postavljate u čarobnjaku ili na detaljima zahtjeva."
+              >
+                Operativni prioritet: čeka unos
+              </span>
+            ) : null}
+            <span className="inline-flex max-w-full min-w-0 flex-wrap items-center gap-x-1.5 gap-y-1" title={DISPECER_HITNOST_KORISNIK_CHIP_TITLE}>
+              <span className="text-xs font-medium" style={{ color: 'var(--first-nonary)' }}>
+                Procjena hitnosti:
+              </span>
+              <KorisnickaHitnostOutlinedChip score={scoreZaPrikaz} />
+            </span>
+          </div>
+        </div>
+
+        {/* Kategorija, problem, korisnik */}
+        <div className="mt-3 min-w-0 space-y-1 border-t pt-3" style={{ borderColor: 'rgb(var(--first-quaternary-rgb) / 0.22)' }}>
+          <h2
+            className="text-lg font-bold leading-snug sm:text-xl"
             style={{ color: 'var(--first-octonary)' }}
             title={glavna}
           >
             {glavna}
+          </h2>
+          <p className="text-sm font-semibold leading-snug sm:text-base" style={{ color: 'var(--first-octonary)' }}>
+            {problem}
           </p>
-          <p
-            className="mt-0.5 truncate text-xs font-medium leading-tight"
-            style={{ color: 'var(--first-nonary)' }}
-            title={imePrezime}
-          >
+          <p className="text-sm font-medium leading-snug" style={{ color: 'rgb(var(--first-nonary-rgb) / 0.92)' }}>
             {imePrezime}
           </p>
-          <div className="mt-1 flex min-w-0 items-center gap-1.5">
-            <p
-              className="min-w-0 flex-1 truncate text-xs font-semibold leading-tight tabular-nums"
-              style={{ color: 'var(--first-octonary)' }}
-              title={terminTekst}
-            >
-              {terminTekst}
+        </div>
+
+        {/* Adresa i kontakt */}
+        <div
+          className="mt-3 min-w-0 space-y-3 rounded-xl px-3 py-3 sm:px-3.5"
+          style={{
+            backgroundColor: 'rgb(var(--first-quinary-rgb) / 0.28)',
+            border: '1px solid rgb(var(--first-quaternary-rgb) / 0.25)',
+          }}
+        >
+          <div>
+            <p className="mb-1 text-xs font-medium" style={{ color: 'rgb(var(--first-nonary-rgb) / 0.85)' }}>
+              Adresa
+            </p>
+            <div className="flex gap-2">
+              <MapPin className="mt-0.5 h-4 w-4 shrink-0" style={{ color: 'var(--first-secondary)' }} aria-hidden />
+              <div className="pointer-events-auto min-w-0 flex-1 text-sm font-semibold leading-snug" style={{ color: 'var(--first-octonary)' }}>
+                <p className="whitespace-pre-wrap break-words">{(zahtjev.address ?? '').trim() || '—'}</p>
+              </div>
+            </div>
+            {imaKoordinate ? (
+              <p className="mt-1.5 pl-6 text-[11px] font-medium" style={{ color: 'rgb(var(--first-nonary-rgb) / 0.8)' }}>
+                GPS lokacija na mapi
+              </p>
+            ) : null}
+          </div>
+          <div>
+            <p className="mb-1 text-xs font-medium" style={{ color: 'rgb(var(--first-nonary-rgb) / 0.85)' }}>
+              Kontakt
+            </p>
+            {telefonHref ? (
+              <a
+                href={telefonHref}
+                className="pointer-events-auto inline-flex max-w-full items-center gap-2 text-sm font-semibold underline-offset-2 hover:underline"
+                style={{ color: 'var(--first-secondary)' }}
+                title={telefonSirovo}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <Phone className="h-4 w-4 shrink-0" aria-hidden />
+                <span className="tabular-nums">{telefonSirovo}</span>
+              </a>
+            ) : (
+              <p className="text-sm font-medium" style={{ color: 'var(--first-nonary)' }}>
+                —
+              </p>
+            )}
+          </div>
+        </div>
+
+        <div className="min-h-0 min-w-0 flex-1 basis-0" aria-hidden />
+
+        {/* Termin, sljedeći korak, prilog (status je već u zoni toka iznad — bez duplog bedža) */}
+        <div
+          className="mt-3 w-full space-y-3 border-t pt-3"
+          style={{ borderColor: 'rgb(var(--first-quaternary-rgb) / 0.25)' }}
+        >
+          <div className="flex min-w-0 flex-wrap items-start gap-x-2 gap-y-1">
+            <Calendar className="mt-0.5 h-4 w-4 shrink-0" style={{ color: 'rgb(var(--first-nonary-rgb) / 0.75)' }} aria-hidden />
+            {!termin.imaPreferirani ? (
+              <div className="min-w-0 flex-1">
+                <span className="text-xs font-medium" style={{ color: 'rgb(var(--first-nonary-rgb) / 0.88)' }}>
+                  Preferirani termin:{' '}
+                </span>
+                <span
+                  className="inline-flex max-w-full rounded-md border px-2 py-1 text-xs font-semibold leading-snug"
+                  style={{
+                    color: 'rgb(67 56 202)',
+                    backgroundColor: 'rgb(238 242 255 / 0.95)',
+                    borderColor: 'rgb(165 180 252 / 0.65)',
+                  }}
+                >
+                  {termin.tekstCijeli}
+                </span>
+              </div>
+            ) : (
+              <p className="min-w-0 flex-1 text-sm font-semibold leading-snug" style={{ color: 'var(--first-octonary)' }}>
+                <span className="font-medium" style={{ color: 'rgb(var(--first-nonary-rgb) / 0.88)' }}>
+                  Preferirani termin:{' '}
+                </span>
+                {termin.tekstCijeli}
+              </p>
+            )}
+          </div>
+
+          <p className="text-xs font-medium leading-relaxed" style={{ color: 'rgb(var(--first-nonary-rgb) / 0.9)' }}>
+            {sljedecaAkcijaZaOperatera(zahtjev)}
+          </p>
+
+          <div
+            className="flex items-center gap-2 border-t pt-3"
+            style={{ borderColor: 'rgb(var(--first-quaternary-rgb) / 0.2)' }}
+          >
+            <ImageLucide
+              className="h-4 w-4 shrink-0"
+              style={{
+                color: korisnikJePrilozioSliku ? 'var(--first-secondary)' : 'rgb(var(--first-nonary-rgb) / 0.5)',
+              }}
+              aria-hidden
+            />
+            <p className="text-sm font-medium leading-snug" style={{ color: 'var(--first-octonary)' }}>
+              {korisnikJePrilozioSliku
+                ? brojPrilozenihSlika === 1
+                  ? 'Korisnik je priložio sliku.'
+                  : 'Korisnik je priložio više slika.'
+                : 'Korisnik nije priložio sliku.'}
             </p>
           </div>
         </div>
-      </Link>
+      </div>
     </article>
   );
 }
