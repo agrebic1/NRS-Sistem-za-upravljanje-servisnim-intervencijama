@@ -13,7 +13,6 @@ export async function GET() {
     const imaPriv = await assertServiserAccess(supabase, user.id);
     if (!imaPriv) return NextResponse.json({ error: 'Pristup odbijen.' }, { status: 403 });
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const db = supabase as any;
 
     const { data, error } = await db

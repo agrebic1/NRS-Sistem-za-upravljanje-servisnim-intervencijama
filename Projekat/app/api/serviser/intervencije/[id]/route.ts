@@ -36,7 +36,6 @@ export async function GET(
     const provjera = await assertServiserVlasnistvo(supabase, zahtjevId, user.id);
     if (!provjera.ok) return NextResponse.json({ error: provjera.greska }, { status: 403 });
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const db = supabase as any;
 
     const { data: zahtjev, error } = await db

@@ -44,7 +44,6 @@ export async function POST(
 
     const { opis_rada, trajanje_minuta, materijal, napomene } = rezultat.data;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const db = supabase as any;
 
     const { data: evidencija, error: evErr } = await db
