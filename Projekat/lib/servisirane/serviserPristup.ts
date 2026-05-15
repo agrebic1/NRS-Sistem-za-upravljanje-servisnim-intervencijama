@@ -1,6 +1,4 @@
-import type { createAdminClient } from '@/lib/supabase/admin';
-
-type AdminClient = ReturnType<typeof createAdminClient>;
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 function getUlogaNaziv(uloga: unknown): string {
   if (!uloga) return '';
@@ -8,17 +6,13 @@ function getUlogaNaziv(uloga: unknown): string {
   return (uloga as { naziv?: string })?.naziv ?? '';
 }
 
-/**
- * Provjera da li korisnik ima ulogu Serviser u bazi.
- * Vraća true ako ima pristup, false ako nema.
- */
 export async function assertServiserAccess(
-  supabase: AdminClient,
+  supabase: SupabaseClient,
   userId:   string
 ): Promise<boolean> {
   const { data } = await supabase
     .from('uposlenici')
-    .select('uloga(naziv), is_verified')
+    .select('id_uloge, uloga(naziv)')
     .eq('id_uposlenika', userId)
     .maybeSingle();
 
@@ -27,11 +21,8 @@ export async function assertServiserAccess(
   return naziv === 'Serviser' || naziv === 'serviser';
 }
 
-/**
- * Provjera da li je zahtjev dodijeljen ovom serviseru.
- */
 export async function assertServiserVlasnistvo(
-  supabase:   AdminClient,
+  supabase:   SupabaseClient,
   zahtjevId:  number,
   servizerId: string
 ): Promise<{ ok: true; status: string; is_premium: boolean } | { ok: false; greska: string }> {
@@ -48,11 +39,10 @@ export async function assertServiserVlasnistvo(
   return { ok: true, status: data.status, is_premium: Boolean(data.is_premium) };
 }
 
-/** Dozvoljeni prijelazi statusa za servisera. */
 export const SERVISER_DOZVOLJENI_PRIJELAZI: Record<string, string[]> = {
   dodijeljeno:  ['u_radu'],
   u_radu:       ['u_izvrsenju'],
-  u_izvrsenju:  [], // serviser može evidencirati rad, ali ne mijenja status — dispatcher zatvara
+  u_izvrsenju:  [],
 };
 
 export function serviserSmijeMijenjatiStatus(

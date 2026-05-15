@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createAdminClient }                  from '@/lib/supabase/admin';
-import { createClient as createServerClient } from '@/lib/supabase/server';
+import { createClient } from '@/lib/supabase/server';
 import { assertServiserAccess, assertServiserVlasnistvo } from '@/lib/servisirane/serviserPristup';
 import { evidencijaRadaSchema } from '@/lib/validations/servisirane';
 
@@ -13,8 +12,8 @@ export async function POST(
   { params }: { params: RouteParams }
 ) {
   try {
-    const supabaseSesija = createServerClient();
-    const { data: { user } } = await supabaseSesija.auth.getUser();
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: 'Niste prijavljeni.' }, { status: 401 });
 
     const resolved  = await params;
@@ -23,14 +22,12 @@ export async function POST(
       return NextResponse.json({ error: 'Neispravan ID.' }, { status: 400 });
     }
 
-    const supabase = createAdminClient();
-    const imaPriv  = await assertServiserAccess(supabase, user.id);
-    if (!imaPriv)  return NextResponse.json({ error: 'Pristup odbijen.' }, { status: 403 });
+    const imaPriv = await assertServiserAccess(supabase, user.id);
+    if (!imaPriv) return NextResponse.json({ error: 'Pristup odbijen.' }, { status: 403 });
 
     const provjera = await assertServiserVlasnistvo(supabase, zahtjevId, user.id);
     if (!provjera.ok) return NextResponse.json({ error: provjera.greska }, { status: 403 });
 
-    // Evidencija je moguća samo u aktivnim statusima
     const AKTIVNI = ['u_radu', 'u_izvrsenju', 'dodijeljeno'];
     if (!AKTIVNI.includes(provjera.status)) {
       return NextResponse.json(
@@ -47,12 +44,11 @@ export async function POST(
 
     const { opis_rada, trajanje_minuta, materijal, napomene } = rezultat.data;
 
-    // Pohrani evidenciju rada
     const { data: evidencija, error: evErr } = await supabase
       .from('work_evidence')
       .insert({
-        zahtjev_id:     zahtjevId,
-        serviser_id:    user.id,
+        zahtjev_id:      zahtjevId,
+        serviser_id:     user.id,
         opis_rada,
         trajanje_minuta: trajanje_minuta ?? null,
         materijal:       materijal ?? null,
@@ -63,7 +59,6 @@ export async function POST(
 
     if (evErr) return NextResponse.json({ error: evErr.message }, { status: 500 });
 
-    // Bilježi u aktivnosti
     const trajanjeTekst = trajanje_minuta ? ` (${trajanje_minuta} min)` : '';
     await supabase.from('intervention_activities').insert({
       zahtjev_id: zahtjevId,
@@ -73,7 +68,6 @@ export async function POST(
       metadata:   { evidencija_id: evidencija.id },
     });
 
-    // Ako je u_radu, prijeđi u u_izvrsenju
     if (provjera.status === 'u_radu') {
       await supabase
         .from('service_requests')
