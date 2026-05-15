@@ -1,21 +1,18 @@
 import { NextResponse } from 'next/server';
-import { createAdminClient }      from '@/lib/supabase/admin';
-import { createClient as createServerClient } from '@/lib/supabase/server';
-import { assertServiserAccess }   from '@/lib/servisirane/serviserPristup';
+import { createClient } from '@/lib/supabase/server';
+import { assertServiserAccess } from '@/lib/servisirane/serviserPristup';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
-    const supabaseSesija = createServerClient();
-    const { data: { user } } = await supabaseSesija.auth.getUser();
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: 'Niste prijavljeni.' }, { status: 401 });
 
-    const supabase  = createAdminClient();
-    const imaPriv   = await assertServiserAccess(supabase, user.id);
+    const imaPriv = await assertServiserAccess(supabase, user.id);
     if (!imaPriv) return NextResponse.json({ error: 'Pristup odbijen.' }, { status: 403 });
 
-    // Intervencije dodijeljene ovom serviseru (sve, uključujući završene za historiju)
     const { data, error } = await supabase
       .from('service_requests')
       .select('*')
@@ -25,7 +22,6 @@ export async function GET() {
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
-    // Dodaj osoba (podnosilac) za svaki zahtjev
     const zahtjevi = data ?? [];
     const userIds  = [...new Set(zahtjevi.map((z) => z.user_id))];
 

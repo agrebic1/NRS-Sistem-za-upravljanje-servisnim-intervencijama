@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
-import { z }                                  from 'zod';
-import { createAdminClient }                  from '@/lib/supabase/admin';
-import { createClient as createServerClient } from '@/lib/supabase/server';
+import { z } from 'zod';
+import { createClient } from '@/lib/supabase/server';
 import {
   assertServiserAccess,
   assertServiserVlasnistvo,
@@ -26,16 +25,15 @@ export async function GET(
   { params }: { params: RouteParams }
 ) {
   try {
-    const supabaseSesija = createServerClient();
-    const { data: { user } } = await supabaseSesija.auth.getUser();
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: 'Niste prijavljeni.' }, { status: 401 });
 
     const zahtjevId = await resolveId(params);
     if (!zahtjevId) return NextResponse.json({ error: 'Neispravan ID.' }, { status: 400 });
 
-    const supabase = createAdminClient();
-    const imaPriv  = await assertServiserAccess(supabase, user.id);
-    if (!imaPriv)  return NextResponse.json({ error: 'Pristup odbijen.' }, { status: 403 });
+    const imaPriv = await assertServiserAccess(supabase, user.id);
+    if (!imaPriv) return NextResponse.json({ error: 'Pristup odbijen.' }, { status: 403 });
 
     const provjera = await assertServiserVlasnistvo(supabase, zahtjevId, user.id);
     if (!provjera.ok) return NextResponse.json({ error: provjera.greska }, { status: 403 });
@@ -48,21 +46,18 @@ export async function GET(
 
     if (error || !zahtjev) return NextResponse.json({ error: 'Zahtjev nije pronađen.' }, { status: 404 });
 
-    // Podnosilac
     const { data: osoba } = await supabase
       .from('osoba')
       .select('ime, prezime, broj_telefona')
       .eq('id_osobe', zahtjev.user_id)
       .maybeSingle();
 
-    // Evidencija rada
     const { data: evidencije } = await supabase
       .from('work_evidence')
       .select('*')
       .eq('zahtjev_id', zahtjevId)
       .order('created_at', { ascending: false });
 
-    // Aktivnosti
     const { data: aktivnosti } = await supabase
       .from('intervention_activities')
       .select('*, autor:osoba!autor_id(ime, prezime)')
@@ -70,7 +65,7 @@ export async function GET(
       .order('created_at', { ascending: true });
 
     return NextResponse.json({
-      zahtjev:   { ...zahtjev, podnosilac: osoba ?? null },
+      zahtjev:    { ...zahtjev, podnosilac: osoba ?? null },
       evidencije: evidencije ?? [],
       aktivnosti: (aktivnosti ?? []).map((a) => ({
         ...a,
@@ -96,16 +91,15 @@ export async function PATCH(
   { params }: { params: RouteParams }
 ) {
   try {
-    const supabaseSesija = createServerClient();
-    const { data: { user } } = await supabaseSesija.auth.getUser();
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: 'Niste prijavljeni.' }, { status: 401 });
 
     const zahtjevId = await resolveId(params);
     if (!zahtjevId) return NextResponse.json({ error: 'Neispravan ID.' }, { status: 400 });
 
-    const supabase = createAdminClient();
-    const imaPriv  = await assertServiserAccess(supabase, user.id);
-    if (!imaPriv)  return NextResponse.json({ error: 'Pristup odbijen.' }, { status: 403 });
+    const imaPriv = await assertServiserAccess(supabase, user.id);
+    if (!imaPriv) return NextResponse.json({ error: 'Pristup odbijen.' }, { status: 403 });
 
     const provjera = await assertServiserVlasnistvo(supabase, zahtjevId, user.id);
     if (!provjera.ok) return NextResponse.json({ error: provjera.greska }, { status: 403 });
@@ -116,7 +110,7 @@ export async function PATCH(
       return NextResponse.json({ error: rezultat.error.errors[0].message }, { status: 400 });
     }
 
-    const podaci        = rezultat.data;
+    const podaci         = rezultat.data;
     const trenutniStatus = provjera.status;
 
     if (podaci.action === 'prihvati') {
@@ -176,13 +170,12 @@ export async function PATCH(
           { status: 400 }
         );
       }
-      // Vrati na potvrdeno + oslobodi dodjelu
       const { error } = await supabase
         .from('service_requests')
         .update({
-          status:                  'potvrdeno',
-          serviser_dodijeljen_id:  null,
-          serviser_odbio_razlog:   podaci.razlog,
+          status:                 'potvrdeno',
+          serviser_dodijeljen_id: null,
+          serviser_odbio_razlog:  podaci.razlog,
         })
         .eq('id', zahtjevId);
 
