@@ -10,29 +10,29 @@ Validacija je rađena kroz:
 - manuelne testove za Sprint 7 dispecerske tokove (`TC-01` do `TC-26`)
 
 Pokriveni domeni:
-- dispecerski dashboard i KPI pregled
+- dispečerski dashboard i KPI pregled
 - lista aktivnih zahtjeva, filteri i statusni pregled
-- detalj pojedinacne intervencije i dispecerski carobnjak
-- operativni prioritet i razdvajanje od korisnicke hitnosti
+- detalj pojedinačne intervencije i dispečerski wizard
+- operativni prioritet i razdvajanje od korisničke hitnosti
 - izmjena i otkazivanje vlastitog zahtjeva prema statusima
-- autorizacija dispecerskih stranica i API endpointa (RBAC)
-- uskladjenost statusa izmedju korisnickog i dispecerskog dijela sistema
+- autorizacija dispečerskih stranica i API endpointa (RBAC)
+- uskladjenost statusa između korisničkog i dispečerskog dijela sistema
 
 ## Podjela po sprintovima
 
 - Sprint 5: auth/RBAC osnova, registracija, prijava, odjava, sesija, role redirect i kontrola pristupa.
-- Sprint 6: korisnicki zahtjevi, admin kreiranje korisnika, onboarding partnera i premium tokovi.
-- Sprint 7: dispecerski dashboard, liste, detalj intervencije, carobnjak, operativni prioritet, statusi i RBAC API provjere.
+- Sprint 6: korisnički zahtjevi, admin kreiranje korisnika, onboarding partnera i premium tokovi.
+- Sprint 7: dispečerski dashboard, liste, detalj intervencije, wizard, operativni prioritet, statusi i RBAC API provjere.
 
 ## Dodano u Sprintu 7
 
 - Automatski testovi: +42 u odnosu na Sprint 6 zbir (sa 69 na 111 automatskih testova).
 - Manuelni test scenariji: +26 za `SB-07-35`.
-- Novi Sprint 7 automatski testovi pokrivaju dispecerske faze, operativni prioritet, dispecerski pristup, API liste/detalja/PATCH akcija i E2E smoke tok dispecera.
+- Novi Sprint 7 automatski testovi pokrivaju dispečerske faze, operativni prioritet, dispečerski pristup, API liste/detalja/PATCH akcija i E2E smoke tok dispečera.
 
 ## Rezultati automatskih testova
 
-Izvrsene komande:
+Izvršene komande:
 1. `npm test`
 2. `npm run test:coverage`
 3. `npm run test:e2e`
@@ -50,7 +50,7 @@ Coverage (`npm run test:coverage`):
 - Lines: 100%
 
 Status cilja pokrivenosti:
-- trazeni minimum: 98%
+- traženi minimum: 98%
 - ostvareno: cilj ispunjen
 
 ## Rezultati manuelnih testova (SB-07-35)
@@ -58,11 +58,11 @@ Status cilja pokrivenosti:
 Izvor: `Projekat/docs/testing/SB-07-35/EXEC_SB-07-35_Sprint7_DispecerManualFlows.csv`
 
 - Ukupno testova: 26
-- Proslo: 26
-- Nije proslo: 0
+- Prošlo: 26
+- Nije prošlo: 0
 - Blokirano: 0
-- Ceka rucnu QA potvrdu: 0
-- Izvrsilac: Ajla Ćesir; datum izvrsenja: 15/05/2026
+- Čeka ručnu QA potvrdu: 0
+- Izvršilac: Ajla Ćesir; datum izvrsenja: 15/05/2026
 
 ## Bug status
 
@@ -76,7 +76,7 @@ Izvor: `Projekat/docs/testing/SB-07-35/BUG_SB-07-35_Sprint7_DispecerManualFlows.
 - sign-off: `Projekat/docs/testing/SB-07-35/SIGNOFF_SB-07-35_QA-SA.md`
 - test case matrica: `Projekat/docs/testing/SB-07-35/TC_SB-07-35_Sprint7_DispecerManualFlows.csv`
 - manual execution: `Projekat/docs/testing/SB-07-35/EXEC_SB-07-35_Sprint7_DispecerManualFlows.csv`
-- automatski timestamp izvjestaji: `Projekat/docs/testing/Izvjestaji/`
+- automatski timestamp izvještaji: `Projekat/docs/testing/Izvjestaji/`
 - zadnji run pointer: `Projekat/docs/testing/Izvjestaji/ZADNJI_RUN.txt`
 
 ## Zakljucak
