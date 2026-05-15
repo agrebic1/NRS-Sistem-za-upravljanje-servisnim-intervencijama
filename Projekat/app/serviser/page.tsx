@@ -17,6 +17,7 @@ import { Button } from '@/components/ui/Button';
 import { AlertMessage } from '@/components/ui/AlertMessage';
 import { UrgencyBadge } from '@/components/servisirane/UrgencyBadge';
 import { StatusBadge } from '@/components/servisirane/ZahtjevKartica';
+import { AdresaProsiriva } from '@/components/servisirane/AdresaProsiriva';
 import type { ServisniZahtjev } from '@/domain/types/servisirane';
 import { formatirajDatumPrikaz } from '@/lib/format/datumi';
 import { labelKategorije } from '@/lib/servisirane/kategorije';

@@ -22,6 +22,7 @@ import {
   ZahtjevKorisnickaPorukaBubble,
   ZahtjevMiniTimeline,
 } from '@/components/servisirane/ZahtjevTimelineIPoruka';
+import { AdresaProsiriva } from '@/components/servisirane/AdresaProsiriva';
 import { PrilogGalerija } from '@/components/servisirane/PrilogGalerija';
 import { stilTekstaOperativnogPrioriteta } from '@/lib/servisirane/dispecerPaleta';
 
