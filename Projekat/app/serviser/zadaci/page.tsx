@@ -113,7 +113,7 @@ export default function ServiserZadaciPage() {
   useEffect(() => { ucitaj(); }, []);
 
   const aktTab    = TABOVI.find((t) => t.key === aktTabKey) ?? TABOVI[0];
-  const filtriran = sve.filter((z) => aktTab.statusi.includes(z.status as 'dodijeljeno' | 'u_radu' | 'u_izvrsenju' | 'zavrseno'));
+  const filtriran = sve.filter((z) => (aktTab.statusi as readonly string[]).includes(z.status));
 
   const dodijeljeno = sve.filter((z) => z.status === 'dodijeljeno').length;
   const uRadu       = sve.filter((z) => z.status === 'u_radu').length;
@@ -177,7 +177,7 @@ export default function ServiserZadaciPage() {
           style={{ borderColor: 'rgb(var(--first-quaternary-rgb) / 0.3)' }}
         >
           {TABOVI.map((tab) => {
-            const br = sve.filter((z) => tab.statusi.includes(z.status as typeof tab.statusi[number])).length;
+            const br = sve.filter((z) => (tab.statusi as readonly string[]).includes(z.status)).length;
             const aktivan = aktTabKey === tab.key;
             return (
               <button
