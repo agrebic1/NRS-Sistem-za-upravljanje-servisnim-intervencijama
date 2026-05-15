@@ -55,23 +55,28 @@ CREATE INDEX IF NOT EXISTS idx_activities_zahtjev_created
 
 -- ─── 5. RLS ───────────────────────────────────────────────────────────────────
 
-ALTER TABLE work_evidence         ENABLE ROW LEVEL SECURITY;
+ALTER TABLE work_evidence ENABLE ROW LEVEL SECURITY;
 ALTER TABLE intervention_activities ENABLE ROW LEVEL SECURITY;
 
 -- Work evidence: serviser čita/upisuje samo vlastito
-CREATE POLICY IF NOT EXISTS we_own_select ON work_evidence
+DROP POLICY IF EXISTS we_own_select ON work_evidence;
+CREATE POLICY we_own_select ON work_evidence
   FOR SELECT TO authenticated
   USING (serviser_id = auth.uid());
 
-CREATE POLICY IF NOT EXISTS we_own_insert ON work_evidence
+DROP POLICY IF EXISTS we_own_insert ON work_evidence;
+CREATE POLICY we_own_insert ON work_evidence
   FOR INSERT TO authenticated
   WITH CHECK (serviser_id = auth.uid());
 
 -- Activities: svi autentificirani mogu čitati (prava na zahtjev provjerava API)
-CREATE POLICY IF NOT EXISTS ia_select ON intervention_activities
-  FOR SELECT TO authenticated USING (TRUE);
+DROP POLICY IF EXISTS ia_select ON intervention_activities;
+CREATE POLICY ia_select ON intervention_activities
+  FOR SELECT TO authenticated
+  USING (TRUE);
 
-CREATE POLICY IF NOT EXISTS ia_insert ON intervention_activities
+DROP POLICY IF EXISTS ia_insert ON intervention_activities;
+CREATE POLICY ia_insert ON intervention_activities
   FOR INSERT TO authenticated
   WITH CHECK (autor_id = auth.uid());
 
