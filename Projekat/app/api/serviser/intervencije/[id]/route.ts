@@ -110,7 +110,6 @@ export async function PATCH(
 
     const podaci         = rezultat.data;
     const trenutniStatus = provjera.status;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const db             = supabase as any;
 
     if (podaci.action === 'prihvati') {
