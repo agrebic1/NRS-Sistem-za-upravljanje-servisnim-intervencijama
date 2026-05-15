@@ -44,7 +44,10 @@ export async function POST(
 
     const { opis_rada, trajanje_minuta, materijal, napomene } = rezultat.data;
 
-    const { data: evidencija, error: evErr } = await supabase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const db = supabase as any;
+
+    const { data: evidencija, error: evErr } = await db
       .from('work_evidence')
       .insert({
         zahtjev_id:      zahtjevId,
@@ -60,21 +63,21 @@ export async function POST(
     if (evErr) return NextResponse.json({ error: evErr.message }, { status: 500 });
 
     const trajanjeTekst = trajanje_minuta ? ` (${trajanje_minuta} min)` : '';
-    await supabase.from('intervention_activities').insert({
+    await db.from('intervention_activities').insert({
       zahtjev_id: zahtjevId,
       autor_id:   user.id,
       tip:        'evidencija',
       sadrzaj:    `Evidentirani rad${trajanjeTekst}: ${opis_rada.substring(0, 100)}${opis_rada.length > 100 ? '...' : ''}`,
-      metadata:   { evidencija_id: evidencija.id },
+      metadata:   { evidencija_id: evidencija?.id },
     });
 
     if (provjera.status === 'u_radu') {
-      await supabase
+      await db
         .from('service_requests')
         .update({ status: 'u_izvrsenju', rad_evidentiran_at: new Date().toISOString() })
         .eq('id', zahtjevId);
     } else if (provjera.status === 'u_izvrsenju') {
-      await supabase
+      await db
         .from('service_requests')
         .update({ rad_evidentiran_at: new Date().toISOString() })
         .eq('id', zahtjevId);

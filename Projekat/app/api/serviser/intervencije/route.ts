@@ -13,7 +13,10 @@ export async function GET() {
     const imaPriv = await assertServiserAccess(supabase, user.id);
     if (!imaPriv) return NextResponse.json({ error: 'Pristup odbijen.' }, { status: 403 });
 
-    const { data, error } = await supabase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const db = supabase as any;
+
+    const { data, error } = await db
       .from('service_requests')
       .select('*')
       .eq('serviser_dodijeljen_id', user.id)
@@ -22,21 +25,24 @@ export async function GET() {
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
-    const zahtjevi = data ?? [];
-    const userIds  = [...new Set(zahtjevi.map((z) => z.user_id))];
+    const zahtjevi: Record<string, unknown>[] = data ?? [];
+    const userIds = [...new Set(zahtjevi.map((z) => z.user_id as string))];
 
     let osobeMap: Record<string, { ime: string; prezime: string; broj_telefona: string | null }> = {};
     if (userIds.length > 0) {
-      const { data: osobe } = await supabase
+      const { data: osobe } = await db
         .from('osoba')
         .select('id_osobe, ime, prezime, broj_telefona')
         .in('id_osobe', userIds);
-      osobeMap = Object.fromEntries((osobe ?? []).map((o) => [o.id_osobe, o]));
+      osobeMap = Object.fromEntries(
+        ((osobe ?? []) as { id_osobe: string; ime: string; prezime: string; broj_telefona: string | null }[])
+          .map((o) => [o.id_osobe, o])
+      );
     }
 
     const rezultat = zahtjevi.map((z) => ({
       ...z,
-      podnosilac: osobeMap[z.user_id] ?? null,
+      podnosilac: osobeMap[z.user_id as string] ?? null,
     }));
 
     return NextResponse.json({ intervencije: rezultat });

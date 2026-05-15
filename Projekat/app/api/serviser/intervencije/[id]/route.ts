@@ -18,8 +18,6 @@ async function resolveId(params: RouteParams): Promise<number | null> {
   return Number.isFinite(n) && n > 0 ? n : null;
 }
 
-// ─── GET — detalji intervencije za servisera ──────────────────────────────────
-
 export async function GET(
   _req: Request,
   { params }: { params: RouteParams }
@@ -38,7 +36,10 @@ export async function GET(
     const provjera = await assertServiserVlasnistvo(supabase, zahtjevId, user.id);
     if (!provjera.ok) return NextResponse.json({ error: provjera.greska }, { status: 403 });
 
-    const { data: zahtjev, error } = await supabase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const db = supabase as any;
+
+    const { data: zahtjev, error } = await db
       .from('service_requests')
       .select('*')
       .eq('id', zahtjevId)
@@ -46,19 +47,19 @@ export async function GET(
 
     if (error || !zahtjev) return NextResponse.json({ error: 'Zahtjev nije pronađen.' }, { status: 404 });
 
-    const { data: osoba } = await supabase
+    const { data: osoba } = await db
       .from('osoba')
       .select('ime, prezime, broj_telefona')
       .eq('id_osobe', zahtjev.user_id)
       .maybeSingle();
 
-    const { data: evidencije } = await supabase
+    const { data: evidencije } = await db
       .from('work_evidence')
       .select('*')
       .eq('zahtjev_id', zahtjevId)
       .order('created_at', { ascending: false });
 
-    const { data: aktivnosti } = await supabase
+    const { data: aktivnosti } = await db
       .from('intervention_activities')
       .select('*, autor:osoba!autor_id(ime, prezime)')
       .eq('zahtjev_id', zahtjevId)
@@ -67,7 +68,7 @@ export async function GET(
     return NextResponse.json({
       zahtjev:    { ...zahtjev, podnosilac: osoba ?? null },
       evidencije: evidencije ?? [],
-      aktivnosti: (aktivnosti ?? []).map((a) => ({
+      aktivnosti: (aktivnosti ?? []).map((a: Record<string, unknown>) => ({
         ...a,
         autor: Array.isArray(a.autor) ? a.autor[0] : a.autor,
       })),
@@ -77,8 +78,6 @@ export async function GET(
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
-
-// ─── PATCH — akcije servisera: prihvati / odbij / pocni ──────────────────────
 
 const akcijaPatchSchema = z.discriminatedUnion('action', [
   z.object({ action: z.literal('prihvati') }),
@@ -112,6 +111,8 @@ export async function PATCH(
 
     const podaci         = rezultat.data;
     const trenutniStatus = provjera.status;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const db             = supabase as any;
 
     if (podaci.action === 'prihvati') {
       if (!serviserSmijeMijenjatiStatus(trenutniStatus, 'u_radu')) {
@@ -120,21 +121,13 @@ export async function PATCH(
           { status: 400 }
         );
       }
-      const { error } = await supabase
-        .from('service_requests')
-        .update({ status: 'u_radu' })
-        .eq('id', zahtjevId);
-
+      const { error } = await db.from('service_requests').update({ status: 'u_radu' }).eq('id', zahtjevId);
       if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
-      await supabase.from('intervention_activities').insert({
-        zahtjev_id: zahtjevId,
-        autor_id:   user.id,
-        tip:        'status_promjena',
-        sadrzaj:    'Serviser prihvatio zadatak.',
-        metadata:   { iz: trenutniStatus, u: 'u_radu' },
+      await db.from('intervention_activities').insert({
+        zahtjev_id: zahtjevId, autor_id: user.id, tip: 'status_promjena',
+        sadrzaj: 'Serviser prihvatio zadatak.', metadata: { iz: trenutniStatus, u: 'u_radu' },
       });
-
       return NextResponse.json({ success: true, novi_status: 'u_radu' });
     }
 
@@ -145,21 +138,13 @@ export async function PATCH(
           { status: 400 }
         );
       }
-      const { error } = await supabase
-        .from('service_requests')
-        .update({ status: 'u_izvrsenju' })
-        .eq('id', zahtjevId);
-
+      const { error } = await db.from('service_requests').update({ status: 'u_izvrsenju' }).eq('id', zahtjevId);
       if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
-      await supabase.from('intervention_activities').insert({
-        zahtjev_id: zahtjevId,
-        autor_id:   user.id,
-        tip:        'status_promjena',
-        sadrzaj:    'Serviser je na lokaciji — intervencija u toku.',
-        metadata:   { iz: trenutniStatus, u: 'u_izvrsenju' },
+      await db.from('intervention_activities').insert({
+        zahtjev_id: zahtjevId, autor_id: user.id, tip: 'status_promjena',
+        sadrzaj: 'Serviser je na lokaciji — intervencija u toku.', metadata: { iz: trenutniStatus, u: 'u_izvrsenju' },
       });
-
       return NextResponse.json({ success: true, novi_status: 'u_izvrsenju' });
     }
 
@@ -170,25 +155,15 @@ export async function PATCH(
           { status: 400 }
         );
       }
-      const { error } = await supabase
-        .from('service_requests')
-        .update({
-          status:                 'potvrdeno',
-          serviser_dodijeljen_id: null,
-          serviser_odbio_razlog:  podaci.razlog,
-        })
-        .eq('id', zahtjevId);
-
+      const { error } = await db.from('service_requests').update({
+        status: 'potvrdeno', serviser_dodijeljen_id: null, serviser_odbio_razlog: podaci.razlog,
+      }).eq('id', zahtjevId);
       if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
-      await supabase.from('intervention_activities').insert({
-        zahtjev_id: zahtjevId,
-        autor_id:   user.id,
-        tip:        'odbijanje',
-        sadrzaj:    `Serviser odbio zadatak: ${podaci.razlog}`,
-        metadata:   { iz: 'dodijeljeno', u: 'potvrdeno' },
+      await db.from('intervention_activities').insert({
+        zahtjev_id: zahtjevId, autor_id: user.id, tip: 'odbijanje',
+        sadrzaj: `Serviser odbio zadatak: ${podaci.razlog}`, metadata: { iz: 'dodijeljeno', u: 'potvrdeno' },
       });
-
       return NextResponse.json({ success: true, novi_status: 'potvrdeno' });
     }
 
