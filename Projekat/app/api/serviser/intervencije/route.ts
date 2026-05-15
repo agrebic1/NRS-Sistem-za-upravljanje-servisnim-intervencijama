@@ -1,0 +1,51 @@
+import { NextResponse } from 'next/server';
+import { createAdminClient }      from '@/lib/supabase/admin';
+import { createClient as createServerClient } from '@/lib/supabase/server';
+import { assertServiserAccess }   from '@/lib/servisirane/serviserPristup';
+
+export const dynamic = 'force-dynamic';
+
+export async function GET() {
+  try {
+    const supabaseSesija = createServerClient();
+    const { data: { user } } = await supabaseSesija.auth.getUser();
+    if (!user) return NextResponse.json({ error: 'Niste prijavljeni.' }, { status: 401 });
+
+    const supabase  = createAdminClient();
+    const imaPriv   = await assertServiserAccess(supabase, user.id);
+    if (!imaPriv) return NextResponse.json({ error: 'Pristup odbijen.' }, { status: 403 });
+
+    // Intervencije dodijeljene ovom serviseru (sve, uključujući završene za historiju)
+    const { data, error } = await supabase
+      .from('service_requests')
+      .select('*')
+      .eq('serviser_dodijeljen_id', user.id)
+      .order('termin_planirani_pocetak', { ascending: true, nullsFirst: false })
+      .order('created_at', { ascending: false });
+
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+    // Dodaj osoba (podnosilac) za svaki zahtjev
+    const zahtjevi = data ?? [];
+    const userIds  = [...new Set(zahtjevi.map((z) => z.user_id))];
+
+    let osobeMap: Record<string, { ime: string; prezime: string; broj_telefona: string | null }> = {};
+    if (userIds.length > 0) {
+      const { data: osobe } = await supabase
+        .from('osoba')
+        .select('id_osobe, ime, prezime, broj_telefona')
+        .in('id_osobe', userIds);
+      osobeMap = Object.fromEntries((osobe ?? []).map((o) => [o.id_osobe, o]));
+    }
+
+    const rezultat = zahtjevi.map((z) => ({
+      ...z,
+      podnosilac: osobeMap[z.user_id] ?? null,
+    }));
+
+    return NextResponse.json({ intervencije: rezultat });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Greška servera.';
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+}

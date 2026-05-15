@@ -186,3 +186,40 @@ export const premiumStartSchema = z.object({
 export const premiumConfirmSchema = z.object({
   plan: premiumPlanSchema,
 });
+
+// ─── Sprint 8: Serviserski modul ──────────────────────────────────────────────
+
+export const evidencijaRadaSchema = z.object({
+  opis_rada:       z.string()
+    .min(5,   'Opis mora imati najmanje 5 karaktera')
+    .max(2000, 'Opis ne smije biti duži od 2000 karaktera'),
+  trajanje_minuta: z.number()
+    .int('Trajanje mora biti cijeli broj')
+    .min(1,    'Trajanje mora biti najmanje 1 minuta')
+    .max(1440, 'Trajanje ne može biti duže od 24 sata')
+    .optional()
+    .nullable(),
+  materijal: z.string().max(500).optional().nullable(),
+  napomene:  z.string().max(1000).optional().nullable(),
+});
+
+export const odbijZadatakSchema = z.object({
+  razlog: z.string()
+    .min(10,  'Razlog mora imati najmanje 10 karaktera')
+    .max(500, 'Razlog ne smije biti duži od 500 karaktera'),
+});
+
+export const dodijelijeSchema = z.object({
+  action:                   z.literal('dodijeli'),
+  serviser_id:              z.string().uuid('Neispravan ID servisera'),
+  termin_planirani_pocetak: z.string().datetime({ offset: true }).optional().nullable(),
+  termin_planirani_kraj:    z.string().datetime({ offset: true }).optional().nullable(),
+  procijenjeno_trajanje:    z.number().int().min(5).max(1440).optional().nullable(),
+  dispecer_napomene:        z.string().max(1000).optional().nullable(),
+});
+
+export const napomenaSchema = z.object({
+  sadrzaj: z.string()
+    .min(2,   'Napomena mora imati najmanje 2 karaktera')
+    .max(2000, 'Napomena ne smije biti duža od 2000 karaktera'),
+});

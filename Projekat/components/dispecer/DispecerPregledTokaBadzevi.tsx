@@ -4,8 +4,7 @@ import type { ServisniZahtjev } from '@/domain/types/servisirane';
 import { DispecerStatusBadge } from '@/components/servisirane/zahtjevBadgeovi';
 import { DISPECER_PALETA_STATUS } from '@/lib/servisirane/dispecerPaleta';
 import {
-  nazivDispecerskeFazePregleda,
-  uzmiDispecerskuFazuZaPregled,
+  fazaObradeNazivZaKarticu,
   zahtjevJeNoviUPregleduDispecera,
 } from '@/lib/servisirane/dispecerskeFaze';
 import { zahtjevCekaObraduUInboxuDispecera } from '@/lib/servisirane/statusZahtjeva';
@@ -20,19 +19,42 @@ function stilBedza(pal: DispecerPaletaStatus) {
   } as const;
 }
 
+function FazaBedz({ naziv, title }: { naziv: string; title?: string }) {
+  return (
+    <span
+      className="inline-flex max-w-[12.5rem] truncate rounded-md px-2 py-0.5 text-[10px] font-semibold"
+      style={stilBedza(DISPECER_PALETA_STATUS.neutral)}
+      title={title ?? naziv}
+    >
+      {naziv}
+    </span>
+  );
+}
+
 /**
- * Na pregledu: **Novi** dok dispečer nije postavio operativni prioritet; zatim **U obradi** + pod-faza
- * (dogovor termina, izbor servisera, potvrda u čarobnjaku). Izvan inboxa — bedž statusa iz baze.
+ * Prikazuje STATUS zahtjeva + FAZU obrade kao odvojene bedževe.
+ *
+ * - Inbox: "Novi" ili "U obradi" + faza (Procjena zahtjeva / Dogovor termina / Izbor servisera / Potvrda termina)
+ * - Potvrdeno: DispecerStatusBadge + "Dodjela serviseru" faza
+ * - Ostali aktivni statusi: samo DispecerStatusBadge
  */
 export function DispecerPregledTokaBadzevi({ zahtjev }: { zahtjev: ServisniZahtjev }) {
-  if (!zahtjevCekaObraduUInboxuDispecera(zahtjev.status)) {
-    return <DispecerStatusBadge status={zahtjev.status} />;
+  const uInboxu = zahtjevCekaObraduUInboxuDispecera(zahtjev.status);
+
+  // Requests outside inbox (potvrdeno, dodijeljeno, u_radu, u_izvrsenju, zavrseno, etc.)
+  if (!uInboxu) {
+    const fazaNaziv = fazaObradeNazivZaKarticu(zahtjev);
+    return (
+      <span className="flex flex-wrap items-center gap-1">
+        <DispecerStatusBadge status={zahtjev.status} />
+        {fazaNaziv ? <FazaBedz naziv={fazaNaziv} /> : null}
+      </span>
+    );
   }
 
-  const jeNovi = zahtjevJeNoviUPregleduDispecera(zahtjev);
-  const faza = uzmiDispecerskuFazuZaPregled(zahtjev);
+  const jeNovi    = zahtjevJeNoviUPregleduDispecera(zahtjev);
   const glavnaPal = jeNovi ? DISPECER_PALETA_STATUS.inbox : DISPECER_PALETA_STATUS.uObradi;
-  const prikaziPodfazu = !jeNovi && faza !== 'ceka_operativni_prioritet';
+  const fazaNaziv = fazaObradeNazivZaKarticu(zahtjev);
 
   return (
     <span className="flex flex-wrap items-center gap-1">
@@ -42,14 +64,8 @@ export function DispecerPregledTokaBadzevi({ zahtjev }: { zahtjev: ServisniZahtj
       >
         {jeNovi ? 'Novi' : 'U obradi'}
       </span>
-      {prikaziPodfazu ? (
-        <span
-          className="inline-flex max-w-[12.5rem] truncate rounded-md px-2 py-0.5 text-[10px] font-semibold"
-          style={stilBedza(DISPECER_PALETA_STATUS.neutral)}
-          title={nazivDispecerskeFazePregleda(faza)}
-        >
-          {nazivDispecerskeFazePregleda(faza)}
-        </span>
+      {fazaNaziv ? (
+        <FazaBedz naziv={fazaNaziv} title={`Faza: ${fazaNaziv}`} />
       ) : null}
     </span>
   );
