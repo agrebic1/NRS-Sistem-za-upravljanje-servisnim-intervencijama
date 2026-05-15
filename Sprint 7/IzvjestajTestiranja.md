@@ -1,7 +1,7 @@
 # Izvjestaj testiranja
 ## Sprint 7
 
-Datum: 10/05/2026  
+Datum: 15/05/2026  
 
 ## Obuhvat
 
@@ -58,10 +58,11 @@ Status cilja pokrivenosti:
 Izvor: `Projekat/docs/testing/SB-07-35/EXEC_SB-07-35_Sprint7_DispecerManualFlows.csv`
 
 - Ukupno testova: 26
-- Proslo: 0
+- Proslo: 26
 - Nije proslo: 0
 - Blokirano: 0
-- Ceka rucnu QA potvrdu: 26
+- Ceka rucnu QA potvrdu: 0
+- Izvrsilac: Ajla Ćesir; datum izvrsenja: 15/05/2026
 
 ## Bug status
 
@@ -80,4 +81,4 @@ Izvor: `Projekat/docs/testing/SB-07-35/BUG_SB-07-35_Sprint7_DispecerManualFlows.
 
 ## Zakljucak
 
-Sprint 7 automatsko testiranje je uspjesno zavrseno. Svi automatski testovi prolaze, nema otvorenih bugova u evidenciji, a pokrivenost kriticnih modula je iznad trazenog praga. Manuelni testovi za dispecerski operativni tok su pripremljeni i cekaju formalnu QA potvrdu prije zavrsnog sign-offa.
+Sprint 7 automatsko i manuelno testiranje je uspjesno zavrseno. Svi automatski testovi prolaze (111/111), nema otvorenih bugova u evidenciji, a pokrivenost kriticnih modula je iznad trazenog praga. Svi manualni testovi za dispecerski operativni tok (SB-07-35) izvrseni su sa statusom PASSED; QA sign-off: Ajla Ćesir, 15/05/2026. Detalji u `Projekat/docs/testing/SB-07-35/`.

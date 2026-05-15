@@ -20,6 +20,7 @@ import { ZahtjevExpandSadrzaj } from '@/components/dispecer/ZahtjevExpandSadrzaj
 import { DispecerPregledTokaBadzevi } from '@/components/dispecer/DispecerPregledTokaBadzevi';
 import { DispecerPremiumKruna, KorisnickaHitnostOutlinedChip } from '@/components/servisirane/zahtjevBadgeovi';
 import { efektivniKorisnickiUrgencyScore, inboxGrupaIzKorisnickeProcjene } from '@/lib/servisirane/urgency';
+import { oznakaZaDispecerskiPrikazBroja } from '@/lib/servisirane/korisnickiBrojZahtjeva';
 
 /** @deprecated Koristite `zahtjevCekaObraduUInboxuDispecera` iz `@/lib/servisirane/statusZahtjeva`. */
 export const zahtjevCekaObraduSprint7 = zahtjevCekaObraduUInboxuDispecera;
@@ -55,7 +56,9 @@ export function DispecerskaZahtjevKartica({
   }
 
   const { glavna, podkategorija } = labelKategorije(zahtjev);
-  const { tekstCijeli: terminTekst } = preferiraniTerminZaDispecera(zahtjev);
+  const { tekstCijeli: terminTekst } = preferiraniTerminZaDispecera(zahtjev, {
+    dispecerskiPregled: true,
+  });
   const imePrezime = imePrezimePodnosioca(podnosilac);
   const datumZaKarticu = terminTekst.includes(',')
     ? terminTekst.split(',')[0].trim()
@@ -97,7 +100,7 @@ export function DispecerskaZahtjevKartica({
                   border: '1px solid rgb(var(--first-quaternary-rgb) / 0.35)',
                 }}
               >
-                #{zahtjev.id}
+                #{oznakaZaDispecerskiPrikazBroja(zahtjev)}
               </span>
               {zahtjev.is_premium ? <DispecerPremiumKruna className="translate-y-px" /> : null}
             </span>

@@ -208,21 +208,20 @@ export function KorakTrijaza({
           boxShadow: isPremium ? '0 4px 14px rgba(217, 119, 6, 0.1)' : 'none',
         }}
       >
-        <div className="flex items-start gap-2">
-          <span
-            className="mt-0.5 inline-flex h-7 w-7 items-center justify-center rounded-full"
-            style={{ backgroundColor: 'rgba(217, 119, 6, 0.12)', color: '#A16207' }}
+        <div>
+          <p
+            className="inline-flex flex-wrap items-center gap-1.5 text-sm font-semibold"
+            style={{ color: '#3F2F1E' }}
           >
-            <Crown className="h-4 w-4" />
-          </span>
-          <div>
-            <p className="text-sm font-semibold" style={{ color: '#3F2F1E' }}>
-              Hitna intervencija (premium)
-            </p>
-            <p className="mt-1 text-xs leading-relaxed" style={{ color: '#5B4A3A' }}>
-              Premium zahtjev dobija prioritetnu obradu prema pravilima premium paketa.
-            </p>
-          </div>
+            <Crown className="h-4 w-4 shrink-0" style={{ color: '#A16207' }} aria-hidden />
+            <span>Hitna intervencija (premium)</span>
+          </p>
+          <p className="mt-1 text-xs font-semibold leading-snug" style={{ color: '#7A6047' }}>
+            Visoka hitnost od strane korisnika
+          </p>
+          <p className="mt-1 text-xs leading-relaxed" style={{ color: '#5B4A3A' }}>
+            Premium zahtjev dobija prioritetnu obradu prema pravilima premium paketa.
+          </p>
         </div>
         {isPremium ? (
           <div className="mt-3 flex flex-col gap-2">

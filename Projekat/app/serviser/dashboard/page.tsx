@@ -97,9 +97,9 @@ function TaskRow({ zadatak }: { zadatak: Zadatak }) {
               <Clock className="h-3 w-3" />
               {zadatak.vrijemePocetka}
             </span>
-            <span className="flex items-center gap-1">
-              <MapPin className="h-3 w-3" />
-              {zadatak.lokacija}
+            <span className="flex min-w-0 items-center gap-1">
+              <MapPin className="h-3 w-3 shrink-0" />
+              <span className="min-w-0 break-words">{zadatak.lokacija}</span>
             </span>
           </div>
           <p className="mt-0.5 text-xs" style={{ color: 'var(--first-quinary)' }}>

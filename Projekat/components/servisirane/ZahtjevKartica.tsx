@@ -26,7 +26,6 @@ import {
 import { DISPECER_HITNOST_KORISNIK_CHIP_TITLE } from '@/lib/servisirane/dispecerPojmovi';
 import { PreciznaLokacijaChip, DispecerPremiumKruna, KorisnickaHitnostOutlinedChip } from '@/components/servisirane/zahtjevBadgeovi';
 import { KorisnikPregledTokaBadzevi } from '@/components/korisnik/KorisnikPregledTokaBadzevi';
-import { AdresaProsiriva } from '@/components/servisirane/AdresaProsiriva';
 
 // ─── Životni ciklus statusa — Triple Coding ───────────────────────────────────
 
@@ -236,7 +235,9 @@ export function ZahtjevKartica({ zahtjev, onUredi, onOtkazi }: ZahtjevKarticaPro
               {podkategorija}
             </p>
           ) : null}
-          <AdresaProsiriva address={zahtjev.address} variant="kartica" />
+          <p className="break-words text-sm font-medium leading-snug" style={{ color: 'var(--first-nonary)' }}>
+            {(zahtjev.address ?? '').trim() || '—'}
+          </p>
         </div>
 
         <div className="mt-3 flex min-w-0 items-center justify-between gap-2">

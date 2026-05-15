@@ -26,7 +26,6 @@ import {
   KorisnickaHitnostOutlinedChip,
   PreciznaLokacijaChip,
 } from '@/components/servisirane/zahtjevBadgeovi';
-import { AdresaProsiriva } from '@/components/servisirane/AdresaProsiriva';
 import { PrilogGalerija } from '@/components/servisirane/PrilogGalerija';
 import {
   ZahtjevKorisnickaPorukaBubble,
@@ -226,7 +225,9 @@ export function KorisnikZahtjevDetaljPanel({
                 <p className={POLJE_OZNAKA_KLASA} style={POLJE_OZNAKA_BOJA}>
                   Adresa
                 </p>
-                <AdresaProsiriva address={zahtjev.address} variant="panel" />
+                <p className="break-words font-medium leading-snug" style={{ color: 'var(--first-octonary)' }}>
+                  {(zahtjev.address ?? '').trim() || '—'}
+                </p>
                 {imaPreciznuLokaciju ? (
                   <div className="mt-2">
                     <PreciznaLokacijaChip compact />

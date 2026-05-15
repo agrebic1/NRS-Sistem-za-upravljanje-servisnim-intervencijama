@@ -1,17 +1,42 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { Suspense, useEffect, useState } from 'react';
+import { useParams, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { AppShell } from '@/components/layout/AppShell';
 import { AlertMessage } from '@/components/ui/AlertMessage';
 import { DispecerZahtjevDetaljSadrzaj } from '@/components/dispecer/DispecerZahtjevDetaljSadrzaj';
 import type { ServisniZahtjev } from '@/domain/types/servisirane';
 import { labelKategorije } from '@/lib/servisirane/kategorije';
+import { oznakaZaDispecerskiPrikazBroja } from '@/lib/servisirane/korisnickiBrojZahtjeva';
 
 type ZahtjevDetalj = ServisniZahtjev & {
   podnosilac: { ime: string; prezime: string; broj_telefona: string | null } | null;
 };
+
+function DispecerZahtjevDetaljSaUpitom({
+  zahtjev,
+  requestId,
+  setZahtjev,
+}: {
+  zahtjev: ZahtjevDetalj;
+  requestId: string;
+  setZahtjev: (z: ZahtjevDetalj) => void;
+}) {
+  const searchParams = useSearchParams();
+  const fokusKorakTermin = searchParams.get('korak') === 'termin';
+
+  return (
+    <DispecerZahtjevDetaljSadrzaj
+      zahtjev={zahtjev}
+      requestId={requestId}
+      onRequestUpdated={(noviZahtjev) => setZahtjev(noviZahtjev)}
+      prikaziDugmeNazad
+      hrefNazad={`/dispecer?z=${zahtjev.id}`}
+      fokusKorakTermin={fokusKorakTermin}
+    />
+  );
+}
 
 export default function DispecerZahtjevDetaljPage() {
   const { id } = useParams<{ id: string }>();
@@ -21,7 +46,7 @@ export default function DispecerZahtjevDetaljPage() {
   const kategorija = zahtjev ? labelKategorije(zahtjev) : null;
   const naslovKruh =
     zahtjev && kategorija
-      ? `#${zahtjev.id} ${kategorija.podkategorija || kategorija.glavna}`
+      ? `#${oznakaZaDispecerskiPrikazBroja(zahtjev)} ${kategorija.podkategorija || kategorija.glavna}`
       : '';
 
   useEffect(() => {
@@ -76,13 +101,13 @@ export default function DispecerZahtjevDetaljPage() {
         {greska && <AlertMessage variant="error" message={greska} />}
 
         {zahtjev && (
-          <DispecerZahtjevDetaljSadrzaj
-            zahtjev={zahtjev}
-            requestId={id}
-            onRequestUpdated={(noviZahtjev) => setZahtjev(noviZahtjev)}
-            prikaziDugmeNazad
-            hrefNazad={`/dispecer?z=${zahtjev.id}`}
-          />
+          <Suspense fallback={null}>
+            <DispecerZahtjevDetaljSaUpitom
+              zahtjev={zahtjev}
+              requestId={String(id)}
+              setZahtjev={setZahtjev}
+            />
+          </Suspense>
         )}
       </div>
     </AppShell>

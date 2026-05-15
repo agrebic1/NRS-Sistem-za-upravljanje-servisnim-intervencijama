@@ -19,6 +19,8 @@ import {
   DISPECER_PALETA_HITNOST,
   DISPECER_PALETA_PREMIUM,
   DISPECER_PALETA_STATUS,
+  normalizujKljucOperativnogPrioriteta,
+  vizuelOperativnogPrioriteta,
 } from '@/lib/servisirane/dispecerPaleta';
 
 type StatusCfg = {
@@ -128,14 +130,25 @@ export function DispecerStatusBadge({
   );
 }
 
-/** Hitna intervencija (premium) — crvena, bijeli tekst. */
+/** Hitna intervencija (premium) — kruna uz naziv; korisnička visoka hitnost kao kontekst. */
 export function PremiumHitnaBadge({ className = '' }: { className?: string }) {
   return (
     <span
-      className={`inline-flex w-fit items-center rounded-full px-2.5 py-1 text-xs font-bold text-white ${className}`}
-      style={{ backgroundColor: DISPECER_PALETA_PREMIUM.akcent }}
+      className={`inline-flex w-fit max-w-full flex-col items-start gap-1 text-left ${className}`}
     >
-      Hitna intervencija (premium)
+      <span
+        className="inline-flex w-fit max-w-full items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold text-white"
+        style={{ backgroundColor: DISPECER_PALETA_PREMIUM.akcent }}
+      >
+        <Crown className="h-3.5 w-3.5 shrink-0" strokeWidth={2.25} aria-hidden />
+        <span className="leading-tight">Hitna intervencija (premium)</span>
+      </span>
+      <span
+        className="max-w-[14rem] pl-0.5 text-[11px] font-semibold leading-snug sm:max-w-none"
+        style={{ color: 'rgb(80 52 42)' }}
+      >
+        Visoka hitnost od strane korisnika
+      </span>
     </span>
   );
 }
@@ -143,7 +156,7 @@ export function PremiumHitnaBadge({ className = '' }: { className?: string }) {
 /** Mala kruna uz premium zahtjev na dispečerskim listama i sažetku. */
 export function DispecerPremiumKruna({
   className = '',
-  title = 'Premium hitna intervencija',
+  title = 'Premium hitna intervencija — visoka hitnost od strane korisnika',
 }: {
   className?: string;
   title?: string;
@@ -208,7 +221,7 @@ export function KorisnickaHitnostOutlinedChip({
   const { label, boja, pozadina, border } = korisnickaHitnostStil(score);
   return (
     <span
-      className={`inline-flex w-fit max-w-full shrink-0 items-center rounded-full px-3 py-1 text-xs font-semibold ${className}`}
+      className={`inline-flex w-fit max-w-full shrink-0 items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold ${className}`}
       style={{
         backgroundColor: pozadina,
         color: boja,
@@ -217,8 +230,8 @@ export function KorisnickaHitnostOutlinedChip({
     >
       {prikaziPredgovor ? (
         <>
-          <span className="font-medium opacity-[0.92]">Procjena hitnosti: </span>
-          {label}
+          <span className="font-medium opacity-[0.92]">Procjena hitnosti:</span>
+          <span>{label}</span>
         </>
       ) : (
         label
@@ -237,40 +250,37 @@ export function OperativniPrioritetChip({
 }) {
   const v = vrijednost.trim();
   if (!v) return null;
-  const hitno = v.toUpperCase() === 'HITNO';
-  const H = DISPECER_PALETA_HITNOST.Hitno;
+  const pal = vizuelOperativnogPrioriteta(v);
+  const k = normalizujKljucOperativnogPrioriteta(v);
+  const naglasiVrijednost = k === 'HITNO' || k === 'KRITIČNO' || k === 'VISOKO';
+
   return (
     <span
-      className={`inline-flex max-w-[min(100%,18rem)] shrink-0 items-center rounded-full px-3 py-1 text-xs font-semibold ${className}`}
+      className={`inline-flex max-w-[min(100%,18rem)] shrink-0 items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold ${className}`}
       style={{
-        backgroundColor: hitno ? H.pozadina : 'rgb(var(--first-quinary-rgb) / 0.22)',
-        color: hitno ? H.tekst : 'var(--first-octonary)',
-        border: hitno ? `1px solid ${H.border}` : '1px solid rgb(var(--first-quaternary-rgb) / 0.45)',
+        backgroundColor: pal.pozadina,
+        color: pal.tekst,
+        border: `1px solid ${pal.border}`,
       }}
     >
-      <span className="font-medium opacity-[0.92]">Operativni prioritet: </span>
-      <span className={hitno ? 'font-bold' : ''}>{v}</span>
+      <span className={pal.tamnaPozadina ? 'font-medium opacity-90' : 'font-medium opacity-[0.92]'}>
+        Operativni prioritet:
+      </span>
+      <span className={naglasiVrijednost ? 'font-bold' : ''}>{v}</span>
     </span>
   );
 }
 
-/** Ista paleta za prikaz enum nivoa (serviser / tehnički prikaz). */
+/** Operativni nivo (enum u bazi) — ista paleta kao {@link OperativniPrioritetChip} (ne korisnička procjena). */
 export function NivoHitnostiOutlinedChip({ nivo }: { nivo: NivoHitnosti }) {
-  const map: Record<NivoHitnosti, 'Hitno' | 'Srednja' | 'Niska'> = {
-    KRITIČNO: 'Hitno',
-    VISOKO: 'Hitno',
-    SREDNJE: 'Srednja',
-    NISKO: 'Niska',
-  };
-  const kljuc = map[nivo];
-  const cfg = KORISNICKA_HITNOST_CHIP[kljuc];
+  const pal = vizuelOperativnogPrioriteta(nivo);
   return (
     <span
-      className="inline-flex w-fit items-center rounded-full px-3 py-1 text-xs font-semibold"
+      className="inline-flex w-fit items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold"
       style={{
-        backgroundColor: cfg.pozadina,
-        color: cfg.boja,
-        border: `1px solid ${cfg.border}`,
+        backgroundColor: pal.pozadina,
+        color: pal.tekst,
+        border: `1px solid ${pal.border}`,
       }}
     >
       {nivo}

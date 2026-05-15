@@ -14,7 +14,7 @@ import { DispecerPregledTokaBadzevi } from '@/components/dispecer/DispecerPregle
 import { DispecerPremiumKruna, KorisnickaHitnostOutlinedChip } from '@/components/servisirane/zahtjevBadgeovi';
 import { efektivniKorisnickiUrgencyScore } from '@/lib/servisirane/urgency';
 import { ZahtjevKorisnickaPorukaBubble } from '@/components/servisirane/ZahtjevTimelineIPoruka';
-import { AdresaProsiriva } from '@/components/servisirane/AdresaProsiriva';
+import { oznakaZaDispecerskiPrikazBroja } from '@/lib/servisirane/korisnickiBrojZahtjeva';
 
 const POLJE_OZNAKA_KLASA =
   'mb-0.5 text-[11px] font-medium uppercase [letter-spacing:0.4px]';
@@ -27,7 +27,9 @@ export function DispecerKontrolnaTablaSažetak({ zahtjev }: { zahtjev: ZahtjevZa
   const naslovKratki = podkategorija || glavna;
   const podnaslovKategorije = podkategorija ? glavna : null;
 
-  const { tekstCijeli: terminTekst } = preferiraniTerminZaDispecera(zahtjev);
+  const { tekstCijeli: terminTekst } = preferiraniTerminZaDispecera(zahtjev, {
+    dispecerskiPregled: true,
+  });
   const terminPrikaz = terminTekst.includes(',') ? terminTekst.replace(',', ' ·') : terminTekst;
 
   const telefonSirovo = podnosilac?.broj_telefona?.trim() || zahtjev.contact_phone?.trim() || '';
@@ -52,7 +54,7 @@ export function DispecerKontrolnaTablaSažetak({ zahtjev }: { zahtjev: ZahtjevZa
             style={{ color: 'var(--first-octonary)' }}
           >
             <span className="inline-flex items-center gap-2">
-              #{zahtjev.id}
+              #{oznakaZaDispecerskiPrikazBroja(zahtjev)}
               {zahtjev.is_premium ? <DispecerPremiumKruna /> : null}
             </span>
             <span className="min-w-0">{naslovKratki}</span>
@@ -118,7 +120,9 @@ export function DispecerKontrolnaTablaSažetak({ zahtjev }: { zahtjev: ZahtjevZa
           <p className={POLJE_OZNAKA_KLASA} style={POLJE_OZNAKA_BOJA}>
             Adresa
           </p>
-          <AdresaProsiriva address={zahtjev.address} variant="panel" />
+          <p className="break-words text-sm font-medium leading-snug" style={{ color: 'var(--first-octonary)' }}>
+            {(zahtjev.address ?? '').trim() || '—'}
+          </p>
         </div>
 
         <div className="mt-5 min-w-0">

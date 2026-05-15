@@ -27,21 +27,37 @@ function formatKratkiDatum(datumStr: string): string {
   return d.replace(/\s+/g, '').replace(/\.$/, '');
 }
 
-export function preferiraniTerminZaDispecera(zahtjev: ServisniZahtjev): {
+export type OpcijePreferiranogTerminaDispecer = {
+  /**
+   * US-07 AC10: u dispečerskom pregledu jasno da treba kontaktirati korisnika.
+   * Korisnički pregledi ostaju na kratkoj poruci.
+   */
+  dispecerskiPregled?: boolean;
+};
+
+export function preferiraniTerminZaDispecera(
+  zahtjev: ServisniZahtjev,
+  opcije?: OpcijePreferiranogTerminaDispecer,
+): {
   tekstCijeli: string;
   imaPreferirani: boolean;
 } {
+  const bezPreferiranogTermina =
+    opcije?.dispecerskiPregled === true
+      ? 'Dogovor naknadno (kontaktirati korisnika)'
+      : 'Dogovor naknadno';
+
   const schedule = zahtjev.preferred_schedule;
   const nema =
     !schedule ||
     schedule.no_preferred_time === true ||
     (schedule.termini?.length ?? 0) === 0;
   if (nema) {
-    return { tekstCijeli: 'Dogovor naknadno', imaPreferirani: false };
+    return { tekstCijeli: bezPreferiranogTermina, imaPreferirani: false };
   }
   const prvi = schedule.termini[0];
   if (!prvi?.date) {
-    return { tekstCijeli: 'Dogovor naknadno', imaPreferirani: false };
+    return { tekstCijeli: bezPreferiranogTermina, imaPreferirani: false };
   }
   const datum = formatKratkiDatum(prvi.date);
   if (prvi.from && prvi.to) {
@@ -144,6 +160,22 @@ export function imePrezimePodnosioca(
   if (nep(p) && i) return i;
   const puno = `${i} ${p}`.trim();
   return puno || 'Nepoznato';
+}
+
+/** Kratke inicijale za jednoznačnu oznaku uz redni broj zahtjeva (npr. A.M.). */
+export function inicijaliPodnosiocaKratko(
+  podnosilac: { ime: string; prezime: string } | null | undefined,
+): string | null {
+  if (!podnosilac) return null;
+  const i = (podnosilac.ime ?? '').trim().charAt(0);
+  const p = (podnosilac.prezime ?? '').trim().charAt(0);
+  const slovo = (c: string) => (/[a-zA-ZČčĆćŽžŠšĐđ]/.test(c) ? c.toLocaleUpperCase('hr-HR') : '');
+  const ii = slovo(i);
+  const pp = slovo(p);
+  if (ii && pp) return `${ii}.${pp}`;
+  if (ii) return ii;
+  if (pp) return pp;
+  return null;
 }
 
 /** Prvi slot: dogovoreni termin dispečera, inače korisnikov preferirani. */

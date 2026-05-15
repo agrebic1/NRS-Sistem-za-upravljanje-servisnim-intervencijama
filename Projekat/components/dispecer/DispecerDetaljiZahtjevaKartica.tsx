@@ -1,6 +1,5 @@
 'use client';
 
-import type { CSSProperties } from 'react';
 import { MapPin, Phone, User } from 'lucide-react';
 import type { ServisniZahtjev } from '@/domain/types/servisirane';
 import { labelKategorije } from '@/lib/servisirane/kategorije';
@@ -23,8 +22,8 @@ import {
   ZahtjevKorisnickaPorukaBubble,
   ZahtjevMiniTimeline,
 } from '@/components/servisirane/ZahtjevTimelineIPoruka';
-import { AdresaProsiriva } from '@/components/servisirane/AdresaProsiriva';
 import { PrilogGalerija } from '@/components/servisirane/PrilogGalerija';
+import { stilTekstaOperativnogPrioriteta } from '@/lib/servisirane/dispecerPaleta';
 
 type ZahtjevZaKarticu = ServisniZahtjev & {
   podnosilac: { ime: string; prezime: string; broj_telefona: string | null } | null;
@@ -43,20 +42,14 @@ const SEKCIJA_GRUPE_RAZDJELNIK_BOJA = 'rgb(var(--first-quaternary-rgb) / 0.22)';
 
 const UNUTARNJI_PANEL_KLASA = 'min-w-0 rounded-xl border p-4 sm:p-5';
 
-function stilOperativnogPrioriteta(vrijednost: string): { className: string; style: CSSProperties } {
-  const hitno = vrijednost.trim().toUpperCase() === 'HITNO';
-  return {
-    className: hitno ? 'text-sm font-bold leading-snug' : 'text-sm font-semibold leading-snug',
-    style: { color: hitno ? 'var(--first-senary)' : 'var(--first-octonary)' },
-  };
-}
-
 /** Lijeva kartica „Detalji zahtjeva” na stranici detalja dispečera. */
 export function DispecerDetaljiZahtjevaKartica({ zahtjev }: { zahtjev: ZahtjevZaKarticu }) {
   const podnosilac = zahtjev.podnosilac;
 
   const { glavna, podkategorija } = labelKategorije(zahtjev);
-  const { tekstCijeli: terminTekst } = preferiraniTerminZaDispecera(zahtjev);
+  const { tekstCijeli: terminTekst } = preferiraniTerminZaDispecera(zahtjev, {
+    dispecerskiPregled: true,
+  });
   const slike = urlsPrilozenihSlika(zahtjev as ZahtjevZaKarticu & Record<string, unknown>);
   const opisSirovo = (zahtjev.description ?? '').trim();
   const opis = uRecenicu(opisSirovo);
@@ -66,7 +59,7 @@ export function DispecerDetaljiZahtjevaKartica({ zahtjev }: { zahtjev: ZahtjevZa
   const imePrezime = imePrezimePodnosioca(podnosilac);
   const imaOperativni = Boolean(zahtjev.final_priority?.trim());
   const fp = zahtjev.final_priority?.trim() ?? '';
-  const operativniStil = imaOperativni ? stilOperativnogPrioriteta(fp) : null;
+  const operativniStil = imaOperativni ? stilTekstaOperativnogPrioriteta(fp) : null;
 
   const naslovZahtjeva = podkategorija || glavna;
   const podnaslovKategorije = podkategorija ? glavna : null;
@@ -122,7 +115,9 @@ export function DispecerDetaljiZahtjevaKartica({ zahtjev }: { zahtjev: ZahtjevZa
                 <p className={POLJE_OZNAKA_KLASA} style={POLJE_OZNAKA_BOJA}>
                   Adresa
                 </p>
-                <AdresaProsiriva address={zahtjev.address} variant="panel" />
+                <p className="break-words font-medium leading-snug" style={{ color: 'var(--first-octonary)' }}>
+                  {(zahtjev.address ?? '').trim() || '—'}
+                </p>
               </div>
             </div>
           </div>
@@ -198,7 +193,7 @@ export function DispecerDetaljiZahtjevaKartica({ zahtjev }: { zahtjev: ZahtjevZa
         <ZahtjevKorisnickaPorukaBubble tekst={opis} className="mt-2 mb-0" />
       </section>
 
-      <section className="min-w-0">
+      <section id="dispecer-prilog-galerija" className="min-w-0 scroll-mt-28">
         <p className={GALERIJA_LABEL_KLASA} style={{ color: 'rgb(var(--first-nonary-rgb) / 0.78)' }}>
           Priložene slike
         </p>

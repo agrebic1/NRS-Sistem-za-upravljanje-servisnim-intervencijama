@@ -98,9 +98,11 @@ export default function IntervencijaDetaljePage({
             </p>
 
             <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm" style={{ color: 'var(--first-nonary)' }}>
-              <span className="flex items-center gap-1.5">
-                <MapPin className="h-3.5 w-3.5" style={{ color: 'var(--first-secondary)' }} />
-                {intervencija.lokacija}
+              <span className="flex min-w-0 max-w-full items-start gap-1.5">
+                <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0" style={{ color: 'var(--first-secondary)' }} />
+                <span className="min-w-0 break-words font-medium leading-snug" style={{ color: 'var(--first-nonary)' }}>
+                  {intervencija.lokacija}
+                </span>
               </span>
               <span className="flex items-center gap-1.5">
                 <Clock className="h-3.5 w-3.5" style={{ color: 'var(--first-secondary)' }} />

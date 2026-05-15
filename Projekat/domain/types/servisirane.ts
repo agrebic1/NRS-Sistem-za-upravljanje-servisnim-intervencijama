@@ -58,6 +58,8 @@ export interface ServisniZahtjev {
   id:                   number;
   /** Redni broj zahtjeva tog korisnika (1 = najstariji); računa se na API-ju, nije kolona u DB. */
   korisnicki_broj_zahtjeva?: number | null;
+  /** Jedinstven red u trenutnom odgovoru dispečerske liste (1…n); nije u DB. */
+  dispecerski_redni_u_pregledu?: number | null;
   user_id:              string;
   category:             string;
   category_main:        string | null;

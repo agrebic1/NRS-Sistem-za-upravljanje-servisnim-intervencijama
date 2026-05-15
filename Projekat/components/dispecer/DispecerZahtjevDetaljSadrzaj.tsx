@@ -8,9 +8,8 @@ import { Button } from '@/components/ui/Button';
 import { Select } from '@/components/ui/Select';
 import { Textarea } from '@/components/ui/Textarea';
 import { DispecerDetaljiZahtjevaKartica } from '@/components/dispecer/DispecerDetaljiZahtjevaKartica';
+import { DispecerPregledTokaBadzevi } from '@/components/dispecer/DispecerPregledTokaBadzevi';
 import {
-  DispecerPremiumKruna,
-  DispecerStatusBadge,
   KorisnickaHitnostOutlinedChip,
   PremiumHitnaBadge,
 } from '@/components/servisirane/zahtjevBadgeovi';
@@ -27,6 +26,7 @@ import {
 import { premiumZahtijevaObrazlozenjeSmanjenjaPrioriteta } from '@/lib/servisirane/operativniPrioritet';
 import { dispecerSmijeMijenjatiOperativniPrioritet } from '@/lib/servisirane/statusZahtjeva';
 import { efektivniKorisnickiUrgencyScore } from '@/lib/servisirane/urgency';
+import { oznakaZaDispecerskiPrikazBroja } from '@/lib/servisirane/korisnickiBrojZahtjeva';
 
 type ZahtjevDetalj = ServisniZahtjev & {
   podnosilac: { ime: string; prezime: string; broj_telefona: string | null } | null;
@@ -219,6 +219,7 @@ export function DispecerZahtjevDetaljSadrzaj({
   onRequestUpdated,
   prikaziDugmeNazad = false,
   hrefNazad = '/dispecer',
+  fokusKorakTermin = false,
 }: {
   zahtjev: ZahtjevDetalj;
   requestId: string;
@@ -226,6 +227,8 @@ export function DispecerZahtjevDetaljSadrzaj({
   prikaziDugmeNazad?: boolean;
   /** Npr. `/dispecer?z=123` da se na kontrolnoj tabli zadrži isti zahtjev. */
   hrefNazad?: string;
+  /** Otvaranje stranice s `?korak=termin` fokusira korak „Termin i serviser“ u čarobnjaku. */
+  fokusKorakTermin?: boolean;
 }) {
   const [akcijaGreska, setAkcijaGreska] = useState<string | null>(null);
   const [jeSlanje, setJeSlanje] = useState(false);
@@ -269,6 +272,8 @@ export function DispecerZahtjevDetaljSadrzaj({
       ? 'Obrazloženje za smanjenje ispod hitne operativne grupe (obavezno za premium zahtjeve)'
       : 'Obrazloženje za smanjenje operativnog prioriteta';
 
+  const refPrimijenjenFokusTermin = useRef(false);
+
   useEffect(() => {
     setPrioritet(inicijalniPrioritet(zahtjev));
     setDowngradeRazlog('');
@@ -282,6 +287,16 @@ export function DispecerZahtjevDetaljSadrzaj({
       setAktivniKorak(najdaljiDostupniKorak);
     }
   }, [aktivniKorak, najdaljiDostupniKorak]);
+
+  useEffect(() => {
+    refPrimijenjenFokusTermin.current = false;
+  }, [zahtjev.id]);
+
+  useEffect(() => {
+    if (!fokusKorakTermin || refPrimijenjenFokusTermin.current) return;
+    refPrimijenjenFokusTermin.current = true;
+    setAktivniKorak(2);
+  }, [fokusKorakTermin, zahtjev.id]);
 
   useEffect(() => {
     const sada =
@@ -347,10 +362,7 @@ export function DispecerZahtjevDetaljSadrzaj({
           className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xl font-bold leading-snug"
           style={{ color: 'var(--first-octonary)' }}
         >
-          <span className="inline-flex items-center gap-2">
-            #{zahtjev.id}
-            {zahtjev.is_premium ? <DispecerPremiumKruna /> : null}
-          </span>
+          <span className="tabular-nums">#{oznakaZaDispecerskiPrikazBroja(zahtjev)}</span>
           <span className="min-w-0">{naslovPodkategorija || naslovKategorija}</span>
         </h1>
         {naslovPodkategorija && (
@@ -407,7 +419,9 @@ export function DispecerZahtjevDetaljSadrzaj({
                 >
                   Status
                 </p>
-                <DispecerStatusBadge status={zahtjev.status} />
+                <div className="min-w-0">
+                  <DispecerPregledTokaBadzevi zahtjev={zahtjev} />
+                </div>
               </div>
               <div>
                 <p

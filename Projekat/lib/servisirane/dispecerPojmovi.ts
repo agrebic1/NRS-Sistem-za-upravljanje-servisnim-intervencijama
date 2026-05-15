@@ -2,7 +2,7 @@
  * Kratki tekstovi za dispečerski UI (bosanski) — razdvajanje korisničke procjene i operativnog prioriteta.
  */
 
-export const DISPECER_HITNOST_KORISNIK_NASLOV = 'Procjena hitnosti (korisnik)';
+export const DISPECER_HITNOST_KORISNIK_NASLOV = 'Procjena hitnosti';
 
 export const DISPECER_OPERATIVNI_NASLOV = 'Operativni prioritet';
 export const DISPECER_OPERATIVNI_OPIS_NEDOSTAJE = '—';
