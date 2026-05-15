@@ -98,10 +98,69 @@ export interface ServisniZahtjev {
    * Isti oblik kao `preferred_schedule` gdje je primjereno.
    */
   dispecer_agreed_schedule?: PreferredSchedule | null;
-  /** Serviser dodijeljen u čarobnjaku (`osoba.id_osobe`); NULL dok nije odabran. */
-  serviser_dodijeljen_id?: string | null;
+  /** Serviser dodijeljen u planiranju. */
+  serviser_dodijeljen_id?:  string | null;
+  /** Planirani termin početka (ISO timestamp). */
+  termin_planirani_pocetak?: string | null;
+  /** Planirani termin kraja (ISO timestamp). */
+  termin_planirani_kraj?:    string | null;
+  /** Procijenjeno trajanje u minutama. */
+  procijenjeno_trajanje?:    number | null;
+  /** Napomene dispečera za servisera. */
+  dispecer_napomene?:        string | null;
+  /** Razlog odbijanja od strane servisera. */
+  serviser_odbio_razlog?:    string | null;
   created_at:           string;
   updated_at:           string;
+}
+
+// ─── Sprint 8: Evidencija rada ───────────────────────────────────────────────
+
+export interface WorkEvidence {
+  id:               number;
+  zahtjev_id:       number;
+  serviser_id:      string;
+  opis_rada:        string;
+  trajanje_minuta:  number | null;
+  materijal:        string | null;
+  napomene:         string | null;
+  created_at:       string;
+}
+
+// ─── Sprint 8: Aktivnosti / historija intervencije ───────────────────────────
+
+export type TipAktivnosti =
+  | 'status_promjena'
+  | 'napomena'
+  | 'dodjela'
+  | 'evidencija'
+  | 'odbijanje'
+  | 'sistem';
+
+export interface InterventionActivity {
+  id:         number;
+  zahtjev_id: number;
+  autor_id:   string;
+  tip:        TipAktivnosti;
+  sadrzaj:    string;
+  metadata:   Record<string, unknown> | null;
+  created_at: string;
+  autor?: {
+    ime:     string;
+    prezime: string;
+    uloga:   string;
+  };
+}
+
+// ─── Sprint 8: Serviser profil za dodjelu ────────────────────────────────────
+
+export interface ServiserZaDodjelu {
+  id:                string;
+  ime:               string;
+  prezime:           string;
+  is_verified:       boolean;
+  aktivnih_zadataka: number;
+  specialnosti:      string[];
 }
 
 // ─── Partner aplikacija ───────────────────────────────────────────────────────

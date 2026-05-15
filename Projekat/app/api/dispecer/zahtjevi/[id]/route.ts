@@ -5,6 +5,7 @@ import { assertDispatcherAccess } from '@/lib/servisirane/dispecerPristup';
 import { korisnickiBrojZahtjevaZaId } from '@/lib/servisirane/korisnickiBrojZahtjeva';
 import { premiumZahtijevaObrazlozenjeSmanjenjaPrioriteta } from '@/lib/servisirane/operativniPrioritet';
 import { dispecerSmijeMijenjatiOperativniPrioritet } from '@/lib/servisirane/statusZahtjeva';
+import { dodijelijeSchema } from '@/lib/validations/servisirane';
 import { z } from 'zod';
 
 export const dynamic = 'force-dynamic';
@@ -26,10 +27,17 @@ const promijeniPrioritetSchema = z.object({
   premium_downgrade_reason: z.string().max(500).optional(),
 });
 
+const zatvorSchema = z.object({
+  action:    z.literal('zatvori'),
+  napomene:  z.string().max(1000).optional().nullable(),
+});
+
 const actionSchema = z.discriminatedUnion('action', [
   potvrdiSchema,
   odbijSchema,
   promijeniPrioritetSchema,
+  dodijelijeSchema,
+  zatvorSchema,
 ]);
 /** Statusi u kojima dispečer može potvrditi/odbiti (MVP: uključuje in_review ako je u inboxu). */
 const PENDING_STATUSES = new Set(['na_cekanju', 'pending_review', 'in_review']);
@@ -194,6 +202,81 @@ export async function PATCH(
 
       if (error) return NextResponse.json({ error: error.message }, { status: 500 });
       return NextResponse.json({ success: true });
+    }
+
+    // ── US-Sprint8: Dodjela servisera ──────────────────────────────────────────
+    if (podaci.action === 'dodijeli') {
+      const DOZVOLJENI_ZA_DODJELU = new Set(['potvrdeno', 'dodijeljeno']);
+      if (!DOZVOLJENI_ZA_DODJELU.has(zahtjev.status)) {
+        return NextResponse.json(
+          { error: 'Dodjela servisera moguća je samo za potvrđene zahtjeve.' },
+          { status: 400 }
+        );
+      }
+
+      const izmjena: Record<string, unknown> = {
+        status:                 'dodijeljeno',
+        serviser_dodijeljen_id: podaci.serviser_id,
+      };
+      if (podaci.termin_planirani_pocetak !== undefined)
+        izmjena.termin_planirani_pocetak = podaci.termin_planirani_pocetak;
+      if (podaci.termin_planirani_kraj !== undefined)
+        izmjena.termin_planirani_kraj = podaci.termin_planirani_kraj;
+      if (podaci.procijenjeno_trajanje !== undefined)
+        izmjena.procijenjeno_trajanje = podaci.procijenjeno_trajanje;
+      if (podaci.dispecer_napomene !== undefined)
+        izmjena.dispecer_napomene = podaci.dispecer_napomene;
+
+      const { error: updErr } = await supabase
+        .from('service_requests')
+        .update(izmjena)
+        .eq('id', requestId);
+
+      if (updErr) return NextResponse.json({ error: updErr.message }, { status: 500 });
+
+      await supabase.from('intervention_activities').insert({
+        zahtjev_id: requestId,
+        autor_id:   user.id,
+        tip:        'dodjela',
+        sadrzaj:    'Dispečer dodijelio intervenciju serviseru.',
+        metadata:   {
+          serviser_id: podaci.serviser_id,
+          iz:          zahtjev.status,
+          u:           'dodijeljeno',
+        },
+      });
+
+      return NextResponse.json({ success: true, novi_status: 'dodijeljeno' });
+    }
+
+    // ── Zatvaranje intervencije (dispečer) ────────────────────────────────────
+    if (podaci.action === 'zatvori') {
+      const DOZVOLJENI_ZA_ZATVARANJE = new Set(['dodijeljeno', 'u_radu', 'u_izvrsenju']);
+      if (!DOZVOLJENI_ZA_ZATVARANJE.has(zahtjev.status)) {
+        return NextResponse.json(
+          { error: 'Zatvaranje je moguće samo za aktivne intervencije.' },
+          { status: 400 }
+        );
+      }
+
+      const { error: updErr } = await supabase
+        .from('service_requests')
+        .update({ status: 'zavrseno' })
+        .eq('id', requestId);
+
+      if (updErr) return NextResponse.json({ error: updErr.message }, { status: 500 });
+
+      await supabase.from('intervention_activities').insert({
+        zahtjev_id: requestId,
+        autor_id:   user.id,
+        tip:        'status_promjena',
+        sadrzaj:    podaci.napomene?.trim()
+          ? `Dispečer zatvorio intervenciju. Napomena: ${podaci.napomene.trim()}`
+          : 'Dispečer zatvorio intervenciju.',
+        metadata:   { iz: zahtjev.status, u: 'zavrseno' },
+      });
+
+      return NextResponse.json({ success: true, novi_status: 'zavrseno' });
     }
 
     if (!PENDING_STATUSES.has(zahtjev.status)) {

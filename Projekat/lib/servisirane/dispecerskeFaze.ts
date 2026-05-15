@@ -116,10 +116,10 @@ export type DispecerskaFazaPregleda =
   | 'konačna_potvrda';
 
 const NAZIV_FAZE_PREGLEDA: Record<DispecerskaFazaPregleda, string> = {
-  ceka_operativni_prioritet: 'Čeka operativni prioritet',
-  dogovor_termina: 'Dogovor termina',
-  dodjela_servisera: 'Izbor servisera',
-  konačna_potvrda: 'Potvrđeno',
+  ceka_operativni_prioritet: 'Procjena zahtjeva',
+  dogovor_termina:           'Dogovor termina',
+  dodjela_servisera:         'Izbor servisera',
+  konačna_potvrda:           'Potvrda termina',
 };
 
 export function nazivDispecerskeFazePregleda(faza: DispecerskaFazaPregleda): string {
@@ -163,24 +163,50 @@ export function zahtjevJeUFaziIntervencije(zahtjev: { status: string }): boolean
 }
 
 /**
+ * Svi zahtjevi koji su u inboxu dispečera — i oni bez prioriteta (Novi) i oni s prioritetom (U obradi).
+ * Koristi se za novi glavni status filter "U obradi" koji obuhvata cijeli inbox.
+ */
+export function zahtjevJeUObradiSirokoGledano(zahtjev: ServisniZahtjev): boolean {
+  return zahtjevCekaObraduUInboxuDispecera(zahtjev.status);
+}
+
+/**
+ * Naziv faze obrade za prikaz na kartici — radi za sve statuse.
+ * Vraća `null` za terminal statuse (zavrseno, otkazano, odbijeno).
+ */
+export function fazaObradeNazivZaKarticu(zahtjev: ServisniZahtjev): string | null {
+  const s = zahtjev.status;
+  if (s === 'potvrdeno')   return 'Dodjela serviseru';
+  if (s === 'dodijeljeno') return 'Servis dodijeljen';
+  if (s === 'u_radu')      return 'Servis u toku';
+  if (s === 'u_izvrsenju') return 'Servis na terenu';
+  if (!zahtjevCekaObraduUInboxuDispecera(s)) return null;
+  return nazivDispecerskeFazePregleda(uzmiDispecerskuFazuZaPregled(zahtjev));
+}
+
+/**
  * Synonymi za `?filter=` — stari i skraćeni ključevi preusmjeravaju na kanonske nazive.
- * Kanon: svi, novi, u_obradi, zakazivanje_termina, dodjela_servisera, korak_potvrde, potvrdeno.
+ * Kanon (novi): svi, novi, u_obradi, potvrdeni, zavrseni, otkazani.
+ * Stari kanon (za backward compat): zakazivanje_termina, dodjela_servisera, korak_potvrde, potvrdeno.
  */
 const SYNONIMI_DISPECER_FILTRA: Record<string, string> = {
-  /** @deprecated Uklonjen zajednički filter; stari linkovi vode na sve aktivne. */
-  red_obrade: 'svi',
-  inbox: 'svi',
-  /** @deprecated Stari URL; isto što i `novi`. */
-  bez_prioriteta: 'novi',
-  carobnjak: 'svi',
-  u_toku: 'svi',
-  ceka_prioritet: 'novi',
-  ceka_termin: 'zakazivanje_termina',
-  ceka_servisera: 'dodjela_servisera',
-  ceka_zavrsnu_potvrdu: 'korak_potvrde',
-  konacna_potvrda: 'korak_potvrde',
-  intervencija: 'svi',
-  teren: 'svi',
+  red_obrade:           'svi',
+  inbox:                'svi',
+  bez_prioriteta:       'novi',
+  carobnjak:            'svi',
+  u_toku:               'svi',
+  ceka_prioritet:       'novi',
+  ceka_termin:          'u_obradi',
+  ceka_servisera:       'u_obradi',
+  ceka_zavrsnu_potvrdu: 'u_obradi',
+  konacna_potvrda:      'u_obradi',
+  intervencija:         'svi',
+  teren:                'svi',
+  // Stari sub-filter vrednosti → nova kategorija
+  zakazivanje_termina:  'u_obradi',
+  dodjela_servisera:    'u_obradi',
+  korak_potvrde:        'u_obradi',
+  potvrdeno:            'potvrdeni',
 };
 
 export function normalizujDispecerFilterIzParametra(raw: string | null | undefined, dozvoljene: string[]): string {
