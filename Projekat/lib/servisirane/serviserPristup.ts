@@ -1,7 +1,3 @@
-import type { createClient } from '@/lib/supabase/server'
-
-type KlijentSupabase = ReturnType<typeof createClient>
-
 // Lokalni tipovi za tabele koje nisu u generiranim DB tipovima
 // ili čiji join rezultati nisu automatski inferovani
 type UposlenikSaUlogom = {
@@ -22,7 +18,7 @@ function getUlogaNaziv(uloga: unknown): string {
 }
 
 export async function assertServiserAccess(
-  supabase: KlijentSupabase,
+  supabase: any,
   userId:   string
 ): Promise<boolean> {
   const { data } = await supabase
@@ -37,13 +33,12 @@ export async function assertServiserAccess(
 }
 
 export async function assertServiserVlasnistvo(
-  supabase:   KlijentSupabase,
+  supabase:   any,
   zahtjevId:  number,
   servizerId: string
 ): Promise<{ ok: true; status: string; is_premium: boolean } | { ok: false; greska: string }> {
-  // service_requests nije u generiranim tipovima — cast je neophodan
-  const { data } = await (supabase as ReturnType<typeof createClient>)
-    .from('service_requests' as never)
+  const { data } = await supabase
+    .from('service_requests')
     .select('serviser_dodijeljen_id, status, is_premium')
     .eq('id', zahtjevId)
     .maybeSingle() as unknown as { data: ServiceRequestBasic | null }
