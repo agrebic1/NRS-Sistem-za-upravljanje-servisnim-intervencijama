@@ -183,6 +183,7 @@ export default function DispecerZahtjevDetaljPage() {
     }
   }
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { void ucitaj(); }, [id]);
 
   return (

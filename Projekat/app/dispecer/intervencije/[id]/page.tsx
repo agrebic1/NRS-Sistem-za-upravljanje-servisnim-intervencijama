@@ -168,6 +168,7 @@ export default function DispecerIntervencijaDetaljiPage() {
     }
   }
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { ucitaj(); }, [id]);
 
   // ─── Loading ────────────────────────────────────────────────────────────────
