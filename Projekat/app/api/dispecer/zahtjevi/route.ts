@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createAdminClient } from '@/lib/supabase/admin';
-import { createClient as createServerClient } from '@/lib/supabase/server';
+import { createClient } from '@/lib/supabase/server';
 import { assertDispatcherAccess } from '@/lib/servisirane/dispecerPristup';
 import { korisnickiBrojeviMapPoKorisniku } from '@/lib/servisirane/korisnickiBrojZahtjeva';
 
@@ -10,54 +9,39 @@ function parsirajStatuseIzUpita(request: Request): string[] | null {
   const { searchParams } = new URL(request.url);
   const raw = searchParams.get('status');
   if (raw == null || raw.trim() === '') return null;
-  const lista = raw
-    .split(',')
-    .map((s) => s.trim().toLowerCase())
-    .filter(Boolean);
+  const lista = raw.split(',').map((s) => s.trim().toLowerCase()).filter(Boolean);
   return lista.length > 0 ? lista : null;
 }
 
 export async function GET(request: Request) {
   try {
-    const supabaseSesija = createServerClient();
-    const {
-      data: { user },
-    } = await supabaseSesija.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json({ error: 'Niste prijavljeni.' }, { status: 401 });
-    }
-
-    const supabase = createAdminClient();
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return NextResponse.json({ error: 'Niste prijavljeni.' }, { status: 401 });
 
     const imaPriv = await assertDispatcherAccess(supabase, user.id);
-    if (!imaPriv) {
-      return NextResponse.json({ error: 'Pristup odbijen.' }, { status: 403 });
-    }
+    if (!imaPriv) return NextResponse.json({ error: 'Pristup odbijen.' }, { status: 403 });
 
+    const db = supabase as any;
     const statusFiltar = parsirajStatuseIzUpita(request);
 
-    // Dohvati zahtjeve sa podacima podnosioca (opciono: ?status=a,b,c)
-    let upit = supabase
+    let upit = db
       .from('service_requests')
       .select('*')
       .not('status', 'in', '("zavrseno","otkazano","odbijeno")');
 
-    if (statusFiltar) {
-      upit = upit.in('status', statusFiltar);
-    }
+    if (statusFiltar) upit = upit.in('status', statusFiltar);
 
     let { data, error } = await upit
       .order('is_premium', { ascending: false })
       .order('created_at', { ascending: true });
+
     if (error?.message?.includes("'is_premium' column")) {
-      let fb = supabase
+      let fb = db
         .from('service_requests')
         .select('*')
         .not('status', 'in', '("zavrseno","otkazano","odbijeno")');
-      if (statusFiltar) {
-        fb = fb.in('status', statusFiltar);
-      }
+      if (statusFiltar) fb = fb.in('status', statusFiltar);
       const fallback = await fb.order('created_at', { ascending: true });
       data = fallback.data;
       error = fallback.error;
@@ -65,13 +49,12 @@ export async function GET(request: Request) {
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
-    // Dohvati profile korisnika koji su podnijeli zahtjeve
-    const userIds = [...new Set((data ?? []).map((z) => z.user_id))];
+    const userIds = [...new Set((data ?? []).map((z: any) => z.user_id as string))];
     let profili: Record<string, { ime: string; prezime: string; broj_telefona: string | null }> = {};
-
     let idDoKorisnickogBroja = new Map<number, number>();
+
     if (userIds.length > 0) {
-      const { data: sviZaKorisnike, error: brojErr } = await supabase
+      const { data: sviZaKorisnike, error: brojErr } = await db
         .from('service_requests')
         .select('id, user_id, created_at')
         .in('user_id', userIds);
@@ -79,21 +62,17 @@ export async function GET(request: Request) {
         idDoKorisnickogBroja = korisnickiBrojeviMapPoKorisniku(sviZaKorisnike);
       }
 
-      const { data: osobeData } = await supabase
+      const { data: osobeData } = await db
         .from('osoba')
         .select('id_osobe, ime, prezime, broj_telefona')
         .in('id_osobe', userIds);
 
       for (const o of osobeData ?? []) {
-        profili[o.id_osobe] = {
-          ime:           o.ime,
-          prezime:       o.prezime,
-          broj_telefona: o.broj_telefona,
-        };
+        profili[o.id_osobe] = { ime: o.ime, prezime: o.prezime, broj_telefona: o.broj_telefona };
       }
     }
 
-    const zahtjeviSaPodnosiocima = (data ?? []).map((z, indeks) => ({
+    const zahtjeviSaPodnosiocima = (data ?? []).map((z: any, indeks: number) => ({
       ...z,
       podnosilac: profili[z.user_id] ?? null,
       korisnicki_broj_zahtjeva: idDoKorisnickogBroja.get(z.id),
