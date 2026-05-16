@@ -110,6 +110,8 @@ export interface ServisniZahtjev {
   dispecer_napomene?:        string | null;
   /** Razlog odbijanja od strane servisera. */
   serviser_odbio_razlog?:    string | null;
+  /** Timestamp kada je serviser evidentirao rad. */
+  rad_evidentiran_at?:       string | null;
   created_at:           string;
   updated_at:           string;
 }
