@@ -105,12 +105,40 @@ export async function GET(
       ? korisnickiBrojZahtjevaZaId(redoviAsc, requestId)
       : null;
 
+    // Serviser profil (ako je dodijeljen)
+    let serviserProfil: { id: string; ime: string; prezime: string; broj_telefona: string | null } | null = null;
+    if (zahtjev.serviser_dodijeljen_id) {
+      const { data: sp } = await supabase
+        .from('osoba')
+        .select('id_osobe, ime, prezime, broj_telefona')
+        .eq('id_osobe', zahtjev.serviser_dodijeljen_id)
+        .maybeSingle();
+      if (sp) serviserProfil = { id: sp.id_osobe, ime: sp.ime, prezime: sp.prezime, broj_telefona: sp.broj_telefona };
+    }
+
+    // Aktivnosti intervencije
+    const { data: aktivnosti } = await supabase
+      .from('intervention_activities')
+      .select('*')
+      .eq('zahtjev_id', requestId)
+      .order('created_at', { ascending: true });
+
+    // Evidencija rada
+    const { data: evidencije } = await supabase
+      .from('work_evidence')
+      .select('*')
+      .eq('zahtjev_id', requestId)
+      .order('created_at', { ascending: false });
+
     return NextResponse.json({
       zahtjev: {
         ...zahtjev,
-        podnosilac: osoba ?? null,
+        podnosilac:               osoba ?? null,
+        serviser:                 serviserProfil,
         korisnicki_broj_zahtjeva: korisnicki_broj_zahtjeva ?? undefined,
       },
+      aktivnosti: aktivnosti ?? [],
+      evidencije: evidencije  ?? [],
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Greška servera.';

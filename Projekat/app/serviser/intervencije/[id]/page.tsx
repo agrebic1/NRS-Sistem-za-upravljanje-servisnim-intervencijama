@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import {
   ArrowLeft, MapPin, Phone, Calendar, Clock, ClipboardCheck,
@@ -14,6 +14,9 @@ import { AlertMessage } from '@/components/ui/AlertMessage';
 import { StatusBadge } from '@/components/servisirane/ZahtjevKartica';
 import { AktivnostiTimeline } from '@/components/serviser/AktivnostiTimeline';
 import { EvidencijaRadaModal } from '@/components/serviser/EvidencijaRadaModal';
+import { IntervencijaProgressStepper } from '@/components/serviser/IntervencijaProgressStepper';
+import { MapPreview } from '@/components/serviser/MapPreview';
+import { IntervencijaChecklist } from '@/components/serviser/IntervencijaChecklist';
 import type { ServisniZahtjev, WorkEvidence, InterventionActivity } from '@/domain/types/servisirane';
 import { labelKategorije } from '@/lib/servisirane/kategorije';
 
@@ -276,6 +279,11 @@ export default function ServiserIntervencijaDetaljiPage() {
         </div>
       </div>
 
+      {/* Progress stepper */}
+      <div className="mb-6">
+        <IntervencijaProgressStepper status={zahtjev.status} />
+      </div>
+
       <div className="flex flex-col gap-5">
 
         {/* Akcije */}
@@ -389,6 +397,23 @@ export default function ServiserIntervencijaDetaljiPage() {
             </div>
           </div>
         )}
+
+        {/* Lokacija na mapi */}
+        <div className="rounded-2xl overflow-hidden" style={{ border: '1px solid rgb(var(--first-quaternary-rgb) / 0.35)' }}>
+          <MapPreview
+            adresa={zahtjev.address}
+            lat={zahtjev.latitude}
+            lng={zahtjev.longitude}
+          />
+        </div>
+
+        {/* Checklista */}
+        <div className="rounded-2xl p-5" style={SEKCIJA_STYL}>
+          <p className="mb-4 text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--first-nonary)' }}>
+            Kontrolna lista
+          </p>
+          <IntervencijaChecklist status={zahtjev.status} />
+        </div>
 
         {/* Evidencija rada */}
         {evidencije.length > 0 && (

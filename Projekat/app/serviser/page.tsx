@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import {
   Clock, CheckCircle2, Truck, ClipboardList,
-  ChevronRight, MapPin, Calendar, RefreshCw, AlertTriangle,
+  ChevronRight, MapPin, Calendar, RefreshCw, AlertTriangle, Zap,
 } from 'lucide-react';
 import { AppShell } from '@/components/layout/AppShell';
 import { Button } from '@/components/ui/Button';
@@ -15,15 +15,199 @@ import { labelKategorije } from '@/lib/servisirane/kategorije';
 import { kreirajKlijenta } from '@/lib/supabase/klijent';
 import { formatirajDatumPrikaz } from '@/lib/format/datumi';
 
+// ─── Tipovi ───────────────────────────────────────────────────────────────────
+
 interface IntervencijaZaListu extends ServisniZahtjev {
   podnosilac: { ime: string; prezime: string; broj_telefona: string | null } | null;
 }
+
+type KpiFilter = 'sve' | 'dodijeljeno' | 'u_radu' | 'u_izvrsenju' | 'zavrseno' | 'danas' | 'hitno';
+
+// ─── Helperi ──────────────────────────────────────────────────────────────────
+
+function jeIntervencijaZaDanas(z: IntervencijaZaListu): boolean {
+  if (!z.termin_planirani_pocetak) return false;
+  const t = new Date(z.termin_planirani_pocetak);
+  const d = new Date();
+  return t.getFullYear() === d.getFullYear()
+    && t.getMonth() === d.getMonth()
+    && t.getDate() === d.getDate();
+}
+
+function jeHitna(z: IntervencijaZaListu): boolean {
+  return (z.urgency_score ?? 0) >= 75 || Boolean(z.is_premium);
+}
+
+function filtrirajPoKpi(
+  intervencije: IntervencijaZaListu[],
+  filter: KpiFilter,
+): IntervencijaZaListu[] {
+  switch (filter) {
+    case 'dodijeljeno': return intervencije.filter((z) => z.status === 'dodijeljeno');
+    case 'u_radu':      return intervencije.filter((z) => z.status === 'u_radu');
+    case 'u_izvrsenju': return intervencije.filter((z) => z.status === 'u_izvrsenju');
+    case 'zavrseno':    return intervencije.filter((z) => z.status === 'zavrseno');
+    case 'danas':       return intervencije.filter(jeIntervencijaZaDanas);
+    case 'hitno':       return intervencije.filter(jeHitna);
+    default:            return intervencije.filter((z) => ['dodijeljeno', 'u_radu', 'u_izvrsenju'].includes(z.status));
+  }
+}
+
+// ─── Sljedeća intervencija ────────────────────────────────────────────────────
+
+function SljededcaIntervencija({ intervencija }: { intervencija: IntervencijaZaListu }) {
+  const kat    = labelKategorije(intervencija);
+  const naslov = kat.podkategorija ? `${kat.glavna} — ${kat.podkategorija}` : kat.glavna;
+  const termin = intervencija.termin_planirani_pocetak
+    ? new Date(intervencija.termin_planirani_pocetak).toLocaleString('bs-BA', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })
+    : null;
+
+  return (
+    <Link href={`/serviser/intervencije/${intervencija.id}`} className="block mb-6">
+      <div
+        className="rounded-2xl p-5 border-l-4 transition-shadow hover:shadow-md"
+        style={{
+          backgroundColor: 'rgb(37 99 235 / 0.04)',
+          border:          '1px solid rgb(37 99 235 / 0.2)',
+          borderLeftColor: intervencija.is_premium ? '#E11D48' : 'var(--first-secondary)',
+        }}
+      >
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0 flex-1">
+            <p className="mb-1 text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--first-secondary)' }}>
+              Sljedeća intervencija
+            </p>
+            <h2 className="text-base font-bold leading-snug" style={{ color: 'var(--first-octonary)' }}>
+              {naslov}
+            </h2>
+            <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs" style={{ color: 'var(--first-nonary)' }}>
+              {termin && (
+                <span className="flex items-center gap-1">
+                  <Calendar className="h-3.5 w-3.5" />
+                  {termin}
+                </span>
+              )}
+              <span className="flex items-center gap-1">
+                <MapPin className="h-3.5 w-3.5" />
+                {intervencija.address.length > 45
+                  ? `${intervencija.address.substring(0, 45)}...`
+                  : intervencija.address}
+              </span>
+            </div>
+          </div>
+          <ChevronRight className="mt-1 h-5 w-5 flex-shrink-0" style={{ color: 'var(--first-secondary)' }} />
+        </div>
+      </div>
+    </Link>
+  );
+}
+
+// ─── Kartica intervencije ─────────────────────────────────────────────────────
+
+function IntervencijaKartica({ z }: { z: IntervencijaZaListu }) {
+  const kat    = labelKategorije(z);
+  const naslov = kat.podkategorija ? `${kat.glavna} — ${kat.podkategorija}` : kat.glavna;
+  const hitno  = jeHitna(z);
+  const termin = z.termin_planirani_pocetak
+    ? new Date(z.termin_planirani_pocetak).toLocaleString('bs-BA', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })
+    : null;
+
+  return (
+    <li>
+      <Link
+        href={`/serviser/intervencije/${z.id}`}
+        className="flex items-start gap-4 px-5 py-4 transition-colors hover:bg-black/[0.02]"
+      >
+        <div className="mt-0.5 flex-shrink-0">
+          {hitno
+            ? <AlertTriangle className="h-4 w-4" style={{ color: 'var(--first-senary)' }} />
+            : <ClipboardList className="h-4 w-4" style={{ color: 'var(--first-quinary)' }} />}
+        </div>
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <p className="font-medium" style={{ color: 'var(--first-octonary)' }}>{naslov}</p>
+            <StatusBadge status={z.status} />
+            {z.is_premium && (
+              <span
+                className="rounded-full px-2 py-0.5 text-xs font-semibold"
+                style={{ backgroundColor: 'rgba(220,38,38,0.12)', color: '#B91C1C', border: '1px solid rgba(220,38,38,0.25)' }}
+              >
+                Premium
+              </span>
+            )}
+          </div>
+          <div className="mt-1 flex flex-wrap gap-x-4 text-xs" style={{ color: 'var(--first-nonary)' }}>
+            <span className="flex items-center gap-1">
+              <MapPin className="h-3 w-3" />
+              {z.address.length > 40 ? `${z.address.substring(0, 40)}...` : z.address}
+            </span>
+            {termin && (
+              <span className="flex items-center gap-1">
+                <Calendar className="h-3 w-3" />
+                {termin}
+              </span>
+            )}
+          </div>
+        </div>
+        <ChevronRight className="mt-1 h-4 w-4 flex-shrink-0" style={{ color: 'var(--first-quinary)' }} />
+      </Link>
+    </li>
+  );
+}
+
+// ─── KPI kartica ──────────────────────────────────────────────────────────────
+
+function KpiKartica({
+  oznaka, vrijednost, boja, Ikona, aktivan, onClick,
+}: {
+  oznaka: string;
+  vrijednost: number;
+  boja: string;
+  Ikona: React.ComponentType<{ className?: string; style?: React.CSSProperties }>;
+  aktivan: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="flex items-center gap-3 rounded-2xl p-4 text-left transition-all duration-150 focus:outline-none focus-visible:ring-2"
+      style={{
+        backgroundColor: aktivan
+          ? `color-mix(in srgb, ${boja} 14%, white)`
+          : 'rgb(var(--first-quinary-rgb) / 0.22)',
+        border: aktivan
+          ? `2px solid color-mix(in srgb, ${boja} 45%, transparent)`
+          : '1px solid rgb(var(--first-quaternary-rgb) / 0.35)',
+        boxShadow: aktivan ? `0 0 0 1px color-mix(in srgb, ${boja} 20%, transparent)` : 'none',
+      }}
+    >
+      <div
+        className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl"
+        style={{ backgroundColor: `color-mix(in srgb, ${boja} 14%, transparent)` }}
+      >
+        <Ikona className="h-5 w-5" style={{ color: boja }} />
+      </div>
+      <div>
+        <p className="text-2xl font-bold tabular-nums leading-none" style={{ color: aktivan ? boja : 'var(--first-octonary)' }}>
+          {vrijednost}
+        </p>
+        <p className="mt-0.5 text-xs font-medium leading-tight" style={{ color: 'var(--first-nonary)' }}>
+          {oznaka}
+        </p>
+      </div>
+    </button>
+  );
+}
+
+// ─── Stranica ─────────────────────────────────────────────────────────────────
 
 export default function ServiserPage() {
   const [intervencije, setIntervencije] = useState<IntervencijaZaListu[]>([]);
   const [ucitava,      setUcitava]      = useState(true);
   const [greska,       setGreska]       = useState<string | null>(null);
   const [imeKorisnika, setImeKorisnika] = useState('Korisnik');
+  const [aktivniKpi,   setAktivniKpi]   = useState<KpiFilter>('sve');
 
   async function ucitaj() {
     setUcitava(true);
@@ -48,41 +232,77 @@ export default function ServiserPage() {
     const ucitajIme = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!mounted || !user) return;
-      const { data: profil } = await supabase
-        .from('osoba').select('ime, prezime').eq('id_osobe', user.id).maybeSingle();
+      const { data: profil } = await supabase.from('osoba').select('ime, prezime').eq('id_osobe', user.id).maybeSingle();
       const imeIzProfila = [profil?.ime, profil?.prezime].filter(Boolean).join(' ').trim();
-      const imeIzMeta   = [user.user_metadata?.ime, user.user_metadata?.prezime].filter(Boolean).join(' ').trim();
+      const imeIzMeta    = [user.user_metadata?.ime, user.user_metadata?.prezime].filter(Boolean).join(' ').trim();
       setImeKorisnika(imeIzProfila || imeIzMeta || user.email || 'Korisnik');
     };
     void ucitajIme();
     return () => { mounted = false; };
   }, []);
 
+  // ─── Izračuni ─────────────────────────────────────────────────────────────
+
   const imeZaPozdrav = imeKorisnika.split(' ')[0]?.trim() || imeKorisnika;
 
-  const dodijeljeno = intervencije.filter((z) => z.status === 'dodijeljeno').length;
-  const uRadu       = intervencije.filter((z) => z.status === 'u_radu').length;
-  const naTermenu   = intervencije.filter((z) => z.status === 'u_izvrsenju').length;
-  const zavrseno    = intervencije.filter((z) => z.status === 'zavrseno').length;
+  const dodijeljeno = useMemo(() => intervencije.filter((z) => z.status === 'dodijeljeno').length, [intervencije]);
+  const uRadu       = useMemo(() => intervencije.filter((z) => z.status === 'u_radu').length, [intervencije]);
+  const naTermenu   = useMemo(() => intervencije.filter((z) => z.status === 'u_izvrsenju').length, [intervencije]);
+  const zavrseno    = useMemo(() => intervencije.filter((z) => z.status === 'zavrseno').length, [intervencije]);
+  const danas       = useMemo(() => intervencije.filter(jeIntervencijaZaDanas).length, [intervencije]);
+  const hitno       = useMemo(() => intervencije.filter(jeHitna).length, [intervencije]);
 
-  const aktivni = intervencije
-    .filter((z) => ['dodijeljeno', 'u_radu', 'u_izvrsenju'].includes(z.status))
-    .sort((a, b) => {
+  const filtriran = useMemo(
+    () => filtrirajPoKpi(intervencije, aktivniKpi),
+    [intervencije, aktivniKpi],
+  );
+
+  const sortirano = useMemo(
+    () => [...filtriran].sort((a, b) => {
       if (Boolean(a.is_premium) !== Boolean(b.is_premium)) return a.is_premium ? -1 : 1;
       return (b.urgency_score ?? 0) - (a.urgency_score ?? 0);
-    })
-    .slice(0, 5);
+    }),
+    [filtriran],
+  );
+
+  // Sljedeća intervencija = najbliža buduća s terminima
+  const sljededca = useMemo(() => {
+    const sada = Date.now();
+    return intervencije
+      .filter((z) => z.termin_planirani_pocetak && new Date(z.termin_planirani_pocetak).getTime() >= sada - 3_600_000)
+      .sort((a, b) => new Date(a.termin_planirani_pocetak!).getTime() - new Date(b.termin_planirani_pocetak!).getTime())[0]
+      ?? null;
+  }, [intervencije]);
+
+  // ─── Kpi definicije ───────────────────────────────────────────────────────
+
+  const kpiKartice = [
+    { key: 'danas'       as KpiFilter, oznaka: 'Danas',       v: danas,     boja: 'var(--first-primary)',   Ikona: Calendar     },
+    { key: 'dodijeljeno' as KpiFilter, oznaka: 'Dodijeljeno', v: dodijeljeno, boja: '#D97706',              Ikona: Clock        },
+    { key: 'u_radu'      as KpiFilter, oznaka: 'Prihvaćeno',  v: uRadu,     boja: '#2563EB',               Ikona: ClipboardList },
+    { key: 'u_izvrsenju' as KpiFilter, oznaka: 'Na terenu',   v: naTermenu, boja: '#22C55E',               Ikona: Truck        },
+    { key: 'zavrseno'    as KpiFilter, oznaka: 'Završeno',    v: zavrseno,  boja: 'var(--first-secondary)', Ikona: CheckCircle2 },
+    { key: 'hitno'       as KpiFilter, oznaka: 'Hitno',       v: hitno,     boja: '#DC2626',               Ikona: Zap          },
+  ];
+
+  const aktivniKpiUkupno = sortirano.length;
+  const aktivniFilter = aktivniKpi === 'sve' ? null : kpiKartice.find((k) => k.key === aktivniKpi);
 
   return (
     <AppShell uloga="serviser" imeKorisnika={imeKorisnika}>
       {/* Zaglavlje */}
-      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight" style={{ color: 'var(--first-octonary)' }}>
             Dobro jutro, {imeZaPozdrav}!
           </h1>
           <p className="mt-1 text-sm" style={{ color: 'var(--first-nonary)' }}>
-            {formatirajDatumPrikaz(new Date())} — imate {dodijeljeno + uRadu + naTermenu} aktivnih zadataka
+            {formatirajDatumPrikaz(new Date())}
+            {dodijeljeno + uRadu + naTermenu > 0 && (
+              <> — <span className="font-medium" style={{ color: 'var(--first-octonary)' }}>
+                {dodijeljeno + uRadu + naTermenu} aktivnih zadataka
+              </span></>
+            )}
           </p>
         </div>
         <Button variant="secondary" size="md" onClick={ucitaj} isLoading={ucitava} loadingText="Osvježavanje...">
@@ -91,36 +311,27 @@ export default function ServiserPage() {
         </Button>
       </div>
 
+      {greska && <div className="mb-4"><AlertMessage variant="error" message={greska} /></div>}
+
+      {/* Sljedeća intervencija */}
+      {!ucitava && sljededca && <SljededcaIntervencija intervencija={sljededca} />}
+
       {/* KPI kartice */}
-      <div className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
-        {[
-          { oznaka: 'Dodijeljeno', v: dodijeljeno, boja: '#D97706',                   Ikona: Clock         },
-          { oznaka: 'Prihvaćeno',  v: uRadu,       boja: '#2563EB',                   Ikona: ClipboardList },
-          { oznaka: 'Na terenu',   v: naTermenu,   boja: '#22C55E',                   Ikona: Truck         },
-          { oznaka: 'Završeno',    v: zavrseno,    boja: 'var(--first-secondary)',     Ikona: CheckCircle2  },
-        ].map(({ oznaka, v, boja, Ikona }) => (
-          <div
-            key={oznaka}
-            className="flex items-center gap-3 rounded-2xl p-4 shadow-card"
-            style={{ backgroundColor: 'rgb(var(--first-quinary-rgb) / 0.22)', border: '1px solid rgb(var(--first-quaternary-rgb) / 0.35)' }}
-          >
-            <div
-              className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl"
-              style={{ backgroundColor: `color-mix(in srgb, ${boja} 12%, transparent)` }}
-            >
-              <Ikona className="h-4 w-4" style={{ color: boja }} />
-            </div>
-            <div>
-              <p className="text-xl font-bold tabular-nums" style={{ color: boja }}>{v}</p>
-              <p className="text-xs" style={{ color: 'var(--first-nonary)' }}>{oznaka}</p>
-            </div>
-          </div>
+      <div className="mb-6 grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-6">
+        {kpiKartice.map(({ key, oznaka, v, boja, Ikona }) => (
+          <KpiKartica
+            key={key}
+            oznaka={oznaka}
+            vrijednost={v}
+            boja={boja}
+            Ikona={Ikona}
+            aktivan={aktivniKpi === key}
+            onClick={() => setAktivniKpi(aktivniKpi === key ? 'sve' : key)}
+          />
         ))}
       </div>
 
-      {greska && <div className="mb-4"><AlertMessage variant="error" message={greska} /></div>}
-
-      {/* Aktivni zadaci */}
+      {/* Lista intervencija */}
       <div
         className="rounded-2xl shadow-card"
         style={{ backgroundColor: 'rgb(var(--first-quinary-rgb) / 0.22)', border: '1px solid rgb(var(--first-quaternary-rgb) / 0.35)' }}
@@ -129,7 +340,32 @@ export default function ServiserPage() {
           className="flex items-center justify-between px-5 py-4"
           style={{ borderBottom: '1px solid rgb(var(--first-quaternary-rgb) / 0.3)' }}
         >
-          <h2 className="font-semibold" style={{ color: 'var(--first-octonary)' }}>Aktivni zadaci</h2>
+          <div className="flex items-center gap-2">
+            <h2 className="font-semibold" style={{ color: 'var(--first-octonary)' }}>
+              {aktivniFilter ? aktivniFilter.oznaka : 'Aktivni zadaci'}
+            </h2>
+            {!ucitava && (
+              <span
+                className="rounded-full px-2 py-0.5 text-xs font-bold tabular-nums"
+                style={{
+                  backgroundColor: 'rgb(var(--first-quaternary-rgb) / 0.3)',
+                  color: 'var(--first-nonary)',
+                }}
+              >
+                {aktivniKpiUkupno}
+              </span>
+            )}
+            {aktivniFilter && (
+              <button
+                type="button"
+                onClick={() => setAktivniKpi('sve')}
+                className="ml-1 text-xs transition-opacity hover:opacity-70"
+                style={{ color: 'var(--first-nonary)' }}
+              >
+                × Ukloni filter
+              </button>
+            )}
+          </div>
           <Link
             href="/serviser/zadaci"
             className="flex items-center gap-1 text-sm font-medium transition-opacity hover:opacity-70"
@@ -145,60 +381,27 @@ export default function ServiserPage() {
               Učitavanje...
             </li>
           )}
-          {!ucitava && aktivni.length === 0 && (
+          {!ucitava && sortirano.length === 0 && (
             <li className="flex flex-col items-center gap-2 px-5 py-10 text-center">
               <CheckCircle2 className="h-8 w-8" style={{ color: 'var(--first-quinary)' }} />
-              <p className="text-sm" style={{ color: 'var(--first-nonary)' }}>
-                Nemate aktivnih zadataka. Odlično!
+              <p className="font-medium text-sm" style={{ color: 'var(--first-octonary)' }}>
+                {aktivniFilter
+                  ? `Nema intervencija za filter "${aktivniFilter.oznaka}".`
+                  : 'Nemate aktivnih zadataka. Odlično!'}
               </p>
+              {aktivniFilter && (
+                <button
+                  type="button"
+                  onClick={() => setAktivniKpi('sve')}
+                  className="mt-1 text-sm transition-opacity hover:opacity-70"
+                  style={{ color: 'var(--first-secondary)' }}
+                >
+                  Prikaži sve zadatke
+                </button>
+              )}
             </li>
           )}
-          {!ucitava && aktivni.map((z) => {
-            const kat    = labelKategorije(z);
-            const naslov = kat.podkategorija ? `${kat.glavna} — ${kat.podkategorija}` : kat.glavna;
-            const hitno  = (z.urgency_score ?? 0) >= 75 || z.is_premium;
-            return (
-              <li key={z.id}>
-                <Link
-                  href={`/serviser/intervencije/${z.id}`}
-                  className="flex items-start gap-4 px-5 py-4 transition-colors hover:bg-soft-beige/10"
-                >
-                  <div className="mt-0.5 flex-shrink-0">
-                    {hitno
-                      ? <AlertTriangle className="h-4 w-4" style={{ color: 'var(--first-senary)' }} />
-                      : <ClipboardList className="h-4 w-4" style={{ color: 'var(--first-quinary)' }} />}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <p className="font-medium" style={{ color: 'var(--first-octonary)' }}>{naslov}</p>
-                      <StatusBadge status={z.status} />
-                      {z.is_premium && (
-                        <span
-                          className="rounded-full px-2 py-0.5 text-xs font-semibold"
-                          style={{ backgroundColor: 'rgba(220,38,38,0.12)', color: '#B91C1C', border: '1px solid rgba(220,38,38,0.25)' }}
-                        >
-                          Premium HITNO
-                        </span>
-                      )}
-                    </div>
-                    <div className="mt-1.5 flex flex-wrap gap-x-4 text-xs" style={{ color: 'var(--first-nonary)' }}>
-                      <span className="flex items-center gap-1">
-                        <MapPin className="h-3 w-3" />
-                        {z.address.length > 45 ? `${z.address.substring(0, 45)}...` : z.address}
-                      </span>
-                      {z.termin_planirani_pocetak && (
-                        <span className="flex items-center gap-1">
-                          <Calendar className="h-3 w-3" />
-                          {new Date(z.termin_planirani_pocetak).toLocaleDateString('bs-BA')}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  <ChevronRight className="mt-1 h-4 w-4 flex-shrink-0" style={{ color: 'var(--first-quinary)' }} />
-                </Link>
-              </li>
-            );
-          })}
+          {!ucitava && sortirano.map((z) => <IntervencijaKartica key={z.id} z={z} />)}
         </ul>
       </div>
     </AppShell>

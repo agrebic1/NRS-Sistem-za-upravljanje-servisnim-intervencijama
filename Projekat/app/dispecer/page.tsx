@@ -4,6 +4,7 @@ import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'rea
 import {
   ClipboardList, ChevronRight,
   RefreshCw, XCircle, BellOff,
+  AlertTriangle, CheckCircle2, UserCheck, Zap, Inbox,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -276,10 +277,18 @@ function DispecerPageContent() {
     };
   }, []);
 
-  const uInboxu = zahtjevi.filter((z) => JE_PENDING(z.status));
+  const uInboxu       = zahtjevi.filter((z) => JE_PENDING(z.status));
   const noviPregledBr = uInboxu.filter((z) => zahtjevJeNoviUPregleduDispecera(z)).length;
   const uObradiPregledBr = uInboxu.filter((z) => zahtjevJeUObradiUPregleduDispecera(z)).length;
-  const potvrdenoBr = zahtjevi.filter((z) => z.status === 'potvrdeno').length;
+  const potvrdenoBr   = zahtjevi.filter((z) => z.status === 'potvrdeno').length;
+  const dodijeljeniiBr = zahtjevi.filter((z) => ['dodijeljeno', 'u_radu', 'u_izvrsenju'].includes(z.status)).length;
+  const hitniB        = zahtjevi.filter((z) => (z.urgency_score ?? 0) >= 75 || z.is_premium).length;
+  const zavrsenoDanaBr = zahtjevi.filter((z) => {
+    if (z.status !== 'zavrseno') return false;
+    const d = new Date(z.updated_at ?? z.created_at);
+    const n = new Date();
+    return d.getFullYear() === n.getFullYear() && d.getMonth() === n.getMonth() && d.getDate() === n.getDate();
+  }).length;
 
   return (
     <>
@@ -303,45 +312,33 @@ function DispecerPageContent() {
         </Button>
       </div>
 
-      <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
         {[
-          {
-            oznaka:    'Novi',
-            vrijednost: noviPregledBr,
-            boja:      DISPECER_PALETA_STATUS.inbox.kpi,
-            Ikona:     ClipboardList,
-            href:      '/dispecer/zahtjevi?filter=novi',
-          },
-          {
-            oznaka:    'U obradi',
-            vrijednost: uObradiPregledBr,
-            boja:      DISPECER_PALETA_STATUS.uObradi.kpi,
-            Ikona:     ClipboardList,
-            href:      '/dispecer/zahtjevi?filter=u_obradi',
-          },
-          {
-            oznaka:    'Potvrđeno',
-            vrijednost: potvrdenoBr,
-            boja:      DISPECER_PALETA_STATUS.terminPotvrden.kpi,
-            Ikona:     ClipboardList,
-            href:      '/dispecer/zahtjevi?filter=potvrdeno',
-          },
-        ].map(({ oznaka, vrijednost, boja, Ikona, href }) => (
+          { oznaka: 'Novi zahtjevi',    v: noviPregledBr,   boja: DISPECER_PALETA_STATUS.inbox.kpi,           Ikona: Inbox,        href: '/dispecer/zahtjevi?filter=novi'      },
+          { oznaka: 'U obradi',         v: uObradiPregledBr, boja: DISPECER_PALETA_STATUS.uObradi.kpi,        Ikona: ClipboardList, href: '/dispecer/zahtjevi?filter=u_obradi' },
+          { oznaka: 'Hitni',            v: hitniB,           boja: '#DC2626',                                  Ikona: Zap,           href: '/dispecer/zahtjevi'                 },
+          { oznaka: 'Potvrđeni',        v: potvrdenoBr,      boja: DISPECER_PALETA_STATUS.terminPotvrden.kpi, Ikona: CheckCircle2,  href: '/dispecer/zahtjevi?filter=potvrdeni'},
+          { oznaka: 'Na terenu',        v: dodijeljeniiBr,   boja: DISPECER_PALETA_STATUS.uToku.kpi,           Ikona: UserCheck,     href: '/dispecer/zahtjevi'                 },
+          { oznaka: 'Završeni danas',   v: zavrsenoDanaBr,   boja: DISPECER_PALETA_STATUS.zavrseno.kpi,        Ikona: CheckCircle2,  href: '/dispecer/zahtjevi?filter=zavrseni' },
+        ].map(({ oznaka, v, boja, Ikona, href }) => (
           <Link
             key={oznaka}
             href={href}
-            className="flex items-center gap-4 rounded-2xl p-5 shadow-card transition-opacity hover:opacity-90"
-            style={{ backgroundColor: 'rgb(var(--first-quinary-rgb) / 0.22)', border: '1px solid rgb(var(--first-quaternary-rgb) / 0.35)' }}
+            className="flex items-center gap-3 rounded-2xl p-4 shadow-card transition-all hover:shadow-md hover:opacity-90"
+            style={{
+              backgroundColor: 'rgb(var(--first-quinary-rgb) / 0.22)',
+              border: '1px solid rgb(var(--first-quaternary-rgb) / 0.35)',
+            }}
           >
-            <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl" style={{ backgroundColor: `${boja}18` }}>
-              <Ikona className="h-5 w-5" style={{ color: boja }} />
+            <div
+              className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl"
+              style={{ backgroundColor: `color-mix(in srgb, ${boja} 12%, transparent)` }}
+            >
+              <Ikona className="h-4 w-4" style={{ color: boja }} />
             </div>
-            <div>
-              <p className="text-3xl font-extrabold leading-none" style={{ color: boja }}>{vrijednost}</p>
-              <p className="mt-1 text-xs font-medium" style={{ color: 'rgb(var(--first-nonary-rgb) / 0.86)' }}>{oznaka}</p>
-              <p className="mt-1 text-[11px] font-medium" style={{ color: 'rgb(var(--first-nonary-rgb) / 0.62)' }}>
-                Otvori filtrirani pregled
-              </p>
+            <div className="min-w-0">
+              <p className="text-2xl font-extrabold leading-none tabular-nums" style={{ color: boja }}>{v}</p>
+              <p className="mt-0.5 text-[11px] font-medium leading-tight" style={{ color: 'var(--first-nonary)' }}>{oznaka}</p>
             </div>
           </Link>
         ))}
