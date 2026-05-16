@@ -131,7 +131,7 @@ function TimeOnTask({
           {jePrekoracio && (
             <p className="mt-1.5 flex items-center gap-1 text-xs font-semibold" style={{ color: '#DC2626' }}>
               <AlertTriangle className="h-3 w-3" />
-              Prekoračeno procijenjeno trajanje za {trajanjeLabel(elapsed - procijenjeno)}
+              Prekoračeno procijenjeno trajanje za {trajanjeLabel(elapsed - (procijenjeno ?? 0))}
             </p>
           )}
         </div>
