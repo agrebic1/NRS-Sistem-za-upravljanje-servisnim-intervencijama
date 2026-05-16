@@ -1040,7 +1040,7 @@ export default function DispecerPlaniranjePage() {
                       Potvrđujem da su svi podaci provjereni i tačni.
                     </p>
                     <p className="mt-1 text-xs" style={{ color: 'var(--first-nonary)' }}>
-                      Klikom na "Dodijeli intervenciju" kreirate radni nalog i obavještavate servisera.
+                      Klikom na &quot;Dodijeli intervenciju&quot; kreirate radni nalog i obavještavate servisera.
                     </p>
                     {wz.potvrdio && (
                       <div className="mt-2 flex items-center gap-1.5">
