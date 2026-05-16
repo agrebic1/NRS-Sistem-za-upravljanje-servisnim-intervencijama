@@ -189,7 +189,7 @@ export async function GET() {
         if (r3.error) {
           return NextResponse.json({ error: premiumStatusiGreska.message }, { status: 500 });
         }
-        premiumRedovi = (r3.data ?? []).map((row) => ({
+        premiumRedovi = (r3.data ?? []).map((row: any) => ({
           id_korisnika_usluge: row.id_korisnika_usluge,
           is_premium: row.is_premium,
           premium_status: row.is_premium ? 'active' : 'inactive',
