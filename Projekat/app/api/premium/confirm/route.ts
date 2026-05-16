@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createAdminClient } from '@/lib/supabase/admin';
-import { createClient as createServerClient } from '@/lib/supabase/server';
+import { createClient } from '@/lib/supabase/server';
 import { premiumConfirmSimulatedPayment } from '@/lib/premium/lifecycle';
 import { premiumConfirmSchema } from '@/lib/validations/servisirane';
 
@@ -8,10 +7,10 @@ export const dynamic = 'force-dynamic';
 
 export async function POST(request: Request) {
   try {
-    const supabaseSesija = createServerClient();
+    const supabase = createClient();
     const {
       data: { user },
-    } = await supabaseSesija.auth.getUser();
+    } = await supabase.auth.getUser();
 
     if (!user) {
       return NextResponse.json({ error: 'Niste prijavljeni.' }, { status: 401 });
@@ -23,8 +22,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: parsed.error.errors[0]?.message ?? 'Neispravan unos.' }, { status: 400 });
     }
 
-    const supabase = createAdminClient();
-    const rez = await premiumConfirmSimulatedPayment(supabase, user.id, user.id, parsed.data.plan);
+    const rez = await premiumConfirmSimulatedPayment(supabase as any, user.id, user.id, parsed.data.plan);
     if (!rez.ok) {
       return NextResponse.json({ error: rez.message }, { status: rez.status });
     }

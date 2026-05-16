@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { randomBytes } from 'crypto';
 import { formatirajDatumPrikaz } from '@/lib/format/datumi';
 import { createAdminClient } from '@/lib/supabase/admin';
-import { createClient as createServerClient } from '@/lib/supabase/server';
+import { createClient } from '@/lib/supabase/server';
 import { sendEmail, kreirajEmailInternogNaloga } from '@/lib/email/sendEmail';
 import { adminCreateUserSchema } from '@/lib/validations/servisirane';
 
@@ -63,8 +63,8 @@ function odrediStatus(user: { banned_until?: string | null; email_confirmed_at?:
   return 'neaktivan';
 }
 
-async function provjeriAdminPristup(supabase: ReturnType<typeof createAdminClient>, idKorisnika: string) {
-  const { data: uposlenik, error } = await supabase
+async function provjeriAdminPristup(db: any, idKorisnika: string) {
+  const { data: uposlenik, error } = await db
     .from('uposlenici')
     .select('id_uloge')
     .eq('id_uposlenika', idKorisnika)
@@ -72,7 +72,7 @@ async function provjeriAdminPristup(supabase: ReturnType<typeof createAdminClien
 
   if (error || !uposlenik?.id_uloge) return false;
 
-  const { data: ulogaPodaci, error: ulogaError } = await supabase
+  const { data: ulogaPodaci, error: ulogaError } = await db
     .from('uloga')
     .select('naziv')
     .eq('id_uloge', uposlenik.id_uloge)
@@ -97,7 +97,7 @@ function generisiPrivremenuLozinku() {
 }
 
 async function upisiAdminCreateAudit(
-  supabase: ReturnType<typeof createAdminClient>,
+  supabase: any,
   payload: {
     created_user_id: string | null;
     created_by_user_id: string;
@@ -113,7 +113,7 @@ async function upisiAdminCreateAudit(
 
 export async function GET() {
   try {
-    const supabaseSesija = createServerClient();
+    const supabaseSesija = createClient();
     const {
       data: { user },
     } = await supabaseSesija.auth.getUser();
@@ -122,12 +122,23 @@ export async function GET() {
       return NextResponse.json({ error: 'Niste prijavljeni.' }, { status: 401 });
     }
 
-    const supabase = createAdminClient();
-    const jeAdmin = await provjeriAdminPristup(supabase, user.id);
+    const db = supabaseSesija as any;
+    const jeAdmin = await provjeriAdminPristup(db, user.id);
 
     if (!jeAdmin) {
       return NextResponse.json({ error: 'Nemate dozvolu za pregled korisnika.' }, { status: 403 });
     }
+
+    let supabase: ReturnType<typeof createAdminClient>;
+    try {
+      supabase = createAdminClient();
+    } catch {
+      return NextResponse.json(
+        { error: 'Upravljanje korisnicima zahtijeva SUPABASE_SERVICE_ROLE_KEY. Dodajte ovu env varijablu u Vercel podešavanja.' },
+        { status: 503 }
+      );
+    }
+    const adminDb = supabase as any;
 
     const [
       { data: authPodaci, error: authGreska },
@@ -138,18 +149,18 @@ export async function GET() {
     ] =
       await Promise.all([
         supabase.auth.admin.listUsers({ page: 1, perPage: 1000 }),
-        supabase
+        adminDb
           .from('v_korisnik_usluge')
           .select('id_korisnika_usluge, ime, prezime, email'),
-        supabase
+        adminDb
           .from('korisnik_usluge')
           .select(
             'id_korisnika_usluge, is_premium, premium_status, premium_started_at, premium_expires_at, premium_plan, premium_cancelled_at, premium_cancel_reason'
           ),
-        supabase
+        adminDb
           .from('v_uposlenici')
           .select('id_uposlenika, id_uloge, ime, prezime, email'),
-        supabase
+        adminDb
           .from('uloga')
           .select('id_uloge, naziv'),
       ]);
@@ -168,13 +179,13 @@ export async function GET() {
 
     let premiumRedovi: PremiumRedIzBaze[] = (premiumStatusi as PremiumRedIzBaze[] | null) ?? [];
     if (premiumStatusiGreska) {
-      const r2 = await supabase
+      const r2 = await adminDb
         .from('korisnik_usluge')
         .select('id_korisnika_usluge, is_premium, premium_status, premium_started_at, premium_expires_at, premium_plan');
       if (!r2.error && r2.data) {
         premiumRedovi = r2.data as PremiumRedIzBaze[];
       } else {
-        const r3 = await supabase.from('korisnik_usluge').select('id_korisnika_usluge, is_premium');
+        const r3 = await adminDb.from('korisnik_usluge').select('id_korisnika_usluge, is_premium');
         if (r3.error) {
           return NextResponse.json({ error: premiumStatusiGreska.message }, { status: 500 });
         }
@@ -295,7 +306,7 @@ export async function POST(request: Request) {
   let createdUserId: string | null = null;
 
   try {
-    const supabaseSesija = createServerClient();
+    const supabaseSesija = createClient();
     const {
       data: { user },
     } = await supabaseSesija.auth.getUser();
@@ -305,12 +316,20 @@ export async function POST(request: Request) {
     }
 
     actorId = user.id;
-    const supabase = createAdminClient();
-    const jeAdmin = await provjeriAdminPristup(supabase, user.id);
+    const jeAdmin = await provjeriAdminPristup(supabaseSesija as any, user.id);
     if (!jeAdmin) {
       return NextResponse.json({ error: 'Nemate dozvolu za kreiranje korisnika.' }, { status: 403 });
     }
 
+    let supabase: ReturnType<typeof createAdminClient>;
+    try {
+      supabase = createAdminClient();
+    } catch {
+      return NextResponse.json(
+        { error: 'Kreiranje korisnika zahtijeva SUPABASE_SERVICE_ROLE_KEY. Dodajte ovu env varijablu u Vercel podešavanja.' },
+        { status: 503 }
+      );
+    }
     const body = await request.json();
     const parsed = adminCreateUserSchema.safeParse(body);
     if (!parsed.success) {
@@ -405,17 +424,21 @@ export async function POST(request: Request) {
       email_poslan: emailRezultat.success,
     });
   } catch (error) {
-    const supabase = createAdminClient();
     if (actorId && targetEmail && targetRole) {
-      await upisiAdminCreateAudit(supabase, {
-        created_user_id: createdUserId,
-        created_by_user_id: actorId,
-        target_email: targetEmail,
-        target_role: targetRole,
-        success: false,
-        error_message: error instanceof Error ? error.message : 'Neočekivana greška pri kreiranju korisnika.',
-        email_sent: false,
-      });
+      try {
+        const supabase = createAdminClient();
+        await upisiAdminCreateAudit(supabase, {
+          created_user_id: createdUserId,
+          created_by_user_id: actorId,
+          target_email: targetEmail,
+          target_role: targetRole,
+          success: false,
+          error_message: error instanceof Error ? error.message : 'Neočekivana greška pri kreiranju korisnika.',
+          email_sent: false,
+        });
+      } catch {
+        // audit nije kritičan — nastavi s greškom
+      }
     }
     const message = error instanceof Error ? error.message : 'Neočekivana greška pri kreiranju korisnika.';
     return NextResponse.json({ error: message }, { status: 500 });

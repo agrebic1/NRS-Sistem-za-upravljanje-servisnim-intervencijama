@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { UserRole } from '@/domain/types';
-import { createAdminClient } from '@/lib/supabase/admin';
-import { createClient as createServerClient } from '@/lib/supabase/server';
+import { createClient } from '@/lib/supabase/server';
 
 function mapirajNazivUloge(naziv: string | null | undefined): UserRole | null {
   const normalizovanNaziv = naziv?.toLowerCase();
@@ -26,20 +25,20 @@ function mapirajNazivUloge(naziv: string | null | undefined): UserRole | null {
 
 export async function GET() {
   try {
-    const supabaseSesija = createServerClient();
+    const supabase = createClient();
     const {
       data: { user },
       error: greskaKorisnika,
-    } = await supabaseSesija.auth.getUser();
+    } = await supabase.auth.getUser();
 
     if (greskaKorisnika || !user) {
       return NextResponse.json({ error: 'Niste prijavljeni.' }, { status: 401 });
     }
 
-    const supabase = createAdminClient();
+    const db = supabase as any;
     const uloge: UserRole[] = [];
 
-    const { data: korisnikUsluge, error: greskaKorisnikaUsluge } = await supabase
+    const { data: korisnikUsluge, error: greskaKorisnikaUsluge } = await db
       .from('korisnik_usluge')
       .select('id_korisnika_usluge')
       .eq('id_korisnika_usluge', user.id)
@@ -53,7 +52,7 @@ export async function GET() {
       uloge.push('korisnik');
     }
 
-    const { data: uposlenik, error: greskaUposlenika } = await supabase
+    const { data: uposlenik, error: greskaUposlenika } = await db
       .from('uposlenici')
       .select('id_uloge')
       .eq('id_uposlenika', user.id)
@@ -64,7 +63,7 @@ export async function GET() {
     }
 
     if (uposlenik?.id_uloge) {
-      const { data: ulogaPodaci, error: greskaUloge } = await supabase
+      const { data: ulogaPodaci, error: greskaUloge } = await db
         .from('uloga')
         .select('naziv')
         .eq('id_uloge', uposlenik.id_uloge)

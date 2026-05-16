@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createAdminClient } from '@/lib/supabase/admin';
-import { createClient as createServerClient } from '@/lib/supabase/server';
+import { createClient } from '@/lib/supabase/server';
 import {
   preferredScheduleBaseSchema,
   preferredScheduleSchema,
@@ -8,7 +7,7 @@ import {
 } from '@/lib/validations/servisirane';
 import { izracunajUrgency, URGENCY_SCORE_MAKS } from '@/lib/servisirane/urgency';
 import type { TriageOdgovori } from '@/domain/types/servisirane';
-import { labelKategorije, serializujKategoriju, validnaKombinacijaKategorije } from '@/lib/servisirane/kategorije';
+import { serializujKategoriju, validnaKombinacijaKategorije } from '@/lib/servisirane/kategorije';
 import { dodijeliKorisnickeBrojeveZahtjeva } from '@/lib/servisirane/korisnickiBrojZahtjeva';
 import { z } from 'zod';
 
@@ -54,17 +53,17 @@ const scheduleSchema = z
 
 export async function GET() {
   try {
-    const supabaseSesija = createServerClient();
+    const supabase = createClient();
     const {
       data: { user },
-    } = await supabaseSesija.auth.getUser();
+    } = await supabase.auth.getUser();
 
     if (!user) {
       return NextResponse.json({ error: 'Niste prijavljeni.' }, { status: 401 });
     }
 
-    const supabase = createAdminClient();
-    const { data, error } = await supabase
+    const db = supabase as any;
+    const { data, error } = await db
       .from('service_requests')
       .select('*')
       .eq('user_id', user.id)
@@ -81,10 +80,10 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const supabaseSesija = createServerClient();
+    const supabase = createClient();
     const {
       data: { user },
-    } = await supabaseSesija.auth.getUser();
+    } = await supabase.auth.getUser();
 
     if (!user) {
       return NextResponse.json({ error: 'Niste prijavljeni.' }, { status: 401 });
@@ -97,14 +96,14 @@ export async function POST(request: Request) {
       );
     }
 
-    const supabase = createAdminClient();
-    let { data: korisnikUsluge, error: korisnikUslugeError } = await supabase
+    const db = supabase as any;
+    let { data: korisnikUsluge, error: korisnikUslugeError } = await db
       .from('korisnik_usluge')
       .select('id_korisnika_usluge, is_premium, premium_status')
       .eq('id_korisnika_usluge', user.id)
       .maybeSingle();
     if (korisnikUslugeError?.message?.includes("'premium_status' column")) {
-      const fallback = await supabase
+      const fallback = await db
         .from('korisnik_usluge')
         .select('id_korisnika_usluge, is_premium')
         .eq('id_korisnika_usluge', user.id)
@@ -113,7 +112,7 @@ export async function POST(request: Request) {
       korisnikUslugeError = fallback.error;
     }
     if (korisnikUslugeError?.message?.includes("'is_premium' column")) {
-      const fallback = await supabase
+      const fallback = await db
         .from('korisnik_usluge')
         .select('id_korisnika_usluge')
         .eq('id_korisnika_usluge', user.id)
@@ -183,7 +182,6 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
-    const legacy = labelKategorije({ category });
     const premiumZahtjev = is_premium === true;
     const urgency_score = premiumZahtjev
       ? URGENCY_SCORE_MAKS
@@ -203,15 +201,13 @@ export async function POST(request: Request) {
       urgent_requested_at: premiumZahtjev ? new Date().toISOString() : null,
       triage_json,
       urgency_score,
-      system_score:       urgency_score,   // identical to urgency_score initially
-      // Premium i dalje ima visoku hitnost u inboxu (urgency / is_premium), ali status i operativni
-      // prioritet ostaju „novi“ dok dispečer ne potvrdi internu obradu (kao kod običnog zahtjeva).
+      system_score:       urgency_score,
       status:             'pending_review',
       final_priority:     null,
       preferred_schedule: scheduleResult.data,
     };
 
-    let { data, error } = await supabase
+    let { data, error } = await db
       .from('service_requests')
       .insert(insertPayload)
       .select()
@@ -222,7 +218,7 @@ export async function POST(request: Request) {
       const bezKoordinata: Record<string, unknown> = { ...insertPayload };
       delete bezKoordinata.latitude;
       delete bezKoordinata.longitude;
-      const retry = await supabase
+      const retry = await db
         .from('service_requests')
         .insert(bezKoordinata)
         .select()
@@ -236,7 +232,7 @@ export async function POST(request: Request) {
       const legacyKategorijePayload: Record<string, unknown> = { ...insertPayload };
       delete legacyKategorijePayload.category_main;
       delete legacyKategorijePayload.category_sub;
-      const retry = await supabase
+      const retry = await db
         .from('service_requests')
         .insert(legacyKategorijePayload)
         .select()
@@ -255,7 +251,7 @@ export async function POST(request: Request) {
       delete legacyPremiumPayload.is_premium;
       delete legacyPremiumPayload.premium_terms_accepted;
       delete legacyPremiumPayload.premium_requested_at;
-      const retry = await supabase
+      const retry = await db
         .from('service_requests')
         .insert(legacyPremiumPayload)
         .select()
@@ -269,7 +265,7 @@ export async function POST(request: Request) {
       const legacyUrgentPayload: Record<string, unknown> = { ...insertPayload };
       delete legacyUrgentPayload.urgent_requested;
       delete legacyUrgentPayload.urgent_requested_at;
-      const retry = await supabase
+      const retry = await db
         .from('service_requests')
         .insert(legacyUrgentPayload)
         .select()
@@ -284,7 +280,7 @@ export async function POST(request: Request) {
         ...insertPayload,
         status: 'na_cekanju' as const,
       };
-      const legacyRetry = await supabase
+      const legacyRetry = await db
         .from('service_requests')
         .insert(legacyPayload)
         .select()
@@ -296,10 +292,10 @@ export async function POST(request: Request) {
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
     if (data?.id) {
-      const { data: uposlenici } = await supabase
+      const { data: uposlenici } = await db
         .from('uposlenici')
         .select('id_uposlenika, uloga:uloga(naziv)');
-      const recipients = (uposlenici ?? []).filter((u) => {
+      const recipients = (uposlenici ?? []).filter((u: any) => {
         const naziv = Array.isArray(u.uloga)
           ? (u.uloga[0] as { naziv?: string } | undefined)?.naziv
           : (u.uloga as { naziv?: string } | null)?.naziv;
@@ -312,8 +308,8 @@ export async function POST(request: Request) {
         const alertMessage = isPremiumRequest
           ? `Premium zahtjev #${data.id} čeka prioritetnu obradu.`
           : `Novi zahtjev #${data.id} je pristigao i čeka obradu.`;
-        await supabase.from('dispatcher_alerts').insert(
-          recipients.map((u) => ({
+        await db.from('dispatcher_alerts').insert(
+          recipients.map((u: any) => ({
             recipient_user_id: u.id_uposlenika,
             service_request_id: data.id,
             title: alertTitle,
@@ -323,14 +319,14 @@ export async function POST(request: Request) {
       }
     }
 
-    const { data: sviRedovi } = await supabase
+    const { data: sviRedovi } = await db
       .from('service_requests')
       .select('id, created_at')
       .eq('user_id', user.id)
       .order('created_at', { ascending: true })
       .order('id', { ascending: true });
     const sBrojevima = dodijeliKorisnickeBrojeveZahtjeva(sviRedovi ?? []);
-    const ovaj = sBrojevima.find((r) => r.id === data.id);
+    const ovaj = sBrojevima.find((r: any) => r.id === data.id);
     const korisnickiBrojZahtjeva = ovaj?.korisnicki_broj_zahtjeva ?? sBrojevima.length;
 
     return NextResponse.json(

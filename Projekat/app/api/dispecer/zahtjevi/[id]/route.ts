@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createAdminClient } from '@/lib/supabase/admin';
-import { createClient as createServerClient } from '@/lib/supabase/server';
+import { createClient } from '@/lib/supabase/server';
 import { assertDispatcherAccess } from '@/lib/servisirane/dispecerPristup';
 import { korisnickiBrojZahtjevaZaId } from '@/lib/servisirane/korisnickiBrojZahtjeva';
 import { premiumZahtijevaObrazlozenjeSmanjenjaPrioriteta } from '@/lib/servisirane/operativniPrioritet';
@@ -58,10 +57,10 @@ export async function GET(
   { params }: { params: RouteParams }
 ) {
   try {
-    const supabaseSesija = createServerClient();
+    const supabase = createClient();
     const {
       data: { user },
-    } = await supabaseSesija.auth.getUser();
+    } = await supabase.auth.getUser();
 
     if (!user) {
       return NextResponse.json({ error: 'Niste prijavljeni.' }, { status: 401 });
@@ -72,13 +71,13 @@ export async function GET(
       return NextResponse.json({ error: 'Neispravan ID zahtjeva.' }, { status: 400 });
     }
 
-    const supabase = createAdminClient();
     const imaPriv = await assertDispatcherAccess(supabase, user.id);
     if (!imaPriv) {
       return NextResponse.json({ error: 'Pristup odbijen.' }, { status: 403 });
     }
 
-    const { data: zahtjev, error } = await supabase
+    const db = supabase as any;
+    const { data: zahtjev, error } = await db
       .from('service_requests')
       .select('*')
       .eq('id', requestId)
@@ -88,13 +87,13 @@ export async function GET(
       return NextResponse.json({ error: 'Zahtjev nije pronađen.' }, { status: 404 });
     }
 
-    const { data: osoba } = await supabase
+    const { data: osoba } = await db
       .from('osoba')
       .select('ime, prezime, broj_telefona')
       .eq('id_osobe', zahtjev.user_id)
       .maybeSingle();
 
-    const { data: redoviAsc } = await supabase
+    const { data: redoviAsc } = await db
       .from('service_requests')
       .select('id, created_at')
       .eq('user_id', zahtjev.user_id)
@@ -108,7 +107,7 @@ export async function GET(
     // Serviser profil (ako je dodijeljen)
     let serviserProfil: { id: string; ime: string; prezime: string; broj_telefona: string | null } | null = null;
     if (zahtjev.serviser_dodijeljen_id) {
-      const { data: sp } = await supabase
+      const { data: sp } = await db
         .from('osoba')
         .select('id_osobe, ime, prezime, broj_telefona')
         .eq('id_osobe', zahtjev.serviser_dodijeljen_id)
@@ -117,14 +116,14 @@ export async function GET(
     }
 
     // Aktivnosti intervencije
-    const { data: aktivnosti } = await supabase
+    const { data: aktivnosti } = await db
       .from('intervention_activities')
       .select('*')
       .eq('zahtjev_id', requestId)
       .order('created_at', { ascending: true });
 
     // Evidencija rada
-    const { data: evidencije } = await supabase
+    const { data: evidencije } = await db
       .from('work_evidence')
       .select('*')
       .eq('zahtjev_id', requestId)
@@ -151,10 +150,10 @@ export async function PATCH(
   { params }: { params: RouteParams }
 ) {
   try {
-    const supabaseSesija = createServerClient();
+    const supabase = createClient();
     const {
       data: { user },
-    } = await supabaseSesija.auth.getUser();
+    } = await supabase.auth.getUser();
 
     if (!user) {
       return NextResponse.json({ error: 'Niste prijavljeni.' }, { status: 401 });
@@ -165,12 +164,12 @@ export async function PATCH(
       return NextResponse.json({ error: 'Neispravan ID zahtjeva.' }, { status: 400 });
     }
 
-    const supabase = createAdminClient();
     const imaPriv = await assertDispatcherAccess(supabase, user.id);
     if (!imaPriv) {
       return NextResponse.json({ error: 'Pristup odbijen.' }, { status: 403 });
     }
 
+    const db = supabase as any;
     const body     = await request.json();
     const rezultat = actionSchema.safeParse(body);
 
@@ -178,7 +177,7 @@ export async function PATCH(
       return NextResponse.json({ error: rezultat.error.errors[0].message }, { status: 400 });
     }
 
-    const { data: zahtjev } = await supabase
+    const { data: zahtjev } = await db
       .from('service_requests')
       .select('status, is_premium')
       .eq('id', requestId)
@@ -226,7 +225,7 @@ export async function PATCH(
         izmjena.status = 'in_review';
       }
 
-      const { error } = await supabase.from('service_requests').update(izmjena).eq('id', requestId);
+      const { error } = await db.from('service_requests').update(izmjena).eq('id', requestId);
 
       if (error) return NextResponse.json({ error: error.message }, { status: 500 });
       return NextResponse.json({ success: true });
@@ -255,14 +254,14 @@ export async function PATCH(
       if (podaci.dispecer_napomene !== undefined)
         izmjena.dispecer_napomene = podaci.dispecer_napomene;
 
-      const { error: updErr } = await supabase
+      const { error: updErr } = await db
         .from('service_requests')
         .update(izmjena)
         .eq('id', requestId);
 
       if (updErr) return NextResponse.json({ error: updErr.message }, { status: 500 });
 
-      await supabase.from('intervention_activities').insert({
+      await db.from('intervention_activities').insert({
         zahtjev_id: requestId,
         autor_id:   user.id,
         tip:        'dodjela',
@@ -287,14 +286,14 @@ export async function PATCH(
         );
       }
 
-      const { error: updErr } = await supabase
+      const { error: updErr } = await db
         .from('service_requests')
         .update({ status: 'zavrseno' })
         .eq('id', requestId);
 
       if (updErr) return NextResponse.json({ error: updErr.message }, { status: 500 });
 
-      await supabase.from('intervention_activities').insert({
+      await db.from('intervention_activities').insert({
         zahtjev_id: requestId,
         autor_id:   user.id,
         tip:        'status_promjena',
@@ -329,7 +328,7 @@ export async function PATCH(
           { status: 400 }
         );
       }
-      const { error } = await supabase
+      const { error } = await db
         .from('service_requests')
         .update({
           status:         'potvrdeno',
@@ -347,7 +346,7 @@ export async function PATCH(
     }
 
     if (podaci.action === 'odbij') {
-      const { error } = await supabase
+      const { error } = await db
         .from('service_requests')
         .update({
           status:           'odbijeno',

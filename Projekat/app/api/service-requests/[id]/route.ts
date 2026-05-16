@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createAdminClient } from '@/lib/supabase/admin';
-import { createClient as createServerClient } from '@/lib/supabase/server';
+import { createClient } from '@/lib/supabase/server';
 import { cancelRequestSchema, updateRequestSchema } from '@/lib/validations/servisirane';
 import { korisnickiBrojZahtjevaZaId } from '@/lib/servisirane/korisnickiBrojZahtjeva';
 import { korisnikSmijeMijenjatiIliOtkazatiZahtjev } from '@/lib/servisirane/statusZahtjeva';
@@ -21,10 +20,10 @@ export async function GET(
   { params }: { params: RouteParams }
 ) {
   try {
-    const supabaseSesija = createServerClient();
+    const supabase = createClient();
     const {
       data: { user },
-    } = await supabaseSesija.auth.getUser();
+    } = await supabase.auth.getUser();
 
     if (!user) {
       return NextResponse.json({ error: 'Niste prijavljeni.' }, { status: 401 });
@@ -35,8 +34,8 @@ export async function GET(
       return NextResponse.json({ error: 'Neispravan ID zahtjeva.' }, { status: 400 });
     }
 
-    const supabase = createAdminClient();
-    const { data, error } = await supabase
+    const db = supabase as any;
+    const { data, error } = await db
       .from('service_requests')
       .select('*')
       .eq('id', requestId)
@@ -47,7 +46,7 @@ export async function GET(
       return NextResponse.json({ error: 'Zahtjev nije pronađen.' }, { status: 404 });
     }
 
-    const { data: redoviAsc } = await supabase
+    const { data: redoviAsc } = await db
       .from('service_requests')
       .select('id, created_at')
       .eq('user_id', user.id)
@@ -75,10 +74,10 @@ export async function PATCH(
   { params }: { params: RouteParams }
 ) {
   try {
-    const supabaseSesija = createServerClient();
+    const supabase = createClient();
     const {
       data: { user },
-    } = await supabaseSesija.auth.getUser();
+    } = await supabase.auth.getUser();
 
     if (!user) {
       return NextResponse.json({ error: 'Niste prijavljeni.' }, { status: 401 });
@@ -89,10 +88,10 @@ export async function PATCH(
       return NextResponse.json({ error: 'Neispravan ID zahtjeva.' }, { status: 400 });
     }
 
-    const supabase = createAdminClient();
+    const db = supabase as any;
 
     // Provjeri vlasništvo i status
-    const { data: zahtjev } = await supabase
+    const { data: zahtjev } = await db
       .from('service_requests')
       .select('status, user_id, final_priority')
       .eq('id', requestId)
@@ -126,7 +125,7 @@ export async function PATCH(
         );
       }
 
-      const { error } = await supabase
+      const { error } = await db
         .from('service_requests')
         .update({
           status:         'otkazano',
@@ -147,7 +146,7 @@ export async function PATCH(
       );
     }
 
-    const { error } = await supabase
+    const { error } = await db
       .from('service_requests')
       .update(rezultat.data)
       .eq('id', requestId);
