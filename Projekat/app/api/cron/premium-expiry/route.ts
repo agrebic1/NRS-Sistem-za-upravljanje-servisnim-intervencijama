@@ -22,10 +22,17 @@ async function obradiIstekPremiuma(request: Request) {
       return NextResponse.json({ error: 'Nedozvoljen cron poziv.' }, { status: 401 });
     }
 
-    const supabase = createAdminClient();
-    const sadaIso = new Date().toISOString();
+    let supabase: ReturnType<typeof createAdminClient>;
+    try {
+      supabase = createAdminClient();
+    } catch {
+      return NextResponse.json({ success: true, expiredCount: 0, skipped: 'service_role_key_not_configured' });
+    }
 
-    const { data: istekli, error: selectErr } = await supabase
+    const sadaIso = new Date().toISOString();
+    const db = supabase as any;
+
+    const { data: istekli, error: selectErr } = await db
       .from('korisnik_usluge')
       .select('id_korisnika_usluge')
       .eq('premium_status', 'active')
@@ -42,12 +49,12 @@ async function obradiIstekPremiuma(request: Request) {
       return NextResponse.json({ error: selectErr.message }, { status: 500 });
     }
 
-    const userIds = (istekli ?? []).map((k) => k.id_korisnika_usluge);
+    const userIds = (istekli ?? []).map((k: any) => k.id_korisnika_usluge);
     if (userIds.length === 0) {
       return NextResponse.json({ success: true, expiredCount: 0 });
     }
 
-    const { error: updateErr } = await supabase
+    const { error: updateErr } = await db
       .from('korisnik_usluge')
       .update({
         is_premium: false,
@@ -60,8 +67,8 @@ async function obradiIstekPremiuma(request: Request) {
       return NextResponse.json({ error: updateErr.message }, { status: 500 });
     }
 
-    const { error: eventsErr } = await supabase.from('premium_events').insert(
-      userIds.map((userId) => ({
+    const { error: eventsErr } = await db.from('premium_events').insert(
+      userIds.map((userId: string) => ({
         user_id: userId,
         actor_user_id: null,
         event_type: 'premium_expired',

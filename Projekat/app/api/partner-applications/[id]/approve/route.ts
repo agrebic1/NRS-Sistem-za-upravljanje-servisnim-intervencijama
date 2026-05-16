@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createAdminClient }      from '@/lib/supabase/admin';
-import { createClient as createServerClient } from '@/lib/supabase/server';
+import { createClient } from '@/lib/supabase/server';
 import { sendEmail, kreirajEmailOdobrenja }   from '@/lib/email/sendEmail';
 
 export const dynamic = 'force-dynamic';
@@ -16,17 +16,17 @@ export async function POST(
   { params }: { params: { id: string } }
 ) {
   try {
-    const supabaseSesija = createServerClient();
-    const { data: { user } } = await supabaseSesija.auth.getUser();
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
       return NextResponse.json({ error: 'Niste prijavljeni.' }, { status: 401 });
     }
 
-    const supabase = createAdminClient();
+    const db = supabase as any;
 
     // Provjeri admin pristup
-    const { data: uposlenik } = await supabase
+    const { data: uposlenik } = await db
       .from('uposlenici')
       .select('uloga(naziv)')
       .eq('id_uposlenika', user.id)
@@ -38,7 +38,7 @@ export async function POST(
     }
 
     // Dohvati aplikaciju
-    const { data: aplikacija, error: greskaAplikacije } = await supabase
+    const { data: aplikacija, error: greskaAplikacije } = await db
       .from('partner_applications')
       .select('*')
       .eq('id', params.id)
@@ -59,9 +59,19 @@ export async function POST(
     const ulogaMetadata =
       aplikacija.service_type === 'serviser' ? 'Serviser' : 'Dispečer';
 
-    // Kreiraj auth korisnika
+    // Kreiraj auth korisnika — zahtijeva service role key
+    let adminClient: ReturnType<typeof createAdminClient>;
+    try {
+      adminClient = createAdminClient();
+    } catch {
+      return NextResponse.json(
+        { error: 'Odobrenje zahtijeva SUPABASE_SERVICE_ROLE_KEY. Dodajte ovu env varijablu u Vercel podešavanja.' },
+        { status: 503 }
+      );
+    }
+
     const { data: authKorisnik, error: greskaKreiranja } =
-      await supabase.auth.admin.createUser({
+      await adminClient.auth.admin.createUser({
         email:         aplikacija.email,
         password:      privremenalozinka,
         email_confirm: true,
@@ -80,13 +90,13 @@ export async function POST(
     }
 
     // Postavi is_verified = true na novom uposleniku
-    await supabase
+    await db
       .from('uposlenici')
       .update({ is_verified: true })
       .eq('id_uposlenika', authKorisnik.user.id);
 
-    // Ažuriraj status aplikacije na bosanski
-    await supabase
+    // Ažuriraj status aplikacije
+    await db
       .from('partner_applications')
       .update({ status: 'odobreno' })
       .eq('id', params.id);
@@ -107,7 +117,6 @@ export async function POST(
     });
 
     if (!emailRezultat.success) {
-      // Ne failamo cijeli request ako email ne proradi — nalog je već kreiran
       console.warn('[approve] Email nije poslan:', emailRezultat.greska);
     }
 

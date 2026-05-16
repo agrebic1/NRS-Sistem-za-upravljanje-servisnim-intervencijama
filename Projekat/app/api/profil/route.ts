@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createAdminClient } from '@/lib/supabase/admin';
-import { createClient as createServerClient } from '@/lib/supabase/server';
+import { createClient } from '@/lib/supabase/server';
 import { profilUpdateSchema } from '@/lib/validations/servisirane';
 
 export const dynamic = 'force-dynamic';
@@ -9,19 +8,18 @@ type PremiumStatus = 'inactive' | 'pending_payment' | 'active' | 'expired' | 'ca
 
 export async function GET() {
   try {
-    const supabaseSesija = createServerClient();
+    const supabase = createClient();
     const {
       data: { user },
-    } = await supabaseSesija.auth.getUser();
+    } = await supabase.auth.getUser();
 
     if (!user) {
       return NextResponse.json({ error: 'Niste prijavljeni.' }, { status: 401 });
     }
 
-    const supabase = createAdminClient();
+    const db = supabase as any;
 
-    // Dohvati podatke iz osoba tabele
-    const { data: osoba, error: greskaOsoba } = await supabase
+    const { data: osoba, error: greskaOsoba } = await db
       .from('osoba')
       .select('ime, prezime, broj_telefona, adresa, email')
       .eq('id_osobe', user.id)
@@ -31,11 +29,10 @@ export async function GET() {
       return NextResponse.json({ error: greskaOsoba.message }, { status: 500 });
     }
 
-    // Provjeri uloge
     const uloge: string[] = [];
     let isVerified = false;
 
-    let { data: korisnikUsluge, error: korisnikUslugeErr } = await supabase
+    let { data: korisnikUsluge, error: korisnikUslugeErr } = await db
       .from('korisnik_usluge')
       .select(
         'id_korisnika_usluge, is_premium, premium_status, premium_started_at, premium_expires_at, premium_plan, premium_cancelled_at, premium_cancel_reason'
@@ -46,32 +43,32 @@ export async function GET() {
       korisnikUslugeErr?.message?.includes("'premium_status' column") ||
       korisnikUslugeErr?.message?.includes('premium_cancelled_at')
     ) {
-      const fallback = await supabase
+      const fallback = await db
         .from('korisnik_usluge')
         .select(
           'id_korisnika_usluge, is_premium, premium_status, premium_started_at, premium_expires_at, premium_plan'
         )
         .eq('id_korisnika_usluge', user.id)
         .maybeSingle();
-      korisnikUsluge = fallback.data as typeof korisnikUsluge;
+      korisnikUsluge = fallback.data;
       korisnikUslugeErr = fallback.error;
     }
     if (korisnikUslugeErr?.message?.includes("'premium_status' column")) {
-      const fallback = await supabase
+      const fallback = await db
         .from('korisnik_usluge')
         .select('id_korisnika_usluge, is_premium')
         .eq('id_korisnika_usluge', user.id)
         .maybeSingle();
-      korisnikUsluge = fallback.data as typeof korisnikUsluge;
+      korisnikUsluge = fallback.data;
       korisnikUslugeErr = fallback.error;
     }
     if (korisnikUslugeErr?.message?.includes("'is_premium' column")) {
-      const fallback = await supabase
+      const fallback = await db
         .from('korisnik_usluge')
         .select('id_korisnika_usluge')
         .eq('id_korisnika_usluge', user.id)
         .maybeSingle();
-      korisnikUsluge = fallback.data as typeof korisnikUsluge;
+      korisnikUsluge = fallback.data;
       korisnikUslugeErr = fallback.error;
     }
     if (korisnikUslugeErr) {
@@ -84,7 +81,7 @@ export async function GET() {
 
     if (korisnikUsluge) uloge.push('korisnik');
 
-    const { data: uposlenik } = await supabase
+    const { data: uposlenik } = await db
       .from('uposlenici')
       .select('id_uloge, is_verified, uloga:uloga(naziv)')
       .eq('id_uposlenika', user.id)
@@ -135,10 +132,10 @@ export async function GET() {
 
 export async function PATCH(request: Request) {
   try {
-    const supabaseSesija = createServerClient();
+    const supabase = createClient();
     const {
       data: { user },
-    } = await supabaseSesija.auth.getUser();
+    } = await supabase.auth.getUser();
 
     if (!user) {
       return NextResponse.json({ error: 'Niste prijavljeni.' }, { status: 401 });
@@ -154,8 +151,8 @@ export async function PATCH(request: Request) {
       );
     }
 
-    const supabase = createAdminClient();
-    const { error } = await supabase
+    const db = supabase as any;
+    const { error } = await db
       .from('osoba')
       .update(rezultat.data)
       .eq('id_osobe', user.id);

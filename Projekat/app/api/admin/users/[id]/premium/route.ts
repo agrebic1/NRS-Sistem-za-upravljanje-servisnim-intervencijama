@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { createAdminClient } from '@/lib/supabase/admin';
-import { createClient as createServerClient } from '@/lib/supabase/server';
+import { createClient } from '@/lib/supabase/server';
 import { izracunajIstek, safeInsertPremiumEvent } from '@/lib/premium/lifecycle';
 
 export const dynamic = 'force-dynamic';
@@ -11,8 +10,8 @@ function procitajNazivUloge(uloga: { naziv?: string | null } | { naziv?: string 
   return zapis?.naziv ?? '';
 }
 
-async function jeAdminKorisnik(supabase: ReturnType<typeof createAdminClient>, idKorisnika: string): Promise<boolean> {
-  const { data: uposlenik, error } = await supabase
+async function jeAdminKorisnik(db: any, idKorisnika: string): Promise<boolean> {
+  const { data: uposlenik, error } = await db
     .from('uposlenici')
     .select('uloga:uloga(naziv)')
     .eq('id_uposlenika', idKorisnika)
@@ -34,14 +33,14 @@ const actionBodySchema = z.object({
 type RouteParams = { id: string } | Promise<{ id: string }>;
 
 async function upsertKorisnikUsluge(
-  supabase: ReturnType<typeof createAdminClient>,
+  db: any,
   ciljId: string,
   patch: Record<string, unknown>
 ): Promise<{ ok: true } | { ok: false; message: string; status: number }> {
-  const { error } = await supabase.from('korisnik_usluge').update(patch).eq('id_korisnika_usluge', ciljId);
+  const { error } = await db.from('korisnik_usluge').update(patch).eq('id_korisnika_usluge', ciljId);
   if (error?.message?.includes('premium_cancelled_at')) {
     const { premium_cancelled_at: _a, premium_cancel_reason: _b, ...rest } = patch;
-    const { error: fb } = await supabase.from('korisnik_usluge').update(rest).eq('id_korisnika_usluge', ciljId);
+    const { error: fb } = await db.from('korisnik_usluge').update(rest).eq('id_korisnika_usluge', ciljId);
     if (fb) return { ok: false, message: fb.message, status: 500 };
     return { ok: true };
   }
@@ -54,23 +53,23 @@ export async function PATCH(request: Request, { params }: { params: RouteParams 
     const resolved = await params;
     const ciljId = resolved.id;
 
-    const supabaseSesija = createServerClient();
+    const supabase = createClient();
     const {
       data: { user },
-    } = await supabaseSesija.auth.getUser();
+    } = await supabase.auth.getUser();
     if (!user) {
       return NextResponse.json({ error: 'Niste prijavljeni.' }, { status: 401 });
     }
 
-    const supabase = createAdminClient();
-    const jeAdmin = await jeAdminKorisnik(supabase, user.id);
+    const db = supabase as any;
+    const jeAdmin = await jeAdminKorisnik(db, user.id);
     if (!jeAdmin) {
       return NextResponse.json({ error: 'Nemate dozvolu za ovu akciju.' }, { status: 403 });
     }
 
     const raw = await request.json();
 
-    const { data: postojeci, error: checkErr } = await supabase
+    const { data: postojeci, error: checkErr } = await db
       .from('korisnik_usluge')
       .select('id_korisnika_usluge')
       .eq('id_korisnika_usluge', ciljId)
@@ -197,10 +196,10 @@ export async function PATCH(request: Request, { params }: { params: RouteParams 
           return NextResponse.json({ error: 'Nepoznata akcija.' }, { status: 400 });
       }
 
-      const up = await upsertKorisnikUsluge(supabase, ciljId, patch);
+      const up = await upsertKorisnikUsluge(db, ciljId, patch);
       if (!up.ok) return NextResponse.json({ error: up.message }, { status: up.status });
 
-      const ev = await safeInsertPremiumEvent(supabase, {
+      const ev = await safeInsertPremiumEvent(db, {
         user_id: ciljId,
         actor_user_id: user.id,
         event_type: eventType,
@@ -232,7 +231,7 @@ export async function PATCH(request: Request, { params }: { params: RouteParams 
       premium_cancel_reason: null,
     };
 
-    const up = await upsertKorisnikUsluge(supabase, ciljId, patch);
+    const up = await upsertKorisnikUsluge(db, ciljId, patch);
     if (up.ok === false) {
       if (up.message?.includes("'is_premium' column")) {
         return NextResponse.json(
@@ -243,7 +242,7 @@ export async function PATCH(request: Request, { params }: { params: RouteParams 
       return NextResponse.json({ error: up.message }, { status: up.status });
     }
 
-    const ev = await safeInsertPremiumEvent(supabase, {
+    const ev = await safeInsertPremiumEvent(db, {
       user_id: ciljId,
       actor_user_id: user.id,
       event_type: isPremium ? 'premium_activated_admin' : 'premium_deactivated_admin',

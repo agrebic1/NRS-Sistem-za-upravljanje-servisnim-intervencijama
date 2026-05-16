@@ -1,23 +1,21 @@
 import { NextResponse } from 'next/server';
-import { createAdminClient } from '@/lib/supabase/admin';
-import { createClient as createServerClient } from '@/lib/supabase/server';
+import { createClient } from '@/lib/supabase/server';
 import { premiumRenewSimulated } from '@/lib/premium/lifecycle';
 
 export const dynamic = 'force-dynamic';
 
 export async function POST() {
   try {
-    const supabaseSesija = createServerClient();
+    const supabase = createClient();
     const {
       data: { user },
-    } = await supabaseSesija.auth.getUser();
+    } = await supabase.auth.getUser();
 
     if (!user) {
       return NextResponse.json({ error: 'Niste prijavljeni.' }, { status: 401 });
     }
 
-    const supabase = createAdminClient();
-    const rez = await premiumRenewSimulated(supabase, user.id, user.id);
+    const rez = await premiumRenewSimulated(supabase as any, user.id, user.id);
     if (!rez.ok) {
       return NextResponse.json({ error: rez.message }, { status: rez.status });
     }

@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createAdminClient } from '@/lib/supabase/admin';
-import { createClient as createServerClient } from '@/lib/supabase/server';
+import { createClient } from '@/lib/supabase/server';
 import { partnerApplicationSchema } from '@/lib/validations/servisirane';
 
 export const dynamic = 'force-dynamic';
@@ -11,11 +10,8 @@ function getUlogaNaziv(uloga: unknown): string {
   return (uloga as { naziv?: string })?.naziv ?? '';
 }
 
-async function provjeriAdminPristup(
-  supabase: ReturnType<typeof createAdminClient>,
-  idKorisnika: string
-) {
-  const { data } = await supabase
+async function provjeriAdminPristup(db: any, idKorisnika: string) {
+  const { data } = await db
     .from('uposlenici')
     .select('uloga(naziv)')
     .eq('id_uposlenika', idKorisnika)
@@ -27,23 +23,23 @@ async function provjeriAdminPristup(
 
 export async function GET() {
   try {
-    const supabaseSesija = createServerClient();
+    const supabase = createClient();
     const {
       data: { user },
-    } = await supabaseSesija.auth.getUser();
+    } = await supabase.auth.getUser();
 
     if (!user) {
       return NextResponse.json({ error: 'Niste prijavljeni.' }, { status: 401 });
     }
 
-    const supabase = createAdminClient();
-    const jeAdmin  = await provjeriAdminPristup(supabase, user.id);
+    const db = supabase as any;
+    const jeAdmin = await provjeriAdminPristup(db, user.id);
 
     if (!jeAdmin) {
       return NextResponse.json({ error: 'Nemate dozvolu za pregled aplikacija.' }, { status: 403 });
     }
 
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from('partner_applications')
       .select('*')
       .order('created_at', { ascending: false });
@@ -68,8 +64,9 @@ export async function POST(request: Request) {
       );
     }
 
-    const supabase = createAdminClient();
-    const { data, error } = await supabase
+    const supabase = createClient();
+    const db = supabase as any;
+    const { data, error } = await db
       .from('partner_applications')
       .insert({ ...rezultat.data, status: 'na_cekanju' })
       .select()
