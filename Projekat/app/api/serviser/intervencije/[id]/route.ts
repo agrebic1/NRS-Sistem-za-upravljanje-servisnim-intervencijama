@@ -7,6 +7,10 @@ import {
   serviserSmijeMijenjatiStatus,
 } from '@/lib/servisirane/serviserPristup';
 import { odbijZadatakSchema } from '@/lib/validations/servisirane';
+import {
+  notifPrihvatanjeZadatka,
+  notifOdbijanjeZadatka,
+} from '@/lib/servisirane/notifikacijeHelper';
 
 export const dynamic = 'force-dynamic';
 
@@ -60,7 +64,7 @@ export async function GET(
 
     const { data: aktivnosti } = await db
       .from('intervention_activities')
-      .select('*, autor:osoba!autor_id(ime, prezime)')
+      .select('*, autor:osoba!autor_id(ime, prezime, uloga)')
       .eq('zahtjev_id', zahtjevId)
       .order('created_at', { ascending: true });
 
@@ -82,6 +86,7 @@ const akcijaPatchSchema = z.discriminatedUnion('action', [
   z.object({ action: z.literal('prihvati') }),
   z.object({ action: z.literal('pocni') }),
   z.object({ action: z.literal('odbij'), razlog: odbijZadatakSchema.shape.razlog }),
+  z.object({ action: z.literal('napomena'), sadrzaj: z.string().min(1).max(2000) }),
 ]);
 
 export async function PATCH(
@@ -126,6 +131,34 @@ export async function PATCH(
         zahtjev_id: zahtjevId, autor_id: user.id, tip: 'status_promjena',
         sadrzaj: 'Serviser prihvatio zadatak.', metadata: { iz: trenutniStatus, u: 'u_radu' },
       });
+
+      // Notifikacija dispečeru
+      const { data: zah } = await db
+        .from('service_requests')
+        .select('osoba!user_id(id_osobe)')
+        .eq('id', zahtjevId)
+        .single();
+      const { data: osoba } = await db
+        .from('osoba')
+        .select('ime, prezime')
+        .eq('id_osobe', user.id)
+        .maybeSingle();
+      const imeServisera = osoba ? `${osoba.ime} ${osoba.prezime}` : 'Serviser';
+
+      // Nađi dispečere koji prate ovu intervenciju (author of dodjela activity)
+      const { data: dodjelaActivity } = await db
+        .from('intervention_activities')
+        .select('autor_id')
+        .eq('zahtjev_id', zahtjevId)
+        .eq('tip', 'dodjela')
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (dodjelaActivity?.autor_id) {
+        await notifPrihvatanjeZadatka(db, dodjelaActivity.autor_id, zahtjevId, imeServisera);
+      }
+      void zah; // suppress unused variable
       return NextResponse.json({ success: true, novi_status: 'u_radu' });
     }
 
@@ -146,6 +179,19 @@ export async function PATCH(
       return NextResponse.json({ success: true, novi_status: 'u_izvrsenju' });
     }
 
+    // ── US-30: Napomena servisera ─────────────────────────────────────────────
+    if (podaci.action === 'napomena') {
+      const { error: insErr } = await db.from('intervention_activities').insert({
+        zahtjev_id: zahtjevId,
+        autor_id:   user.id,
+        tip:        'napomena',
+        sadrzaj:    podaci.sadrzaj.trim(),
+        metadata:   null,
+      });
+      if (insErr) return NextResponse.json({ error: insErr.message }, { status: 500 });
+      return NextResponse.json({ success: true });
+    }
+
     if (podaci.action === 'odbij') {
       if (trenutniStatus !== 'dodijeljeno') {
         return NextResponse.json(
@@ -162,6 +208,28 @@ export async function PATCH(
         zahtjev_id: zahtjevId, autor_id: user.id, tip: 'odbijanje',
         sadrzaj: `Serviser odbio zadatak: ${podaci.razlog}`, metadata: { iz: 'dodijeljeno', u: 'potvrdeno' },
       });
+
+      // Notifikacija dispečeru
+      const { data: osobaOdb } = await db
+        .from('osoba')
+        .select('ime, prezime')
+        .eq('id_osobe', user.id)
+        .maybeSingle();
+      const imeOdb = osobaOdb ? `${osobaOdb.ime} ${osobaOdb.prezime}` : 'Serviser';
+
+      const { data: dodjelaAkt } = await db
+        .from('intervention_activities')
+        .select('autor_id')
+        .eq('zahtjev_id', zahtjevId)
+        .eq('tip', 'dodjela')
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (dodjelaAkt?.autor_id) {
+        await notifOdbijanjeZadatka(db, dodjelaAkt.autor_id, zahtjevId, imeOdb, podaci.razlog);
+      }
+
       return NextResponse.json({ success: true, novi_status: 'potvrdeno' });
     }
 

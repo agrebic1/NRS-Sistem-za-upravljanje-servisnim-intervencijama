@@ -4,123 +4,305 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
-  ArrowLeft, MapPin, Phone, Calendar, Clock, ClipboardCheck,
-  CheckCircle2, Truck, UserX, AlertTriangle, FileText, History,
-  RefreshCw,
+  ArrowLeft, MapPin, Phone, Calendar, Clock,
+  ClipboardCheck, CheckCircle2, Truck, UserX,
+  FileText, History, RefreshCw, ChevronRight,
+  AlertTriangle, Radio, Navigation, Shield, User, Headphones, Users,
+  ClipboardList, Activity, Wrench,
 } from 'lucide-react';
 import { AppShell } from '@/components/layout/AppShell';
 import { Button } from '@/components/ui/Button';
 import { AlertMessage } from '@/components/ui/AlertMessage';
-import { StatusBadge } from '@/components/servisirane/ZahtjevKartica';
+import { MiniMapa } from '@/components/shared/MiniMapa';
+import { NapomeneThread } from '@/components/shared/NapomeneThread';
 import { AktivnostiTimeline } from '@/components/serviser/AktivnostiTimeline';
 import { EvidencijaRadaModal } from '@/components/serviser/EvidencijaRadaModal';
-import { IntervencijaProgressStepper } from '@/components/serviser/IntervencijaProgressStepper';
-import { MapPreview } from '@/components/serviser/MapPreview';
 import { IntervencijaChecklist } from '@/components/serviser/IntervencijaChecklist';
 import type { ServisniZahtjev, WorkEvidence, InterventionActivity } from '@/domain/types/servisirane';
 import { labelKategorije } from '@/lib/servisirane/kategorije';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function formDatumVrijeme(iso: string): string {
-  return new Date(iso).toLocaleString('bs-BA', {
-    day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit',
+function fmtDatum(iso: string): string {
+  return new Date(iso).toLocaleDateString('bs-BA', {
+    weekday: 'long', day: '2-digit', month: 'long', year: 'numeric',
   });
 }
-
+function fmtSat(iso: string): string {
+  return new Date(iso).toLocaleTimeString('bs-BA', { hour: '2-digit', minute: '2-digit' });
+}
+function fmtKratki(iso: string): string {
+  return new Date(iso).toLocaleDateString('bs-BA', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
 function trajanjeOznaka(min: number): string {
   if (min < 60) return `${min} min`;
-  const h = Math.floor(min / 60);
-  const m = min % 60;
+  const h = Math.floor(min / 60), m = min % 60;
   return m ? `${h}h ${m}min` : `${h}h`;
 }
-
-// ─── Akcije na osnovu statusa ─────────────────────────────────────────────────
-
-interface AkcijeProps {
-  status:     string;
-  zahtjevId:  number;
-  onRefresh:  () => void;
-  onEvidencija: () => void;
+function prioritetBoja(p: string | null): string {
+  switch ((p ?? '').toUpperCase()) {
+    case 'HITNO':    return '#DC2626';
+    case 'KRITIČNO': return '#991B1B';
+    case 'VISOKO':   return '#EA580C';
+    case 'SREDNJE':  return '#D97706';
+    default:         return 'var(--first-secondary)';
+  }
+}
+function jeKasni(z: IntervencijaDetalji): boolean {
+  if (!z.termin_planirani_pocetak) return false;
+  if (['zavrseno', 'otkazano', 'odbijeno'].includes(z.status)) return false;
+  return new Date(z.termin_planirani_pocetak) < new Date();
 }
 
-function AkcijeServiser({ status, zahtjevId, onRefresh, onEvidencija }: AkcijeProps) {
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+interface IntervencijaDetalji extends ServisniZahtjev {
+  podnosilac: { ime: string; prezime: string; broj_telefona: string | null } | null;
+}
+
+// ─── Real-time tracker ────────────────────────────────────────────────────────
+
+const TRACKER_KORACI = [
+  { kljuc: 'dodijeljeno', naziv: 'Dodijeljeno', Ikona: ClipboardList },
+  { kljuc: 'u_radu',      naziv: 'Na putu',     Ikona: Truck },
+  { kljuc: 'u_izvrsenju', naziv: 'Na terenu',   Ikona: MapPin },
+  { kljuc: 'zavrseno',    naziv: 'Završeno',    Ikona: CheckCircle2 },
+] as const;
+
+const REDOSLIJED = ['dodijeljeno', 'u_radu', 'u_izvrsenju', 'zavrseno'];
+
+function ServiserTracker({
+  status, aktivnosti, terminPocetak,
+}: {
+  status: string;
+  aktivnosti: InterventionActivity[];
+  terminPocetak?: string | null;
+}) {
+  const aktivniIdx = REDOSLIJED.indexOf(status);
+  const jeAktivna  = ['u_radu', 'u_izvrsenju'].includes(status);
+
+  function vrijemeKoraka(kljuc: string): string | null {
+    if (kljuc === 'dodijeljeno' && terminPocetak) return fmtSat(terminPocetak);
+    const a = aktivnosti.find(
+      (x) => (x.tip === 'status_promjena' || x.tip === 'dodjela') &&
+        typeof x.metadata === 'object' && x.metadata !== null &&
+        (x.metadata as Record<string, string>).u === kljuc
+    );
+    return a ? fmtSat(a.created_at) : null;
+  }
+
+  return (
+    <div className="rounded-2xl px-5 py-4"
+      style={{ backgroundColor: 'rgb(255 255 255/0.85)', border: '1px solid rgb(var(--first-quaternary-rgb)/0.28)' }}>
+      <div className="mb-4 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Activity className="h-4 w-4" style={{ color: 'var(--first-secondary)' }} />
+          <span className="text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--first-nonary)' }}>
+            Tok intervencije
+          </span>
+        </div>
+        {jeAktivna && (
+          <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-bold"
+            style={{ backgroundColor: 'rgb(var(--first-secondary-rgb)/0.1)', color: 'var(--first-secondary)', border: '1px solid rgb(var(--first-secondary-rgb)/0.2)' }}>
+            <Radio className="h-3 w-3 animate-pulse" />LIVE
+          </span>
+        )}
+      </div>
+
+      <div className="flex items-start">
+        {TRACKER_KORACI.map((korak, i) => {
+          const done    = aktivniIdx > i;
+          const active  = aktivniIdx === i;
+          const future  = aktivniIdx < i;
+          const last    = i === TRACKER_KORACI.length - 1;
+          const Ikona   = korak.Ikona;
+          const sat     = vrijemeKoraka(korak.kljuc);
+
+          return (
+            <div key={korak.kljuc} className="flex flex-1 flex-col items-center">
+              <div className="flex w-full items-center">
+                {i > 0 && (
+                  <div className="h-0.5 flex-1 transition-colors duration-500"
+                    style={{ backgroundColor: done || active ? 'var(--first-secondary)' : 'rgb(var(--first-quaternary-rgb)/0.28)' }} />
+                )}
+                <div className="relative flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full transition-all duration-300"
+                  style={{
+                    backgroundColor: done ? 'var(--first-secondary)' : active ? 'var(--first-primary)' : 'rgb(var(--first-quaternary-rgb)/0.35)',
+                    boxShadow: active ? '0 0 0 4px rgb(var(--first-primary-rgb)/0.18)' : 'none',
+                  }}>
+                  {done
+                    ? <CheckCircle2 className="h-4.5 w-4.5 text-white" strokeWidth={2.5} style={{ width: '1.125rem', height: '1.125rem' }} />
+                    : <Ikona className="h-4 w-4" style={{ color: done || active ? '#fff' : 'var(--first-nonary)' }} />}
+                  {active && (
+                    <span className="absolute inset-0 rounded-full animate-ping"
+                      style={{ backgroundColor: 'var(--first-primary)', opacity: 0.15 }} />
+                  )}
+                </div>
+                {!last && (
+                  <div className="h-0.5 flex-1 transition-colors duration-500"
+                    style={{ backgroundColor: done ? 'var(--first-secondary)' : 'rgb(var(--first-quaternary-rgb)/0.28)' }} />
+                )}
+              </div>
+              <div className="mt-2 flex flex-col items-center gap-0.5 text-center px-1">
+                <span className="text-[11px] font-bold leading-tight"
+                  style={{
+                    color: active ? 'var(--first-primary)' : done ? 'var(--first-secondary)' : 'var(--first-nonary)',
+                    opacity: future ? 0.5 : 1,
+                  }}>
+                  {korak.naziv}
+                </span>
+                {sat && (
+                  <span className="text-[10px] tabular-nums" style={{ color: 'var(--first-nonary)' }}>{sat}</span>
+                )}
+                {active && (
+                  <span className="mt-0.5 rounded-full px-1.5 py-px text-[9px] font-bold"
+                    style={{ backgroundColor: 'rgb(var(--first-primary-rgb)/0.1)', color: 'var(--first-primary)' }}>
+                    Trenutno
+                  </span>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ─── Termin vizual ────────────────────────────────────────────────────────────
+
+function TerminVizual({ zahtjev }: { zahtjev: IntervencijaDetalji }) {
+  const kasni = jeKasni(zahtjev);
+  if (!zahtjev.termin_planirani_pocetak) return null;
+
+  return (
+    <div className="rounded-2xl p-4"
+      style={{
+        backgroundColor: kasni ? 'rgba(220,38,38,0.03)' : 'rgb(255 255 255/0.85)',
+        border: kasni ? '1px solid rgba(220,38,38,0.2)' : '1px solid rgb(var(--first-quaternary-rgb)/0.28)',
+      }}>
+      <div className="mb-3 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Calendar className="h-3.5 w-3.5" style={{ color: 'var(--first-secondary)' }} />
+          <p className="text-[10px] font-bold uppercase tracking-wide" style={{ color: 'var(--first-nonary)' }}>Termin</p>
+        </div>
+        {kasni && (
+          <span className="flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold"
+            style={{ backgroundColor: 'rgba(220,38,38,0.1)', color: '#DC2626', border: '1px solid rgba(220,38,38,0.2)' }}>
+            <AlertTriangle className="h-2.5 w-2.5" />Kasni
+          </span>
+        )}
+      </div>
+
+      {/* Datum */}
+      <p className="text-sm font-bold capitalize mb-2" style={{ color: 'var(--first-octonary)' }}>
+        {fmtDatum(zahtjev.termin_planirani_pocetak)}
+      </p>
+
+      {/* Timeline bar */}
+      <div className="flex items-center gap-2">
+        <span className="text-sm font-black tabular-nums" style={{ color: 'var(--first-primary)' }}>
+          {fmtSat(zahtjev.termin_planirani_pocetak)}
+        </span>
+        <div className="relative flex-1 flex items-center">
+          <div className="h-1.5 w-full overflow-hidden rounded-full"
+            style={{ backgroundColor: 'rgb(var(--first-quaternary-rgb)/0.25)' }}>
+            <div className="h-full rounded-full"
+              style={{
+                width: kasni ? '100%' : '60%',
+                backgroundColor: kasni ? '#DC2626' : 'var(--first-secondary)',
+              }} />
+          </div>
+        </div>
+        {zahtjev.termin_planirani_kraj && (
+          <span className="text-sm font-black tabular-nums" style={{ color: 'var(--first-primary)' }}>
+            {fmtSat(zahtjev.termin_planirani_kraj)}
+          </span>
+        )}
+      </div>
+
+      {zahtjev.procijenjeno_trajanje && (
+        <div className="mt-2 flex items-center gap-1.5">
+          <Clock className="h-3 w-3" style={{ color: 'var(--first-nonary)' }} />
+          <span className="text-xs" style={{ color: 'var(--first-nonary)' }}>
+            {trajanjeOznaka(zahtjev.procijenjeno_trajanje)} procijenjeno
+          </span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Akcije servisera ─────────────────────────────────────────────────────────
+
+function AkcijeServiser({
+  status, zahtjevId, onRefresh, onEvidencija,
+}: {
+  status: string;
+  zahtjevId: number;
+  onRefresh: () => void;
+  onEvidencija: () => void;
+}) {
   const [showOdbij, setShowOdbij] = useState(false);
   const [razlog,    setRazlog]    = useState('');
   const [jeSlanje,  setJeSlanje]  = useState(false);
   const [greska,    setGreska]    = useState<string | null>(null);
 
-  async function promijeniStatus(action: 'prihvati' | 'pocni', razlogOdbijanja?: string) {
-    setJeSlanje(true);
-    setGreska(null);
+  async function akcija(action: 'prihvati' | 'pocni', razlogOdbijanja?: string) {
+    setJeSlanje(true); setGreska(null);
     try {
       const body: Record<string, string> = { action };
       if (razlogOdbijanja) body.razlog = razlogOdbijanja;
       const r = await fetch(`/api/serviser/intervencije/${zahtjevId}`, {
-        method:  'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify(body),
+        method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),
       });
       const d = await r.json();
       if (!r.ok) throw new Error(d.error ?? 'Greška.');
       onRefresh();
-    } catch (err) {
-      setGreska(err instanceof Error ? err.message : 'Greška.');
-    } finally {
-      setJeSlanje(false);
-    }
+    } catch (e) {
+      setGreska(e instanceof Error ? e.message : 'Greška.');
+    } finally { setJeSlanje(false); }
   }
 
   async function odbijSaRazlogom() {
     if (razlog.trim().length < 10) { setGreska('Razlog mora imati najmanje 10 karaktera.'); return; }
-    setJeSlanje(true);
-    setGreska(null);
+    setJeSlanje(true); setGreska(null);
     try {
       const r = await fetch(`/api/serviser/intervencije/${zahtjevId}`, {
-        method:  'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ action: 'odbij', razlog: razlog.trim() }),
+        method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'odbij', razlog: razlog.trim() }),
       });
       const d = await r.json();
       if (!r.ok) throw new Error(d.error ?? 'Greška.');
       onRefresh();
-    } catch (err) {
-      setGreska(err instanceof Error ? err.message : 'Greška.');
-    } finally {
-      setJeSlanje(false);
-    }
-  }
-
-  if (greska) {
-    return (
-      <div className="flex flex-col gap-3">
-        <AlertMessage variant="error" message={greska} />
-        <Button variant="ghost" size="sm" onClick={() => setGreska(null)}>Zatvori</Button>
-      </div>
-    );
+    } catch (e) {
+      setGreska(e instanceof Error ? e.message : 'Greška.');
+    } finally { setJeSlanje(false); }
   }
 
   if (status === 'dodijeljeno') {
     if (showOdbij) {
       return (
-        <div className="flex flex-col gap-3">
-          <p className="text-sm font-medium" style={{ color: 'var(--first-octonary)' }}>
-            Razlog odbijanja *
-          </p>
+        <div className="rounded-2xl p-5"
+          style={{ backgroundColor: 'rgba(220,38,38,0.03)', border: '1px solid rgba(220,38,38,0.18)' }}>
+          <div className="mb-3 flex items-center gap-2">
+            <UserX className="h-4 w-4" style={{ color: '#DC2626' }} />
+            <p className="text-sm font-bold" style={{ color: '#DC2626' }}>Odbijanje zadatka</p>
+          </div>
+          {greska && <p className="mb-2 text-xs font-medium" style={{ color: '#DC2626' }}>{greska}</p>}
           <textarea
             rows={3}
             value={razlog}
             onChange={(e) => setRazlog(e.target.value)}
             placeholder="Objasnite zašto odbijate ovaj zadatak (min. 10 karaktera)..."
-            className="w-full resize-none rounded-xl border px-4 py-2.5 text-sm focus:outline-none"
-            style={{ borderColor: 'rgb(var(--first-quaternary-rgb)/0.45)', color: 'var(--first-octonary)', backgroundColor: 'rgb(255 255 255 / 0.8)' }}
+            className="mb-3 w-full resize-none rounded-xl border px-4 py-2.5 text-sm focus:outline-none"
+            style={{ borderColor: 'rgba(220,38,38,0.3)', color: 'var(--first-octonary)', backgroundColor: 'rgb(255 255 255/0.9)' }}
           />
           <div className="flex gap-2">
             <Button variant="danger" size="md" onClick={odbijSaRazlogom} isLoading={jeSlanje} loadingText="Odbijanje...">
-              <UserX className="h-4 w-4" />
-              Potvrdi odbijanje
+              <UserX className="h-4 w-4" />Potvrdi odbijanje
             </Button>
-            <Button variant="ghost" size="md" onClick={() => setShowOdbij(false)} disabled={jeSlanje}>
+            <Button variant="ghost" size="md" onClick={() => { setShowOdbij(false); setGreska(null); }} disabled={jeSlanje}>
               Odustani
             </Button>
           </div>
@@ -128,90 +310,241 @@ function AkcijeServiser({ status, zahtjevId, onRefresh, onEvidencija }: AkcijePr
       );
     }
     return (
-      <div className="flex flex-wrap gap-3">
-        <Button size="md" onClick={() => promijeniStatus('prihvati')} isLoading={jeSlanje} loadingText="Prihvatanje...">
-          <CheckCircle2 className="h-4 w-4" />
-          Prihvati zadatak
-        </Button>
-        <Button variant="secondary" size="md" onClick={() => setShowOdbij(true)} disabled={jeSlanje}>
-          <UserX className="h-4 w-4" />
-          Odbij zadatak
-        </Button>
+      <div className="rounded-2xl p-5"
+        style={{ backgroundColor: 'rgba(217,119,6,0.04)', border: '1px solid rgba(217,119,6,0.2)' }}>
+        <div className="mb-4 flex items-center gap-2">
+          <AlertTriangle className="h-4 w-4" style={{ color: '#D97706' }} />
+          <p className="text-sm font-bold" style={{ color: '#D97706' }}>Čeka vaše prihvatanje</p>
+        </div>
+        {greska && <p className="mb-3 text-xs" style={{ color: '#DC2626' }}>{greska}</p>}
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <button
+            type="button"
+            onClick={() => akcija('prihvati')}
+            disabled={jeSlanje}
+            className="flex flex-1 items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold transition-all hover:opacity-90 disabled:opacity-60"
+            style={{ backgroundColor: 'var(--first-primary)', color: '#fff' }}>
+            <CheckCircle2 className="h-4 w-4" />
+            {jeSlanje ? 'Prihvatanje...' : 'Prihvati zadatak'}
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowOdbij(true)}
+            disabled={jeSlanje}
+            className="flex items-center justify-center gap-2 rounded-xl px-5 py-3.5 text-sm font-semibold transition-all hover:opacity-80 sm:flex-none"
+            style={{ backgroundColor: 'rgba(220,38,38,0.08)', color: '#DC2626', border: '1px solid rgba(220,38,38,0.2)' }}>
+            <UserX className="h-4 w-4" />Odbij
+          </button>
+        </div>
       </div>
     );
   }
 
   if (status === 'u_radu') {
     return (
-      <div className="flex flex-wrap gap-3">
-        <Button size="md" onClick={() => promijeniStatus('pocni')} isLoading={jeSlanje} loadingText="Ažuriranje...">
-          <Truck className="h-4 w-4" />
-          Počni intervenciju
-        </Button>
-        <Button variant="secondary" size="md" onClick={onEvidencija}>
-          <ClipboardCheck className="h-4 w-4" />
-          Evidentiraj rad
-        </Button>
+      <div className="rounded-2xl p-5"
+        style={{ backgroundColor: 'rgb(var(--first-secondary-rgb)/0.05)', border: '1px solid rgb(var(--first-secondary-rgb)/0.2)' }}>
+        <div className="mb-4 flex items-center gap-2">
+          <Truck className="h-4 w-4" style={{ color: 'var(--first-secondary)' }} />
+          <p className="text-sm font-bold" style={{ color: 'var(--first-secondary)' }}>Prihvaćeno — na putu ste</p>
+        </div>
+        {greska && <p className="mb-3 text-xs" style={{ color: '#DC2626' }}>{greska}</p>}
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <button
+            type="button"
+            onClick={() => akcija('pocni')}
+            disabled={jeSlanje}
+            className="flex flex-1 items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold transition-all hover:opacity-90 disabled:opacity-60"
+            style={{ backgroundColor: 'var(--first-primary)', color: '#fff' }}>
+            <MapPin className="h-4 w-4" />
+            {jeSlanje ? 'Ažuriranje...' : 'Stigao sam — počni intervenciju'}
+          </button>
+          <button
+            type="button"
+            onClick={onEvidencija}
+            className="flex items-center justify-center gap-2 rounded-xl px-5 py-3.5 text-sm font-semibold transition-all hover:opacity-80 sm:flex-none"
+            style={{ backgroundColor: 'rgb(var(--first-secondary-rgb)/0.1)', color: 'var(--first-secondary)', border: '1px solid rgb(var(--first-secondary-rgb)/0.2)' }}>
+            <ClipboardCheck className="h-4 w-4" />Evidentiraj
+          </button>
+        </div>
       </div>
     );
   }
 
   if (status === 'u_izvrsenju') {
     return (
-      <Button size="md" onClick={onEvidencija}>
-        <ClipboardCheck className="h-4 w-4" />
+      <button
+        type="button"
+        onClick={onEvidencija}
+        className="flex w-full items-center justify-center gap-2 rounded-2xl py-4 text-sm font-bold transition-all hover:opacity-90"
+        style={{ backgroundColor: 'var(--first-primary)', color: '#fff' }}>
+        <ClipboardCheck className="h-5 w-5" />
         Evidentiraj rad
-      </Button>
+      </button>
     );
   }
 
   return null;
 }
 
-// ─── Stranica ─────────────────────────────────────────────────────────────────
+// ─── Sidebar ──────────────────────────────────────────────────────────────────
 
-interface IntervencijaDetalji extends ServisniZahtjev {
-  podnosilac: { ime: string; prezime: string; broj_telefona: string | null } | null;
+function SidebarPanel({ zahtjev, tim }: {
+  zahtjev: IntervencijaDetalji;
+  tim: Array<{ serviser_id: string; serviser?: { ime: string; prezime: string } | null }>;
+}) {
+  const kasni    = jeKasni(zahtjev);
+  const mapsUrl  = zahtjev.latitude && zahtjev.longitude
+    ? `https://www.google.com/maps/search/?api=1&query=${zahtjev.latitude},${zahtjev.longitude}`
+    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(zahtjev.address ?? '')}`;
+  const tel      = zahtjev.podnosilac?.broj_telefona ?? zahtjev.contact_phone;
+
+  const kartica = {
+    backgroundColor: 'rgb(255 255 255/0.85)',
+    border: '1px solid rgb(var(--first-quaternary-rgb)/0.28)',
+  };
+
+  return (
+    <div className="flex flex-col gap-4 lg:w-80 xl:w-88 flex-shrink-0 lg:sticky lg:top-4">
+      {/* Mapa */}
+      <MiniMapa
+        adresa={zahtjev.address ?? ''}
+        lat={zahtjev.latitude}
+        lng={zahtjev.longitude}
+        visina={180}
+        prikaziFooter
+        kartica
+      />
+
+      {/* Termin */}
+      <TerminVizual zahtjev={zahtjev} />
+
+      {/* Korisnik */}
+      {zahtjev.podnosilac && (
+        <div className="rounded-2xl p-4" style={kartica}>
+          <p className="mb-3 text-[10px] font-bold uppercase tracking-wide" style={{ color: 'var(--first-nonary)' }}>Podnosilac</p>
+          <div className="flex items-center gap-3 mb-3">
+            <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl"
+              style={{ backgroundColor: 'rgb(var(--first-quinary-rgb)/0.5)' }}>
+              <User className="h-4 w-4" style={{ color: 'var(--first-nonary)' }} />
+            </div>
+            <div>
+              <p className="text-sm font-bold" style={{ color: 'var(--first-octonary)' }}>
+                {zahtjev.podnosilac.ime} {zahtjev.podnosilac.prezime}
+              </p>
+              {zahtjev.is_premium ? (
+                <div className="flex items-center gap-1">
+                  <Shield className="h-3 w-3" style={{ color: '#DC2626' }} />
+                  <span className="text-[11px] font-bold" style={{ color: '#DC2626' }}>Premium korisnik</span>
+                </div>
+              ) : (
+                <p className="text-[11px]" style={{ color: 'var(--first-nonary)' }}>Korisnik</p>
+              )}
+            </div>
+          </div>
+          {tel && (
+            <a href={`tel:${tel}`}
+              className="flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all hover:opacity-80"
+              style={{ backgroundColor: 'rgb(var(--first-secondary-rgb)/0.1)', color: 'var(--first-secondary)', border: '1px solid rgb(var(--first-secondary-rgb)/0.2)' }}>
+              <Phone className="h-4 w-4" />{tel}
+            </a>
+          )}
+        </div>
+      )}
+
+      {/* Tim — pomoćni serviseri */}
+      {tim.length > 0 && (
+        <div className="rounded-2xl p-4" style={kartica}>
+          <div className="mb-3 flex items-center gap-2">
+            <Users className="h-3.5 w-3.5" style={{ color: 'var(--first-secondary)' }} />
+            <p className="text-[10px] font-bold uppercase tracking-wide" style={{ color: 'var(--first-nonary)' }}>
+              Pomoćni serviseri ({tim.length})
+            </p>
+          </div>
+          <div className="flex flex-col gap-2">
+            {tim.map((c) => (
+              <div key={c.serviser_id} className="flex items-center gap-2">
+                <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg"
+                  style={{ backgroundColor: 'rgb(var(--first-secondary-rgb)/0.1)' }}>
+                  <Wrench className="h-3.5 w-3.5" style={{ color: 'var(--first-secondary)' }} />
+                </div>
+                <p className="text-sm font-medium" style={{ color: 'var(--first-octonary)' }}>
+                  {c.serviser ? `${c.serviser.ime} ${c.serviser.prezime}` : 'Serviser'}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Brze akcije */}
+      <div className="rounded-2xl p-4" style={kartica}>
+        <p className="mb-3 text-[10px] font-bold uppercase tracking-wide" style={{ color: 'var(--first-nonary)' }}>Brze akcije</p>
+        <div className="flex flex-col gap-2">
+          <a href={mapsUrl} target="_blank" rel="noopener noreferrer"
+            className="flex w-full items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all hover:opacity-80"
+            style={{ backgroundColor: 'var(--first-primary)', color: '#fff' }}>
+            <Navigation className="h-4 w-4" />Navigiraj do lokacije
+          </a>
+          {tel && (
+            <a href={`tel:${tel}`}
+              className="flex w-full items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all hover:opacity-80"
+              style={{ backgroundColor: 'rgb(var(--first-secondary-rgb)/0.08)', color: 'var(--first-secondary)', border: '1px solid rgb(var(--first-secondary-rgb)/0.2)' }}>
+              <Phone className="h-4 w-4" />Pozovi korisnika
+            </a>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 }
 
-export default function ServiserIntervencijaDetaljiPage() {
-  const { id }   = useParams<{ id: string }>();
-  const router   = useRouter();
+// ─── Stranica ─────────────────────────────────────────────────────────────────
 
-  const [zahtjev,     setZahtjev]     = useState<IntervencijaDetalji | null>(null);
-  const [evidencije,  setEvidencije]  = useState<WorkEvidence[]>([]);
-  const [aktivnosti,  setAktivnosti]  = useState<InterventionActivity[]>([]);
-  const [ucitava,     setUcitava]     = useState(true);
-  const [greska,      setGreska]      = useState<string | null>(null);
-  const [pokaziEvid,  setPokaziEvid]  = useState(false);
+export default function ServiserIntervencijaDetaljiPage() {
+  const { id } = useParams<{ id: string }>();
+
+  const [zahtjev,    setZahtjev]    = useState<IntervencijaDetalji | null>(null);
+  const [evidencije, setEvidencije] = useState<WorkEvidence[]>([]);
+  const [aktivnosti, setAktivnosti] = useState<InterventionActivity[]>([]);
+  const [tim,        setTim]        = useState<Array<{ serviser_id: string; serviser?: { ime: string; prezime: string } | null }>>([]);
+  const [ucitava,    setUcitava]    = useState(true);
+  const [greska,     setGreska]     = useState<string | null>(null);
+  const [pokaziEvid, setPokaziEvid] = useState(false);
 
   async function ucitaj() {
-    setUcitava(true);
-    setGreska(null);
+    setUcitava(true); setGreska(null);
     try {
-      const r = await fetch(`/api/serviser/intervencije/${id}`, { cache: 'no-store' });
-      const d = await r.json();
-      if (!r.ok) throw new Error(d.error ?? 'Zahtjev nije pronađen.');
-      setZahtjev(d.zahtjev);
-      setEvidencije(d.evidencije ?? []);
-      setAktivnosti(d.aktivnosti ?? []);
-    } catch (err) {
-      setGreska(err instanceof Error ? err.message : 'Greška pri učitavanju.');
-    } finally {
-      setUcitava(false);
-    }
+      const [intR, timR] = await Promise.all([
+        fetch(`/api/serviser/intervencije/${id}`, { cache: 'no-store' }),
+        fetch(`/api/dispecer/zahtjevi/${id}/tim`, { cache: 'no-store' }),
+      ]);
+      const intD = await intR.json();
+      if (!intR.ok) throw new Error(intD.error ?? 'Zahtjev nije pronađen.');
+      setZahtjev(intD.zahtjev);
+      setEvidencije(intD.evidencije ?? []);
+      setAktivnosti(intD.aktivnosti ?? []);
+      if (timR.ok) {
+        const timD = await timR.json();
+        setTim(timD.tim ?? []);
+      }
+    } catch (e) {
+      setGreska(e instanceof Error ? e.message : 'Greška pri učitavanju.');
+    } finally { setUcitava(false); }
   }
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { ucitaj(); }, [id]);
 
-  // ─── Loading ────────────────────────────────────────────────────────────────
-
   if (ucitava) {
     return (
       <AppShell uloga="serviser">
-        <div className="flex min-h-[40vh] items-center justify-center">
-          <p className="text-sm" style={{ color: 'var(--first-nonary)' }}>Učitavanje...</p>
+        <div className="flex min-h-[50vh] items-center justify-center">
+          <div className="flex flex-col items-center gap-3">
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-transparent"
+              style={{ borderTopColor: 'var(--first-secondary)' }} />
+            <p className="text-sm" style={{ color: 'var(--first-nonary)' }}>Učitavanje intervencije...</p>
+          </div>
         </div>
       </AppShell>
     );
@@ -223,7 +556,7 @@ export default function ServiserIntervencijaDetaljiPage() {
         <AlertMessage variant="error" message={greska ?? 'Intervencija nije pronađena.'} />
         <Link href="/serviser/zadaci">
           <Button variant="secondary" size="md" className="mt-4">
-            <ArrowLeft className="h-4 w-4" /> Nazad
+            <ArrowLeft className="h-4 w-4" />Nazad
           </Button>
         </Link>
       </AppShell>
@@ -231,227 +564,324 @@ export default function ServiserIntervencijaDetaljiPage() {
   }
 
   const kat    = labelKategorije(zahtjev);
-  const naslov = kat.podkategorija ? `${kat.glavna} — ${kat.podkategorija}` : kat.glavna;
+  const naslov = kat.podkategorija ? `${kat.podkategorija}` : kat.glavna;
+  const pboja  = prioritetBoja(zahtjev.final_priority);
+  const kasni  = jeKasni(zahtjev);
+  const jeAktivna = ['dodijeljeno', 'u_radu', 'u_izvrsenju'].includes(zahtjev.status);
 
-  const SEKCIJA_STYL = {
-    backgroundColor: 'rgb(var(--first-quinary-rgb) / 0.22)',
-    border:          '1px solid rgb(var(--first-quaternary-rgb) / 0.35)',
-  };
+  function statusLabel(s: string): string {
+    switch (s) {
+      case 'dodijeljeno':  return 'Dodijeljeno';
+      case 'u_radu':       return 'Na putu';
+      case 'u_izvrsenju':  return 'Na terenu';
+      case 'zavrseno':     return 'Završeno';
+      case 'otkazano':     return 'Otkazano';
+      case 'odbijeno':     return 'Odbijeno';
+      default:             return s;
+    }
+  }
+  function statusBoja(s: string): string {
+    switch (s) {
+      case 'dodijeljeno':  return 'var(--first-senary)';
+      case 'u_radu':       return 'var(--first-secondary)';
+      case 'u_izvrsenju':  return 'var(--first-secondary)';
+      case 'zavrseno':     return 'var(--first-nonary)';
+      default:             return 'var(--first-nonary)';
+    }
+  }
+  const sboja = statusBoja(zahtjev.status);
 
   return (
     <AppShell uloga="serviser">
-      {/* Zaglavlje */}
-      <div className="mb-6">
-        <Link
-          href="/serviser/zadaci"
-          className="mb-2 inline-flex items-center gap-1.5 text-sm transition-opacity hover:opacity-70"
-          style={{ color: 'var(--first-nonary)' }}
-        >
-          <ArrowLeft className="h-3.5 w-3.5" /> Zadaci
-        </Link>
-        <div className="flex flex-wrap items-start gap-3">
-          <div className="flex-1 min-w-0">
-            <h1 className="text-xl font-bold tracking-tight" style={{ color: 'var(--first-octonary)' }}>
-              {naslov}
-            </h1>
-            <div className="mt-2 flex flex-wrap gap-2">
-              <StatusBadge status={zahtjev.status} />
-              {zahtjev.final_priority && (
-                <span
-                  className="rounded-full px-2.5 py-0.5 text-xs font-semibold"
-                  style={{ backgroundColor: 'rgba(37,99,235,0.1)', color: '#2563EB', border: '1px solid rgba(37,99,235,0.25)' }}
-                >
-                  {zahtjev.final_priority}
-                </span>
-              )}
-              {zahtjev.is_premium && (
-                <span
-                  className="rounded-full px-2.5 py-0.5 text-xs font-semibold"
-                  style={{ backgroundColor: 'rgba(220,38,38,0.12)', color: '#B91C1C', border: '1px solid rgba(220,38,38,0.25)' }}
-                >
-                  Premium HITNO
-                </span>
-              )}
-            </div>
+      {/* ─── Breadcrumb ─────────────────────────────────────────────────────── */}
+      <div className="mb-4 flex items-center justify-between">
+        <div className="flex items-center gap-1.5 text-sm" style={{ color: 'var(--first-nonary)' }}>
+          <Link href="/serviser/zadaci"
+            className="flex items-center gap-1 rounded-lg px-2 py-1 transition-all hover:bg-black/[0.04]">
+            <ArrowLeft className="h-3.5 w-3.5" />Zadaci
+          </Link>
+          <ChevronRight className="h-3.5 w-3.5" />
+          <span className="font-semibold" style={{ color: 'var(--first-octonary)' }}>#{id}</span>
+        </div>
+        <button type="button" onClick={ucitaj}
+          className="flex h-8 w-8 items-center justify-center rounded-lg transition-all hover:bg-black/[0.05]">
+          <RefreshCw className="h-4 w-4" style={{ color: 'var(--first-nonary)' }} />
+        </button>
+      </div>
+
+      {/* ─── HERO KARTICA ───────────────────────────────────────────────────── */}
+      <div className="mb-5 overflow-hidden rounded-2xl"
+        style={{
+          backgroundColor: 'rgb(255 255 255/0.9)',
+          border: '1px solid rgb(var(--first-quaternary-rgb)/0.28)',
+          borderLeftWidth: '5px',
+          borderLeftColor: zahtjev.is_premium ? '#DC2626' : pboja,
+        }}>
+        <div className="px-5 py-4">
+          {/* Badges */}
+          <div className="mb-3 flex flex-wrap items-center gap-2">
+            <span className="rounded-md px-2 py-0.5 text-[11px] font-bold tabular-nums"
+              style={{ backgroundColor: 'rgb(var(--first-quaternary-rgb)/0.22)', color: 'var(--first-nonary)' }}>
+              #{zahtjev.id}
+            </span>
+            <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold"
+              style={{ backgroundColor: `${sboja}14`.replace('var(--first-secondary)', 'rgb(var(--first-secondary-rgb)').replace(')', '/0.08)'), color: sboja, border: `1.5px solid ${sboja}28`.replace('var(--first-secondary)', 'rgb(var(--first-secondary-rgb)/0.2)') }}>
+              <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: sboja }} />
+              {statusLabel(zahtjev.status)}
+            </span>
+            {zahtjev.final_priority && (
+              <span className="rounded-full px-2.5 py-1 text-xs font-bold"
+                style={{ backgroundColor: `${pboja}12`, color: pboja, border: `1px solid ${pboja}28` }}>
+                {zahtjev.final_priority}
+              </span>
+            )}
+            {zahtjev.is_premium && (
+              <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-bold"
+                style={{ backgroundColor: 'rgba(220,38,38,0.08)', color: '#DC2626', border: '1px solid rgba(220,38,38,0.2)' }}>
+                Premium
+              </span>
+            )}
+            {kasni && (
+              <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-bold"
+                style={{ backgroundColor: 'rgba(220,38,38,0.08)', color: '#DC2626', border: '1px solid rgba(220,38,38,0.2)' }}>
+                <AlertTriangle className="h-3 w-3" />Kasni
+              </span>
+            )}
           </div>
-          <Button variant="ghost" size="sm" onClick={ucitaj}>
-            <RefreshCw className="h-4 w-4" />
-          </Button>
+
+          {/* Naslov */}
+          <h1 className="text-xl font-black leading-snug mb-1" style={{ color: 'var(--first-octonary)' }}>
+            {naslov}
+          </h1>
+          {kat.podkategorija && (
+            <p className="text-sm mb-3" style={{ color: 'var(--first-nonary)' }}>{kat.glavna}</p>
+          )}
+
+          {/* Meta */}
+          <div className="flex flex-wrap gap-x-5 gap-y-1.5 text-sm" style={{ color: 'var(--first-nonary)' }}>
+            <div className="flex items-center gap-1.5">
+              <MapPin className="h-3.5 w-3.5 flex-shrink-0" />
+              <span className="line-clamp-1">{zahtjev.address}</span>
+            </div>
+            {zahtjev.termin_planirani_pocetak && (
+              <div className="flex items-center gap-1.5">
+                <Calendar className="h-3.5 w-3.5 flex-shrink-0" />
+                <span>{fmtKratki(zahtjev.termin_planirani_pocetak)} · {fmtSat(zahtjev.termin_planirani_pocetak)}</span>
+                {zahtjev.termin_planirani_kraj && (
+                  <span>– {fmtSat(zahtjev.termin_planirani_kraj)}</span>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Progress stepper */}
-      <div className="mb-6">
-        <IntervencijaProgressStepper status={zahtjev.status} />
+      {/* ─── Real-time tracker ──────────────────────────────────────────────── */}
+      <div className="mb-5">
+        <ServiserTracker
+          status={zahtjev.status}
+          aktivnosti={aktivnosti}
+          terminPocetak={zahtjev.termin_planirani_pocetak}
+        />
       </div>
 
-      <div className="flex flex-col gap-5">
+      {/* ─── Dva stupca ─────────────────────────────────────────────────────── */}
+      <div className="flex flex-col gap-5 lg:flex-row lg:items-start">
 
-        {/* Akcije */}
-        {['dodijeljeno', 'u_radu', 'u_izvrsenju'].includes(zahtjev.status) && (
-          <div
-            className="rounded-2xl p-5"
-            style={{
-              ...SEKCIJA_STYL,
-              borderColor: zahtjev.status === 'dodijeljeno' ? 'rgba(217,119,6,0.4)' : 'rgba(37,99,235,0.3)',
-              backgroundColor: zahtjev.status === 'dodijeljeno' ? 'rgba(217,119,6,0.04)' : 'rgba(37,99,235,0.03)',
-            }}
-          >
-            <p className="mb-3 text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--first-nonary)' }}>
-              {zahtjev.status === 'dodijeljeno'
-                ? 'Čeka vaše prihvatanje'
-                : zahtjev.status === 'u_radu'
-                ? 'Prihvaćeno — pokrenite intervenciju'
-                : 'Intervencija u toku — evidentirajte rad'}
-            </p>
+        {/* ── Lijevi stupac (glavni sadržaj) ──────────────────────────────── */}
+        <div className="min-w-0 flex-1 flex flex-col gap-4">
+
+          {/* Akcije */}
+          {jeAktivna && (
             <AkcijeServiser
               status={zahtjev.status}
               zahtjevId={zahtjev.id}
               onRefresh={ucitaj}
               onEvidencija={() => setPokaziEvid(true)}
             />
-          </div>
-        )}
+          )}
 
-        {/* Detalji */}
-        <div className="rounded-2xl p-5" style={SEKCIJA_STYL}>
-          <p className="mb-4 text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--first-nonary)' }}>
-            Detalji zahtjeva
-          </p>
-          <div className="flex flex-col gap-3">
-            <div className="flex items-start gap-3">
-              <FileText className="mt-0.5 h-4 w-4 flex-shrink-0" style={{ color: 'var(--first-nonary)' }} />
+          {/* Opis problema */}
+          <div className="rounded-2xl p-5"
+            style={{ backgroundColor: 'rgb(255 255 255/0.85)', border: '1px solid rgb(var(--first-quaternary-rgb)/0.28)' }}>
+            <div className="mb-3 flex items-center gap-2">
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg"
+                style={{ backgroundColor: 'rgb(var(--first-secondary-rgb)/0.1)' }}>
+                <FileText className="h-3.5 w-3.5" style={{ color: 'var(--first-secondary)' }} />
+              </div>
+              <p className="text-[10px] font-bold uppercase tracking-wide" style={{ color: 'var(--first-nonary)' }}>Opis problema</p>
+            </div>
+            <div className="rounded-xl border-l-4 px-4 py-3"
+              style={{ borderLeftColor: 'var(--first-secondary)', backgroundColor: 'rgb(var(--first-secondary-rgb)/0.04)' }}>
               <p className="text-sm leading-relaxed" style={{ color: 'var(--first-octonary)' }}>
                 {zahtjev.description}
               </p>
             </div>
-            <div className="flex items-start gap-3">
-              <MapPin className="mt-0.5 h-4 w-4 flex-shrink-0" style={{ color: 'var(--first-nonary)' }} />
-              <p className="text-sm" style={{ color: 'var(--first-octonary)' }}>{zahtjev.address}</p>
-            </div>
-            {zahtjev.podnosilac?.broj_telefona && (
-              <div className="flex items-center gap-3">
-                <Phone className="h-4 w-4 flex-shrink-0" style={{ color: 'var(--first-nonary)' }} />
-                <a
-                  href={`tel:${zahtjev.podnosilac.broj_telefona}`}
-                  className="text-sm font-medium transition-opacity hover:opacity-70"
-                  style={{ color: 'var(--first-secondary)' }}
-                >
-                  {zahtjev.podnosilac.broj_telefona}
-                </a>
+          </div>
+
+          {/* Napomene dispečera */}
+          {zahtjev.dispecer_napomene && (
+            <div className="rounded-2xl p-5"
+              style={{ backgroundColor: 'rgba(217,132,0,0.04)', border: '1px solid rgba(217,132,0,0.2)' }}>
+              <div className="mb-3 flex items-center gap-2">
+                <div className="flex h-7 w-7 items-center justify-center rounded-lg"
+                  style={{ backgroundColor: 'rgba(217,132,0,0.1)' }}>
+                  <Headphones className="h-3.5 w-3.5" style={{ color: 'var(--first-senary)' }} />
+                </div>
+                <p className="text-[10px] font-bold uppercase tracking-wide" style={{ color: 'var(--first-senary)' }}>
+                  Instrukcija dispečera
+                </p>
               </div>
+              <p className="text-sm leading-relaxed font-medium" style={{ color: 'var(--first-octonary)' }}>
+                {zahtjev.dispecer_napomene}
+              </p>
+            </div>
+          )}
+
+          {/* Komunikacija dispečer ↔ serviser */}
+          <NapomeneThread
+            aktivnosti={aktivnosti}
+            apiEndpoint={`/api/serviser/intervencije/${zahtjev.id}`}
+            mojaUloga="serviser"
+            onDodana={ucitaj}
+            disabled={!jeAktivna}
+          />
+
+          {/* Kontrolna lista */}
+          <div className="rounded-2xl p-5"
+            style={{ backgroundColor: 'rgb(255 255 255/0.85)', border: '1px solid rgb(var(--first-quaternary-rgb)/0.28)' }}>
+            <div className="mb-4 flex items-center gap-2">
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg"
+                style={{ backgroundColor: 'rgb(var(--first-secondary-rgb)/0.1)' }}>
+                <ClipboardCheck className="h-3.5 w-3.5" style={{ color: 'var(--first-secondary)' }} />
+              </div>
+              <p className="text-[10px] font-bold uppercase tracking-wide" style={{ color: 'var(--first-nonary)' }}>Kontrolna lista</p>
+            </div>
+            <IntervencijaChecklist status={zahtjev.status} />
+          </div>
+
+          {/* Evidencija rada */}
+          {evidencije.length > 0 && (
+            <div className="rounded-2xl p-5"
+              style={{ backgroundColor: 'rgb(255 255 255/0.85)', border: '1px solid rgb(var(--first-quaternary-rgb)/0.28)' }}>
+              <div className="mb-4 flex items-center gap-2">
+                <div className="flex h-7 w-7 items-center justify-center rounded-lg"
+                  style={{ backgroundColor: 'rgb(var(--first-secondary-rgb)/0.1)' }}>
+                  <Wrench className="h-3.5 w-3.5" style={{ color: 'var(--first-secondary)' }} />
+                </div>
+                <p className="text-[10px] font-bold uppercase tracking-wide" style={{ color: 'var(--first-nonary)' }}>
+                  Evidencija rada ({evidencije.length})
+                </p>
+              </div>
+              <div className="flex flex-col gap-3">
+                {evidencije.map((e) => (
+                  <div key={e.id} className="rounded-xl border p-4"
+                    style={{ borderColor: 'rgb(var(--first-quaternary-rgb)/0.28)', backgroundColor: 'rgb(var(--first-quinary-rgb)/0.1)' }}>
+                    <p className="text-sm leading-relaxed" style={{ color: 'var(--first-octonary)' }}>{e.opis_rada}</p>
+                    <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs" style={{ color: 'var(--first-nonary)' }}>
+                      {e.trajanje_minuta && (
+                        <span className="flex items-center gap-1">
+                          <Clock className="h-3 w-3" />{trajanjeOznaka(e.trajanje_minuta)}
+                        </span>
+                      )}
+                      {e.materijal && <span>Materijal: {e.materijal}</span>}
+                      <span>{new Date(e.created_at).toLocaleDateString('bs-BA')}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Historija aktivnosti */}
+          {aktivnosti.length > 0 && (
+            <div className="rounded-2xl p-5"
+              style={{ backgroundColor: 'rgb(255 255 255/0.85)', border: '1px solid rgb(var(--first-quaternary-rgb)/0.28)' }}>
+              <div className="mb-4 flex items-center gap-2">
+                <div className="flex h-7 w-7 items-center justify-center rounded-lg"
+                  style={{ backgroundColor: 'rgb(var(--first-secondary-rgb)/0.1)' }}>
+                  <History className="h-3.5 w-3.5" style={{ color: 'var(--first-secondary)' }} />
+                </div>
+                <p className="text-[10px] font-bold uppercase tracking-wide" style={{ color: 'var(--first-nonary)' }}>Historija aktivnosti</p>
+              </div>
+              <AktivnostiTimeline aktivnosti={aktivnosti} />
+            </div>
+          )}
+        </div>
+
+        {/* ── Desni sidebar ────────────────────────────────────────────────── */}
+        <SidebarPanel zahtjev={zahtjev} tim={tim} />
+      </div>
+
+      {/* ─── Mobile sticky bar ──────────────────────────────────────────────── */}
+      {jeAktivna && (
+        <div className="fixed bottom-0 left-0 right-0 z-40 lg:hidden"
+          style={{
+            backgroundColor: 'rgb(255 255 255/0.97)',
+            borderTop: '1px solid rgb(var(--first-quaternary-rgb)/0.28)',
+            backdropFilter: 'blur(12px)',
+          }}>
+          <div className="flex items-center gap-2 px-4 py-3">
+            {zahtjev.status === 'dodijeljeno' && (
+              <>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    const r = await fetch(`/api/serviser/intervencije/${zahtjev.id}`, {
+                      method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ action: 'prihvati' }),
+                    });
+                    if (r.ok) ucitaj();
+                  }}
+                  className="flex flex-1 items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold"
+                  style={{ backgroundColor: 'var(--first-primary)', color: '#fff' }}>
+                  <CheckCircle2 className="h-4 w-4" />Prihvati
+                </button>
+                <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(zahtjev.address ?? '')}`}
+                  target="_blank" rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-1 rounded-xl px-4 py-3 text-sm font-semibold"
+                  style={{ backgroundColor: 'rgb(var(--first-secondary-rgb)/0.1)', color: 'var(--first-secondary)', border: '1px solid rgb(var(--first-secondary-rgb)/0.2)' }}>
+                  <Navigation className="h-4 w-4" />
+                </a>
+              </>
+            )}
+            {zahtjev.status === 'u_radu' && (
+              <>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    const r = await fetch(`/api/serviser/intervencije/${zahtjev.id}`, {
+                      method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ action: 'pocni' }),
+                    });
+                    if (r.ok) ucitaj();
+                  }}
+                  className="flex flex-1 items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold"
+                  style={{ backgroundColor: 'var(--first-primary)', color: '#fff' }}>
+                  <MapPin className="h-4 w-4" />Počni intervenciju
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPokaziEvid(true)}
+                  className="flex items-center justify-center gap-1 rounded-xl px-4 py-3 text-sm font-semibold"
+                  style={{ backgroundColor: 'rgb(var(--first-secondary-rgb)/0.1)', color: 'var(--first-secondary)', border: '1px solid rgb(var(--first-secondary-rgb)/0.2)' }}>
+                  <ClipboardCheck className="h-4 w-4" />
+                </button>
+              </>
+            )}
+            {zahtjev.status === 'u_izvrsenju' && (
+              <button
+                type="button"
+                onClick={() => setPokaziEvid(true)}
+                className="flex flex-1 items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold"
+                style={{ backgroundColor: 'var(--first-primary)', color: '#fff' }}>
+                <ClipboardCheck className="h-5 w-5" />Evidentiraj rad
+              </button>
             )}
           </div>
         </div>
-
-        {/* Planirani termin */}
-        {(zahtjev.termin_planirani_pocetak || zahtjev.dispecer_napomene) && (
-          <div className="rounded-2xl p-5" style={SEKCIJA_STYL}>
-            <p className="mb-4 text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--first-nonary)' }}>
-              Plan dispečera
-            </p>
-            <div className="flex flex-col gap-3">
-              {zahtjev.termin_planirani_pocetak && (
-                <div className="flex items-center gap-3">
-                  <Calendar className="h-4 w-4 flex-shrink-0" style={{ color: 'var(--first-nonary)' }} />
-                  <div>
-                    <p className="text-xs" style={{ color: 'var(--first-nonary)' }}>Planirani početak</p>
-                    <p className="text-sm font-medium" style={{ color: 'var(--first-octonary)' }}>
-                      {formDatumVrijeme(zahtjev.termin_planirani_pocetak)}
-                    </p>
-                  </div>
-                </div>
-              )}
-              {zahtjev.termin_planirani_kraj && (
-                <div className="flex items-center gap-3">
-                  <Clock className="h-4 w-4 flex-shrink-0" style={{ color: 'var(--first-nonary)' }} />
-                  <div>
-                    <p className="text-xs" style={{ color: 'var(--first-nonary)' }}>Planirani kraj</p>
-                    <p className="text-sm font-medium" style={{ color: 'var(--first-octonary)' }}>
-                      {formDatumVrijeme(zahtjev.termin_planirani_kraj)}
-                    </p>
-                  </div>
-                </div>
-              )}
-              {zahtjev.procijenjeno_trajanje && (
-                <div className="flex items-center gap-3">
-                  <Clock className="h-4 w-4 flex-shrink-0" style={{ color: 'var(--first-nonary)' }} />
-                  <div>
-                    <p className="text-xs" style={{ color: 'var(--first-nonary)' }}>Procijenjeno trajanje</p>
-                    <p className="text-sm font-medium" style={{ color: 'var(--first-octonary)' }}>
-                      {trajanjeOznaka(zahtjev.procijenjeno_trajanje)}
-                    </p>
-                  </div>
-                </div>
-              )}
-              {zahtjev.dispecer_napomene && (
-                <div
-                  className="rounded-xl p-3 text-sm"
-                  style={{ backgroundColor: 'rgb(var(--first-septenary-rgb)/0.12)', color: 'var(--first-octonary)' }}
-                >
-                  <p className="mb-1 text-xs font-semibold" style={{ color: 'var(--first-nonary)' }}>
-                    Napomene dispečera:
-                  </p>
-                  {zahtjev.dispecer_napomene}
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Lokacija na mapi */}
-        <div className="rounded-2xl overflow-hidden" style={{ border: '1px solid rgb(var(--first-quaternary-rgb) / 0.35)' }}>
-          <MapPreview
-            adresa={zahtjev.address}
-            lat={zahtjev.latitude}
-            lng={zahtjev.longitude}
-          />
-        </div>
-
-        {/* Checklista */}
-        <div className="rounded-2xl p-5" style={SEKCIJA_STYL}>
-          <p className="mb-4 text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--first-nonary)' }}>
-            Kontrolna lista
-          </p>
-          <IntervencijaChecklist status={zahtjev.status} />
-        </div>
-
-        {/* Evidencija rada */}
-        {evidencije.length > 0 && (
-          <div className="rounded-2xl p-5" style={SEKCIJA_STYL}>
-            <p className="mb-4 text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--first-nonary)' }}>
-              Evidencija rada ({evidencije.length})
-            </p>
-            <div className="flex flex-col gap-3">
-              {evidencije.map((e) => (
-                <div
-                  key={e.id}
-                  className="rounded-xl border p-4"
-                  style={{ borderColor: 'rgb(var(--first-quaternary-rgb)/0.35)', backgroundColor: 'rgb(255 255 255 / 0.6)' }}
-                >
-                  <p className="text-sm" style={{ color: 'var(--first-octonary)' }}>{e.opis_rada}</p>
-                  <div className="mt-1.5 flex flex-wrap gap-x-4 text-xs" style={{ color: 'var(--first-nonary)' }}>
-                    {e.trajanje_minuta && <span>{trajanjeOznaka(e.trajanje_minuta)}</span>}
-                    {e.materijal && <span>Materijal: {e.materijal}</span>}
-                    <span>{new Date(e.created_at).toLocaleDateString('bs-BA')}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Historija aktivnosti */}
-        <div className="rounded-2xl p-5" style={SEKCIJA_STYL}>
-          <div className="mb-4 flex items-center gap-2">
-            <History className="h-4 w-4" style={{ color: 'var(--first-nonary)' }} />
-            <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--first-nonary)' }}>
-              Historija aktivnosti
-            </p>
-          </div>
-          <AktivnostiTimeline aktivnosti={aktivnosti} />
-        </div>
-      </div>
+      )}
+      {jeAktivna && <div className="h-20 lg:hidden" />}
 
       {/* Modal za evidenciju */}
       {pokaziEvid && (

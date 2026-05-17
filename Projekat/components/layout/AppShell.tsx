@@ -6,13 +6,14 @@ import { usePathname, useRouter } from 'next/navigation';
 import {
   Home, ShieldCheck, Wrench, Headphones,
   LayoutDashboard, ClipboardList, PlusCircle,
-  Users, LogOut, Menu, X, Bell, ChevronRight,
+  Users, LogOut, Menu, X, ChevronRight,
   UserCircle, ArrowLeftRight, ChevronDown,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
 import type { UserRole } from '@/domain/types';
 import { odjaviSe } from '@/services/auth/authService';
+import { NotifikacijeBell } from '@/components/layout/NotifikacijeBell';
 
 // ─── Triple Coding po ulozi ───────────────────────────────────────────────────
 
@@ -297,13 +298,7 @@ export function AppShell({ children, uloga, imeKorisnika }: AppShellProps) {
 
         {/* Desno */}
         <div className="flex items-center gap-1">
-          <button
-            className="flex h-8 w-8 items-center justify-center rounded-lg transition-colors hover:bg-soft-beige/30"
-            style={{ color: 'var(--first-nonary)' }}
-            aria-label="Obavještenja"
-          >
-            <Bell className="h-4 w-4" />
-          </button>
+          <NotifikacijeBell boja={boja} />
 
           <KorisnikDropdown
             imeKorisnika={imeKorisnika}

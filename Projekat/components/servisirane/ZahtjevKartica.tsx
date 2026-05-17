@@ -9,13 +9,13 @@ import {
   XCircle,
   Pencil,
   Ban,
-  ImageIcon,
+  Lock,
   ChevronRight,
 } from 'lucide-react';
 import type { ServisniZahtjev, StatusZahtjeva } from '@/domain/types/servisirane';
 import { brojZahtjevaZaPrikaz } from '@/lib/servisirane/korisnickiBrojZahtjeva';
 import { korisnikSmijeMijenjatiIliOtkazatiZahtjev } from '@/lib/servisirane/statusZahtjeva';
-import { efektivniKorisnickiUrgencyScore, inboxGrupaIzKorisnickeProcjene } from '@/lib/servisirane/urgency';
+import { inboxGrupaIzKorisnickeProcjene } from '@/lib/servisirane/urgency';
 import { labelKategorije } from '@/lib/servisirane/kategorije';
 import { preferiraniTerminZaDispecera, relativnoPrijavljenoZaDispecera } from '@/lib/servisirane/zahtjevPrikaz';
 import {
@@ -23,8 +23,7 @@ import {
   DISPECER_PALETA_HITNOST,
   DISPECER_PALETA_PREMIUM,
 } from '@/lib/servisirane/dispecerPaleta';
-import { DISPECER_HITNOST_KORISNIK_CHIP_TITLE } from '@/lib/servisirane/dispecerPojmovi';
-import { PreciznaLokacijaChip, DispecerPremiumKruna, KorisnickaHitnostOutlinedChip } from '@/components/servisirane/zahtjevBadgeovi';
+import { DispecerPremiumKruna } from '@/components/servisirane/zahtjevBadgeovi';
 import { KorisnikPregledTokaBadzevi } from '@/components/korisnik/KorisnikPregledTokaBadzevi';
 
 // ─── Životni ciklus statusa — Triple Coding ───────────────────────────────────
@@ -39,61 +38,72 @@ export const STATUS_LIFECYCLE: Record<
     Ikona: ComponentType<{ className?: string; style?: CSSProperties }>;
   }
 > = {
+  // Čekanje — amber (potrebna akcija dispečera)
   pending_review: {
     oznaka: 'Novi',
-    boja: '#D97706',
-    pozadina: 'rgba(217,119,6,0.12)',
-    border: 'rgba(217,119,6,0.3)',
+    boja: 'var(--first-senary)',
+    pozadina: 'rgb(var(--first-senary-rgb) / 0.1)',
+    border: 'rgb(var(--first-senary-rgb) / 0.28)',
     Ikona: Clock,
   },
   na_cekanju: {
     oznaka: 'Novi',
-    boja: '#D97706',
-    pozadina: 'rgba(217,119,6,0.12)',
-    border: 'rgba(217,119,6,0.3)',
+    boja: 'var(--first-senary)',
+    pozadina: 'rgb(var(--first-senary-rgb) / 0.1)',
+    border: 'rgb(var(--first-senary-rgb) / 0.28)',
     Ikona: Clock,
   },
   in_review: {
-    oznaka: 'U čarobnjaku',
-    boja: '#CA8A04',
-    pozadina: 'rgba(202,138,4,0.12)',
-    border: 'rgba(202,138,4,0.3)',
+    oznaka: 'U obradi',
+    boja: 'var(--first-senary)',
+    pozadina: 'rgb(var(--first-senary-rgb) / 0.1)',
+    border: 'rgb(var(--first-senary-rgb) / 0.28)',
     Ikona: Clock,
   },
+  // Potvrđeno/dodijeljeno — plava (na putu k rješavanju)
   potvrdeno: {
     oznaka: 'Potvrđeno',
-    boja: '#2563EB',
-    pozadina: 'rgba(37,99,235,0.1)',
-    border: 'rgba(37,99,235,0.25)',
+    boja: 'var(--first-secondary)',
+    pozadina: 'rgb(var(--first-secondary-rgb) / 0.08)',
+    border: 'rgb(var(--first-secondary-rgb) / 0.22)',
     Ikona: CheckCircle2,
   },
   dodijeljeno: {
-    oznaka: 'Dodijeljeno serviseru',
-    boja: '#2563EB',
-    pozadina: 'rgba(37,99,235,0.1)',
-    border: 'rgba(37,99,235,0.25)',
+    oznaka: 'Servis dodijeljen',
+    boja: 'var(--first-secondary)',
+    pozadina: 'rgb(var(--first-secondary-rgb) / 0.08)',
+    border: 'rgb(var(--first-secondary-rgb) / 0.22)',
     Ikona: CheckCircle2,
   },
+  // Aktivna intervencija — plava (u tijeku)
   u_radu: {
-    oznaka: 'Na terenu',
-    boja: '#059669',
-    pozadina: 'rgba(5,150,105,0.1)',
-    border: 'rgba(5,150,105,0.25)',
+    oznaka: 'Na putu',
+    boja: 'var(--first-secondary)',
+    pozadina: 'rgb(var(--first-secondary-rgb) / 0.08)',
+    border: 'rgb(var(--first-secondary-rgb) / 0.22)',
     Ikona: Truck,
   },
   u_izvrsenju: {
     oznaka: 'Na terenu',
-    boja: '#059669',
-    pozadina: 'rgba(5,150,105,0.1)',
-    border: 'rgba(5,150,105,0.25)',
+    boja: 'var(--first-secondary)',
+    pozadina: 'rgb(var(--first-secondary-rgb) / 0.08)',
+    border: 'rgb(var(--first-secondary-rgb) / 0.22)',
     Ikona: Truck,
   },
+  // Završeno/arhivirano — neutralno (bez potrebne akcije)
   zavrseno: {
     oznaka: 'Završeno',
-    boja: 'var(--first-secondary)',
-    pozadina: 'rgb(var(--first-secondary-rgb) / 0.1)',
-    border: 'rgb(var(--first-secondary-rgb) / 0.25)',
+    boja: 'var(--first-nonary)',
+    pozadina: 'rgb(var(--first-quaternary-rgb) / 0.2)',
+    border: 'rgb(var(--first-quaternary-rgb) / 0.4)',
     Ikona: CheckCircle2,
+  },
+  zatvoreno: {
+    oznaka: 'Arhivirano',
+    boja: 'var(--first-nonary)',
+    pozadina: 'rgb(var(--first-quaternary-rgb) / 0.2)',
+    border: 'rgb(var(--first-quaternary-rgb) / 0.4)',
+    Ikona: Lock,
   },
   otkazano: {
     oznaka: 'Otkazano',
@@ -161,16 +171,12 @@ interface ZahtjevKarticaProps {
 export function ZahtjevKartica({ zahtjev, onUredi, onOtkazi }: ZahtjevKarticaProps) {
   const { glavna, podkategorija } = labelKategorije(zahtjev);
   const { tekstCijeli: terminTekst } = preferiraniTerminZaDispecera(zahtjev);
-  const scoreZaPrikaz = efektivniKorisnickiUrgencyScore(zahtjev);
   const grupaInboxaPoKorisniku = inboxGrupaIzKorisnickeProcjene(zahtjev);
   const datumZaKarticu = terminTekst.includes(',')
     ? terminTekst.split(',')[0].trim()
     : terminTekst;
   const prijavljenoRel = relativnoPrijavljenoZaDispecera(zahtjev.created_at);
   const prijavljenoBoja = bojaRelativnogPrijaveDispecera(prijavljenoRel.ton);
-
-  const imaKoordinate = zahtjev.latitude != null && zahtjev.longitude != null;
-  const imaFotografiju = Boolean(zahtjev.photo_url?.trim());
 
   const mozeKorisnikUrediti = korisnikSmijeMijenjatiIliOtkazatiZahtjev(
     zahtjev.status,
@@ -213,9 +219,6 @@ export function ZahtjevKartica({ zahtjev, onUredi, onOtkazi }: ZahtjevKarticaPro
               <KorisnikPregledTokaBadzevi zahtjev={zahtjev} />
             </div>
           </div>
-          <div className="shrink-0 pt-0.5" title={DISPECER_HITNOST_KORISNIK_CHIP_TITLE}>
-            <KorisnickaHitnostOutlinedChip score={scoreZaPrikaz} />
-          </div>
         </div>
 
         <div className="mt-3 min-w-0 space-y-1">
@@ -257,24 +260,6 @@ export function ZahtjevKartica({ zahtjev, onUredi, onOtkazi }: ZahtjevKarticaPro
           </p>
         </div>
 
-        {(imaKoordinate || imaFotografiju) && (
-          <div className="mt-2 flex flex-wrap gap-2">
-            {imaKoordinate && <PreciznaLokacijaChip />}
-            {imaFotografiju && (
-              <span
-                className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold"
-                style={{
-                  backgroundColor: 'rgb(var(--first-secondary-rgb) / 0.1)',
-                  color: 'var(--first-secondary)',
-                  border: '1px solid rgb(var(--first-secondary-rgb) / 0.25)',
-                }}
-              >
-                <ImageIcon className="h-3 w-3" />
-                Fotografija dodana
-              </span>
-            )}
-          </div>
-        )}
       </div>
 
       <div
