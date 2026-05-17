@@ -15,18 +15,44 @@ export async function GET() {
 
     const db = supabase as any;
 
-    const { data, error } = await db
+    // 1. Intervencije gdje je glavni serviser
+    const { data: glavneData, error: glavnaErr } = await db
       .from('service_requests')
       .select('*')
       .eq('serviser_dodijeljen_id', user.id)
       .order('termin_planirani_pocetak', { ascending: true, nullsFirst: false })
       .order('created_at', { ascending: false });
 
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    if (glavnaErr) return NextResponse.json({ error: glavnaErr.message }, { status: 500 });
 
-    const zahtjevi: Record<string, unknown>[] = data ?? [];
-    const userIds = [...new Set(zahtjevi.map((z) => z.user_id as string))];
+    // 2. Intervencije gdje je pomoćni serviser (tim_intervencije)
+    const { data: timRedovi } = await db
+      .from('tim_intervencije')
+      .select('zahtjev_id')
+      .eq('serviser_id', user.id);
 
+    const pomocniIds: number[] = (timRedovi ?? []).map((t: { zahtjev_id: number }) => t.zahtjev_id);
+    const glavniIds = new Set((glavneData ?? []).map((z: Record<string, unknown>) => z.id as number));
+    const noviIds   = pomocniIds.filter((id) => !glavniIds.has(id));
+
+    let pomocneData: Record<string, unknown>[] = [];
+    if (noviIds.length > 0) {
+      const { data } = await db
+        .from('service_requests')
+        .select('*')
+        .in('id', noviIds)
+        .order('termin_planirani_pocetak', { ascending: true, nullsFirst: false });
+      pomocneData = data ?? [];
+    }
+
+    // 3. Spoji i označi ulogu servisera
+    const sveIntervencije: Record<string, unknown>[] = [
+      ...(glavneData ?? []).map((z: Record<string, unknown>) => ({ ...z, uloga_u_intervenciji: 'glavni' })),
+      ...pomocneData.map((z) => ({ ...z, uloga_u_intervenciji: 'pomocni' })),
+    ];
+
+    // 4. Podaci o podnosiocima
+    const userIds = [...new Set(sveIntervencije.map((z) => z.user_id as string))];
     let osobeMap: Record<string, { ime: string; prezime: string; broj_telefona: string | null }> = {};
     if (userIds.length > 0) {
       const { data: osobe } = await db
@@ -39,7 +65,7 @@ export async function GET() {
       );
     }
 
-    const rezultat = zahtjevi.map((z) => ({
+    const rezultat = sveIntervencije.map((z) => ({
       ...z,
       podnosilac: osobeMap[z.user_id as string] ?? null,
     }));

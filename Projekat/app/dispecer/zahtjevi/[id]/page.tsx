@@ -3,7 +3,7 @@
 import { Suspense, useEffect, useState } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { CheckCircle2, X } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, ChevronRight, X } from 'lucide-react';
 import { AppShell } from '@/components/layout/AppShell';
 import { AlertMessage } from '@/components/ui/AlertMessage';
 import { Button } from '@/components/ui/Button';
@@ -164,11 +164,6 @@ export default function DispecerZahtjevDetaljPage() {
   const [zahtjev, setZahtjev] = useState<ZahtjevDetalj | null>(null);
   const [ucitava, setUcitava] = useState(true);
   const [greska, setGreska] = useState<string | null>(null);
-  const kategorija = zahtjev ? labelKategorije(zahtjev) : null;
-  const naslovKruh =
-    zahtjev && kategorija
-      ? `#${oznakaZaDispecerskiPrikazBroja(zahtjev)} ${kategorija.podkategorija || kategorija.glavna}`
-      : '';
 
   async function ucitaj() {
     try {
@@ -186,39 +181,74 @@ export default function DispecerZahtjevDetaljPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { void ucitaj(); }, [id]);
 
+  const kategorija = zahtjev ? labelKategorije(zahtjev) : null;
+  const naslovStr = zahtjev && kategorija
+    ? `${kategorija.podkategorija || kategorija.glavna}`
+    : 'Obrada zahtjeva';
+
   return (
     <AppShell uloga="dispecer" imeKorisnika="Dispečer">
       <div className="mx-auto max-w-6xl px-4 sm:px-0">
-        <nav
-          className="mb-4 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm"
-          aria-label="Navigacija"
-        >
-          <Link
-            href={zahtjev ? `/dispecer?z=${zahtjev.id}` : '/dispecer'}
-            className="font-medium transition-opacity hover:opacity-70"
-            style={{ color: 'var(--first-secondary)' }}
-          >
-            Kontrolna ploča
-          </Link>
-          <span style={{ color: 'var(--first-nonary)' }}>/</span>
-          <Link
-            href="/dispecer/zahtjevi"
-            className="font-medium transition-opacity hover:opacity-70"
-            style={{ color: 'var(--first-secondary)' }}
-          >
-            Pregled zahtjeva
-          </Link>
+        {/* Header: nazad + breadcrumb + naslov + badge */}
+        <div className="mb-5">
+          <div className="mb-3 flex items-center gap-1.5 text-sm" style={{ color: 'var(--first-nonary)' }}>
+            <Link href={zahtjev ? `/dispecer?z=${zahtjev.id}` : '/dispecer'}
+              className="inline-flex items-center gap-1 rounded-lg px-2 py-1 font-medium transition-all hover:bg-black/[0.04]"
+              style={{ color: 'var(--first-secondary)' }}>
+              <ArrowLeft className="h-3.5 w-3.5" />Kontrolna ploča
+            </Link>
+            <ChevronRight className="h-3.5 w-3.5" />
+            <Link href="/dispecer/zahtjevi"
+              className="rounded-lg px-2 py-1 font-medium transition-all hover:bg-black/[0.04]"
+              style={{ color: 'var(--first-secondary)' }}>
+              Zahtjevi
+            </Link>
+            {zahtjev && (
+              <>
+                <ChevronRight className="h-3.5 w-3.5" />
+                <span className="font-semibold" style={{ color: 'var(--first-octonary)' }}>
+                  #{oznakaZaDispecerskiPrikazBroja(zahtjev)}
+                </span>
+              </>
+            )}
+          </div>
           {zahtjev && (
-            <>
-              <span style={{ color: 'var(--first-nonary)' }}>/</span>
-              <span className="font-medium" style={{ color: 'var(--first-octonary)' }}>
-                {naslovKruh}
-              </span>
-            </>
+            <div className="flex flex-wrap items-center gap-3">
+              <h1 className="text-xl font-black" style={{ color: 'var(--first-octonary)' }}>
+                {naslovStr}
+              </h1>
+              {kategorija?.podkategorija && (
+                <span className="text-sm font-medium" style={{ color: 'var(--first-nonary)' }}>
+                  {kategorija.glavna}
+                </span>
+              )}
+              {zahtjev.is_premium && (
+                <span className="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold"
+                  style={{ backgroundColor: 'rgba(220,38,38,0.1)', color: '#DC2626', border: '1.5px solid rgba(220,38,38,0.25)' }}>
+                  Premium
+                </span>
+              )}
+              {zahtjev.final_priority && (
+                <span className="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold"
+                  style={{
+                    backgroundColor: 'rgba(220,38,38,0.08)',
+                    color: zahtjev.final_priority === 'HITNO' || zahtjev.final_priority === 'KRITIČNO' ? '#DC2626' : 'var(--first-secondary)',
+                    border: '1px solid rgba(220,38,38,0.2)',
+                  }}>
+                  {zahtjev.final_priority}
+                </span>
+              )}
+            </div>
           )}
-        </nav>
+        </div>
 
-        {ucitava && <p style={{ color: 'var(--first-nonary)' }}>Učitavanje...</p>}
+        {ucitava && (
+          <div className="flex items-center gap-3 py-12">
+            <div className="h-6 w-6 animate-spin rounded-full border-2 border-transparent"
+              style={{ borderTopColor: 'var(--first-secondary)' }} />
+            <p className="text-sm" style={{ color: 'var(--first-nonary)' }}>Učitavanje zahtjeva...</p>
+          </div>
+        )}
         {greska && <AlertMessage variant="error" message={greska} />}
 
         {zahtjev && (
