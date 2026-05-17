@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { assertServiserAccess, assertServiserVlasnistvo } from '@/lib/servisirane/serviserPristup';
 import { evidencijaRadaSchema } from '@/lib/validations/servisirane';
+import { notifEvidencijaRada } from '@/lib/servisirane/notifikacijeHelper';
 
 export const dynamic = 'force-dynamic';
 
@@ -80,6 +81,27 @@ export async function POST(
         .from('service_requests')
         .update({ rad_evidentiran_at: new Date().toISOString() })
         .eq('id', zahtjevId);
+    }
+
+    // Notifikacija dispečeru o evidentiranom radu
+    const { data: osobaEv } = await db
+      .from('osoba')
+      .select('ime, prezime')
+      .eq('id_osobe', user.id)
+      .maybeSingle();
+    const imeEv = osobaEv ? `${osobaEv.ime} ${osobaEv.prezime}` : 'Serviser';
+
+    const { data: dodjelaAktEv } = await db
+      .from('intervention_activities')
+      .select('autor_id')
+      .eq('zahtjev_id', zahtjevId)
+      .eq('tip', 'dodjela')
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (dodjelaAktEv?.autor_id) {
+      await notifEvidencijaRada(db, dodjelaAktEv.autor_id, zahtjevId, imeEv);
     }
 
     return NextResponse.json({ success: true, evidencija }, { status: 201 });

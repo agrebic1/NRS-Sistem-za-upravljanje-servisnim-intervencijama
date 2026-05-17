@@ -5,11 +5,11 @@ import Link from 'next/link';
 import {
   ClipboardList, CheckCircle2, Truck, Clock,
   ChevronRight, MapPin, Calendar, RefreshCw, AlertTriangle,
+  Zap, Shield,
 } from 'lucide-react';
 import { AppShell } from '@/components/layout/AppShell';
 import { Button } from '@/components/ui/Button';
 import { AlertMessage } from '@/components/ui/AlertMessage';
-import { StatusBadge } from '@/components/servisirane/ZahtjevKartica';
 import type { ServisniZahtjev } from '@/domain/types/servisirane';
 import { labelKategorije } from '@/lib/servisirane/kategorije';
 
@@ -30,58 +30,120 @@ interface IntervencijaZaListu extends ServisniZahtjev {
   podnosilac: { ime: string; prezime: string; broj_telefona: string | null } | null;
 }
 
+// ─── Helperi ─────────────────────────────────────────────────────────────────
+
+function jeKasni(z: IntervencijaZaListu): boolean {
+  if (!z.termin_planirani_pocetak) return false;
+  if (['zavrseno', 'zatvoreno', 'otkazano'].includes(z.status)) return false;
+  return new Date(z.termin_planirani_pocetak) < new Date();
+}
+
+function prioritetBoja(p: string | null): string {
+  switch ((p ?? '').toUpperCase()) {
+    case 'HITNO':    return '#DC2626';
+    case 'KRITIČNO': return '#DC2626';
+    case 'VISOKO':   return '#EA580C';
+    case 'SREDNJE':  return 'var(--first-senary)';
+    default:         return 'var(--first-secondary)';
+  }
+}
+
+function fmtTermin(iso: string): string {
+  const d = new Date(iso);
+  const danas = new Date();
+  const sutra = new Date(danas);
+  sutra.setDate(danas.getDate() + 1);
+  const sat = d.toLocaleTimeString('bs-BA', { hour: '2-digit', minute: '2-digit' });
+  if (d.toDateString() === danas.toDateString()) return `Danas, ${sat}`;
+  if (d.toDateString() === sutra.toDateString()) return `Sutra, ${sat}`;
+  return `${d.toLocaleDateString('bs-BA', { day: '2-digit', month: '2-digit' })}, ${sat}`;
+}
+
 // ─── Kartica zadatka ──────────────────────────────────────────────────────────
 
 function ZadatakKartica({ z }: { z: IntervencijaZaListu }) {
-  const kat     = labelKategorije(z);
-  const naslov  = kat.podkategorija ? `${kat.glavna} — ${kat.podkategorija}` : kat.glavna;
-  const hitno   = (z.urgency_score ?? 0) >= 75 || z.is_premium;
+  const kat    = labelKategorije(z);
+  const naslov = kat.podkategorija ?? kat.glavna;
+  const kasni  = jeKasni(z);
+  const pboja  = prioritetBoja(z.final_priority);
+
+  const statusBoja = z.status === 'dodijeljeno' ? 'var(--first-senary)'
+    : ['u_radu', 'u_izvrsenju'].includes(z.status) ? 'var(--first-secondary)'
+    : 'var(--first-nonary)';
+
+  const statusNaziv = z.status === 'dodijeljeno' ? 'Dodijeljeno'
+    : z.status === 'u_radu' ? 'Na putu'
+    : z.status === 'u_izvrsenju' ? 'Na terenu'
+    : 'Završeno';
 
   return (
     <li>
       <Link
         href={`/serviser/intervencije/${z.id}`}
-        className="flex items-start gap-4 px-5 py-4 transition-colors hover:bg-soft-beige/10"
+        className="group flex min-w-0 overflow-hidden rounded-2xl transition-all hover:shadow-md"
+        style={{
+          backgroundColor: 'rgb(255 255 255/0.85)',
+          border:          '1px solid rgb(var(--first-quaternary-rgb)/0.32)',
+          borderLeftWidth: 4,
+          borderLeftColor: kasni ? '#DC2626' : z.is_premium ? '#DC2626' : pboja,
+        }}
       >
-        <div className="mt-0.5 flex-shrink-0">
-          {hitno
-            ? <AlertTriangle className="h-4 w-4" style={{ color: 'var(--first-senary)' }} />
-            : <ClipboardList className="h-4 w-4" style={{ color: 'var(--first-quinary)' }} />}
-        </div>
-
-        <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <p className="font-medium" style={{ color: 'var(--first-octonary)' }}>{naslov}</p>
-            <StatusBadge status={z.status} />
-            {z.is_premium && (
-              <span
-                className="rounded-full px-2 py-0.5 text-xs font-semibold"
-                style={{ backgroundColor: 'rgba(220,38,38,0.12)', color: '#B91C1C', border: '1px solid rgba(220,38,38,0.25)' }}
-              >
-                Premium HITNO
-              </span>
-            )}
-          </div>
-
-          <p className="mt-0.5 line-clamp-1 text-sm" style={{ color: 'var(--first-nonary)' }}>
-            {z.description}
-          </p>
-
-          <div className="mt-1.5 flex flex-wrap gap-x-4 text-xs" style={{ color: 'var(--first-nonary)' }}>
-            <span className="flex items-center gap-1">
-              <MapPin className="h-3 w-3" />
-              {z.address.length > 40 ? `${z.address.substring(0, 40)}...` : z.address}
+        <div className="flex min-w-0 flex-1 flex-col gap-2 p-4">
+          {/* Badges */}
+          <div className="flex flex-wrap items-center gap-1.5">
+            <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-bold"
+              style={{ backgroundColor: `color-mix(in srgb, ${statusBoja} 10%, transparent)`, color: statusBoja, border: `1px solid color-mix(in srgb, ${statusBoja} 22%, transparent)` }}>
+              <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: statusBoja }} />
+              {statusNaziv}
             </span>
-            {z.termin_planirani_pocetak && (
+            {z.final_priority && (
+              <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-bold"
+                style={{ backgroundColor: `color-mix(in srgb, ${pboja} 10%, transparent)`, color: pboja }}>
+                <Zap className="h-2.5 w-2.5" />{z.final_priority}
+              </span>
+            )}
+            {z.is_premium && (
+              <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-bold"
+                style={{ backgroundColor: 'rgba(220,38,38,0.08)', color: '#DC2626' }}>
+                <Shield className="h-2.5 w-2.5" />Premium
+              </span>
+            )}
+            {kasni && (
+              <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-bold"
+                style={{ backgroundColor: 'rgba(220,38,38,0.08)', color: '#DC2626' }}>
+                <AlertTriangle className="h-2.5 w-2.5" />Kasni
+              </span>
+            )}
+          </div>
+
+          {/* Naslov */}
+          <p className="font-bold leading-snug" style={{ color: 'var(--first-octonary)' }}>{naslov}</p>
+          {kat.podkategorija && (
+            <p className="text-xs" style={{ color: 'var(--first-nonary)' }}>{kat.glavna}</p>
+          )}
+
+          {/* Meta */}
+          <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs" style={{ color: 'var(--first-nonary)' }}>
+            {z.address && (
               <span className="flex items-center gap-1">
-                <Calendar className="h-3 w-3" />
-                {new Date(z.termin_planirani_pocetak).toLocaleDateString('bs-BA')}
+                <MapPin className="h-3 w-3 flex-shrink-0" />
+                <span className="line-clamp-1 max-w-[180px]">{z.address}</span>
+              </span>
+            )}
+            {z.termin_planirani_pocetak && (
+              <span className="flex items-center gap-1"
+                style={{ color: kasni ? '#DC2626' : undefined, fontWeight: kasni ? 700 : undefined }}>
+                <Calendar className="h-3 w-3 flex-shrink-0" />
+                {fmtTermin(z.termin_planirani_pocetak)}
               </span>
             )}
           </div>
         </div>
 
-        <ChevronRight className="mt-1 h-4 w-4 flex-shrink-0" style={{ color: 'var(--first-quinary)' }} />
+        <div className="flex items-center pr-4">
+          <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5"
+            style={{ color: 'var(--first-secondary)' }} />
+        </div>
       </Link>
     </li>
   );
@@ -141,9 +203,9 @@ export default function ServiserZadaciPage() {
       <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
         {[
           { oznaka: 'Dodijeljeno', v: dodijeljeno, boja: '#D97706',  Ikona: Clock },
-          { oznaka: 'Prihvaćeno',  v: uRadu,       boja: '#2563EB',  Ikona: ClipboardList },
-          { oznaka: 'Na terenu',   v: uIzvrsenju,  boja: '#22C55E',  Ikona: Truck },
-          { oznaka: 'Završeno',    v: zavrseno,    boja: 'var(--first-secondary)', Ikona: CheckCircle2 },
+          { oznaka: 'Prihvaćeno',  v: uRadu,       boja: 'var(--first-secondary)', Ikona: ClipboardList },
+          { oznaka: 'Na terenu',   v: uIzvrsenju,  boja: 'var(--first-secondary)', Ikona: Truck },
+          { oznaka: 'Završeno',    v: zavrseno,    boja: 'var(--first-nonary)',    Ikona: CheckCircle2 },
         ].map(({ oznaka, v, boja, Ikona }) => (
           <div
             key={oznaka}
@@ -207,7 +269,7 @@ export default function ServiserZadaciPage() {
         </div>
 
         {/* Lista */}
-        <ul className="divide-y" style={{ borderColor: 'rgb(var(--first-quaternary-rgb) / 0.25)' }}>
+        <ul className="flex flex-col gap-3 p-4">
           {ucitava && (
             <li className="px-5 py-8 text-center text-sm" style={{ color: 'var(--first-nonary)' }}>
               Učitavanje...

@@ -2,9 +2,28 @@
 
 import {
   ArrowRightLeft, MessageSquare, UserCheck, ClipboardCheck,
-  UserX, Cog, Clock,
+  UserX, Cog, Clock, Image as ImageIcon, Users, UserMinus, Lock, AlertTriangle,
+  Headphones, Wrench, User,
 } from 'lucide-react';
 import type { InterventionActivity, TipAktivnosti } from '@/domain/types/servisirane';
+import type { LucideIcon } from 'lucide-react';
+
+// ─── Role ikonice ─────────────────────────────────────────────────────────────
+
+function ulogaIkona(uloga?: string): LucideIcon {
+  if (uloga === 'dispecer') return Headphones;
+  if (uloga === 'serviser') return Wrench;
+  if (uloga === 'korisnik') return User;
+  return Cog;
+}
+
+function ulogaNaziv(uloga?: string, ime?: string): string {
+  if (ime) return ime;
+  if (uloga === 'dispecer') return 'Dispečer';
+  if (uloga === 'serviser') return 'Serviser';
+  if (uloga === 'korisnik') return 'Korisnik';
+  return 'Sistem';
+}
 
 // ─── Config po tipu aktivnosti ───────────────────────────────────────────────
 
@@ -13,12 +32,17 @@ const TIP_CONFIG: Record<TipAktivnosti, {
   boja:  string;
   rgb:   string;
 }> = {
-  status_promjena: { Ikona: ArrowRightLeft, boja: '#2563EB', rgb: '37,99,235' },
-  napomena:        { Ikona: MessageSquare,  boja: '#617089', rgb: '97,112,137' },
-  dodjela:         { Ikona: UserCheck,      boja: '#22C55E', rgb: '34,197,94' },
-  evidencija:      { Ikona: ClipboardCheck, boja: '#D97706', rgb: '217,119,6' },
-  odbijanje:       { Ikona: UserX,          boja: '#DC2626', rgb: '220,38,38' },
-  sistem:          { Ikona: Cog,            boja: '#9CA3AF', rgb: '156,163,175' },
+  status_promjena:   { Ikona: ArrowRightLeft, boja: 'var(--first-secondary)', rgb: '45,91,159' },
+  napomena:          { Ikona: MessageSquare,  boja: '#617089',                rgb: '97,112,137' },
+  dodjela:           { Ikona: UserCheck,      boja: 'var(--first-secondary)', rgb: '45,91,159' },
+  evidencija:        { Ikona: ClipboardCheck, boja: '#D97706',                rgb: '217,119,6' },
+  odbijanje:         { Ikona: UserX,          boja: '#DC2626',                rgb: '220,38,38' },
+  sistem:            { Ikona: Cog,            boja: '#9CA3AF',                rgb: '156,163,175' },
+  slika:             { Ikona: ImageIcon,      boja: '#7C3AED',                rgb: '124,58,237' },
+  tim_dodjela:       { Ikona: Users,          boja: 'var(--first-secondary)', rgb: '45,91,159' },
+  tim_uklanjanje:    { Ikona: UserMinus,      boja: '#D97706',                rgb: '217,119,6' },
+  zatvaranje:        { Ikona: Lock,           boja: 'var(--first-primary)',   rgb: '16,37,65' },
+  konflikt_override: { Ikona: AlertTriangle,  boja: '#D97706',                rgb: '217,119,6' },
 };
 
 // ─── Format vremena ───────────────────────────────────────────────────────────
@@ -68,12 +92,12 @@ export function AktivnostiTimeline({ aktivnosti, ucitava }: AktivnostiTimelinePr
   return (
     <div className="flex flex-col gap-0">
       {aktivnosti.map((a, idx) => {
-        const cfg      = TIP_CONFIG[a.tip] ?? TIP_CONFIG.sistem;
-        const Ikona    = cfg.Ikona;
-        const jeLast   = idx === aktivnosti.length - 1;
-        const autorIme = a.autor
-          ? `${a.autor.ime} ${a.autor.prezime}`.trim()
-          : 'Sistem';
+        const cfg       = TIP_CONFIG[a.tip] ?? TIP_CONFIG.sistem;
+        const Ikona     = cfg.Ikona;
+        const jeLast    = idx === aktivnosti.length - 1;
+        const imePrezime = a.autor ? `${a.autor.ime} ${a.autor.prezime}`.trim() : '';
+        const autorIme  = ulogaNaziv(a.autor?.uloga, imePrezime);
+        const AutorIkona = ulogaIkona(a.autor?.uloga);
 
         return (
           <div key={a.id} className="flex gap-3">
@@ -106,8 +130,11 @@ export function AktivnostiTimeline({ aktivnosti, ucitava }: AktivnostiTimelinePr
                   {a.sadrzaj}
                 </p>
               </div>
-              <div className="mt-0.5 flex flex-wrap gap-x-3 text-xs" style={{ color: 'var(--first-nonary)' }}>
-                <span>{autorIme}</span>
+              <div className="mt-0.5 flex flex-wrap items-center gap-x-3 text-xs" style={{ color: 'var(--first-nonary)' }}>
+                <span className="flex items-center gap-1">
+                  <AutorIkona className="h-3 w-3 flex-shrink-0" />
+                  {autorIme}
+                </span>
                 <span>{formatirajVrijeme(a.created_at)}</span>
               </div>
             </div>

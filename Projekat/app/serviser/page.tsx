@@ -279,9 +279,9 @@ export default function ServiserPage() {
   const kpiKartice = [
     { key: 'danas'       as KpiFilter, oznaka: 'Danas',       v: danas,     boja: 'var(--first-primary)',   Ikona: Calendar     },
     { key: 'dodijeljeno' as KpiFilter, oznaka: 'Dodijeljeno', v: dodijeljeno, boja: '#D97706',              Ikona: Clock        },
-    { key: 'u_radu'      as KpiFilter, oznaka: 'Prihvaćeno',  v: uRadu,     boja: '#2563EB',               Ikona: ClipboardList },
-    { key: 'u_izvrsenju' as KpiFilter, oznaka: 'Na terenu',   v: naTermenu, boja: '#22C55E',               Ikona: Truck        },
-    { key: 'zavrseno'    as KpiFilter, oznaka: 'Završeno',    v: zavrseno,  boja: 'var(--first-secondary)', Ikona: CheckCircle2 },
+    { key: 'u_radu'      as KpiFilter, oznaka: 'Prihvaćeno',  v: uRadu,     boja: 'var(--first-secondary)', Ikona: ClipboardList },
+    { key: 'u_izvrsenju' as KpiFilter, oznaka: 'Na terenu',   v: naTermenu, boja: 'var(--first-secondary)', Ikona: Truck        },
+    { key: 'zavrseno'    as KpiFilter, oznaka: 'Završeno',    v: zavrseno,  boja: 'var(--first-nonary)',    Ikona: CheckCircle2 },
     { key: 'hitno'       as KpiFilter, oznaka: 'Hitno',       v: hitno,     boja: '#DC2626',               Ikona: Zap          },
   ];
 
