@@ -46,7 +46,7 @@ export function IntervencijaWorkflowProgress({ status }: { status: string }) {
                 className="flex h-5 w-5 items-center justify-center rounded-full"
                 style={{
                   backgroundColor: jeZavrsena
-                    ? '#22C55E'
+                    ? 'var(--first-secondary)'
                     : jeAktivna
                       ? 'var(--first-secondary)'
                       : 'rgb(var(--first-quaternary-rgb)/0.35)',
@@ -65,7 +65,7 @@ export function IntervencijaWorkflowProgress({ status }: { status: string }) {
                 className="h-0.5 flex-1 mx-0.5"
                 style={{
                   backgroundColor: jeZavrsena
-                    ? '#22C55E'
+                    ? 'var(--first-secondary)'
                     : 'rgb(var(--first-quaternary-rgb)/0.3)',
                   transition: 'background-color 0.2s',
                 }}
@@ -115,7 +115,7 @@ export function IntervencijaWorkflowTimeline({
                 className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full"
                 style={{
                   backgroundColor: jeZavrsena
-                    ? '#22C55E'
+                    ? 'var(--first-secondary)'
                     : jeAktivna
                       ? 'var(--first-secondary)'
                       : 'rgb(var(--first-quinary-rgb)/0.45)',
@@ -134,7 +134,7 @@ export function IntervencijaWorkflowTimeline({
                   className="mt-1 w-0.5 flex-1 min-h-[1.5rem]"
                   style={{
                     backgroundColor: jeZavrsena
-                      ? '#22C55E'
+                      ? 'var(--first-secondary)'
                       : 'rgb(var(--first-quaternary-rgb)/0.3)',
                     minHeight: '1.5rem',
                   }}

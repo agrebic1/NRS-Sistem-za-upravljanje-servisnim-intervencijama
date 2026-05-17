@@ -19,7 +19,6 @@ import type { ZahtjevZaDispecerskuKarticu } from '@/components/dispecer/Dispecer
 import type { ServisniZahtjev } from '@/domain/types/servisirane';
 import { inboxGrupaIzKorisnickeProcjene, efektivniKorisnickiUrgencyScore } from '@/lib/servisirane/urgency';
 import { oznakaZaDispecerskiPrikazBroja } from '@/lib/servisirane/korisnickiBrojZahtjeva';
-import { DISPECER_HITNOST_KORISNIK_CHIP_TITLE } from '@/lib/servisirane/dispecerPojmovi';
 import {
   zahtjevCekaDogovorTerminaDispecera,
   zahtjevCekaDodjeluServiseraDispecera,
@@ -134,27 +133,10 @@ export function DispecerskaZahtjevPregledGridKartica({ zahtjev }: { zahtjev: Zah
             <DispecerPregledTokaBadzevi zahtjev={zahtjev} />
           </div>
           <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-2">
-            {operativniPrioritetSirovo ? (
+            {operativniPrioritetSirovo && (
               <OperativniPrioritetChip vrijednost={operativniPrioritetSirovo} />
-            ) : zahtjevCekaObraduUInboxuDispecera(zahtjev.status) ? (
-              <span
-                className="inline-flex max-w-full shrink-0 rounded-full border border-dashed px-2.5 py-1 text-xs font-semibold"
-                style={{
-                  color: 'rgb(var(--first-nonary-rgb) / 0.92)',
-                  borderColor: 'rgb(var(--first-quaternary-rgb) / 0.45)',
-                  backgroundColor: 'rgb(var(--first-quinary-rgb) / 0.2)',
-                }}
-                title="Operativni prioritet postavljate u čarobnjaku ili na detaljima zahtjeva."
-              >
-                Operativni prioritet: čeka unos
-              </span>
-            ) : null}
-            <span className="inline-flex max-w-full min-w-0 flex-wrap items-center gap-x-1.5 gap-y-1" title={DISPECER_HITNOST_KORISNIK_CHIP_TITLE}>
-              <span className="text-xs font-medium" style={{ color: 'var(--first-nonary)' }}>
-                Procjena hitnosti:
-              </span>
-              <KorisnickaHitnostOutlinedChip score={scoreZaPrikaz} />
-            </span>
+            )}
+            <KorisnickaHitnostOutlinedChip score={scoreZaPrikaz} />
           </div>
         </div>
 
@@ -239,9 +221,9 @@ export function DispecerskaZahtjevPregledGridKartica({ zahtjev }: { zahtjev: Zah
                 <span
                   className="inline-flex max-w-full rounded-md border px-2 py-1 text-xs font-semibold leading-snug"
                   style={{
-                    color: 'rgb(67 56 202)',
-                    backgroundColor: 'rgb(238 242 255 / 0.95)',
-                    borderColor: 'rgb(165 180 252 / 0.65)',
+                    color: 'var(--first-secondary)',
+                    backgroundColor: 'rgb(var(--first-secondary-rgb) / 0.07)',
+                    borderColor: 'rgb(var(--first-secondary-rgb) / 0.25)',
                   }}
                 >
                   {termin.tekstCijeli}

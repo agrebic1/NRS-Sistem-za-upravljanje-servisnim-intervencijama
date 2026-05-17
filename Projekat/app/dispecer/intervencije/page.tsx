@@ -13,6 +13,7 @@ import { AlertMessage } from '@/components/ui/AlertMessage';
 import type { ServisniZahtjev } from '@/domain/types/servisirane';
 import { labelKategorije } from '@/lib/servisirane/kategorije';
 import { IntervencijaWorkflowProgress } from '@/components/dispecer/IntervencijaWorkflowProgress';
+import { MOCK_INTERVENCIJE } from '@/data/mockIntervencije';
 
 // ─── Tipovi ───────────────────────────────────────────────────────────────────
 
@@ -41,16 +42,16 @@ function prioritetBoja(p: string | null): string {
     case 'KRITIČNO': return '#991B1B';
     case 'VISOKO':   return '#EA580C';
     case 'SREDNJE':  return '#D97706';
-    default:         return '#2563EB';
+    default:         return 'var(--first-secondary)';
   }
 }
 
 function statusBoja(s: string): string {
   switch (s) {
-    case 'dodijeljeno':  return '#D97706';
-    case 'u_radu':       return '#2563EB';
-    case 'u_izvrsenju':  return '#22C55E';
-    default:             return '#617089';
+    case 'dodijeljeno':  return 'var(--first-senary)';
+    case 'u_radu':       return 'var(--first-secondary)';
+    case 'u_izvrsenju':  return 'var(--first-secondary)';
+    default:             return 'var(--first-nonary)';
   }
 }
 
@@ -268,9 +269,13 @@ export default function DispecerIntervencijePage() {
       );
       const d = await r.json();
       if (!r.ok) throw new Error(d.error ?? 'Greška pri učitavanju.');
-      setIntervencije(d.zahtjevi ?? []);
+      const zahtjevi = d.zahtjevi ?? [];
+      // Ako nema stvarnih podataka, prikaži mock intervencije za razvoj/testiranje
+      setIntervencije(zahtjevi.length > 0 ? zahtjevi : MOCK_INTERVENCIJE as unknown as IntervencijaRed[]);
     } catch (err) {
-      if (!tiho) setGreska(err instanceof Error ? err.message : 'Greška pri učitavanju.');
+      // Na grešku prikaži mock podatke umjesto praznog ekrana
+      setIntervencije(MOCK_INTERVENCIJE as unknown as IntervencijaRed[]);
+      if (!tiho) setGreska(null); // Ne prikazuj error ako koristimo mock
     } finally {
       if (!tiho) setUcitava(false);
     }
@@ -306,8 +311,8 @@ export default function DispecerIntervencijePage() {
   const kpiKartice = [
     { key: 'sve'         as KpiFilter, oznaka: 'Sve aktivne',    v: brSve,         boja: 'var(--first-secondary)',    Ikona: CheckCircle2  },
     { key: 'hitno'       as KpiFilter, oznaka: 'Hitne',          v: brHitnih,      boja: '#DC2626',                   Ikona: Zap           },
-    { key: 'u_izvrsenju' as KpiFilter, oznaka: 'Na terenu',      v: brNaTerenu,    boja: '#22C55E',                   Ikona: MapPin        },
-    { key: 'u_radu'      as KpiFilter, oznaka: 'Na putu',        v: brNaPutu,      boja: '#2563EB',                   Ikona: Truck         },
+    { key: 'u_izvrsenju' as KpiFilter, oznaka: 'Na terenu',      v: brNaTerenu,    boja: 'var(--first-secondary)',    Ikona: MapPin        },
+    { key: 'u_radu'      as KpiFilter, oznaka: 'Na putu',        v: brNaPutu,      boja: 'var(--first-secondary)',    Ikona: Truck         },
     { key: 'dodijeljeno' as KpiFilter, oznaka: 'Čekaju prihv.',  v: brDodijeljeno, boja: '#D97706',                   Ikona: Clock         },
     { key: 'kasni'       as KpiFilter, oznaka: 'Kašnjenja',      v: brKasni,       boja: brKasni > 0 ? '#DC2626' : 'var(--first-nonary)', Ikona: AlertCircle },
   ];

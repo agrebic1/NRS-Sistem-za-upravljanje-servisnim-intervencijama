@@ -5,6 +5,12 @@ import { korisnickiBrojZahtjevaZaId } from '@/lib/servisirane/korisnickiBrojZaht
 import { premiumZahtijevaObrazlozenjeSmanjenjaPrioriteta } from '@/lib/servisirane/operativniPrioritet';
 import { dispecerSmijeMijenjatiOperativniPrioritet } from '@/lib/servisirane/statusZahtjeva';
 import { dodijelijeSchema } from '@/lib/validations/servisirane';
+import { provjeriKonfliktServiseraNaTerminu } from '@/lib/servisirane/konfliktiTermina';
+import {
+  notifDodjelaIntervencije,
+  notifZatvaranjeIntervencije,
+  notifTimDodjela,
+} from '@/lib/servisirane/notifikacijeHelper';
 import { z } from 'zod';
 
 export const dynamic = 'force-dynamic';
@@ -31,12 +37,24 @@ const zatvorSchema = z.object({
   napomene:  z.string().max(1000).optional().nullable(),
 });
 
+const napomenaDispeSchema = z.object({
+  action:  z.literal('napomena'),
+  sadrzaj: z.string().min(1, 'Napomena ne može biti prazna.').max(2000, 'Napomena je predugačka (max 2000 znakova).'),
+});
+
+const zatvoriFormalnoSchema = z.object({
+  action:       z.literal('zatvoriFormalno'),
+  closure_note: z.string().max(1000).optional().nullable(),
+});
+
 const actionSchema = z.discriminatedUnion('action', [
   potvrdiSchema,
   odbijSchema,
   promijeniPrioritetSchema,
   dodijelijeSchema,
   zatvorSchema,
+  napomenaDispeSchema,
+  zatvoriFormalnoSchema,
 ]);
 /** Statusi u kojima dispečer može potvrditi/odbiti (MVP: uključuje in_review ako je u inboxu). */
 const PENDING_STATUSES = new Set(['na_cekanju', 'pending_review', 'in_review']);
@@ -118,7 +136,7 @@ export async function GET(
     // Aktivnosti intervencije
     const { data: aktivnosti } = await db
       .from('intervention_activities')
-      .select('*')
+      .select('*, autor:osoba!autor_id(ime, prezime, uloga)')
       .eq('zahtjev_id', requestId)
       .order('created_at', { ascending: true });
 
@@ -136,7 +154,10 @@ export async function GET(
         serviser:                 serviserProfil,
         korisnicki_broj_zahtjeva: korisnicki_broj_zahtjeva ?? undefined,
       },
-      aktivnosti: aktivnosti ?? [],
+      aktivnosti: (aktivnosti ?? []).map((a: Record<string, unknown>) => ({
+        ...a,
+        autor: Array.isArray(a.autor) ? a.autor[0] : a.autor,
+      })),
       evidencije: evidencije  ?? [],
     });
   } catch (err) {
@@ -231,7 +252,7 @@ export async function PATCH(
       return NextResponse.json({ success: true });
     }
 
-    // ── US-Sprint8: Dodjela servisera ──────────────────────────────────────────
+    // ── Dodjela servisera (s provjerom konflikta termina) ─────────────────────
     if (podaci.action === 'dodijeli') {
       const DOZVOLJENI_ZA_DODJELU = new Set(['potvrdeno', 'dodijeljeno']);
       if (!DOZVOLJENI_ZA_DODJELU.has(zahtjev.status)) {
@@ -239,6 +260,42 @@ export async function PATCH(
           { error: 'Dodjela servisera moguća je samo za potvrđene zahtjeve.' },
           { status: 400 }
         );
+      }
+
+      // Provjera konflikta termina (samo ako su oba termina prisutna)
+      if (
+        podaci.termin_planirani_pocetak &&
+        podaci.termin_planirani_kraj &&
+        !(podaci as Record<string, unknown>).override_konflikt
+      ) {
+        const konflikt = await provjeriKonfliktServiseraNaTerminu(
+          db,
+          podaci.serviser_id,
+          podaci.termin_planirani_pocetak,
+          podaci.termin_planirani_kraj,
+          requestId
+        );
+        if (konflikt) {
+          return NextResponse.json(
+            {
+              error:    'Serviser ima drugu intervenciju u odabranom terminu.',
+              kod:      'KONFLIKT_TERMINA',
+              konflikt,
+            },
+            { status: 409 }
+          );
+        }
+      }
+
+      // Evidentiramo override konflikta ako je prisutan
+      if ((podaci as Record<string, unknown>).override_konflikt) {
+        await db.from('intervention_activities').insert({
+          zahtjev_id: requestId,
+          autor_id:   user.id,
+          tip:        'konflikt_override',
+          sadrzaj:    `Dispečer prihvatio konflikt termina. Razlog: ${(podaci as Record<string, unknown>).razlog_konflikta ?? 'nije naveden'}`,
+          metadata:   { serviser_id: podaci.serviser_id },
+        });
       }
 
       const izmjena: Record<string, unknown> = {
@@ -266,14 +323,26 @@ export async function PATCH(
         autor_id:   user.id,
         tip:        'dodjela',
         sadrzaj:    'Dispečer dodijelio intervenciju serviseru.',
-        metadata:   {
-          serviser_id: podaci.serviser_id,
-          iz:          zahtjev.status,
-          u:           'dodijeljeno',
-        },
+        metadata:   { serviser_id: podaci.serviser_id, iz: zahtjev.status, u: 'dodijeljeno' },
       });
 
+      // Notifikacija serviseru
+      await notifDodjelaIntervencije(db, podaci.serviser_id, requestId);
+
       return NextResponse.json({ success: true, novi_status: 'dodijeljeno' });
+    }
+
+    // ── US-30: Napomena dispečera ─────────────────────────────────────────────
+    if (podaci.action === 'napomena') {
+      const { error: insErr } = await db.from('intervention_activities').insert({
+        zahtjev_id: requestId,
+        autor_id:   user.id,
+        tip:        'napomena',
+        sadrzaj:    podaci.sadrzaj.trim(),
+        metadata:   null,
+      });
+      if (insErr) return NextResponse.json({ error: insErr.message }, { status: 500 });
+      return NextResponse.json({ success: true });
     }
 
     // ── Zatvaranje intervencije (dispečer) ────────────────────────────────────
@@ -304,6 +373,74 @@ export async function PATCH(
       });
 
       return NextResponse.json({ success: true, novi_status: 'zavrseno' });
+    }
+
+    // ── Formalno zatvaranje intervencije (status: zavrseno → zatvoreno) ────────
+    if (podaci.action === 'zatvoriFormalno') {
+      if (zahtjev.status !== 'zavrseno') {
+        return NextResponse.json(
+          { error: 'Formalno zatvaranje moguće je samo za intervencije u statusu "zavrseno".' },
+          { status: 400 }
+        );
+      }
+
+      // Provjeri da postoji evidencija rada
+      const { count: evidCount } = await db
+        .from('work_evidence')
+        .select('*', { count: 'exact', head: true })
+        .eq('zahtjev_id', requestId);
+
+      if (!evidCount || evidCount === 0) {
+        return NextResponse.json(
+          { error: 'Intervencija ne može biti zatvorena bez evidencije rada. Serviser mora evidentirati obavljeni posao.' },
+          { status: 400 }
+        );
+      }
+
+      const { error: updErr } = await db
+        .from('service_requests')
+        .update({
+          status:       'zatvoreno',
+          closed_at:    new Date().toISOString(),
+          closed_by:    user.id,
+          closure_note: podaci.closure_note?.trim() || null,
+        })
+        .eq('id', requestId);
+
+      if (updErr) return NextResponse.json({ error: updErr.message }, { status: 500 });
+
+      await db.from('intervention_activities').insert({
+        zahtjev_id: requestId,
+        autor_id:   user.id,
+        tip:        'zatvaranje',
+        sadrzaj:    podaci.closure_note?.trim()
+          ? `Intervencija formalno zatvorena. Napomena: ${podaci.closure_note.trim()}`
+          : 'Intervencija formalno zatvorena.',
+        metadata:   { iz: 'zavrseno', u: 'zatvoreno' },
+      });
+
+      // Notifikacije svim servisirima u timu
+      const { data: zahtjevFull } = await db
+        .from('service_requests')
+        .select('serviser_dodijeljen_id')
+        .eq('id', requestId)
+        .single();
+
+      if (zahtjevFull?.serviser_dodijeljen_id) {
+        await notifZatvaranjeIntervencije(db, zahtjevFull.serviser_dodijeljen_id, requestId);
+      }
+
+      // Pomoćni serviseri
+      const { data: tim } = await db
+        .from('tim_intervencije')
+        .select('serviser_id')
+        .eq('zahtjev_id', requestId);
+
+      for (const clan of tim ?? []) {
+        await notifZatvaranjeIntervencije(db, clan.serviser_id, requestId);
+      }
+
+      return NextResponse.json({ success: true, novi_status: 'zatvoreno' });
     }
 
     if (!PENDING_STATUSES.has(zahtjev.status)) {

@@ -1,16 +1,17 @@
 // ─── Statusi zahtjeva — životni ciklus ───────────────────────────────────────
 
 export type StatusZahtjeva =
-  | 'pending_review' // 🟡 Novi — prije dispečerskog čarobnjaka (Sprint 7)
-  | 'na_cekanju'    // 🟡 Novi — korisnik može uređivati do ulaska u čarobnjak
-  | 'in_review'     // 🟡 U čarobnjaku — dispečer u koracima Pregled … Potvrda; korisnik ne smije mijenjati
-  | 'potvrdeno'     // 🟢 Potvrđeno u čarobnjaku — prioritet i termin; sljedeće dodjela / teren
-  | 'dodijeljeno'   // backward compat
-  | 'u_radu'        // backward compat
-  | 'u_izvrsenju'   // 🟢 Zelena — serviser krenuo na teren
-  | 'zavrseno'      // ⚫ Završeno
-  | 'otkazano'      // ⚫ Korisnik otkazao
-  | 'odbijeno';     // 🔴 Crvena — dispečer odbio (rejection_reason obavezan)
+  | 'pending_review' // Novi — prije dispečerskog čarobnjaka
+  | 'na_cekanju'    // Novi — korisnik može uređivati do ulaska u čarobnjak
+  | 'in_review'     // U čarobnjaku — dispečer u koracima Pregled … Potvrda
+  | 'potvrdeno'     // Potvrđeno u čarobnjaku — prioritet i termin
+  | 'dodijeljeno'   // Dodijeljen serviser
+  | 'u_radu'        // Serviser prihvatio — na putu
+  | 'u_izvrsenju'   // Serviser na terenu
+  | 'zavrseno'      // Operativno završeno (dispečer zatvorio)
+  | 'zatvoreno'     // Formalno zatvoreno — read-only, audit finaliziran
+  | 'otkazano'      // Korisnik otkazao
+  | 'odbijeno';     // Dispečer odbio (rejection_reason obavezan)
 
 export type NivoHitnosti    = 'NISKO' | 'SREDNJE' | 'VISOKO' | 'KRITIČNO';
 export type StatusAplikacije = 'na_cekanju' | 'odobreno' | 'odbijeno';
@@ -112,6 +113,12 @@ export interface ServisniZahtjev {
   serviser_odbio_razlog?:    string | null;
   /** Timestamp kada je serviser evidentirao rad. */
   rad_evidentiran_at?:       string | null;
+  /** Timestamp formalnog zatvaranja (status = zatvoreno). */
+  closed_at?:                string | null;
+  /** ID dispečera koji je formalno zatvorio intervenciju. */
+  closed_by?:                string | null;
+  /** Napomena dispečera pri formalnom zatvaranju. */
+  closure_note?:             string | null;
   created_at:           string;
   updated_at:           string;
 }
@@ -137,7 +144,12 @@ export type TipAktivnosti =
   | 'dodjela'
   | 'evidencija'
   | 'odbijanje'
-  | 'sistem';
+  | 'sistem'
+  | 'slika'
+  | 'tim_dodjela'
+  | 'tim_uklanjanje'
+  | 'zatvaranje'
+  | 'konflikt_override';
 
 export interface InterventionActivity {
   id:         number;
@@ -200,4 +212,68 @@ export interface ProfilKorisnika {
   premium_plan?: string | null;
   premium_cancelled_at?: string | null;
   premium_cancel_reason?: string | null;
+}
+
+// ─── Sprint 9: Tim intervencije ───────────────────────────────────────────────
+
+export interface ClanTima {
+  id:            number;
+  zahtjev_id:    number;
+  serviser_id:   string;
+  uloga:         'pomocni';
+  dodijelio_id:  string;
+  dodijeljeno_at: string;
+  serviser?: {
+    ime:          string;
+    prezime:      string;
+    broj_telefona: string | null;
+  };
+}
+
+// ─── Sprint 9: In-app notifikacije ───────────────────────────────────────────
+
+export type TipNotifikacije =
+  | 'dodjela_intervencije'
+  | 'prihvatanje_zadatka'
+  | 'odbijanje_zadatka'
+  | 'promjena_statusa'
+  | 'evidencija_rada'
+  | 'zavrsetak_intervencije'
+  | 'zatvaranje_intervencije'
+  | 'promjena_termina'
+  | 'uklanjanje_servisera'
+  | 'tim_dodjela';
+
+export interface Notifikacija {
+  id:          number;
+  korisnik_id: string;
+  tip:         TipNotifikacije;
+  naslov:      string;
+  poruka:      string;
+  procitano:   boolean;
+  zahtjev_id:  number | null;
+  created_at:  string;
+}
+
+// ─── Sprint 9: Slike intervencije ─────────────────────────────────────────────
+
+export interface SlikaIntervencije {
+  id:            number;
+  zahtjev_id:    number;
+  evidencija_id: number | null;
+  uploaded_by:   string;
+  image_url:     string;
+  naziv:         string | null;
+  opis:          string | null;
+  created_at:    string;
+}
+
+// ─── Sprint 9: Konflikt termina ───────────────────────────────────────────────
+
+export interface KonfliktTermina {
+  serviser_id:    string;
+  serviser_ime:   string;
+  zahtjev_id:     number;
+  pocetak:        string;
+  kraj:           string;
 }

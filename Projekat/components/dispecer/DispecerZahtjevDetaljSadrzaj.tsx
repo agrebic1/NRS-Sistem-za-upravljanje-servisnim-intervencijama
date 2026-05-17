@@ -1,697 +1,1471 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import Link from 'next/link';
-import { Check } from 'lucide-react';
+import {
+  Check, CheckCircle2, AlertTriangle, User, Phone, MapPin,
+  Calendar, Clock, FileText, MessageSquare, Image as ImageIcon,
+  ExternalLink, Wrench, Star, Briefcase, Zap,
+  Shield, ChevronRight, RotateCcw, Info, TrendingUp,
+} from 'lucide-react';
+import type { PreporukaServisera } from '@/lib/servisirane/preporukaServisera';
+import { izracunajPreporuke, scoreBojaHex } from '@/lib/servisirane/preporukaServisera';
 import { AlertMessage } from '@/components/ui/AlertMessage';
 import { Button } from '@/components/ui/Button';
-import { Select } from '@/components/ui/Select';
-import { Textarea } from '@/components/ui/Textarea';
-import { DispecerDetaljiZahtjevaKartica } from '@/components/dispecer/DispecerDetaljiZahtjevaKartica';
+import { MiniMapa } from '@/components/shared/MiniMapa';
 import { DispecerPregledTokaBadzevi } from '@/components/dispecer/DispecerPregledTokaBadzevi';
-import {
-  KorisnickaHitnostOutlinedChip,
-  PremiumHitnaBadge,
-} from '@/components/servisirane/zahtjevBadgeovi';
 import { ZahtjevKorisnickaPorukaBubble } from '@/components/servisirane/ZahtjevTimelineIPoruka';
-import type { ServisniZahtjev } from '@/domain/types/servisirane';
+import { PremiumHitnaBadge } from '@/components/servisirane/zahtjevBadgeovi';
+import type { ServisniZahtjev, ServiserZaDodjelu } from '@/domain/types/servisirane';
 import { labelKategorije } from '@/lib/servisirane/kategorije';
-import { uRecenicu } from '@/lib/servisirane/zahtjevPrikaz';
 import {
-  DISPECER_HITNOST_KORISNIK_NASLOV,
-  DISPECER_OPERATIVNI_NASLOV,
-  DISPECER_OPERATIVNI_SELECT_NASLOV,
-  DISPECER_OPERATIVNI_SELECT_OPIS,
-} from '@/lib/servisirane/dispecerPojmovi';
+  formatPrijavljenoDatumVrijeme,
+  hrefZaTelefon,
+  imePrezimePodnosioca,
+  preferiraniTerminZaDispecera,
+  uRecenicu,
+} from '@/lib/servisirane/zahtjevPrikaz';
+import { urlsPrilozenihSlika } from '@/lib/servisirane/slikeZahtjeva';
 import { premiumZahtijevaObrazlozenjeSmanjenjaPrioriteta } from '@/lib/servisirane/operativniPrioritet';
 import { dispecerSmijeMijenjatiOperativniPrioritet } from '@/lib/servisirane/statusZahtjeva';
 import { efektivniKorisnickiUrgencyScore } from '@/lib/servisirane/urgency';
 import { oznakaZaDispecerskiPrikazBroja } from '@/lib/servisirane/korisnickiBrojZahtjeva';
 
+// ─── Types ────────────────────────────────────────────────────────────────────
+
 type ZahtjevDetalj = ServisniZahtjev & {
   podnosilac: { ime: string; prezime: string; broj_telefona: string | null } | null;
 };
 
-const NIVOI_OPERATIVNOG_PRIORITETA = ['NISKO', 'SREDNJE', 'VISOKO', 'KRITIČNO', 'HITNO'] as const;
-type NivoOperativnogPrioriteta = (typeof NIVOI_OPERATIVNOG_PRIORITETA)[number];
+type NivoOp = 'NISKO' | 'SREDNJE' | 'VISOKO' | 'KRITIČNO' | 'HITNO';
 
-const KORACI_WIZARDA = [
-  { kljuc: 'pregled', naslov: 'Pregled' },
-  { kljuc: 'prioritet', naslov: 'Prioritet' },
-  { kljuc: 'termin', naslov: 'Termin i serviser' },
-  { kljuc: 'nalog', naslov: 'Pregled naloga' },
-  { kljuc: 'potvrda', naslov: 'Potvrda' },
+interface SlotDef {
+  id: string;
+  naziv: string;
+  opis: string;
+  od: string;
+  do: string;
+}
+
+// ─── Constants ────────────────────────────────────────────────────────────────
+
+const KORACI = [
+  { kljuc: 'pregled',   naziv: 'Pregled' },
+  { kljuc: 'prioritet', naziv: 'Prioritet' },
+  { kljuc: 'termin',    naziv: 'Termin i serviser' },
+  { kljuc: 'nalog',     naziv: 'Pregled naloga' },
+  { kljuc: 'potvrda',   naziv: 'Potvrda' },
 ] as const;
 
-const ZADNJI_KORAK_INDEKS = KORACI_WIZARDA.length - 1;
+const PRIORITETI = [
+  { kljuc: 'NISKO' as NivoOp,    boja: 'var(--first-secondary)', pozadina: 'rgb(var(--first-secondary-rgb)/0.08)', opis: 'Standardna intervencija, bez posebne hitnosti' },
+  { kljuc: 'SREDNJE' as NivoOp,  boja: '#D97706', pozadina: 'rgba(217,119,6,0.08)',   opis: 'Umjerena hitnost, riješiti u roku radnog dana' },
+  { kljuc: 'VISOKO' as NivoOp,   boja: '#EA580C', pozadina: 'rgba(234,88,12,0.08)',   opis: 'Povećana hitnost, riješiti što brže moguće' },
+  { kljuc: 'KRITIČNO' as NivoOp, boja: '#991B1B', pozadina: 'rgba(153,27,27,0.08)',   opis: 'Kritično stanje, odmah dodijeliti servisera' },
+  { kljuc: 'HITNO' as NivoOp,    boja: '#DC2626', pozadina: 'rgba(220,38,38,0.08)',   opis: 'Premium hitna intervencija — momentalna reakcija' },
+] as const;
 
-const PORUKA_SACUVAJ_PRIORITET_PRIJE_NASTAVKA = 'Prije nastavka sačuvajte operativni prioritet.';
-
-function normalizujFinalPriority(v: string | null | undefined): string | null {
-  const t = v?.trim();
-  return t ? t : null;
-}
-
-function inicijalniPrioritet(zahtjev: ServisniZahtjev): NivoOperativnogPrioriteta {
-  const fp = zahtjev.final_priority?.trim();
-  if (fp && (NIVOI_OPERATIVNOG_PRIORITETA as readonly string[]).includes(fp)) {
-    return fp as NivoOperativnogPrioriteta;
-  }
-  if (zahtjev.is_premium) return 'HITNO';
-  return 'SREDNJE';
-}
-
-/** Viši broj = viši operativni prioritet (za usporedbu smanjenja). */
-const RANG_OPERATIVNOG_PRIORITETA: Record<NivoOperativnogPrioriteta, number> = {
-  NISKO: 1,
-  SREDNJE: 2,
-  VISOKO: 3,
-  KRITIČNO: 4,
-  HITNO: 5,
+const PRIORITETI_RANG: Record<NivoOp, number> = {
+  NISKO: 1, SREDNJE: 2, VISOKO: 3, 'KRITIČNO': 4, HITNO: 5,
 };
 
-function referencniPrioritetZaSmanjenje(
-  zahtjev: ServisniZahtjev,
-  fpNaServeru: string | null,
-): NivoOperativnogPrioriteta {
-  if (
-    fpNaServeru &&
-    (NIVOI_OPERATIVNOG_PRIORITETA as readonly string[]).includes(fpNaServeru)
-  ) {
-    return fpNaServeru as NivoOperativnogPrioriteta;
-  }
-  return inicijalniPrioritet(zahtjev);
+const SLOTOVI: SlotDef[] = [
+  { id: 'jutro',        naziv: 'Jutarnji',        opis: '08:00 – 12:00', od: '08:00', do: '12:00' },
+  { id: 'poslijepodne', naziv: 'Poslijepodnevni', opis: '12:00 – 16:00', od: '12:00', do: '16:00' },
+  { id: 'vece',         naziv: 'Večernji',        opis: '16:00 – 20:00', od: '16:00', do: '20:00' },
+  { id: 'cijeli_dan',   naziv: 'Cijeli dan',      opis: '08:00 – 20:00', od: '08:00', do: '20:00' },
+];
+
+const MOCK_SERVISERI: ServiserZaDodjelu[] = [
+  { id: '00000000-0000-0000-0000-000000000001', ime: 'Amar',  prezime: 'Hadžić',  is_verified: true,  aktivnih_zadataka: 0, specialnosti: ['Vodoinstalacije', 'Grijanje'] },
+  { id: '00000000-0000-0000-0000-000000000002', ime: 'Emir',  prezime: 'Delić',   is_verified: true,  aktivnih_zadataka: 1, specialnosti: ['Klima uređaji', 'Elektrika'] },
+  { id: '00000000-0000-0000-0000-000000000003', ime: 'Kenan', prezime: 'Softić',  is_verified: true,  aktivnih_zadataka: 2, specialnosti: ['Bravarija', 'Stolarija'] },
+  { id: '00000000-0000-0000-0000-000000000004', ime: 'Haris', prezime: 'Musić',   is_verified: false, aktivnih_zadataka: 0, specialnosti: ['Elektrika', 'Grijanje'] },
+];
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function preporuciPrioritet(z: ZahtjevDetalj): NivoOp {
+  if (z.is_premium) return 'HITNO';
+  const s = z.urgency_score ?? 0;
+  if (s >= 80) return 'HITNO';
+  if (s >= 60) return 'KRITIČNO';
+  if (s >= 40) return 'VISOKO';
+  if (s >= 20) return 'SREDNJE';
+  return 'NISKO';
 }
 
-function jeOperativniPrioritetSmanjen(
-  odabrano: NivoOperativnogPrioriteta,
-  referenca: NivoOperativnogPrioriteta,
-): boolean {
-  return RANG_OPERATIVNOG_PRIORITETA[odabrano] < RANG_OPERATIVNOG_PRIORITETA[referenca];
+function inicijalniPrioritet(z: ZahtjevDetalj): NivoOp {
+  const fp = z.final_priority?.trim();
+  if (fp && fp in PRIORITETI_RANG) return fp as NivoOp;
+  return preporuciPrioritet(z);
 }
 
-function DispecerObradaWizardStepper({
-  aktivniKorak,
-  najdaljiDostupniKorak,
-  onOdabirKoraka,
-  onPokusajZakljucanKorak,
-}: {
-  aktivniKorak: number;
-  najdaljiDostupniKorak: number;
-  onOdabirKoraka: (i: number) => void;
-  /** Kad korisnik klikne korak koji još nije dostupan (npr. prije spremljenog prioriteta). */
-  onPokusajZakljucanKorak?: (indeks: number) => void;
-}) {
+function izracunajDostignutiKorak(z: ZahtjevDetalj): number {
+  const fin = ['potvrdeno', 'dodijeljeno', 'u_radu', 'u_izvrsenju', 'zavrseno'];
+  if (fin.includes(z.status)) return 4;
+  if (z.serviser_dodijeljen_id) return 3;
+  if (z.final_priority?.trim()) return 2;
+  return 0;
+}
+
+function todayISO(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function fmtDatum(iso: string): string {
+  return new Date(iso).toLocaleDateString('bs-BA', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+
+function urgencyBoja(score: number): string {
+  if (score >= 75) return '#DC2626';
+  if (score >= 50) return '#EA580C';
+  if (score >= 25) return '#D97706';
+  return 'var(--first-secondary)';
+}
+
+function urgencyLabel(score: number): string {
+  if (score >= 75) return 'Kritična hitnost';
+  if (score >= 50) return 'Visoka hitnost';
+  if (score >= 25) return 'Srednja hitnost';
+  return 'Niska hitnost';
+}
+
+// ─── SlikeDugme ───────────────────────────────────────────────────────────────
+
+function SlikeDugme({ slike }: { slike: string[] }) {
+  const [odabrana, setOdabrana] = useState<string | null>(null);
+  if (!slike.length) return (
+    <div className="flex flex-col items-center gap-2 py-8 text-center">
+      <div className="flex h-10 w-10 items-center justify-center rounded-xl" style={{ backgroundColor: 'rgb(var(--first-quinary-rgb)/0.4)' }}>
+        <ImageIcon className="h-5 w-5" style={{ color: 'var(--first-quinary)' }} />
+      </div>
+      <p className="text-xs font-medium" style={{ color: 'var(--first-nonary)' }}>Nema priloženih slika</p>
+    </div>
+  );
   return (
-    <nav aria-label="Koraci obrade zahtjeva" className="mt-4 min-w-0">
-      <ol className="m-0 grid list-none grid-cols-2 gap-2 p-0 sm:grid-cols-5">
-        {KORACI_WIZARDA.map((korak, indeks) => {
-          const jeAktivan = indeks === aktivniKorak;
-          const jeZavrsen = indeks < aktivniKorak;
-          const mozeKlik = indeks <= najdaljiDostupniKorak;
-          const jeOnemogucen = !mozeKlik;
-
-          return (
-            <li key={korak.kljuc} className="min-w-0">
-              <button
-                type="button"
-                aria-disabled={jeOnemogucen}
-                tabIndex={jeOnemogucen ? -1 : 0}
-                onClick={() => {
-                  if (mozeKlik) {
-                    onOdabirKoraka(indeks);
-                  } else {
-                    onPokusajZakljucanKorak?.(indeks);
-                  }
-                }}
-                aria-current={jeAktivan ? 'step' : undefined}
-                className={[
-                  'flex w-full min-w-0 flex-col items-center gap-1 rounded-xl px-2 py-2.5 text-center transition-colors sm:flex-row sm:justify-center sm:gap-2 sm:px-3',
-                  jeOnemogucen ? 'cursor-not-allowed opacity-45' : 'hover:bg-black/[0.03]',
-                  jeAktivan ? 'ring-2 ring-celestial-teal/50' : '',
-                ].join(' ')}
-                style={{
-                  backgroundColor: jeAktivan ? 'rgb(var(--first-quaternary-rgb) / 0.12)' : 'transparent',
-                  border: '1px solid rgb(var(--first-quaternary-rgb) / 0.35)',
-                }}
-              >
-                <span
-                  className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold tabular-nums"
-                  style={{
-                    backgroundColor: jeZavrsen
-                      ? 'rgb(13 148 136 / 0.2)'
-                      : jeAktivan
-                        ? 'rgb(13 148 136 / 0.35)'
-                        : 'rgb(var(--first-quaternary-rgb) / 0.2)',
-                    color: 'var(--first-octonary)',
-                  }}
-                  aria-hidden
-                >
-                  {jeZavrsen ? <Check className="h-4 w-4" strokeWidth={2.5} /> : indeks + 1}
-                </span>
-                <span
-                  className={[
-                    'text-[11px] font-semibold leading-tight sm:text-xs',
-                    jeAktivan ? '' : 'font-medium',
-                  ].join(' ')}
-                  style={{ color: jeOnemogucen ? 'var(--first-nonary)' : 'var(--first-octonary)' }}
-                >
-                  {korak.naslov}
-                </span>
-              </button>
-            </li>
-          );
-        })}
-      </ol>
-    </nav>
+    <>
+      <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
+        {slike.map((url, i) => (
+          <button key={i} type="button" onClick={() => setOdabrana(url)}
+            className="group relative aspect-square overflow-hidden rounded-xl border transition hover:shadow-md"
+            style={{ borderColor: 'rgb(var(--first-quaternary-rgb)/0.3)' }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={url} alt={`Slika ${i + 1}`} className="h-full w-full object-cover transition duration-200 group-hover:scale-105" />
+            <div className="absolute inset-0 flex items-center justify-center bg-black/0 transition group-hover:bg-black/20">
+              <ExternalLink className="h-4 w-4 text-white opacity-0 transition group-hover:opacity-100" />
+            </div>
+          </button>
+        ))}
+      </div>
+      {odabrana && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4" onClick={() => setOdabrana(null)}>
+          <div className="relative" onClick={e => e.stopPropagation()}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={odabrana} alt="Pregled slike" className="max-h-[85vh] max-w-[90vw] rounded-2xl object-contain" />
+            <button type="button" onClick={() => setOdabrana(null)}
+              className="absolute -right-3 -top-3 flex h-8 w-8 items-center justify-center rounded-full text-lg text-white"
+              style={{ backgroundColor: 'rgba(0,0,0,0.6)' }}>×</button>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
-const NAPOMENA_PLACEHOLDER_DEFAULT =
-  'Ova faza još nije povezana s podacima — omogućava dispečeru pregled cjelokupnog plana obrade.';
+// ─── WizardStepper ────────────────────────────────────────────────────────────
 
-function PlaceholderKoraka({
-  naslov,
-  uvod,
-  stavke,
-  oznaka,
-  napomenaDno,
-}: {
-  naslov: string;
-  uvod: string;
-  stavke: string[];
-  /** Npr. „Korak … — placeholder“ iznad naslova. */
-  oznaka?: string;
-  napomenaDno?: string;
+function WizardStepper({ aktivni, dostupnoDoInkluzivno, onKlik }: {
+  aktivni: number;
+  dostupnoDoInkluzivno: number;
+  onKlik: (i: number) => void;
 }) {
-  const tekstDno = napomenaDno ?? NAPOMENA_PLACEHOLDER_DEFAULT;
   return (
-    <div className="min-w-0 space-y-4">
-      {oznaka ? (
-        <p
-          className="m-0 text-[11px] font-semibold uppercase tracking-[0.12em]"
-          style={{ color: 'rgb(var(--first-nonary-rgb) / 0.78)' }}
-        >
-          {oznaka}
-        </p>
-      ) : null}
-      <h2 className="text-base font-semibold" style={{ color: 'var(--first-octonary)' }}>
-        {naslov}
-      </h2>
-      <p className="text-sm leading-relaxed" style={{ color: 'var(--first-nonary)' }}>
-        {uvod}
-      </p>
-      <ul className="m-0 list-disc space-y-2 pl-5 text-sm leading-relaxed" style={{ color: 'var(--first-octonary)' }}>
-        {stavke.map((s) => (
-          <li key={s}>{s}</li>
-        ))}
-      </ul>
-      <p className="rounded-xl border px-3 py-2 text-xs font-medium leading-snug" style={{ borderColor: 'rgb(var(--first-quaternary-rgb) / 0.35)', color: 'rgb(var(--first-nonary-rgb) / 0.92)' }}>
-        {tekstDno}
-      </p>
+    <div className="mb-6 flex items-start">
+      {KORACI.map((k, i) => {
+        const done    = i < aktivni;
+        const active  = i === aktivni;
+        const future  = i > aktivni;
+        const dostupno = i <= dostupnoDoInkluzivno;
+        const last    = i === KORACI.length - 1;
+        return (
+          <div key={k.kljuc} className="flex flex-1 flex-col items-center">
+            <div className="flex w-full items-center">
+              {i > 0 && (
+                <div className="h-0.5 flex-1 transition-colors duration-300"
+                  style={{ backgroundColor: done || active ? 'var(--first-secondary)' : 'rgb(var(--first-quaternary-rgb)/0.28)' }} />
+              )}
+              <button
+                type="button"
+                disabled={!dostupno}
+                onClick={() => dostupno && onKlik(i)}
+                className="relative flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full text-sm font-bold transition-all focus:outline-none"
+                style={{
+                  backgroundColor: done ? 'var(--first-secondary)' : active ? 'var(--first-primary)' : 'rgb(var(--first-quinary-rgb)/0.45)',
+                  color: done || active ? '#fff' : 'var(--first-nonary)',
+                  boxShadow: active ? '0 0 0 4px rgb(var(--first-primary-rgb)/0.18)' : 'none',
+                  cursor: dostupno ? 'pointer' : 'default',
+                  opacity: future && !dostupno ? 0.45 : 1,
+                }}
+              >
+                {done ? <Check className="h-4 w-4" strokeWidth={2.5} /> : i + 1}
+              </button>
+              {!last && (
+                <div className="h-0.5 flex-1 transition-colors duration-300"
+                  style={{ backgroundColor: done ? 'var(--first-secondary)' : 'rgb(var(--first-quaternary-rgb)/0.28)' }} />
+              )}
+            </div>
+            <span className="mt-2 hidden text-center text-[11px] font-semibold leading-tight sm:block"
+              style={{ color: active ? 'var(--first-primary)' : done ? 'var(--first-secondary)' : 'var(--first-nonary)', opacity: future && !dostupno ? 0.5 : 1 }}>
+              {k.naziv}
+            </span>
+          </div>
+        );
+      })}
     </div>
   );
 }
+
+// ─── SummarniPanel ────────────────────────────────────────────────────────────
+
+function SummarniPanel({ zahtjev, prioritet, odabraniServiser, odabraniDatum, odabraniSlot }: {
+  zahtjev: ZahtjevDetalj;
+  prioritet: NivoOp;
+  odabraniServiser: ServiserZaDodjelu | null;
+  odabraniDatum: string;
+  odabraniSlot: SlotDef | null;
+}) {
+  const { glavna, podkategorija } = labelKategorije(zahtjev);
+  const pDef = PRIORITETI.find(p => p.kljuc === prioritet)!;
+  const score = efektivniKorisnickiUrgencyScore(zahtjev);
+  const imePrezime = imePrezimePodnosioca(zahtjev.podnosilac);
+  const { tekstCijeli: terminTekst } = preferiraniTerminZaDispecera(zahtjev, { dispecerskiPregled: true });
+
+  function Red({ Ikona, label, children }: { Ikona: React.ComponentType<{className?:string;style?:React.CSSProperties}>; label: string; children: React.ReactNode }) {
+    return (
+      <div className="flex items-start gap-2.5 py-2.5" style={{ borderBottom: '1px solid rgb(var(--first-quaternary-rgb)/0.18)' }}>
+        <Ikona className="mt-0.5 h-3.5 w-3.5 flex-shrink-0" style={{ color: 'var(--first-quinary)' }} />
+        <div className="min-w-0 flex-1">
+          <p className="text-[10px] font-bold uppercase tracking-wide" style={{ color: 'var(--first-quinary)' }}>{label}</p>
+          <div className="mt-0.5 text-xs font-semibold leading-snug" style={{ color: 'var(--first-octonary)' }}>{children}</div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="w-full overflow-hidden rounded-2xl lg:w-72 xl:w-80 lg:flex-shrink-0 lg:sticky lg:top-4"
+      style={{ backgroundColor: 'rgb(var(--first-quinary-rgb)/0.15)', border: '1px solid rgb(var(--first-quaternary-rgb)/0.3)' }}>
+      <div className="px-4 py-3.5" style={{ backgroundColor: 'var(--first-primary)' }}>
+        <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'rgba(255,255,255,0.65)' }}>Sažetak naloga</p>
+        <p className="mt-0.5 text-sm font-bold text-white">#{oznakaZaDispecerskiPrikazBroja(zahtjev)}</p>
+        <p className="mt-0.5 truncate text-xs" style={{ color: 'rgba(255,255,255,0.75)' }}>{podkategorija || glavna}</p>
+      </div>
+      <div className="px-4 py-1">
+        <Red Ikona={User} label="Korisnik">{imePrezime || '—'}</Red>
+        <Red Ikona={MapPin} label="Adresa"><span className="line-clamp-2">{zahtjev.address || '—'}</span></Red>
+        <Red Ikona={Calendar} label="Prijavljeno">{formatPrijavljenoDatumVrijeme(zahtjev.created_at)}</Red>
+        <Red Ikona={Clock} label="Pref. termin">{terminTekst || '—'}</Red>
+        <Red Ikona={Zap} label="Hitnost korisnika">
+          <span style={{ color: urgencyBoja(score) }}>{urgencyLabel(score)} ({score})</span>
+        </Red>
+        {zahtjev.is_premium && (
+          <div className="flex items-center gap-1.5 py-2.5" style={{ borderBottom: '1px solid rgb(var(--first-quaternary-rgb)/0.18)' }}>
+            <Shield className="h-3.5 w-3.5" style={{ color: '#DC2626' }} />
+            <span className="text-xs font-bold" style={{ color: '#DC2626' }}>Premium korisnik</span>
+          </div>
+        )}
+        <div className="py-2.5" style={{ borderBottom: '1px solid rgb(var(--first-quaternary-rgb)/0.18)' }}>
+          <p className="text-[10px] font-bold uppercase tracking-wide mb-1.5" style={{ color: 'var(--first-quinary)' }}>Op. prioritet</p>
+          <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-bold"
+            style={{ backgroundColor: pDef.pozadina, color: pDef.boja, border: `1px solid ${pDef.boja}28` }}>
+            {prioritet}
+          </span>
+        </div>
+        {odabraniServiser && (
+          <div className="py-2.5" style={{ borderBottom: '1px solid rgb(var(--first-quaternary-rgb)/0.18)' }}>
+            <p className="text-[10px] font-bold uppercase tracking-wide mb-1.5" style={{ color: 'var(--first-quinary)' }}>Serviser</p>
+            <div className="flex items-center gap-2">
+              <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg"
+                style={{ backgroundColor: 'rgb(var(--first-secondary-rgb)/0.12)' }}>
+                <Wrench className="h-3.5 w-3.5" style={{ color: 'var(--first-secondary)' }} />
+              </div>
+              <span className="text-xs font-semibold" style={{ color: 'var(--first-octonary)' }}>
+                {odabraniServiser.ime} {odabraniServiser.prezime}
+              </span>
+            </div>
+          </div>
+        )}
+        {odabraniDatum && odabraniSlot && (
+          <div className="py-2.5">
+            <p className="text-[10px] font-bold uppercase tracking-wide mb-1" style={{ color: 'var(--first-quinary)' }}>Planirani termin</p>
+            <p className="text-xs font-semibold" style={{ color: 'var(--first-octonary)' }}>
+              {fmtDatum(odabraniDatum + 'T00:00:00')}
+            </p>
+            <p className="text-xs" style={{ color: 'var(--first-nonary)' }}>{odabraniSlot.opis}</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ─── KORAK 1 — Pregled zahtjeva ───────────────────────────────────────────────
+
+function KorakPregled({ zahtjev }: { zahtjev: ZahtjevDetalj }) {
+  const { glavna, podkategorija } = labelKategorije(zahtjev);
+  const score = efektivniKorisnickiUrgencyScore(zahtjev);
+  const imePrezime = imePrezimePodnosioca(zahtjev.podnosilac);
+  const telefon = zahtjev.podnosilac?.broj_telefona?.trim() || zahtjev.contact_phone?.trim() || '';
+  const telefonHref = telefon ? hrefZaTelefon(telefon) : null;
+  const opis = uRecenicu((zahtjev.description ?? '').trim());
+  const slike = urlsPrilozenihSlika(zahtjev as ZahtjevDetalj & Record<string, unknown>);
+  const { tekstCijeli: terminTekst } = preferiraniTerminZaDispecera(zahtjev, { dispecerskiPregled: true });
+
+  const sekcija = {
+    backgroundColor: 'rgb(var(--first-quinary-rgb)/0.12)',
+    border: '1px solid rgb(var(--first-quaternary-rgb)/0.28)',
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* Top 3 info cards */}
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+        {/* Korisnik */}
+        <div className="rounded-2xl p-4" style={sekcija}>
+          <div className="mb-3 flex items-center gap-2">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg"
+              style={{ backgroundColor: 'rgb(var(--first-secondary-rgb)/0.12)' }}>
+              <User className="h-3.5 w-3.5" style={{ color: 'var(--first-secondary)' }} />
+            </div>
+            <p className="text-[10px] font-bold uppercase tracking-wide" style={{ color: 'var(--first-nonary)' }}>Korisnik</p>
+          </div>
+          <p className="font-bold leading-snug" style={{ color: 'var(--first-octonary)' }}>{imePrezime || '—'}</p>
+          {telefon ? (
+            <a href={telefonHref ?? '#'} className="mt-1 flex items-center gap-1 text-sm font-medium hover:opacity-70"
+              style={{ color: 'var(--first-secondary)' }}>
+              <Phone className="h-3 w-3" />{telefon}
+            </a>
+          ) : (
+            <p className="mt-1 text-sm" style={{ color: 'var(--first-nonary)' }}>—</p>
+          )}
+          {zahtjev.is_premium && (
+            <div className="mt-2 flex items-center gap-1">
+              <Shield className="h-3 w-3" style={{ color: '#DC2626' }} />
+              <span className="text-[11px] font-bold" style={{ color: '#DC2626' }}>Premium</span>
+            </div>
+          )}
+        </div>
+
+        {/* Hitnost + Termin */}
+        <div className="rounded-2xl p-4" style={sekcija}>
+          <div className="mb-3 flex items-center gap-2">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg"
+              style={{ backgroundColor: 'rgb(var(--first-secondary-rgb)/0.1)' }}>
+              <Zap className="h-3.5 w-3.5" style={{ color: 'var(--first-secondary)' }} />
+            </div>
+            <p className="text-[10px] font-bold uppercase tracking-wide" style={{ color: 'var(--first-nonary)' }}>Hitnost</p>
+          </div>
+          <div className="flex items-center gap-2 mb-3">
+            <div className="h-8 flex-1 overflow-hidden rounded-lg" style={{ backgroundColor: 'rgb(var(--first-quaternary-rgb)/0.2)' }}>
+              <div className="h-full rounded-lg transition-all"
+                style={{ width: `${score}%`, backgroundColor: urgencyBoja(score) }} />
+            </div>
+            <span className="text-sm font-bold tabular-nums" style={{ color: urgencyBoja(score) }}>{score}</span>
+          </div>
+          <p className="text-xs font-semibold" style={{ color: urgencyBoja(score) }}>{urgencyLabel(score)}</p>
+          <div className="mt-3 pt-3" style={{ borderTop: '1px solid rgb(var(--first-quaternary-rgb)/0.2)' }}>
+            <p className="text-[10px] font-bold uppercase tracking-wide mb-1" style={{ color: 'var(--first-nonary)' }}>Termin korisnika</p>
+            <p className="text-xs font-medium" style={{ color: 'var(--first-octonary)' }}>{terminTekst || '—'}</p>
+          </div>
+        </div>
+
+        {/* Datum prijave + Kategorija */}
+        <div className="rounded-2xl p-4" style={sekcija}>
+          <div className="mb-3 flex items-center gap-2">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg"
+              style={{ backgroundColor: 'rgb(var(--first-secondary-rgb)/0.1)' }}>
+              <FileText className="h-3.5 w-3.5" style={{ color: 'var(--first-secondary)' }} />
+            </div>
+            <p className="text-[10px] font-bold uppercase tracking-wide" style={{ color: 'var(--first-nonary)' }}>Zahtjev</p>
+          </div>
+          <p className="font-bold leading-snug" style={{ color: 'var(--first-octonary)' }}>{podkategorija || glavna}</p>
+          {podkategorija && (
+            <p className="mt-0.5 text-xs" style={{ color: 'var(--first-nonary)' }}>{glavna}</p>
+          )}
+          <div className="mt-3 pt-3" style={{ borderTop: '1px solid rgb(var(--first-quaternary-rgb)/0.2)' }}>
+            <p className="text-[10px] font-bold uppercase tracking-wide mb-1" style={{ color: 'var(--first-nonary)' }}>Prijavljeno</p>
+            <p className="text-xs font-medium" style={{ color: 'var(--first-octonary)' }}>
+              {formatPrijavljenoDatumVrijeme(zahtjev.created_at)}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Lokacija + Mapa */}
+      <div className="rounded-2xl p-4" style={sekcija}>
+        <div className="mb-3 flex items-center gap-2">
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg"
+            style={{ backgroundColor: 'rgb(var(--first-secondary-rgb)/0.1)' }}>
+            <MapPin className="h-3.5 w-3.5" style={{ color: 'var(--first-secondary)' }} />
+          </div>
+          <p className="text-[10px] font-bold uppercase tracking-wide" style={{ color: 'var(--first-nonary)' }}>Lokacija intervencije</p>
+        </div>
+        <MiniMapa adresa={zahtjev.address ?? ''} lat={zahtjev.latitude} lng={zahtjev.longitude} visina={160} />
+      </div>
+
+      {/* Opis */}
+      <div className="rounded-2xl p-4" style={sekcija}>
+        <div className="mb-3 flex items-center gap-2">
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg"
+            style={{ backgroundColor: 'rgb(var(--first-secondary-rgb)/0.1)' }}>
+            <MessageSquare className="h-3.5 w-3.5" style={{ color: 'var(--first-secondary)' }} />
+          </div>
+          <p className="text-[10px] font-bold uppercase tracking-wide" style={{ color: 'var(--first-nonary)' }}>Opis problema</p>
+        </div>
+        {opis
+          ? <ZahtjevKorisnickaPorukaBubble tekst={opis} className="mt-0 mb-0" />
+          : <p className="text-sm" style={{ color: 'var(--first-nonary)' }}>Korisnik nije ostavio opis.</p>
+        }
+      </div>
+
+      {/* Slike */}
+      <div className="rounded-2xl p-4" style={sekcija}>
+        <div className="mb-3 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg"
+              style={{ backgroundColor: 'rgb(var(--first-secondary-rgb)/0.1)' }}>
+              <ImageIcon className="h-3.5 w-3.5" style={{ color: 'var(--first-secondary)' }} />
+            </div>
+            <p className="text-[10px] font-bold uppercase tracking-wide" style={{ color: 'var(--first-nonary)' }}>
+              Priložene slike {slike.length > 0 && `(${slike.length})`}
+            </p>
+          </div>
+        </div>
+        <SlikeDugme slike={slike} />
+      </div>
+    </div>
+  );
+}
+
+// ─── KORAK 2 — Operativni prioritet ───────────────────────────────────────────
+
+function KorakPrioritet({ zahtjev, prioritet, setPrioritet, downgradeRazlog, setDowngradeRazlog, mozeMijenjati }: {
+  zahtjev: ZahtjevDetalj;
+  prioritet: NivoOp;
+  setPrioritet: (p: NivoOp) => void;
+  downgradeRazlog: string;
+  setDowngradeRazlog: (s: string) => void;
+  mozeMijenjati: boolean;
+}) {
+  const preporuceni = preporuciPrioritet(zahtjev);
+  const score = efektivniKorisnickiUrgencyScore(zahtjev);
+  const jeSmanjenje = PRIORITETI_RANG[prioritet] < PRIORITETI_RANG[preporuceni];
+  const trebaPremium = zahtjev.is_premium && premiumZahtijevaObrazlozenjeSmanjenjaPrioriteta(prioritet);
+  const prikaziRazlog = mozeMijenjati && (jeSmanjenje || trebaPremium);
+
+  return (
+    <div className="space-y-5">
+      {/* Context row */}
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="flex items-center gap-2 rounded-xl px-3 py-2"
+          style={{ backgroundColor: 'rgb(var(--first-quinary-rgb)/0.3)', border: '1px solid rgb(var(--first-quaternary-rgb)/0.25)' }}>
+          <DispecerPregledTokaBadzevi zahtjev={zahtjev} />
+        </div>
+        <div className="flex items-center gap-2 rounded-xl px-3 py-2"
+          style={{ backgroundColor: 'rgb(var(--first-quinary-rgb)/0.28)', border: '1px solid rgb(var(--first-quaternary-rgb)/0.25)' }}>
+          <Zap className="h-3.5 w-3.5" style={{ color: urgencyBoja(score) }} />
+          <span className="text-xs font-bold" style={{ color: urgencyBoja(score) }}>
+            {urgencyLabel(score)} — {score}
+          </span>
+        </div>
+      </div>
+
+      {/* Info */}
+      <div className="flex items-start gap-2.5 rounded-xl px-4 py-3"
+        style={{ backgroundColor: 'rgb(var(--first-secondary-rgb)/0.05)', border: '1px solid rgb(var(--first-secondary-rgb)/0.15)' }}>
+        <Info className="h-4 w-4 flex-shrink-0 mt-0.5" style={{ color: 'var(--first-secondary)' }} />
+        <p className="text-xs leading-relaxed" style={{ color: 'var(--first-secondary)' }}>
+          Sistem preporučuje <strong>{preporuceni}</strong> na osnovu korisničke hitnosti i premium statusa.
+          {mozeMijenjati ? ' Odaberite operativni prioritet klikom na karticu.' : ' Operativni prioritet ne može se mijenjati za ovaj status.'}
+        </p>
+      </div>
+
+      {/* Priority cards */}
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+        {PRIORITETI.map(p => {
+          const odabran = prioritet === p.kljuc;
+          const jePreporuceni = preporuceni === p.kljuc;
+          return (
+            <button
+              key={p.kljuc}
+              type="button"
+              disabled={!mozeMijenjati}
+              onClick={() => mozeMijenjati && setPrioritet(p.kljuc)}
+              className="relative flex flex-col items-center gap-2 rounded-2xl p-4 text-center transition-all duration-150 focus:outline-none"
+              style={{
+                backgroundColor: odabran ? p.boja : p.pozadina,
+                border: odabran ? `2px solid ${p.boja}` : `1px solid ${p.boja}30`,
+                boxShadow: odabran ? `0 4px 20px ${p.boja}28` : 'none',
+                cursor: mozeMijenjati ? 'pointer' : 'default',
+                transform: odabran ? 'scale(1.03)' : 'scale(1)',
+              }}
+            >
+              {jePreporuceni && (
+                <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full px-2 py-0.5 text-[10px] font-bold"
+                  style={{ backgroundColor: p.boja, color: '#fff' }}>
+                  <Star className="inline h-2.5 w-2.5 mr-0.5" />Preporučeno
+                </span>
+              )}
+              <div className="h-3 w-3 rounded-full" style={{ backgroundColor: odabran ? '#fff' : p.boja }} />
+              <span className="text-sm font-black leading-none"
+                style={{ color: odabran ? '#fff' : p.boja }}>
+                {p.kljuc}
+              </span>
+              <p className="text-[10px] leading-tight"
+                style={{ color: odabran ? 'rgba(255,255,255,0.8)' : 'var(--first-nonary)' }}>
+                {p.opis}
+              </p>
+              {odabran && <Check className="h-4 w-4 text-white" strokeWidth={2.5} />}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Downgrade justification */}
+      {prikaziRazlog && (
+        <div className="rounded-2xl p-4"
+          style={{ backgroundColor: 'rgba(220,38,38,0.04)', border: '1px solid rgba(220,38,38,0.2)' }}>
+          <div className="mb-3 flex items-center gap-2">
+            <AlertTriangle className="h-4 w-4" style={{ color: '#DC2626' }} />
+            <p className="text-sm font-bold" style={{ color: '#DC2626' }}>
+              {trebaPremium ? 'Obavezno obrazloženje (premium zahtjev)' : 'Obrazloženje smanjenja prioriteta'}
+            </p>
+          </div>
+          <textarea
+            rows={3}
+            value={downgradeRazlog}
+            onChange={e => setDowngradeRazlog(e.target.value)}
+            placeholder="Npr. Korisnik označio hitno, ali nema rizika po sigurnost. Problem ne zahtijeva hitan izlazak."
+            className="w-full resize-none rounded-xl border px-4 py-3 text-sm focus:outline-none focus:ring-2"
+            style={{
+              borderColor: 'rgba(220,38,38,0.3)',
+              backgroundColor: 'rgb(255 255 255/0.9)',
+              color: 'var(--first-octonary)',
+            }}
+          />
+        </div>
+      )}
+
+      {!mozeMijenjati && (
+        <div className="flex items-center gap-2 rounded-xl px-4 py-3"
+          style={{ backgroundColor: 'rgb(var(--first-quinary-rgb)/0.3)', border: '1px solid rgb(var(--first-quaternary-rgb)/0.25)' }}>
+          <Info className="h-4 w-4" style={{ color: 'var(--first-nonary)' }} />
+          <p className="text-xs" style={{ color: 'var(--first-nonary)' }}>
+            Za ovaj status operativni prioritet se ne može mijenjati.
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── KORAK 3 — Termin i serviser ──────────────────────────────────────────────
+
+function KorakTerminIServiser({ zahtjev, odabraniDatum, setDatum, odabraniSlot, setSlot, napomene, setNapomene, preporuke, odabraniServiser, setServiser, ucitavaServisere, pomocniServiseri, setPomocniServiseri, konfliktUpozorenje, onOverrideKonflikt }: {
+  zahtjev: ZahtjevDetalj;
+  odabraniDatum: string;
+  setDatum: (s: string) => void;
+  odabraniSlot: SlotDef | null;
+  setSlot: (s: SlotDef | null) => void;
+  napomene: string;
+  setNapomene: (s: string) => void;
+  preporuke: PreporukaServisera[];
+  odabraniServiser: ServiserZaDodjelu | null;
+  setServiser: (s: ServiserZaDodjelu | null) => void;
+  ucitavaServisere: boolean;
+  pomocniServiseri: ServiserZaDodjelu[];
+  setPomocniServiseri: (s: ServiserZaDodjelu[]) => void;
+  konfliktUpozorenje: null | { zahtjev_id: number; pocetak: string; kraj: string };
+  onOverrideKonflikt: () => void;
+}) {
+  const serviseri = preporuke.map(p => p.serviser);
+  const sekcija = {
+    backgroundColor: 'rgb(var(--first-quinary-rgb)/0.12)',
+    border: '1px solid rgb(var(--first-quaternary-rgb)/0.28)',
+  };
+
+  return (
+    <div className="flex flex-col gap-5 lg:flex-row">
+      {/* LEFT: Termin */}
+      <div className="flex-1 space-y-4">
+        <div className="rounded-2xl p-5" style={sekcija}>
+          <div className="mb-4 flex items-center gap-2">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg"
+              style={{ backgroundColor: 'rgb(var(--first-secondary-rgb)/0.12)' }}>
+              <Calendar className="h-3.5 w-3.5" style={{ color: 'var(--first-secondary)' }} />
+            </div>
+            <p className="text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--first-nonary)' }}>Datum intervencije</p>
+          </div>
+          <input
+            type="date"
+            min={todayISO()}
+            value={odabraniDatum}
+            onChange={e => setDatum(e.target.value)}
+            className="w-full rounded-xl border px-4 py-3 text-sm font-semibold focus:outline-none focus:ring-2"
+            style={{
+              borderColor: 'rgb(var(--first-quaternary-rgb)/0.4)',
+              color: 'var(--first-octonary)',
+              backgroundColor: 'rgb(255 255 255/0.9)',
+            }}
+          />
+        </div>
+
+        <div className="rounded-2xl p-5" style={sekcija}>
+          <div className="mb-4 flex items-center gap-2">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg"
+              style={{ backgroundColor: 'rgb(var(--first-secondary-rgb)/0.12)' }}>
+              <Clock className="h-3.5 w-3.5" style={{ color: 'var(--first-secondary)' }} />
+            </div>
+            <p className="text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--first-nonary)' }}>Vremenski termin</p>
+          </div>
+          <div className="grid grid-cols-2 gap-2.5">
+            {SLOTOVI.map(slot => {
+              const aktivan = odabraniSlot?.id === slot.id;
+              return (
+                <button key={slot.id} type="button" onClick={() => setSlot(aktivan ? null : slot)}
+                  className="flex flex-col items-start rounded-xl p-3.5 text-left transition-all"
+                  style={{
+                    backgroundColor: aktivan ? 'var(--first-secondary)' : 'rgb(255 255 255/0.8)',
+                    border: aktivan ? '2px solid var(--first-secondary)' : '1px solid rgb(var(--first-quaternary-rgb)/0.35)',
+                    boxShadow: aktivan ? '0 4px 12px rgb(var(--first-secondary-rgb)/0.2)' : 'none',
+                  }}>
+                  <span className="text-sm font-bold" style={{ color: aktivan ? '#fff' : 'var(--first-octonary)' }}>
+                    {slot.naziv}
+                  </span>
+                  <span className="text-xs font-medium" style={{ color: aktivan ? 'rgba(255,255,255,0.8)' : 'var(--first-nonary)' }}>
+                    {slot.opis}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="rounded-2xl p-5" style={sekcija}>
+          <div className="mb-3 flex items-center gap-2">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg"
+              style={{ backgroundColor: 'rgb(var(--first-quinary-rgb)/0.4)' }}>
+              <FileText className="h-3.5 w-3.5" style={{ color: 'var(--first-nonary)' }} />
+            </div>
+            <p className="text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--first-nonary)' }}>Napomene dispečera</p>
+          </div>
+          <textarea
+            rows={3}
+            value={napomene}
+            onChange={e => setNapomene(e.target.value)}
+            placeholder="Operativne napomene za servisera — pristup, posebna oprema, kontakt na licu mjesta..."
+            className="w-full resize-none rounded-xl border px-4 py-3 text-sm focus:outline-none focus:ring-2"
+            style={{
+              borderColor: 'rgb(var(--first-quaternary-rgb)/0.4)',
+              backgroundColor: 'rgb(255 255 255/0.9)',
+              color: 'var(--first-octonary)',
+            }}
+          />
+        </div>
+      </div>
+
+      {/* RIGHT: Serviseri */}
+      <div className="lg:w-80 xl:w-96 flex-shrink-0 flex flex-col gap-4">
+
+        {/* Konflikt upozorenje */}
+        {konfliktUpozorenje && (
+          <div className="rounded-2xl p-4"
+            style={{ backgroundColor: 'rgba(217,119,6,0.05)', border: '1px solid rgba(217,119,6,0.3)' }}>
+            <div className="flex items-start gap-2 mb-3">
+              <AlertTriangle className="h-4 w-4 flex-shrink-0 mt-0.5" style={{ color: '#D97706' }} />
+              <div>
+                <p className="text-sm font-bold" style={{ color: '#D97706' }}>Konflikt termina</p>
+                <p className="text-xs mt-1" style={{ color: 'var(--first-octonary)' }}>
+                  Serviser je već dodijeljen intervenciji #{konfliktUpozorenje.zahtjev_id} u ovom terminu.
+                </p>
+              </div>
+            </div>
+            <button type="button" onClick={onOverrideKonflikt}
+              className="w-full rounded-xl px-4 py-2.5 text-sm font-semibold transition-all hover:opacity-85"
+              style={{ backgroundColor: '#D97706', color: '#fff' }}>
+              Svjesno prihvati konflikt
+            </button>
+          </div>
+        )}
+
+        {/* Sekcija 1 — Glavni serviser */}
+        <div className="rounded-2xl p-5" style={sekcija}>
+          <div className="mb-4 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg"
+                style={{ backgroundColor: 'var(--first-primary)', }}>
+                <Briefcase className="h-3.5 w-3.5 text-white" />
+              </div>
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--first-nonary)' }}>Glavni serviser</p>
+                <p className="text-[10px]" style={{ color: 'var(--first-nonary)' }}>Primarni izvršilac intervencije</p>
+              </div>
+            </div>
+          </div>
+
+          {ucitavaServisere ? (
+            <div className="flex flex-col items-center gap-3 py-6">
+              <div className="h-5 w-5 animate-spin rounded-full border-2 border-transparent" style={{ borderTopColor: 'var(--first-secondary)' }} />
+              <p className="text-xs" style={{ color: 'var(--first-nonary)' }}>Izračunavam preporuke...</p>
+            </div>
+          ) : preporuke.length === 0 ? (
+            <p className="py-4 text-center text-xs" style={{ color: 'var(--first-nonary)' }}>
+              Nema dostupnih servisera.
+            </p>
+          ) : (
+            <div className="flex flex-col gap-2">
+              {preporuke.map(({ serviser: srv, score, razlozi, jePreporucen }) => {
+                const odabran   = odabraniServiser?.id === srv.id;
+                const jePomocni = pomocniServiseri.some(p => p.id === srv.id);
+                const scoreBoja = scoreBojaHex(score);
+                return (
+                  <button key={srv.id} type="button"
+                    onClick={() => !jePomocni && setServiser(odabran ? null : srv)}
+                    disabled={jePomocni}
+                    className="relative flex flex-col gap-2 rounded-xl p-3 text-left transition-all disabled:opacity-40"
+                    style={{
+                      backgroundColor: odabran ? 'rgb(var(--first-primary-rgb)/0.06)' : 'rgb(255 255 255/0.8)',
+                      border: odabran ? '2px solid var(--first-primary)' : '1px solid rgb(var(--first-quaternary-rgb)/0.35)',
+                    }}>
+                    {/* Preporučeno badge */}
+                    {jePreporucen && (
+                      <div className="absolute -top-2.5 right-2 flex items-center gap-0.5 rounded-full px-2 py-0.5 text-[9px] font-bold"
+                        style={{ backgroundColor: 'var(--first-primary)', color: '#fff' }}>
+                        <Star className="h-2.5 w-2.5" />Preporučeno
+                      </div>
+                    )}
+
+                    {/* Top row: avatar + name + check */}
+                    <div className="flex items-center gap-2.5">
+                      <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl"
+                        style={{
+                          backgroundColor: odabran ? 'var(--first-primary)' : 'rgb(var(--first-quaternary-rgb)/0.28)',
+                        }}>
+                        <Wrench className="h-3.5 w-3.5" style={{ color: odabran ? '#fff' : 'var(--first-nonary)' }} />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-bold truncate" style={{ color: 'var(--first-octonary)' }}>
+                          {srv.ime} {srv.prezime}
+                          {srv.is_verified && (
+                            <Shield className="ml-1 inline h-3 w-3" style={{ color: 'var(--first-secondary)' }} />
+                          )}
+                        </p>
+                      </div>
+                      {odabran && (
+                        <div className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full"
+                          style={{ backgroundColor: 'var(--first-primary)' }}>
+                          <Check className="h-3 w-3 text-white" strokeWidth={2.5} />
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Score bar */}
+                    <div className="flex items-center gap-2">
+                      <TrendingUp className="h-3 w-3 flex-shrink-0" style={{ color: scoreBoja }} />
+                      <div className="flex-1 h-1.5 rounded-full overflow-hidden"
+                        style={{ backgroundColor: 'rgb(var(--first-quaternary-rgb)/0.25)' }}>
+                        <div className="h-full rounded-full transition-all duration-500"
+                          style={{ width: `${score}%`, backgroundColor: scoreBoja }} />
+                      </div>
+                      <span className="text-[10px] font-bold tabular-nums w-7 text-right"
+                        style={{ color: scoreBoja }}>
+                        {score}
+                      </span>
+                    </div>
+
+                    {/* Reason tags */}
+                    {razlozi.length > 0 && (
+                      <div className="flex flex-wrap gap-1">
+                        {razlozi.map(r => (
+                          <span key={r} className="rounded px-1.5 py-0.5 text-[9px] font-semibold"
+                            style={{
+                              backgroundColor: 'rgb(var(--first-quaternary-rgb)/0.2)',
+                              color: 'var(--first-nonary)',
+                            }}>
+                            {r}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* Sekcija 2 — Pomoćni serviseri */}
+        <div className="rounded-2xl p-5" style={sekcija}>
+          <div className="mb-3 flex items-center gap-2">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg"
+              style={{ backgroundColor: 'rgb(var(--first-secondary-rgb)/0.12)' }}>
+              <Star className="h-3.5 w-3.5" style={{ color: 'var(--first-secondary)' }} />
+            </div>
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--first-nonary)' }}>Pomoćni serviseri</p>
+              <p className="text-[10px]" style={{ color: 'var(--first-nonary)' }}>Opciono dodatno osoblje</p>
+            </div>
+          </div>
+
+          {/* Lista odabranih pomoćnih */}
+          {pomocniServiseri.length > 0 && (
+            <div className="mb-3 flex flex-col gap-1.5">
+              {pomocniServiseri.map(p => (
+                <div key={p.id} className="flex items-center gap-2 rounded-xl px-3 py-2"
+                  style={{ backgroundColor: 'rgb(var(--first-secondary-rgb)/0.06)', border: '1px solid rgb(var(--first-secondary-rgb)/0.18)' }}>
+                  <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg text-[10px] font-bold"
+                    style={{ backgroundColor: 'rgb(var(--first-secondary-rgb)/0.15)', color: 'var(--first-secondary)' }}>
+                    {p.ime[0]}{p.prezime[0]}
+                  </div>
+                  <p className="flex-1 text-xs font-semibold truncate" style={{ color: 'var(--first-octonary)' }}>
+                    {p.ime} {p.prezime}
+                  </p>
+                  <button type="button"
+                    onClick={() => setPomocniServiseri(pomocniServiseri.filter(x => x.id !== p.id))}
+                    className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full transition hover:bg-red-100"
+                    style={{ color: '#DC2626' }}>
+                    <ChevronRight className="h-3 w-3 rotate-180" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Dodaj iz liste */}
+          {serviseri.filter(s =>
+            s.id !== odabraniServiser?.id &&
+            !pomocniServiseri.some(p => p.id === s.id)
+          ).length > 0 ? (
+            <div className="flex flex-col gap-1.5">
+              {serviseri
+                .filter(s => s.id !== odabraniServiser?.id && !pomocniServiseri.some(p => p.id === s.id))
+                .map(srv => (
+                  <button key={srv.id} type="button"
+                    onClick={() => setPomocniServiseri([...pomocniServiseri, srv])}
+                    className="flex items-center gap-2 rounded-xl px-3 py-2 text-left transition-all hover:opacity-80"
+                    style={{ backgroundColor: 'rgb(255 255 255/0.8)', border: '1px dashed rgb(var(--first-quaternary-rgb)/0.4)' }}>
+                    <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg text-[10px] font-bold"
+                      style={{ backgroundColor: 'rgb(var(--first-quaternary-rgb)/0.3)', color: 'var(--first-nonary)' }}>
+                      {srv.ime[0]}{srv.prezime[0]}
+                    </div>
+                    <p className="flex-1 text-xs font-medium truncate" style={{ color: 'var(--first-octonary)' }}>
+                      {srv.ime} {srv.prezime}
+                    </p>
+                    <span className="text-[10px] font-semibold" style={{ color: 'var(--first-secondary)' }}>+ Dodaj</span>
+                  </button>
+                ))}
+            </div>
+          ) : (
+            <p className="text-xs text-center py-2" style={{ color: 'var(--first-nonary)' }}>
+              {pomocniServiseri.length > 0 ? 'Svi serviseri su dodani.' : 'Nema dostupnih pomoćnih servisera.'}
+            </p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── KORAK 4 — Pregled naloga ─────────────────────────────────────────────────
+
+function KorakPregledNaloga({ zahtjev, prioritet, odabraniServiser, odabraniDatum, odabraniSlot, napomene, onUredi }: {
+  zahtjev: ZahtjevDetalj;
+  prioritet: NivoOp;
+  odabraniServiser: ServiserZaDodjelu | null;
+  odabraniDatum: string;
+  odabraniSlot: SlotDef | null;
+  napomene: string;
+  onUredi: (korak: number) => void;
+}) {
+  const { glavna, podkategorija } = labelKategorije(zahtjev);
+  const imePrezime = imePrezimePodnosioca(zahtjev.podnosilac);
+  const telefon = zahtjev.podnosilac?.broj_telefona || zahtjev.contact_phone || '';
+  const pDef = PRIORITETI.find(p => p.kljuc === prioritet)!;
+  const score = efektivniKorisnickiUrgencyScore(zahtjev);
+  const slike = urlsPrilozenihSlika(zahtjev as ZahtjevDetalj & Record<string, unknown>);
+
+  function NalogKartica({ naslov, korak, children }: { naslov: string; korak: number; children: React.ReactNode }) {
+    return (
+      <div className="relative rounded-2xl p-5 transition-all"
+        style={{ backgroundColor: 'rgb(var(--first-quinary-rgb)/0.15)', border: '1px solid rgb(var(--first-quaternary-rgb)/0.28)' }}>
+        <div className="mb-3 flex items-center justify-between">
+          <p className="text-[10px] font-bold uppercase tracking-wide" style={{ color: 'var(--first-nonary)' }}>{naslov}</p>
+          <button type="button" onClick={() => onUredi(korak)}
+            className="flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] font-semibold transition hover:opacity-70"
+            style={{ color: 'var(--first-secondary)', backgroundColor: 'rgb(var(--first-secondary-rgb)/0.08)' }}>
+            <RotateCcw className="h-3 w-3" />Uredi
+          </button>
+        </div>
+        {children}
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center gap-2 rounded-xl px-4 py-3"
+        style={{ backgroundColor: 'rgba(34,197,94,0.06)', border: '1px solid rgba(34,197,94,0.2)' }}>
+        <CheckCircle2 className="h-4 w-4 flex-shrink-0" style={{ color: '#16A34A' }} />
+        <p className="text-sm font-semibold" style={{ color: '#16A34A' }}>
+          Pregled kompletnog naloga — provjerite sve detalje prije finalne potvrde
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <NalogKartica naslov="Korisnik" korak={0}>
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl text-sm font-bold"
+              style={{ backgroundColor: 'rgb(var(--first-secondary-rgb)/0.1)', color: 'var(--first-secondary)' }}>
+              {(imePrezime || '?').charAt(0)}
+            </div>
+            <div>
+              <p className="font-bold" style={{ color: 'var(--first-octonary)' }}>{imePrezime || '—'}</p>
+              {telefon && <p className="text-xs" style={{ color: 'var(--first-nonary)' }}>{telefon}</p>}
+              {zahtjev.is_premium && (
+                <span className="flex items-center gap-1 text-[11px] font-bold" style={{ color: '#DC2626' }}>
+                  <Shield className="h-3 w-3" />Premium
+                </span>
+              )}
+            </div>
+          </div>
+        </NalogKartica>
+
+        <NalogKartica naslov="Zahtjev" korak={0}>
+          <p className="font-bold" style={{ color: 'var(--first-octonary)' }}>{podkategorija || glavna}</p>
+          {podkategorija && <p className="text-xs mt-0.5" style={{ color: 'var(--first-nonary)' }}>{glavna}</p>}
+          <div className="mt-2 flex items-center gap-2">
+            <Zap className="h-3.5 w-3.5" style={{ color: urgencyBoja(score) }} />
+            <span className="text-xs font-semibold" style={{ color: urgencyBoja(score) }}>
+              {urgencyLabel(score)} ({score})
+            </span>
+          </div>
+          {slike.length > 0 && (
+            <p className="mt-1 text-xs" style={{ color: 'var(--first-nonary)' }}>{slike.length} priložen{slike.length === 1 ? 'a slika' : 'e slike'}</p>
+          )}
+        </NalogKartica>
+
+        <NalogKartica naslov="Lokacija" korak={0}>
+          <MiniMapa adresa={zahtjev.address ?? ''} lat={zahtjev.latitude} lng={zahtjev.longitude} visina={100} />
+        </NalogKartica>
+
+        <NalogKartica naslov="Operativni prioritet" korak={1}>
+          <span className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-black"
+            style={{ backgroundColor: pDef.pozadina, color: pDef.boja, border: `1.5px solid ${pDef.boja}35` }}>
+            <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: pDef.boja }} />
+            {prioritet}
+          </span>
+          <p className="mt-2 text-xs" style={{ color: 'var(--first-nonary)' }}>{pDef.opis}</p>
+        </NalogKartica>
+
+        <NalogKartica naslov="Termin" korak={2}>
+          {odabraniDatum && odabraniSlot ? (
+            <>
+              <p className="font-bold text-base" style={{ color: 'var(--first-octonary)' }}>{fmtDatum(odabraniDatum + 'T00:00:00')}</p>
+              <div className="mt-1 flex items-center gap-2">
+                <div className="h-6 w-1.5 rounded-full" style={{ backgroundColor: 'var(--first-secondary)' }} />
+                <p className="text-sm font-semibold" style={{ color: 'var(--first-secondary)' }}>{odabraniSlot.opis}</p>
+              </div>
+              <p className="mt-1 text-xs" style={{ color: 'var(--first-nonary)' }}>{odabraniSlot.naziv} termin</p>
+            </>
+          ) : (
+            <p className="text-sm" style={{ color: '#DC2626' }}>Termin nije odabran</p>
+          )}
+        </NalogKartica>
+
+        <NalogKartica naslov="Serviser" korak={2}>
+          {odabraniServiser ? (
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl"
+                style={{ backgroundColor: 'rgb(var(--first-secondary-rgb)/0.12)' }}>
+                <Wrench className="h-5 w-5" style={{ color: 'var(--first-secondary)' }} />
+              </div>
+              <div>
+                <p className="font-bold" style={{ color: 'var(--first-octonary)' }}>
+                  {odabraniServiser.ime} {odabraniServiser.prezime}
+                  {odabraniServiser.is_verified && <Shield className="ml-1 inline h-3 w-3" style={{ color: 'var(--first-secondary)' }} />}
+                </p>
+                <div className="flex flex-wrap gap-1 mt-1">
+                  {odabraniServiser.specialnosti.slice(0, 2).map(s => (
+                    <span key={s} className="text-[10px] rounded px-1.5 py-0.5"
+                      style={{ backgroundColor: 'rgb(var(--first-quaternary-rgb)/0.3)', color: 'var(--first-nonary)' }}>{s}</span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <p className="text-sm" style={{ color: '#DC2626' }}>Serviser nije odabran</p>
+          )}
+        </NalogKartica>
+      </div>
+
+      {napomene.trim() && (
+        <div className="rounded-2xl p-5"
+          style={{ backgroundColor: 'rgb(var(--first-quinary-rgb)/0.15)', border: '1px solid rgb(var(--first-quaternary-rgb)/0.28)' }}>
+          <div className="mb-2 flex items-center justify-between">
+            <p className="text-[10px] font-bold uppercase tracking-wide" style={{ color: 'var(--first-nonary)' }}>Napomene dispečera</p>
+            <button type="button" onClick={() => onUredi(2)}
+              className="flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] font-semibold"
+              style={{ color: 'var(--first-secondary)', backgroundColor: 'rgb(var(--first-secondary-rgb)/0.08)' }}>
+              <RotateCcw className="h-3 w-3" />Uredi
+            </button>
+          </div>
+          <p className="text-sm leading-relaxed" style={{ color: 'var(--first-octonary)' }}>{napomene}</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── KORAK 5 — Potvrda ────────────────────────────────────────────────────────
+
+function KorakPotvrda({ zahtjev, prioritet, odabraniServiser, odabraniDatum, odabraniSlot, potvrdjeno, setPotvrdjeno, imeDispecera }: {
+  zahtjev: ZahtjevDetalj;
+  prioritet: NivoOp;
+  odabraniServiser: ServiserZaDodjelu | null;
+  odabraniDatum: string;
+  odabraniSlot: SlotDef | null;
+  potvrdjeno: boolean;
+  setPotvrdjeno: (b: boolean) => void;
+  imeDispecera: string;
+}) {
+  const pDef = PRIORITETI.find(p => p.kljuc === prioritet)!;
+  const { glavna, podkategorija } = labelKategorije(zahtjev);
+  const imePrezime = imePrezimePodnosioca(zahtjev.podnosilac);
+  const sada = new Date();
+
+  return (
+    <div className="space-y-5">
+      {/* Confirmation hero */}
+      <div className="flex flex-col items-center gap-4 rounded-2xl py-8 text-center"
+        style={{ backgroundColor: 'rgb(var(--first-quinary-rgb)/0.15)', border: '1px solid rgb(var(--first-quaternary-rgb)/0.28)' }}>
+        <div className="flex h-16 w-16 items-center justify-center rounded-2xl"
+          style={{ backgroundColor: 'rgba(34,197,94,0.1)', border: '2px solid rgba(34,197,94,0.25)' }}>
+          <CheckCircle2 className="h-8 w-8" style={{ color: '#16A34A' }} />
+        </div>
+        <div>
+          <h3 className="text-xl font-black" style={{ color: 'var(--first-octonary)' }}>Nalog je spreman za potvrdu</h3>
+          <p className="mt-1 text-sm" style={{ color: 'var(--first-nonary)' }}>
+            Provjerite sve detalje i potvrdite operativni nalog
+          </p>
+        </div>
+      </div>
+
+      {/* Summary compact */}
+      <div className="overflow-hidden rounded-2xl" style={{ border: '1px solid rgb(var(--first-quaternary-rgb)/0.28)' }}>
+        {[
+          { label: 'Korisnik', value: imePrezime || '—' },
+          { label: 'Zahtjev', value: podkategorija || glavna },
+          { label: 'Prioritet', value: <span style={{ color: pDef.boja, fontWeight: 700 }}>{prioritet}</span> },
+          { label: 'Serviser', value: odabraniServiser ? `${odabraniServiser.ime} ${odabraniServiser.prezime}` : <span style={{ color: '#DC2626' }}>Nije odabran</span> },
+          {
+            label: 'Termin', value: odabraniDatum && odabraniSlot
+              ? `${fmtDatum(odabraniDatum + 'T00:00:00')} — ${odabraniSlot.opis}`
+              : <span style={{ color: '#DC2626' }}>Nije odabran</span>
+          },
+        ].map(({ label, value }, i) => (
+          <div key={i} className="flex items-center justify-between gap-4 px-5 py-3.5"
+            style={{ borderBottom: i < 4 ? '1px solid rgb(var(--first-quaternary-rgb)/0.18)' : 'none' }}>
+            <p className="text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--first-nonary)' }}>{label}</p>
+            <p className="text-right text-sm font-semibold" style={{ color: 'var(--first-octonary)' }}>{value}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Dispatcher + timestamp */}
+      <div className="flex items-center justify-between gap-4 rounded-2xl px-5 py-4"
+        style={{ backgroundColor: 'rgb(var(--first-secondary-rgb)/0.06)', border: '1px solid rgb(var(--first-secondary-rgb)/0.15)' }}>
+        <div className="flex items-center gap-3">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl text-sm font-bold"
+            style={{ backgroundColor: 'var(--first-secondary)', color: '#fff' }}>
+            {imeDispecera.charAt(0)}
+          </div>
+          <div>
+            <p className="text-xs font-bold" style={{ color: 'var(--first-octonary)' }}>{imeDispecera}</p>
+            <p className="text-[11px]" style={{ color: 'var(--first-nonary)' }}>Dispečer</p>
+          </div>
+        </div>
+        <div className="text-right">
+          <p className="text-xs font-bold tabular-nums" style={{ color: 'var(--first-octonary)' }}>
+            {sada.toLocaleDateString('bs-BA', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+          </p>
+          <p className="text-[11px] tabular-nums" style={{ color: 'var(--first-nonary)' }}>
+            {sada.toLocaleTimeString('bs-BA', { hour: '2-digit', minute: '2-digit' })}
+          </p>
+        </div>
+      </div>
+
+      {/* Confirmation checkbox */}
+      <label className="flex cursor-pointer items-start gap-3.5 rounded-2xl p-5 transition-all"
+        style={{
+          backgroundColor: potvrdjeno ? 'rgb(var(--first-secondary-rgb)/0.06)' : 'rgb(var(--first-quinary-rgb)/0.15)',
+          border: `2px solid ${potvrdjeno ? 'rgb(var(--first-secondary-rgb)/0.35)' : 'rgb(var(--first-quaternary-rgb)/0.28)'}`,
+        }}>
+        <input
+          type="checkbox"
+          checked={potvrdjeno}
+          onChange={e => setPotvrdjeno(e.target.checked)}
+          className="mt-0.5 h-5 w-5 flex-shrink-0 cursor-pointer accent-green-600"
+        />
+        <p className="text-sm font-semibold leading-relaxed" style={{ color: 'var(--first-octonary)' }}>
+          Potvrđujem da su svi podaci provjereni i da je nalog spreman za obradu.
+          Preuzimam operativnu odgovornost za dodjelu servisera i termin intervencije.
+        </p>
+      </label>
+    </div>
+  );
+}
+
+// ─── MAIN EXPORT ──────────────────────────────────────────────────────────────
 
 export function DispecerZahtjevDetaljSadrzaj({
   zahtjev,
   requestId,
   onRequestUpdated,
-  prikaziDugmeNazad = false,
-  hrefNazad = '/dispecer',
   fokusKorakTermin = false,
 }: {
   zahtjev: ZahtjevDetalj;
   requestId: string;
   onRequestUpdated?: (zahtjev: ZahtjevDetalj) => void;
   prikaziDugmeNazad?: boolean;
-  /** Npr. `/dispecer?z=123` da se na kontrolnoj tabli zadrži isti zahtjev. */
   hrefNazad?: string;
-  /** Otvaranje stranice s `?korak=termin` fokusira korak „Termin i serviser“ u čarobnjaku. */
   fokusKorakTermin?: boolean;
 }) {
-  const [akcijaGreska, setAkcijaGreska] = useState<string | null>(null);
-  const [jeSlanje, setJeSlanje] = useState(false);
-  const [prioritet, setPrioritet] = useState<NivoOperativnogPrioriteta>('SREDNJE');
+  const [aktivniKorak,    setAktivniKorakRaw] = useState(0);
+  const [dostignutiKorak, setDostignutiKorak] = useState(() => izracunajDostignutiKorak(zahtjev));
+  const [prioritet,       setPrioritet]       = useState<NivoOp>(() => inicijalniPrioritet(zahtjev));
   const [downgradeRazlog, setDowngradeRazlog] = useState('');
-  const [aktivniKorak, setAktivniKorak] = useState(0);
-  const [greskaOperativnogPrioriteta, setGreskaOperativnogPrioriteta] = useState<string | null>(null);
-  const refObrazlozenjeSmanjenja = useRef<HTMLTextAreaElement>(null);
-  const bioObrazlozenjeSmanjenjaPrikazano = useRef(false);
-
-  const kategorija = labelKategorije(zahtjev);
-  const { glavna: naslovKategorija, podkategorija: naslovPodkategorija } = kategorija;
-  const porukaKorisnikaTekst = uRecenicu((zahtjev.description ?? '').trim());
+  const [odabraniDatum,   setOdabraniDatum]   = useState(todayISO);
+  const [odabraniSlot,    setOdabraniSlot]    = useState<SlotDef | null>(null);
+  const [napomene,        setNapomene]        = useState('');
+  const [preporuke,       setPreporuke]       = useState<PreporukaServisera[]>([]);
+  const [ucitavaServ,     setUcitavaServ]     = useState(false);
+  const [odabraniServ,    setOdabraniServ]    = useState<ServiserZaDodjelu | null>(null);
+  const [potvrdjeno,        setPotvrdjeno]        = useState(false);
+  const [imeDispecera,      setImeDispecera]      = useState('Dispečer');
+  const [jeSlanje,          setJeSlanje]          = useState(false);
+  const [greska,            setGreska]            = useState<string | null>(null);
+  const [korakGreska,       setKorakGreska]       = useState<string | null>(null);
+  const [pomocniServiseri,  setPomocniServiseri]  = useState<ServiserZaDodjelu[]>([]);
+  const [konfliktUpozorenje,setKonfliktUpozorenje]= useState<null | { zahtjev_id: number; pocetak: string; kraj: string }>(null);
 
   const mozeMijenjatiPrioritet = dispecerSmijeMijenjatiOperativniPrioritet(zahtjev.status);
 
-  const fpNaServeru = normalizujFinalPriority(zahtjev.final_priority);
-
-  const prioritetIzmijenjen = prioritet !== (fpNaServeru ?? '');
-
-  const razlogNaServeru = (zahtjev.premium_priority_override_reason ?? '').trim();
-  const trebaPremiumObrazlozenje = zahtjev.is_premium && premiumZahtijevaObrazlozenjeSmanjenjaPrioriteta(prioritet);
-
-  const razlogDowngradeIzmijenjen =
-    trebaPremiumObrazlozenje && downgradeRazlog.trim() !== razlogNaServeru;
-
-  const formaNijeSinhronizirana =
-    mozeMijenjatiPrioritet && (prioritetIzmijenjen || razlogDowngradeIzmijenjen);
-
-  const mozeNapredovatiNaPlaceholdere =
-    !mozeMijenjatiPrioritet || (fpNaServeru !== null && !formaNijeSinhronizirana);
-
-  const najdaljiDostupniKorak = mozeNapredovatiNaPlaceholdere ? ZADNJI_KORAK_INDEKS : 1;
-
-  const referencaZaSmanjenje = referencniPrioritetZaSmanjenje(zahtjev, fpNaServeru);
-  const prikaziPoljeObrazlozenjaSmanjenja =
-    trebaPremiumObrazlozenje || jeOperativniPrioritetSmanjen(prioritet, referencaZaSmanjenje);
-
-  const labelObrazlozenjaSmanjenja =
-    trebaPremiumObrazlozenje
-      ? 'Obrazloženje za smanjenje ispod hitne operativne grupe (obavezno za premium zahtjeve)'
-      : 'Obrazloženje za smanjenje operativnog prioriteta';
-
-  const refPrimijenjenFokusTermin = useRef(false);
-
-  useEffect(() => {
-    setPrioritet(inicijalniPrioritet(zahtjev));
-    setDowngradeRazlog('');
-    setAkcijaGreska(null);
-    setGreskaOperativnogPrioriteta(null);
-    bioObrazlozenjeSmanjenjaPrikazano.current = false;
-  }, [zahtjev]);
-
-  useEffect(() => {
-    if (aktivniKorak > najdaljiDostupniKorak) {
-      setAktivniKorak(najdaljiDostupniKorak);
-    }
-  }, [aktivniKorak, najdaljiDostupniKorak]);
-
-  useEffect(() => {
-    refPrimijenjenFokusTermin.current = false;
-  }, [zahtjev.id]);
-
-  useEffect(() => {
-    if (!fokusKorakTermin || refPrimijenjenFokusTermin.current) return;
-    refPrimijenjenFokusTermin.current = true;
-    setAktivniKorak(2);
-  }, [fokusKorakTermin, zahtjev.id]);
-
-  useEffect(() => {
-    const sada =
-      prikaziPoljeObrazlozenjaSmanjenja && mozeMijenjatiPrioritet && aktivniKorak === 1;
-    if (!sada) {
-      bioObrazlozenjeSmanjenjaPrikazano.current = false;
-      return;
-    }
-    if (bioObrazlozenjeSmanjenjaPrikazano.current) return;
-
-    const id = requestAnimationFrame(() => {
-      const el = refObrazlozenjeSmanjenja.current;
-      el?.focus({ preventScroll: false });
-      el?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      bioObrazlozenjeSmanjenjaPrikazano.current = true;
-    });
-    return () => cancelAnimationFrame(id);
-  }, [
-    aktivniKorak,
-    mozeMijenjatiPrioritet,
-    prioritet,
-    prikaziPoljeObrazlozenjaSmanjenja,
-  ]);
-
-  async function osvjeziZahtjevNakonAkcije() {
-    const rr = await fetch(`/api/dispecer/zahtjevi/${requestId}`, { cache: 'no-store' });
-    const dd = await rr.json();
-    if (!rr.ok) throw new Error(dd.error ?? 'Greška pri učitavanju zahtjeva sa servera.');
-    onRequestUpdated?.(dd.zahtjev as ZahtjevDetalj);
+  function setAktivniKorak(k: number) {
+    setAktivniKorakRaw(k);
+    setDostignutiKorak(prev => Math.max(prev, k));
+    setKorakGreska(null);
   }
 
-  async function sacuvajOperativniPrioritet(): Promise<boolean> {
-    if (!mozeMijenjatiPrioritet) return false;
+  // Fetch scored recommendations when step 2 becomes active
+  useEffect(() => {
+    if (aktivniKorak !== 2) return;
+    setUcitavaServ(true);
+    fetch(`/api/dispecer/zahtjevi/${requestId}/preporuka`, { cache: 'no-store' })
+      .then(r => r.json())
+      .then(d => {
+        const lista: PreporukaServisera[] = Array.isArray(d.preporuke) && d.preporuke.length > 0
+          ? d.preporuke
+          : [];
+        if (lista.length === 0) {
+          const mock = izracunajPreporuke(MOCK_SERVISERI, { kategorija: zahtjev.category_main });
+          setPreporuke(mock);
+          if (!odabraniServ && mock[0]) setOdabraniServ(mock[0].serviser);
+          return;
+        }
+        setPreporuke(lista);
+        if (!odabraniServ && lista[0]) setOdabraniServ(lista[0].serviser);
+      })
+      .catch(() => {
+        const mock = izracunajPreporuke(MOCK_SERVISERI, { kategorija: zahtjev.category_main });
+        setPreporuke(mock);
+        if (!odabraniServ && mock[0]) setOdabraniServ(mock[0].serviser);
+      })
+      .finally(() => setUcitavaServ(false));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [aktivniKorak, requestId]);
+
+  // Fetch dispatcher name
+  useEffect(() => {
+    import('@/lib/supabase/klijent')
+      .then(({ kreirajKlijenta }) => {
+        const sb = kreirajKlijenta();
+        return sb.auth.getUser();
+      })
+      .then(({ data }) => {
+        if (data.user?.user_metadata) {
+          const m = data.user.user_metadata as Record<string, string>;
+          const ime = [m.ime, m.prezime].filter(Boolean).join(' ') || m.full_name || 'Dispečer';
+          setImeDispecera(ime);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  // Focus termin step from URL param
+  const fokusRef = useRef(false);
+  useEffect(() => {
+    if (!fokusKorakTermin || fokusRef.current) return;
+    fokusRef.current = true;
+    setAktivniKorak(2);
+  }, [fokusKorakTermin]);
+
+  async function osvjeziZahtjev() {
+    const r = await fetch(`/api/dispecer/zahtjevi/${requestId}`, { cache: 'no-store' });
+    const d = await r.json();
+    if (r.ok) onRequestUpdated?.(d.zahtjev as ZahtjevDetalj);
+  }
+
+  async function sacuvajPrioritet(): Promise<boolean> {
+    if (!mozeMijenjatiPrioritet) return true;
     setJeSlanje(true);
-    setAkcijaGreska(null);
-    setGreskaOperativnogPrioriteta(null);
+    setGreska(null);
     try {
       const r = await fetch(`/api/dispecer/zahtjevi/${requestId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'promijeni_prioritet',
-          final_priority: prioritet,
-          premium_downgrade_reason: downgradeRazlog,
-        }),
+        body: JSON.stringify({ action: 'promijeni_prioritet', final_priority: prioritet, premium_downgrade_reason: downgradeRazlog }),
       });
       const d = await r.json();
       if (!r.ok) throw new Error(d.error ?? 'Greška pri snimanju prioriteta.');
-      await osvjeziZahtjevNakonAkcije();
+      await osvjeziZahtjev();
       return true;
     } catch (e) {
-      setAkcijaGreska(e instanceof Error ? e.message : 'Greška pri snimanju prioriteta.');
+      setGreska(e instanceof Error ? e.message : 'Greška.');
       return false;
     } finally {
       setJeSlanje(false);
     }
   }
 
-  return (
-    <>
-      <header className="mb-6 min-w-0">
-        <h1
-          className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xl font-bold leading-snug"
-          style={{ color: 'var(--first-octonary)' }}
-        >
-          <span className="tabular-nums">#{oznakaZaDispecerskiPrikazBroja(zahtjev)}</span>
-          <span className="min-w-0">{naslovPodkategorija || naslovKategorija}</span>
-        </h1>
-        {naslovPodkategorija && (
-          <p className="mt-0.5 text-sm font-medium leading-snug" style={{ color: 'var(--first-nonary)' }}>
-            {naslovKategorija}
-          </p>
-        )}
-        {zahtjev.is_premium && (
-          <div className="mt-2">
-            <PremiumHitnaBadge />
-          </div>
-        )}
-      </header>
+  async function sacuvajTerminIServiser(overrideKonflikt?: boolean): Promise<boolean> {
+    if (!odabraniSlot || !odabraniServ) {
+      setKorakGreska('Odaberite termin i servisera prije nastavka.');
+      return false;
+    }
+    setJeSlanje(true);
+    setGreska(null);
+    setKonfliktUpozorenje(null);
+    try {
+      const pocetak = `${odabraniDatum}T${odabraniSlot.od}:00`;
+      const kraj    = `${odabraniDatum}T${odabraniSlot.do}:00`;
+      const body: Record<string, unknown> = {
+        action:                   'dodijeli',
+        serviser_id:              odabraniServ.id,
+        termin_planirani_pocetak: pocetak,
+        termin_planirani_kraj:    kraj,
+        dispecer_napomene:        napomene.trim() || undefined,
+      };
+      if (overrideKonflikt) {
+        body.override_konflikt = true;
+        body.razlog_konflikta  = 'Dispečer svjesno prihvatio konflikt termina.';
+      }
+      const r = await fetch(`/api/dispecer/zahtjevi/${requestId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      const d = await r.json();
+      if (r.status === 409 && d.kod === 'KONFLIKT_TERMINA') {
+        setKonfliktUpozorenje(d.konflikt);
+        setKorakGreska(`Serviser ima preklapanje termina sa intervencijom #${d.konflikt.zahtjev_id}. Potvrdite override ili odaberite drugog servisera.`);
+        return false;
+      }
+      if (!r.ok) throw new Error(d.error ?? 'Greška pri dodjeli servisera.');
 
-      <DispecerObradaWizardStepper
-        aktivniKorak={aktivniKorak}
-        najdaljiDostupniKorak={najdaljiDostupniKorak}
-        onOdabirKoraka={setAktivniKorak}
-        onPokusajZakljucanKorak={(indeks) => {
-          if (!mozeMijenjatiPrioritet) return;
-          if (indeks >= 2 && !mozeNapredovatiNaPlaceholdere) {
-            setGreskaOperativnogPrioriteta(PORUKA_SACUVAJ_PRIORITET_PRIJE_NASTAVKA);
-            setAktivniKorak(1);
-          }
-        }}
+      // Sačuvaj pomoćne servisere
+      for (const pomocni of pomocniServiseri) {
+        await fetch(`/api/dispecer/zahtjevi/${requestId}/tim`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ serviser_id: pomocni.id }),
+        });
+      }
+
+      await osvjeziZahtjev();
+      return true;
+    } catch (e) {
+      setGreska(e instanceof Error ? e.message : 'Greška.');
+      return false;
+    } finally {
+      setJeSlanje(false);
+    }
+  }
+
+  async function potvrdiNalog() {
+    if (!potvrdjeno) return;
+    setJeSlanje(true);
+    setGreska(null);
+    try {
+      const r = await fetch(`/api/dispecer/zahtjevi/${requestId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'potvrdi', final_priority: prioritet }),
+      });
+      const d = await r.json();
+      if (!r.ok) throw new Error(d.error ?? 'Greška pri potvrdi naloga.');
+      await osvjeziZahtjev();
+    } catch (e) {
+      setGreska(e instanceof Error ? e.message : 'Greška.');
+    } finally {
+      setJeSlanje(false);
+    }
+  }
+
+  async function nasledniKorak() {
+    setKorakGreska(null);
+    if (aktivniKorak === 1) {
+      const ok = await sacuvajPrioritet();
+      if (!ok) return;
+    }
+    if (aktivniKorak === 2) {
+      const ok = await sacuvajTerminIServiser();
+      if (!ok) return;
+    }
+    setAktivniKorak(Math.min(aktivniKorak + 1, 4));
+  }
+
+  const karticaStil = {
+    backgroundColor: 'rgb(255 255 255/0.85)',
+    border: '1px solid rgb(var(--first-quaternary-rgb)/0.32)',
+  };
+
+  return (
+    <div>
+      <WizardStepper
+        aktivni={aktivniKorak}
+        dostupnoDoInkluzivno={dostignutiKorak}
+        onKlik={setAktivniKorak}
       />
 
-      <div
-        className="mt-5 rounded-2xl bg-white p-6 shadow-card"
-        style={{ border: '1px solid rgb(var(--first-quaternary-rgb) / 0.35)' }}
-      >
-        {aktivniKorak === 0 && (
-          <>
-            <h2 className="mb-5 text-base font-semibold" style={{ color: 'var(--first-octonary)' }}>
-              Pregled zahtjeva
-            </h2>
-            <DispecerDetaljiZahtjevaKartica zahtjev={zahtjev} />
-          </>
-        )}
-
-        {aktivniKorak === 1 && (
-          <>
-            <h2 className="mb-5 text-base font-semibold" style={{ color: 'var(--first-octonary)' }}>
-              Operativni prioritet
-            </h2>
-            <div
-              className="mb-5 grid grid-cols-1 gap-4 text-sm sm:grid-cols-2 sm:gap-6"
-              style={{ color: 'var(--first-octonary)' }}
-            >
-              <div>
-                <p
-                  className="mb-1.5 text-[10px] font-semibold uppercase tracking-[0.12em]"
-                  style={{ color: 'rgb(var(--first-nonary-rgb) / 0.72)' }}
-                >
-                  Status
-                </p>
-                <div className="min-w-0">
-                  <DispecerPregledTokaBadzevi zahtjev={zahtjev} />
-                </div>
-              </div>
-              <div>
-                <p
-                  className="mb-1.5 text-[10px] font-semibold uppercase tracking-[0.12em]"
-                  style={{ color: 'rgb(var(--first-nonary-rgb) / 0.72)' }}
-                >
-                  {DISPECER_HITNOST_KORISNIK_NASLOV}
-                </p>
-                <KorisnickaHitnostOutlinedChip score={efektivniKorisnickiUrgencyScore(zahtjev)} />
-              </div>
-              <div className="min-w-0 sm:col-span-2">
-                <p
-                  className="mb-1.5 text-[10px] font-semibold uppercase tracking-[0.12em]"
-                  style={{ color: 'rgb(var(--first-nonary-rgb) / 0.72)' }}
-                >
-                  Poruka korisnika
-                </p>
-                {porukaKorisnikaTekst ? (
-                  <ZahtjevKorisnickaPorukaBubble tekst={porukaKorisnikaTekst} className="mb-0 mt-0" />
-                ) : (
-                  <p className="text-sm font-medium" style={{ color: 'var(--first-nonary)' }}>
-                    —
-                  </p>
-                )}
-              </div>
-              <div className="sm:col-span-2">
-                <p
-                  className="mb-1.5 text-[10px] font-semibold uppercase tracking-[0.12em]"
-                  style={{ color: 'rgb(var(--first-nonary-rgb) / 0.72)' }}
-                >
-                  {DISPECER_OPERATIVNI_NASLOV} (u sistemu)
-                </p>
-                <p className="text-sm font-semibold tabular-nums" style={{ color: 'var(--first-octonary)' }}>
-                  {fpNaServeru ?? '—'}
-                </p>
-              </div>
+      {/* Two-column layout */}
+      <div className="flex flex-col gap-5 lg:flex-row lg:items-start">
+        {/* Main content card */}
+        <div className="min-w-0 flex-1">
+          <div className="rounded-2xl p-5 sm:p-6" style={karticaStil}>
+            {/* Step header */}
+            <div className="mb-5 flex items-center gap-2">
+              <span className="flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold text-white"
+                style={{ backgroundColor: 'var(--first-primary)' }}>{aktivniKorak + 1}</span>
+              <h2 className="text-base font-bold" style={{ color: 'var(--first-octonary)' }}>
+                {KORACI[aktivniKorak]?.naziv}
+              </h2>
+              {zahtjev.is_premium && aktivniKorak === 0 && (
+                <div className="ml-1"><PremiumHitnaBadge /></div>
+              )}
             </div>
 
-            {zahtjev.is_premium && zahtjev.premium_priority_override_reason?.trim() && (
-              <div
-                className="mb-5 rounded-xl border px-3 py-2 text-sm"
-                style={{
-                  borderColor: 'rgba(37, 99, 235, 0.25)',
-                  color: '#1D4ED8',
-                  backgroundColor: 'rgba(37, 99, 235, 0.06)',
-                }}
-              >
-                <span className="font-semibold">Obrazloženje smanjenja operativnog prioriteta: </span>
-                {zahtjev.premium_priority_override_reason}
+            {greska && <div className="mb-4"><AlertMessage variant="error" message={greska} /></div>}
+            {korakGreska && (
+              <div className="mb-4 flex items-center gap-2 rounded-xl px-4 py-3"
+                style={{ backgroundColor: 'rgba(220,38,38,0.06)', border: '1px solid rgba(220,38,38,0.2)' }}>
+                <AlertTriangle className="h-4 w-4 flex-shrink-0" style={{ color: '#DC2626' }} />
+                <p className="text-sm font-semibold" style={{ color: '#DC2626' }}>{korakGreska}</p>
               </div>
             )}
 
-            {akcijaGreska && (
-              <div className="mb-5">
-                <AlertMessage variant="error" message={akcijaGreska} />
-              </div>
+            {aktivniKorak === 0 && <KorakPregled zahtjev={zahtjev} />}
+            {aktivniKorak === 1 && (
+              <KorakPrioritet
+                zahtjev={zahtjev}
+                prioritet={prioritet}
+                setPrioritet={setPrioritet}
+                downgradeRazlog={downgradeRazlog}
+                setDowngradeRazlog={setDowngradeRazlog}
+                mozeMijenjati={mozeMijenjatiPrioritet}
+              />
+            )}
+            {aktivniKorak === 2 && (
+              <KorakTerminIServiser
+                zahtjev={zahtjev}
+                odabraniDatum={odabraniDatum}
+                setDatum={setOdabraniDatum}
+                odabraniSlot={odabraniSlot}
+                setSlot={setOdabraniSlot}
+                napomene={napomene}
+                setNapomene={setNapomene}
+                preporuke={preporuke}
+                odabraniServiser={odabraniServ}
+                setServiser={setOdabraniServ}
+                ucitavaServisere={ucitavaServ}
+                pomocniServiseri={pomocniServiseri}
+                setPomocniServiseri={setPomocniServiseri}
+                konfliktUpozorenje={konfliktUpozorenje}
+                onOverrideKonflikt={() => sacuvajTerminIServiser(true)}
+              />
+            )}
+            {aktivniKorak === 3 && (
+              <KorakPregledNaloga
+                zahtjev={zahtjev}
+                prioritet={prioritet}
+                odabraniServiser={odabraniServ}
+                odabraniDatum={odabraniDatum}
+                odabraniSlot={odabraniSlot}
+                napomene={napomene}
+                onUredi={setAktivniKorak}
+              />
+            )}
+            {aktivniKorak === 4 && (
+              <KorakPotvrda
+                zahtjev={zahtjev}
+                prioritet={prioritet}
+                odabraniServiser={odabraniServ}
+                odabraniDatum={odabraniDatum}
+                odabraniSlot={odabraniSlot}
+                potvrdjeno={potvrdjeno}
+                setPotvrdjeno={setPotvrdjeno}
+                imeDispecera={imeDispecera}
+              />
             )}
 
-            {mozeMijenjatiPrioritet ? (
-              <div className="space-y-3">
-                <div>
-                  <Select
-                    label={DISPECER_OPERATIVNI_SELECT_NASLOV}
-                    id="dispecer-op-prioritet"
-                    value={prioritet}
-                    error={greskaOperativnogPrioriteta ?? undefined}
-                    options={[
-                      { value: 'NISKO', label: 'NISKO' },
-                      { value: 'SREDNJE', label: 'SREDNJE' },
-                      { value: 'VISOKO', label: 'VISOKO' },
-                      { value: 'KRITIČNO', label: 'KRITIČNO' },
-                      { value: 'HITNO', label: 'HITNO' },
-                    ]}
-                    onChange={(e) => {
-                      setGreskaOperativnogPrioriteta(null);
-                      setPrioritet(e.target.value as NivoOperativnogPrioriteta);
-                    }}
-                  />
-                  <p className="mt-1.5 text-[11px] leading-snug" style={{ color: 'rgb(var(--first-nonary-rgb) / 0.72)' }}>
-                    {DISPECER_OPERATIVNI_SELECT_OPIS}
-                  </p>
-                </div>
-                {prikaziPoljeObrazlozenjaSmanjenja && (
-                  <Textarea
-                    ref={refObrazlozenjeSmanjenja}
-                    label={labelObrazlozenjaSmanjenja}
-                    id="dispecer-premium-downgrade"
-                    rows={3}
-                    value={downgradeRazlog}
-                    onChange={(e) => setDowngradeRazlog(e.target.value)}
-                  />
-                )}
-              </div>
-            ) : (
-              <p className="text-sm" style={{ color: 'var(--first-nonary)' }}>
-                Za ovaj status operativni prioritet se više ne mijenja putem ovog obrasca.
-              </p>
-            )}
-          </>
-        )}
+            {/* Navigation */}
+            <div className="mt-8 flex items-center justify-between gap-3 border-t pt-5"
+              style={{ borderColor: 'rgb(var(--first-quaternary-rgb)/0.22)' }}>
+              {aktivniKorak > 0 ? (
+                <Button type="button" variant="secondary" size="md"
+                  onClick={() => setAktivniKorakRaw(k => k - 1)} disabled={jeSlanje}>
+                  Nazad
+                </Button>
+              ) : <div />}
 
-        {aktivniKorak === 2 && (
-          <PlaceholderKoraka
-            oznaka="Korak „Termin i serviser“ — u pripremi"
-            naslov="Termin i serviser"
-            uvod="U narednoj fazi ovaj korak će omogućiti:"
-            stavke={[
-              'potvrdu termina intervencije',
-              'odabir dostupnog servisera',
-              'provjeru dostupnosti servisera',
-              'dodjelu servisera zahtjevu',
-            ]}
-            napomenaDno="Funkcionalnost još nije povezana s podacima."
-          />
-        )}
-
-        {aktivniKorak === 3 && (
-          <PlaceholderKoraka
-            oznaka="Korak „Pregled naloga“ — u pripremi"
-            naslov="Pregled naloga"
-            uvod="Ovdje će biti prikazan konačni pregled naloga prije potvrde:"
-            stavke={[
-              'podaci o zahtjevu',
-              'korisnik',
-              'lokacija',
-              'operativni prioritet',
-              'potvrđeni termin',
-              'dodijeljeni serviser',
-              'napomena dispečera',
-            ]}
-            napomenaDno="Funkcionalnost još nije povezana s podacima."
-          />
-        )}
-
-        {aktivniKorak === 4 && (
-          <PlaceholderKoraka
-            naslov="Potvrda"
-            uvod="Završni korak će potvrditi usklađenost termina, servisera i naloga te obavijestiti korisnika."
-            stavke={[
-              'Zapis konačnog stanja zahtjeva u životnom ciklusu (npr. potvrda uz validne podatke).',
-              'Slanje obavijesti korisniku i serviseru kad kanali budu spremni.',
-              'Zatvaranje čarobnjaka uz zapis ko je potvrdio i kada.',
-            ]}
-          />
-        )}
-
-        <div
-          className="mt-8 flex flex-col gap-2 border-t pt-6 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between"
-          style={{ borderColor: 'rgb(var(--first-quaternary-rgb) / 0.22)' }}
-        >
-          {aktivniKorak === 0 && (
-            <Button type="button" variant="primary" size="md" className="w-full sm:ml-auto sm:w-auto" onClick={() => setAktivniKorak(1)}>
-              Nastavi
-            </Button>
-          )}
-
-          {aktivniKorak === 1 && (
-            <>
-              <Button
-                type="button"
-                variant="secondary"
-                size="md"
-                className="w-full sm:w-auto"
-                onClick={() => setAktivniKorak(0)}
-              >
-                Nazad
-              </Button>
-              <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:justify-end">
-                {mozeMijenjatiPrioritet && formaNijeSinhronizirana && (
-                  <>
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      size="md"
-                      className="w-full sm:w-auto"
-                      isLoading={jeSlanje}
-                      onClick={() => void sacuvajOperativniPrioritet()}
-                    >
-                      Sačuvaj operativni prioritet
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="primary"
-                      size="md"
-                      className="w-full sm:w-auto"
-                      isLoading={jeSlanje}
-                      onClick={async () => {
-                        const ok = await sacuvajOperativniPrioritet();
-                        if (ok) setAktivniKorak(2);
-                      }}
-                    >
-                      Sačuvaj i nastavi
-                    </Button>
-                  </>
-                )}
-                {(!mozeMijenjatiPrioritet || !formaNijeSinhronizirana) && (
-                  <Button
-                    type="button"
-                    variant="primary"
-                    size="md"
-                    className="w-full sm:w-auto"
-                    disabled={jeSlanje}
-                    onClick={() => {
-                      if (!mozeMijenjatiPrioritet) {
-                        setGreskaOperativnogPrioriteta(null);
-                        setAktivniKorak(2);
-                        return;
-                      }
-                      if (mozeNapredovatiNaPlaceholdere) {
-                        setGreskaOperativnogPrioriteta(null);
-                        setAktivniKorak(2);
-                      } else {
-                        setGreskaOperativnogPrioriteta(PORUKA_SACUVAJ_PRIORITET_PRIJE_NASTAVKA);
-                      }
-                    }}
-                  >
-                    Nastavi
-                  </Button>
-                )}
-              </div>
-            </>
-          )}
-
-          {aktivniKorak >= 2 && aktivniKorak < ZADNJI_KORAK_INDEKS && (
-            <>
-              <Button
-                type="button"
-                variant="secondary"
-                size="md"
-                className="w-full sm:w-auto"
-                onClick={() => setAktivniKorak((k) => k - 1)}
-              >
-                Nazad
-              </Button>
-              <Button
-                type="button"
-                variant="primary"
-                size="md"
-                className="w-full sm:ml-auto sm:w-auto"
-                onClick={() => setAktivniKorak((k) => k + 1)}
-              >
-                Nastavi
-              </Button>
-            </>
-          )}
-
-          {aktivniKorak === ZADNJI_KORAK_INDEKS && (
-            <Button
-              type="button"
-              variant="secondary"
-              size="md"
-              className="w-full sm:w-auto"
-              onClick={() => setAktivniKorak((k) => k - 1)}
-            >
-              Nazad
-            </Button>
-          )}
+              {aktivniKorak < 4 ? (
+                <Button type="button" variant="primary" size="md"
+                  onClick={() => void nasledniKorak()}
+                  isLoading={jeSlanje} loadingText="Spremanje...">
+                  Nastavi
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              ) : (
+                <Button type="button" variant="primary" size="md"
+                  onClick={() => void potvrdiNalog()}
+                  disabled={!potvrdjeno}
+                  isLoading={jeSlanje} loadingText="Potvrđivanje...">
+                  <CheckCircle2 className="h-4 w-4" />
+                  Potvrdi nalog
+                </Button>
+              )}
+            </div>
+          </div>
         </div>
+
+        {/* Sticky summary panel */}
+        <SummarniPanel
+          zahtjev={zahtjev}
+          prioritet={prioritet}
+          odabraniServiser={odabraniServ}
+          odabraniDatum={odabraniDatum}
+          odabraniSlot={odabraniSlot}
+        />
       </div>
-
-      {prikaziDugmeNazad && (
-        <div className="mt-6">
-          <Link
-            href={hrefNazad}
-            className="inline-flex items-center justify-center gap-2 rounded-xl border border-soft-beige bg-transparent px-5 py-2 text-sm font-semibold text-deep-teal transition-colors hover:border-celestial-teal hover:bg-celestial-teal/5 focus:outline-none focus:ring-2 focus:ring-celestial-teal/40 focus:ring-offset-2"
-          >
-            Nazad na obradu zahtjeva
-          </Link>
-        </div>
-      )}
-    </>
+    </div>
   );
 }
