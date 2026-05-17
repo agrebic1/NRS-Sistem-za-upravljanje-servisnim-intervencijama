@@ -3,9 +3,15 @@
 // Logika: novi_start < postojeći_kraj AND novi_kraj > postojeći_start
 // Provjerava i glavnog servisera i pomoćne servisere iz tim_intervencije.
 
-import type { KonfliktTermina } from '@/domain/types/servisirane';
-
 type AnyDB = any;
+
+interface KonfliktTermina {
+  serviser_id:  string;
+  serviser_ime: string;
+  zahtjev_id:   number;
+  pocetak:      string;
+  kraj:         string;
+}
 
 const AKTIVNI_STATUSI_ZA_KONFLIKT = ['dodijeljeno', 'u_radu', 'u_izvrsenju'];
 
