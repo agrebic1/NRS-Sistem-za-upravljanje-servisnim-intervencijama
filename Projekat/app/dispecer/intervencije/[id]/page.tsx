@@ -346,10 +346,10 @@ function TimeOnTask({ terminPocetak, procijenjeno, status }: {
               style={{ width: `${postotak}%`, backgroundColor: barBoja }} />
           </div>
           {jePrekoracio && (
-            <div className="mt-2.5 flex items-center gap-1.5 text-xs font-semibold" style={{ color: '#DC2626' }}>
-              <CircleAlert className="h-3.5 w-3.5 flex-shrink-0" />
-              Intervencija prekoračila procijenjeno trajanje
-            </div>
+            <p className="mt-1.5 flex items-center gap-1 text-xs font-semibold" style={{ color: '#DC2626' }}>
+              <AlertTriangle className="h-3 w-3" />
+              Prekoračeno procijenjeno trajanje za {trajanjeLabel(elapsed - (procijenjeno ?? 0))}
+            </p>
           )}
         </>
       )}

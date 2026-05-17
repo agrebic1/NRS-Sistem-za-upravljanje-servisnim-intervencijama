@@ -874,13 +874,15 @@ export default function DispecerPlaniranjePage() {
               <div className="rounded-2xl p-5" style={sekcija}>
                 <h2 className="mb-1 text-base font-bold" style={{ color: 'var(--first-octonary)' }}>Pregled naloga</h2>
                 <p className="mb-5 text-xs" style={{ color: 'var(--first-nonary)' }}>
-                  Pregledajte sve unesene podatke. Za izmjenu pritisnite "Nazad".
+                  Pregledajte sve unesene podatke. Za izmjenu pritisnite &quot;Nazad&quot;.
                 </p>
 
-                <div className="flex flex-col gap-3">
-                  {/* Zahtjev + status */}
-                  <div className="grid grid-cols-1 gap-3 rounded-xl p-4 sm:grid-cols-2"
-                    style={{ backgroundColor: 'rgb(255 255 255 / 0.65)', border: '1px solid rgb(var(--first-quaternary-rgb)/0.3)' }}>
+                <div className="flex flex-col gap-2">
+                  {/* Zahtjev */}
+                  <div
+                    className="grid grid-cols-2 gap-3 rounded-xl p-4"
+                    style={{ backgroundColor: 'rgb(255 255 255 / 0.65)', border: '1px solid rgb(var(--first-quaternary-rgb)/0.3)' }}
+                  >
                     <div>
                       <p className="text-[10px] font-bold uppercase tracking-wide" style={{ color: 'var(--first-nonary)' }}>Intervencija</p>
                       <p className="mt-0.5 text-sm font-semibold" style={{ color: 'var(--first-octonary)' }}>{naslov}</p>
@@ -1016,7 +1018,7 @@ export default function DispecerPlaniranjePage() {
               <div className="rounded-2xl p-5" style={sekcija}>
                 <h2 className="mb-1 text-base font-bold" style={{ color: 'var(--first-octonary)' }}>Potvrda dodjele</h2>
                 <p className="mb-5 text-xs" style={{ color: 'var(--first-nonary)' }}>
-                  Klikom na "Dodijeli intervenciju" kreirate radni nalog i obavještavate servisera.
+                  Klikom na &quot;Dodijeli intervenciju&quot; kreirate radni nalog i obavještavate servisera.
                 </p>
 
                 {/* Sažetak (compact) */}
@@ -1035,51 +1037,43 @@ export default function DispecerPlaniranjePage() {
                   ))}
                 </div>
 
-                {/* Operativna potvrda */}
-                <div
-                  className="rounded-xl p-5"
-                  style={{
-                    backgroundColor: wz.potvrdio ? 'rgba(34,197,94,0.05)' : 'transparent',
-                    border: wz.potvrdio ? '2px solid rgba(34,197,94,0.3)' : '2px solid rgb(var(--first-quaternary-rgb)/0.35)',
-                    transition: 'all 0.2s',
-                  }}
-                >
-                  <div className="flex items-start gap-4">
-                    <button
-                      type="button"
-                      onClick={() => azuriraj({ potvrdio: !wz.potvrdio })}
-                      className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-md transition-all focus:outline-none focus:ring-2"
-                      style={{
-                        backgroundColor: wz.potvrdio ? '#22C55E' : 'transparent',
-                        border: wz.potvrdio ? '2px solid #22C55E' : '2px solid rgb(var(--first-quaternary-rgb)/0.5)',
-                        marginTop: '1px',
-                      }}
-                      aria-checked={wz.potvrdio}
-                      role="checkbox"
-                    >
-                      {wz.potvrdio && <Check className="h-3.5 w-3.5 text-white" strokeWidth={3} />}
-                    </button>
-                    <div>
-                      <p className="text-sm font-semibold" style={{ color: 'var(--first-octonary)' }}>
-                        Potvrđujem da su svi podaci provjereni i tačni.
-                      </p>
-                      <p className="mt-1 text-xs" style={{ color: 'var(--first-nonary)' }}>
-                        Serviser će biti obaviješten o dodjeli i terminima intervencije.
-                      </p>
-                      {wz.potvrdio && (
-                        <div className="mt-2 flex flex-col gap-0.5">
-                          <div className="flex items-center gap-1.5">
-                            <Shield className="h-3.5 w-3.5" style={{ color: '#22C55E' }} />
-                            <p className="text-xs font-semibold" style={{ color: '#16A34A' }}>Potvrđeno</p>
-                          </div>
-                          <p className="text-xs pl-5" style={{ color: 'var(--first-nonary)' }}>
-                            {imeDispecera} · {new Date(vrijemePotvrde).toLocaleString('bs-BA', {
-                              day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit',
-                            })}
-                          </p>
-                        </div>
-                      )}
-                    </div>
+              {/* Operativna potvrda */}
+              <div
+                className="rounded-2xl p-5"
+                style={{
+                  backgroundColor: wz.potvrdio ? 'rgb(34,197,94,0.05)' : 'rgb(var(--first-quinary-rgb)/0.18)',
+                  border: wz.potvrdio ? '2px solid rgb(34,197,94,0.3)' : '2px solid rgb(var(--first-quaternary-rgb)/0.35)',
+                }}
+              >
+                <div className="flex items-start gap-4">
+                  <button
+                    type="button"
+                    onClick={() => azuriraj({ potvrdio: !wz.potvrdio })}
+                    className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-md transition-all focus:outline-none focus:ring-2"
+                    style={{
+                      backgroundColor: wz.potvrdio ? '#22C55E' : 'transparent',
+                      border: wz.potvrdio ? '2px solid #22C55E' : '2px solid rgb(var(--first-quaternary-rgb)/0.5)',
+                    }}
+                    aria-checked={wz.potvrdio}
+                    role="checkbox"
+                  >
+                    {wz.potvrdio && <Check className="h-3.5 w-3.5 text-white" strokeWidth={3} />}
+                  </button>
+                  <div>
+                    <p className="text-sm font-semibold" style={{ color: 'var(--first-octonary)' }}>
+                      Potvrđujem da su svi podaci provjereni i tačni.
+                    </p>
+                    <p className="mt-1 text-xs" style={{ color: 'var(--first-nonary)' }}>
+                      Klikom na &quot;Dodijeli intervenciju&quot; kreirate radni nalog i obavještavate servisera.
+                    </p>
+                    {wz.potvrdio && (
+                      <div className="mt-2 flex items-center gap-1.5">
+                        <Shield className="h-3.5 w-3.5" style={{ color: '#22C55E' }} />
+                        <p className="text-xs font-semibold" style={{ color: '#16A34A' }}>
+                          Potvrđeno · {new Date(vrijemePotvrdio).toLocaleString('bs-BA', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </div>
 

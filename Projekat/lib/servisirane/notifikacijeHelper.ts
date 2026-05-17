@@ -3,7 +3,6 @@
 // Sve insert operacije u tabelu `notifikacije` idu kroz ove funkcije.
 // Koristiti createAdminClient() da se zaobiđu RLS politike pri insertu.
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyDB = any;
 
 export interface NotifikacijaParams {

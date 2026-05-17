@@ -5,7 +5,6 @@
 
 import type { KonfliktTermina } from '@/domain/types/servisirane';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyDB = any;
 
 const AKTIVNI_STATUSI_ZA_KONFLIKT = ['dodijeljeno', 'u_radu', 'u_izvrsenju'];
