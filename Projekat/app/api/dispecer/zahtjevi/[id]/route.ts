@@ -10,6 +10,11 @@ import {
   notifDodjelaIntervencije,
   notifZatvaranjeIntervencije,
   notifTimDodjela,
+  notifKorisnikusServiserDodijeljen,
+  notifKorisnikusIntervencijaZavrsena,
+  notifKorisnikusIntervencijaZatvorena,
+  notifKorisnikusZahtjevUObradi,
+  notifNovaNapomenaServiser,
 } from '@/lib/servisirane/notifikacijeHelper';
 import { z } from 'zod';
 
@@ -329,6 +334,19 @@ export async function PATCH(
       // Notifikacija serviseru
       await notifDodjelaIntervencije(db, podaci.serviser_id, requestId);
 
+      // Notifikacija korisniku — serviser dodijeljen
+      const { data: zahtjevUser } = await db
+        .from('service_requests').select('user_id').eq('id', requestId).maybeSingle();
+      const { data: serviserOsoba } = await db
+        .from('osoba').select('ime, prezime').eq('id_osobe', podaci.serviser_id).maybeSingle();
+      const imeServisera = serviserOsoba ? `${serviserOsoba.ime} ${serviserOsoba.prezime}` : 'Serviser';
+      const terminTekst  = podaci.termin_planirani_pocetak
+        ? new Date(podaci.termin_planirani_pocetak as string).toLocaleString('bs-BA', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+        : undefined;
+      if (zahtjevUser?.user_id) {
+        await notifKorisnikusServiserDodijeljen(db, zahtjevUser.user_id, requestId, imeServisera, terminTekst);
+      }
+
       return NextResponse.json({ success: true, novi_status: 'dodijeljeno' });
     }
 
@@ -342,6 +360,14 @@ export async function PATCH(
         metadata:   null,
       });
       if (insErr) return NextResponse.json({ error: insErr.message }, { status: 500 });
+
+      // Notify assigned serviser about dispatcher note
+      const { data: zahtjevNap } = await db
+        .from('service_requests').select('serviser_dodijeljen_id').eq('id', requestId).maybeSingle();
+      if (zahtjevNap?.serviser_dodijeljen_id) {
+        await notifNovaNapomenaServiser(db, zahtjevNap.serviser_dodijeljen_id, requestId);
+      }
+
       return NextResponse.json({ success: true });
     }
 
@@ -371,6 +397,13 @@ export async function PATCH(
           : 'Dispečer zatvorio intervenciju.',
         metadata:   { iz: zahtjev.status, u: 'zavrseno' },
       });
+
+      // Notify korisnik — intervention complete
+      const { data: zahtjevZav } = await db
+        .from('service_requests').select('user_id').eq('id', requestId).maybeSingle();
+      if (zahtjevZav?.user_id) {
+        await notifKorisnikusIntervencijaZavrsena(db, zahtjevZav.user_id, requestId);
+      }
 
       return NextResponse.json({ success: true, novi_status: 'zavrseno' });
     }
@@ -440,6 +473,13 @@ export async function PATCH(
         await notifZatvaranjeIntervencije(db, clan.serviser_id, requestId);
       }
 
+      // Notify korisnik — formally closed
+      const { data: zahtjevZatv } = await db
+        .from('service_requests').select('user_id').eq('id', requestId).maybeSingle();
+      if (zahtjevZatv?.user_id) {
+        await notifKorisnikusIntervencijaZatvorena(db, zahtjevZatv.user_id, requestId);
+      }
+
       return NextResponse.json({ success: true, novi_status: 'zatvoreno' });
     }
 
@@ -479,6 +519,14 @@ export async function PATCH(
         .eq('id', requestId);
 
       if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+      // Notify korisnik — request in processing
+      const { data: zahtjevPotv } = await db
+        .from('service_requests').select('user_id').eq('id', requestId).maybeSingle();
+      if (zahtjevPotv?.user_id) {
+        await notifKorisnikusZahtjevUObradi(db, zahtjevPotv.user_id, requestId);
+      }
+
       return NextResponse.json({ success: true, novi_status: 'potvrdeno' });
     }
 

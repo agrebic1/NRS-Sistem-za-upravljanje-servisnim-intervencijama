@@ -233,26 +233,38 @@ export interface ClanTima {
 // ─── Sprint 9: In-app notifikacije ───────────────────────────────────────────
 
 export type TipNotifikacije =
+  // Serviser
   | 'dodjela_intervencije'
+  | 'tim_dodjela'
+  | 'uklanjanje_servisera'
+  | 'promjena_termina'
+  | 'nova_napomena'
+  // Dispečer
   | 'prihvatanje_zadatka'
   | 'odbijanje_zadatka'
-  | 'promjena_statusa'
   | 'evidencija_rada'
+  | 'novi_zahtjev'
+  // Korisnik usluge
+  | 'promjena_statusa'
   | 'zavrsetak_intervencije'
   | 'zatvaranje_intervencije'
-  | 'promjena_termina'
-  | 'uklanjanje_servisera'
-  | 'tim_dodjela';
+  // Admin
+  | 'promjena_uloge'
+  | 'promjena_statusa_naloga'
+  | 'sistemska_obavijest';
 
 export interface Notifikacija {
-  id:          number;
-  korisnik_id: string;
-  tip:         TipNotifikacije;
-  naslov:      string;
-  poruka:      string;
-  procitano:   boolean;
-  zahtjev_id:  number | null;
-  created_at:  string;
+  id:                    number;
+  korisnik_id:           string;
+  tip:                   TipNotifikacije;
+  naslov:                string;
+  poruka:                string;
+  procitano:             boolean;
+  zahtjev_id:            number | null;
+  uloga_korisnika:       string | null;
+  povezani_entitet_tip:  string | null;
+  povezani_entitet_id:   string | null;
+  created_at:            string;
 }
 
 // ─── Sprint 9: Slike intervencije ─────────────────────────────────────────────

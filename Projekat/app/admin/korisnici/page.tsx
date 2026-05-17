@@ -1,12 +1,13 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { Crown, Mail, RefreshCw, User, Users } from 'lucide-react';
+import Link from 'next/link';
+import { Crown, Mail, RefreshCw, User, Users, Pencil } from 'lucide-react';
+import { type StatusKorisnika, BADGE_STATUSA } from '@/lib/admin/statusKorisnika';
 import { AppShell } from '@/components/layout/AppShell';
 import { Button } from '@/components/ui/Button';
 import { formatirajDatumPrikaz } from '@/lib/format/datumi';
 
-type StatusKorisnika = 'aktivan' | 'neaktivan' | 'suspendovan';
 type PremiumLifecycleStatus = 'inactive' | 'pending_payment' | 'active' | 'expired' | 'cancelled';
 
 interface KorisnikSistema {
@@ -22,11 +23,6 @@ interface KorisnikSistema {
   premium_expires_at?: string | null;
 }
 
-const BADGE_STATUSA: Record<StatusKorisnika, { oznaka: string; pozadina: string; boja: string }> = {
-  aktivan: { oznaka: 'Aktivan', pozadina: 'rgb(var(--first-secondary-rgb) / 0.15)', boja: 'var(--first-secondary)' },
-  neaktivan: { oznaka: 'Neaktivan', pozadina: 'rgb(var(--first-septenary-rgb) / 0.2)', boja: 'var(--first-septenary)' },
-  suspendovan: { oznaka: 'Suspendovan', pozadina: 'rgb(var(--first-senary-rgb) / 0.12)', boja: 'var(--first-senary)' },
-};
 
 export default function AdminKorisniciPage() {
   const [korisnici, setKorisnici] = useState<KorisnikSistema[]>([]);
@@ -195,6 +191,21 @@ export default function AdminKorisniciPage() {
                     </div>
                   )}
                 </dl>
+
+                <div className="mt-4 border-t pt-3" style={{ borderColor: 'rgb(var(--first-quaternary-rgb)/0.25)' }}>
+                  <Link
+                    href={`/admin/korisnici/${korisnik.id}/uredi`}
+                    className="flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-all hover:opacity-80"
+                    style={{
+                      backgroundColor: 'rgb(var(--first-secondary-rgb)/0.08)',
+                      color: 'var(--first-secondary)',
+                      border: '1px solid rgb(var(--first-secondary-rgb)/0.2)',
+                    }}
+                  >
+                    <Pencil className="h-3.5 w-3.5" />
+                    Uredi
+                  </Link>
+                </div>
               </article>
             );
           })}

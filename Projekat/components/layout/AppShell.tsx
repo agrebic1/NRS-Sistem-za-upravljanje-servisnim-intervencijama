@@ -298,7 +298,7 @@ export function AppShell({ children, uloga, imeKorisnika }: AppShellProps) {
 
         {/* Desno */}
         <div className="flex items-center gap-1">
-          <NotifikacijeBell boja={boja} />
+          <NotifikacijeBell boja={boja} uloga={uloga} />
 
           <KorisnikDropdown
             imeKorisnika={imeKorisnika}

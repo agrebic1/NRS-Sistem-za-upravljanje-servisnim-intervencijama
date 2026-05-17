@@ -80,10 +80,10 @@ export const preferredScheduleSchema = preferredScheduleBaseSchema
       return;
     }
 
-    if (data.termini.length > 1) {
+    if (data.termini.length > 3) {
       ctx.addIssue({
         code:    z.ZodIssueCode.custom,
-        message: 'Dozvoljen je najviše jedan preferirani datum.',
+        message: 'Dozvoljeno je najviše tri preferirana termina.',
         path:    ['termini'],
       });
     }

@@ -12,7 +12,7 @@ import {
   porukaValidacijePreferiranogTermina,
 } from '@/components/forms/ServiceRequestWizard';
 import { KorakTermin } from '@/components/wizard/KorakTermin';
-import type { ServisniZahtjev } from '@/domain/types/servisirane';
+import type { ServisniZahtjev, TerminSlot } from '@/domain/types/servisirane';
 import { brojZahtjevaZaPrikaz } from '@/lib/servisirane/korisnickiBrojZahtjeva';
 import { korisnikSmijeMijenjatiIliOtkazatiZahtjev } from '@/lib/servisirane/statusZahtjeva';
 
@@ -22,13 +22,10 @@ const PHONE_REGEX = /^[0-9+\-\/ ]*$/;
 
 interface EditState {
   address:             string;
-  description:       string;
-  contactPhone:      string;
-  preferredDate:     string | null;
-  preferredTimeFrom: string;
-  preferredTimeTo:   string;
-  noPreferredTime:   boolean;
-  preferredTimeLabel: string | null;
+  description:         string;
+  contactPhone:        string;
+  termini:             TerminSlot[];
+  noPreferredTime:     boolean;
   timeValidationError: string | null;
 }
 
@@ -60,11 +57,8 @@ export default function UrediZahtjevPage() {
     address:             '',
     description:         '',
     contactPhone:        '',
-    preferredDate:       null,
-    preferredTimeFrom:   '',
-    preferredTimeTo:     '',
+    termini:             [],
     noPreferredTime:     false,
-    preferredTimeLabel:  null,
     timeValidationError: null,
   });
 
@@ -87,18 +81,14 @@ export default function UrediZahtjevPage() {
 
         setZahtjev(z);
         const ps = z.preferred_schedule;
-        const termini = ps?.termini ?? [];
-        const noPref = ps?.no_preferred_time === true || termini.length === 0;
-        const prvi = termini[0];
+        const ucitaniTermini = ps?.termini ?? [];
+        const noPref = ps?.no_preferred_time === true || ucitaniTermini.length === 0;
         setEditState({
           address:             z.address,
           description:         z.description,
           contactPhone:        z.contact_phone,
-          preferredDate:       noPref ? null : (prvi?.date ?? null),
-          preferredTimeFrom:   noPref ? '' : (prvi?.from ?? ''),
-          preferredTimeTo:     noPref ? '' : (prvi?.to ?? ''),
+          termini:             noPref ? [] : ucitaniTermini,
           noPreferredTime:     noPref,
-          preferredTimeLabel:  ps?.preferred_time_label ?? null,
           timeValidationError: null,
         });
       } catch (err) {
@@ -113,12 +103,7 @@ export default function UrediZahtjevPage() {
   function azurirajPolje(updates: Partial<EditState>) {
     setEditState((prev) => {
       const next = { ...prev, ...updates };
-      const korak3 =
-        'preferredDate' in updates ||
-        'preferredTimeFrom' in updates ||
-        'preferredTimeTo' in updates ||
-        'noPreferredTime' in updates;
-      if (korak3) {
+      if ('termini' in updates || 'noPreferredTime' in updates) {
         next.timeValidationError = izracunajGreskuPreferiranogVremena(next);
       }
       return next;
@@ -144,16 +129,8 @@ export default function UrediZahtjevPage() {
           preferred_schedule: editState.noPreferredTime
             ? { termini: [], no_preferred_time: true }
             : {
-                termini: [
-                  {
-                    date: editState.preferredDate!,
-                    from: editState.preferredTimeFrom,
-                    to:   editState.preferredTimeTo,
-                  },
-                ],
-                ...(editState.preferredTimeLabel
-                  ? { preferred_time_label: editState.preferredTimeLabel }
-                  : {}),
+                termini:           editState.termini.filter(t => t?.date && t.from && t.to),
+                no_preferred_time: false,
               },
         }),
       });
@@ -303,11 +280,9 @@ export default function UrediZahtjevPage() {
                 </span>
               </div>
               <KorakTermin
-                preferredDate={editState.preferredDate}
-                preferredTimeFrom={editState.preferredTimeFrom}
-                preferredTimeTo={editState.preferredTimeTo}
+                termini={editState.termini}
                 noPreferredTime={editState.noPreferredTime}
-                preferredTimeLabel={editState.preferredTimeLabel}
+                validationError={editState.timeValidationError}
                 onUpdate={azurirajPolje}
               />
             </div>

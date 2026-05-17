@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/Button';
 import { AlertMessage } from '@/components/ui/AlertMessage';
 import type { ServisniZahtjev } from '@/domain/types/servisirane';
 import { labelKategorije } from '@/lib/servisirane/kategorije';
+import { prioritetBoja } from '@/lib/servisirane/statusBoja';
 
 // ─── Status tab config ────────────────────────────────────────────────────────
 
@@ -36,16 +37,6 @@ function jeKasni(z: IntervencijaZaListu): boolean {
   if (!z.termin_planirani_pocetak) return false;
   if (['zavrseno', 'zatvoreno', 'otkazano'].includes(z.status)) return false;
   return new Date(z.termin_planirani_pocetak) < new Date();
-}
-
-function prioritetBoja(p: string | null): string {
-  switch ((p ?? '').toUpperCase()) {
-    case 'HITNO':    return '#DC2626';
-    case 'KRITIČNO': return '#DC2626';
-    case 'VISOKO':   return '#EA580C';
-    case 'SREDNJE':  return 'var(--first-senary)';
-    default:         return 'var(--first-secondary)';
-  }
 }
 
 function fmtTermin(iso: string): string {

@@ -11,6 +11,7 @@ import { AppShell } from '@/components/layout/AppShell';
 import { AlertMessage } from '@/components/ui/AlertMessage';
 import type { ServisniZahtjev } from '@/domain/types/servisirane';
 import { labelKategorije } from '@/lib/servisirane/kategorije';
+import { prioritetBoja, statusBoja, statusOznaka } from '@/lib/servisirane/statusBoja';
 
 // ─── Tipovi ───────────────────────────────────────────────────────────────────
 
@@ -39,38 +40,6 @@ function jeKasni(z: IntervencijaZaListu): boolean {
   if (!z.termin_planirani_pocetak) return false;
   if (['zavrseno', 'zatvoreno', 'otkazano', 'odbijeno'].includes(z.status)) return false;
   return new Date(z.termin_planirani_pocetak) < new Date();
-}
-
-function prioritetBoja(p: string | null): string {
-  switch ((p ?? '').toUpperCase()) {
-    case 'HITNO':    return '#DC2626';
-    case 'KRITIČNO': return '#DC2626';
-    case 'VISOKO':   return '#EA580C';
-    case 'SREDNJE':  return 'var(--first-senary)';
-    default:         return 'var(--first-secondary)';
-  }
-}
-
-function statusOznaka(s: string): string {
-  switch (s) {
-    case 'dodijeljeno':  return 'Dodijeljeno';
-    case 'u_radu':       return 'Na putu';
-    case 'u_izvrsenju':  return 'Na terenu';
-    case 'zavrseno':     return 'Završeno';
-    case 'zatvoreno':    return 'Arhivirano';
-    case 'otkazano':     return 'Otkazano';
-    case 'odbijeno':     return 'Odbijeno';
-    default:             return s;
-  }
-}
-
-function statusBoja(s: string): string {
-  switch (s) {
-    case 'dodijeljeno':  return 'var(--first-senary)';
-    case 'u_radu':       return 'var(--first-secondary)';
-    case 'u_izvrsenju':  return 'var(--first-secondary)';
-    default:             return 'var(--first-nonary)';
-  }
 }
 
 function grupiraj(intervencije: IntervencijaZaListu[]) {
