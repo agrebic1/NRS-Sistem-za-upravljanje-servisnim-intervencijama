@@ -8,7 +8,7 @@ import {
   Shield, ChevronRight, RotateCcw, Info, TrendingUp,
 } from 'lucide-react';
 import type { PreporukaServisera } from '@/lib/servisirane/preporukaServisera';
-import { izracunajPreporuke, scoreBojaHex } from '@/lib/servisirane/preporukaServisera';
+import { scoreBojaHex } from '@/lib/servisirane/preporukaServisera';
 import { AlertMessage } from '@/components/ui/AlertMessage';
 import { Button } from '@/components/ui/Button';
 import { MiniMapa } from '@/components/shared/MiniMapa';
@@ -22,6 +22,7 @@ import {
   hrefZaTelefon,
   imePrezimePodnosioca,
   preferiraniTerminZaDispecera,
+  sviPreferinaniTermini,
   uRecenicu,
 } from '@/lib/servisirane/zahtjevPrikaz';
 import { urlsPrilozenihSlika } from '@/lib/servisirane/slikeZahtjeva';
@@ -75,12 +76,6 @@ const SLOTOVI: SlotDef[] = [
   { id: 'cijeli_dan',   naziv: 'Cijeli dan',      opis: '08:00 – 20:00', od: '08:00', do: '20:00' },
 ];
 
-const MOCK_SERVISERI: ServiserZaDodjelu[] = [
-  { id: '00000000-0000-0000-0000-000000000001', ime: 'Amar',  prezime: 'Hadžić',  is_verified: true,  aktivnih_zadataka: 0, specialnosti: ['Vodoinstalacije', 'Grijanje'] },
-  { id: '00000000-0000-0000-0000-000000000002', ime: 'Emir',  prezime: 'Delić',   is_verified: true,  aktivnih_zadataka: 1, specialnosti: ['Klima uređaji', 'Elektrika'] },
-  { id: '00000000-0000-0000-0000-000000000003', ime: 'Kenan', prezime: 'Softić',  is_verified: true,  aktivnih_zadataka: 2, specialnosti: ['Bravarija', 'Stolarija'] },
-  { id: '00000000-0000-0000-0000-000000000004', ime: 'Haris', prezime: 'Musić',   is_verified: false, aktivnih_zadataka: 0, specialnosti: ['Elektrika', 'Grijanje'] },
-];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -239,6 +234,7 @@ function SummarniPanel({ zahtjev, prioritet, odabraniServiser, odabraniDatum, od
   const score = efektivniKorisnickiUrgencyScore(zahtjev);
   const imePrezime = imePrezimePodnosioca(zahtjev.podnosilac);
   const { tekstCijeli: terminTekst } = preferiraniTerminZaDispecera(zahtjev, { dispecerskiPregled: true });
+  const sviTermini = sviPreferinaniTermini(zahtjev);
 
   function Red({ Ikona, label, children }: { Ikona: React.ComponentType<{className?:string;style?:React.CSSProperties}>; label: string; children: React.ReactNode }) {
     return (
@@ -264,7 +260,18 @@ function SummarniPanel({ zahtjev, prioritet, odabraniServiser, odabraniDatum, od
         <Red Ikona={User} label="Korisnik">{imePrezime || '—'}</Red>
         <Red Ikona={MapPin} label="Adresa"><span className="line-clamp-2">{zahtjev.address || '—'}</span></Red>
         <Red Ikona={Calendar} label="Prijavljeno">{formatPrijavljenoDatumVrijeme(zahtjev.created_at)}</Red>
-        <Red Ikona={Clock} label="Pref. termin">{terminTekst || '—'}</Red>
+        <Red Ikona={Clock} label="Pref. termini">
+          {sviTermini.length > 0 ? (
+            <div className="flex flex-col gap-0.5">
+              {sviTermini.map((t, i) => (
+                <span key={i}>
+                  <span className="font-normal" style={{ color: 'var(--first-nonary)' }}>{t.tip}: </span>
+                  {t.datum}{t.od && t.do ? `, ${t.od}–${t.do}` : ''}
+                </span>
+              ))}
+            </div>
+          ) : terminTekst || '—'}
+        </Red>
         <Red Ikona={Zap} label="Hitnost korisnika">
           <span style={{ color: urgencyBoja(score) }}>{urgencyLabel(score)} ({score})</span>
         </Red>
@@ -320,6 +327,7 @@ function KorakPregled({ zahtjev }: { zahtjev: ZahtjevDetalj }) {
   const opis = uRecenicu((zahtjev.description ?? '').trim());
   const slike = urlsPrilozenihSlika(zahtjev as ZahtjevDetalj & Record<string, unknown>);
   const { tekstCijeli: terminTekst } = preferiraniTerminZaDispecera(zahtjev, { dispecerskiPregled: true });
+  const sviTerminiKorak = sviPreferinaniTermini(zahtjev);
 
   const sekcija = {
     backgroundColor: 'rgb(var(--first-quinary-rgb)/0.12)',
@@ -374,8 +382,21 @@ function KorakPregled({ zahtjev }: { zahtjev: ZahtjevDetalj }) {
           </div>
           <p className="text-xs font-semibold" style={{ color: urgencyBoja(score) }}>{urgencyLabel(score)}</p>
           <div className="mt-3 pt-3" style={{ borderTop: '1px solid rgb(var(--first-quaternary-rgb)/0.2)' }}>
-            <p className="text-[10px] font-bold uppercase tracking-wide mb-1" style={{ color: 'var(--first-nonary)' }}>Termin korisnika</p>
-            <p className="text-xs font-medium" style={{ color: 'var(--first-octonary)' }}>{terminTekst || '—'}</p>
+            <p className="text-[10px] font-bold uppercase tracking-wide mb-1" style={{ color: 'var(--first-nonary)' }}>
+              Termini korisnika
+            </p>
+            {sviTerminiKorak.length > 0 ? (
+              <div className="flex flex-col gap-0.5">
+                {sviTerminiKorak.map((t, i) => (
+                  <p key={i} className="text-xs" style={{ color: 'var(--first-octonary)' }}>
+                    <span className="font-semibold">{t.tip}:</span>{' '}
+                    {t.datum}{t.od && t.do ? `, ${t.od}–${t.do}` : ''}
+                  </p>
+                ))}
+              </div>
+            ) : (
+              <p className="text-xs font-medium" style={{ color: 'var(--first-octonary)' }}>{terminTekst || '—'}</p>
+            )}
           </div>
         </div>
 
@@ -1173,22 +1194,12 @@ export function DispecerZahtjevDetaljSadrzaj({
     fetch(`/api/dispecer/zahtjevi/${requestId}/preporuka`, { cache: 'no-store' })
       .then(r => r.json())
       .then(d => {
-        const lista: PreporukaServisera[] = Array.isArray(d.preporuke) && d.preporuke.length > 0
-          ? d.preporuke
-          : [];
-        if (lista.length === 0) {
-          const mock = izracunajPreporuke(MOCK_SERVISERI, { kategorija: zahtjev.category_main });
-          setPreporuke(mock);
-          if (!odabraniServ && mock[0]) setOdabraniServ(mock[0].serviser);
-          return;
-        }
+        const lista: PreporukaServisera[] = Array.isArray(d.preporuke) ? d.preporuke : [];
         setPreporuke(lista);
         if (!odabraniServ && lista[0]) setOdabraniServ(lista[0].serviser);
       })
       .catch(() => {
-        const mock = izracunajPreporuke(MOCK_SERVISERI, { kategorija: zahtjev.category_main });
-        setPreporuke(mock);
-        if (!odabraniServ && mock[0]) setOdabraniServ(mock[0].serviser);
+        setPreporuke([]);
       })
       .finally(() => setUcitavaServ(false));
   // eslint-disable-next-line react-hooks/exhaustive-deps

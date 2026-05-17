@@ -44,3 +44,21 @@ export function formatirajDatumVrijemeZaPrikaz(
   const min = String(d.getMinutes()).padStart(2, '0');
   return `${datum} ${hh}:${min}`;
 }
+
+// ─── Short inline helpers used across intervention pages ─────────────────────
+
+/** Primjer: `14:30` */
+export function fmtSat(iso: string): string {
+  return new Date(iso).toLocaleTimeString('bs-BA', { hour: '2-digit', minute: '2-digit' });
+}
+
+/** Primjer: `12.05.2026.` (kratki format bez razmaka) */
+export function fmtDatumKratki(iso: string): string {
+  return new Date(iso).toLocaleDateString('bs-BA', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+
+/** Primjer: `12.05.2026., 08:30` */
+export function fmtDatumVrijeme(iso: string): string {
+  const d = new Date(iso);
+  return `${fmtDatumKratki(iso)}, ${d.toLocaleTimeString('bs-BA', { hour: '2-digit', minute: '2-digit' })}`;
+}

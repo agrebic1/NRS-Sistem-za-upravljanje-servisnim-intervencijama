@@ -13,7 +13,7 @@ import { AlertMessage } from '@/components/ui/AlertMessage';
 import type { ServisniZahtjev } from '@/domain/types/servisirane';
 import { labelKategorije } from '@/lib/servisirane/kategorije';
 import { IntervencijaWorkflowProgress } from '@/components/dispecer/IntervencijaWorkflowProgress';
-import { MOCK_INTERVENCIJE } from '@/data/mockIntervencije';
+import { prioritetBoja, statusBoja, statusOznaka } from '@/lib/servisirane/statusBoja';
 
 // ─── Tipovi ───────────────────────────────────────────────────────────────────
 
@@ -36,34 +36,6 @@ function jeKasni(z: IntervencijaRed): boolean {
   return new Date(z.termin_planirani_pocetak) < new Date();
 }
 
-function prioritetBoja(p: string | null): string {
-  switch ((p ?? '').toUpperCase()) {
-    case 'HITNO':    return '#DC2626';
-    case 'KRITIČNO': return '#991B1B';
-    case 'VISOKO':   return '#EA580C';
-    case 'SREDNJE':  return '#D97706';
-    default:         return 'var(--first-secondary)';
-  }
-}
-
-function statusBoja(s: string): string {
-  switch (s) {
-    case 'dodijeljeno':  return 'var(--first-senary)';
-    case 'u_radu':       return 'var(--first-secondary)';
-    case 'u_izvrsenju':  return 'var(--first-secondary)';
-    default:             return 'var(--first-nonary)';
-  }
-}
-
-function statusOznaka(s: string): string {
-  switch (s) {
-    case 'dodijeljeno':  return 'Dodijeljeno';
-    case 'u_radu':       return 'Na putu';
-    case 'u_izvrsenju':  return 'Na terenu';
-    case 'zavrseno':     return 'Završeno';
-    default:             return s;
-  }
-}
 
 function filtrirajPoKpi(intervencije: IntervencijaRed[], filter: KpiFilter): IntervencijaRed[] {
   switch (filter) {
@@ -269,13 +241,9 @@ export default function DispecerIntervencijePage() {
       );
       const d = await r.json();
       if (!r.ok) throw new Error(d.error ?? 'Greška pri učitavanju.');
-      const zahtjevi = d.zahtjevi ?? [];
-      // Ako nema stvarnih podataka, prikaži mock intervencije za razvoj/testiranje
-      setIntervencije(zahtjevi.length > 0 ? zahtjevi : MOCK_INTERVENCIJE as unknown as IntervencijaRed[]);
+      setIntervencije(d.zahtjevi ?? []);
     } catch (err) {
-      // Na grešku prikaži mock podatke umjesto praznog ekrana
-      setIntervencije(MOCK_INTERVENCIJE as unknown as IntervencijaRed[]);
-      if (!tiho) setGreska(null); // Ne prikazuj error ako koristimo mock
+      if (!tiho) setGreska(err instanceof Error ? err.message : 'Greška pri učitavanju intervencija.');
     } finally {
       if (!tiho) setUcitava(false);
     }

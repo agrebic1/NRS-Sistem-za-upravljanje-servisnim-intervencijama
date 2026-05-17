@@ -22,6 +22,7 @@ import { OkvirGalerije } from '@/components/servisirane/PrilogGalerija';
 import { KorakKategorija } from '@/components/wizard/KorakKategorija';
 import { KorakLokacija }    from '@/components/wizard/KorakLokacija';
 import { KorakTermin }      from '@/components/wizard/KorakTermin';
+import type { TerminSlot }  from '@/domain/types/servisirane';
 import { KorakOpis }        from '@/components/wizard/KorakOpis';
 import { KorakTrijaza, type TriageFormState, INITIAL_TRIAGE } from '@/components/wizard/KorakTrijaza';
 import { wizardKorak2Schema, wizardKorak3Schema } from '@/lib/validations/servisirane';
@@ -51,12 +52,9 @@ interface WizardState {
   hasSelectedMapLocation:   boolean;
   isMapVisible:             boolean;
   locationSuccessMessage:   string | null;
-  // Step 3 — Preferirani termin (Sprint 7)
-  preferredDate: string | null;
-  preferredTimeFrom: string;
-  preferredTimeTo: string;
-  noPreferredTime: boolean;
-  preferredTimeLabel: string | null;
+  // Step 3 — Preferirani termini (do 3 slota)
+  termini:             TerminSlot[];
+  noPreferredTime:     boolean;
   timeValidationError: string | null;
   // Step 4 — Opis
   description:      string;
@@ -84,12 +82,9 @@ const INITIAL: WizardState = {
   hasSelectedMapLocation:   false,
   isMapVisible:             false,
   locationSuccessMessage:   null,
-  preferredDate:         null,
-  preferredTimeFrom:     '',
-  preferredTimeTo:       '',
-  noPreferredTime:       false,
-  preferredTimeLabel:    null,
-  timeValidationError:   null,
+  termini:             [],
+  noPreferredTime:     false,
+  timeValidationError: null,
   description:         '',
   contactPhone:        '',
   accountPhone:        '',
@@ -120,21 +115,17 @@ export function danasIsoLokalno(): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
-/** Polja koraka „Preferirani termin” (dijeli wizard i forma izmjene). */
-export type StanjePreferiranogTermina = Pick<
-  WizardState,
-  'preferredDate' | 'preferredTimeFrom' | 'preferredTimeTo' | 'noPreferredTime'
->;
+/** Polja koraka „Preferirani termini”. */
+export type StanjePreferiranogTermina = Pick<WizardState, 'termini' | 'noPreferredTime'>;
 
-/**
- * Korak 3: „Dalje” ako nema preferencije, ili ako postoji budući datum i ispravan raspon vremena.
- */
 export function isPreferiraniTerminKorakValid(s: StanjePreferiranogTermina): boolean {
   if (s.noPreferredTime) return true;
-  if (!s.preferredDate) return false;
-  if (s.preferredDate < danasIsoLokalno()) return false;
-  if (!s.preferredTimeFrom || !s.preferredTimeTo) return false;
-  return s.preferredTimeFrom < s.preferredTimeTo;
+  if (s.termini.length === 0) return false;
+  const t = s.termini[0];
+  if (!t?.date) return false;
+  if (t.date < danasIsoLokalno()) return false;
+  if (!t.from || !t.to) return false;
+  return t.from < t.to;
 }
 
 export function isStepThreeValid(s: WizardState): boolean {
@@ -149,25 +140,19 @@ export function izracunajGreskuPreferiranogVremena(
   s: StanjePreferiranogTermina
 ): string | null {
   if (s.noPreferredTime) return null;
-  if (!s.preferredTimeFrom || !s.preferredTimeTo) return null;
-  if (s.preferredTimeFrom >= s.preferredTimeTo) {
-    return '"Vrijeme do" mora biti nakon "Vrijeme od".';
-  }
+  const t = s.termini[0];
+  if (!t?.from || !t.to) return null;
+  if (t.from >= t.to) return '"Vrijeme do" mora biti nakon "Vrijeme od".';
   return null;
 }
 
 export function porukaValidacijePreferiranogTermina(s: StanjePreferiranogTermina): string | null {
   if (s.noPreferredTime) return null;
-  if (!s.preferredDate) {
-    return 'Odaberite datum ili označite da nemate preferirani termin.';
-  }
-  if (s.preferredDate < danasIsoLokalno()) return 'Datum ne smije biti u prošlosti.';
-  if (!s.preferredTimeFrom || !s.preferredTimeTo) {
-    return 'Odaberite vremenski raspon (od — do).';
-  }
-  if (s.preferredTimeFrom >= s.preferredTimeTo) {
-    return '"Vrijeme do" mora biti nakon "Vrijeme od".';
-  }
+  const t = s.termini[0];
+  if (!t?.date) return 'Odaberite datum ili označite da nemate preferirani termin.';
+  if (t.date < danasIsoLokalno()) return 'Primarni datum ne smije biti u prošlosti.';
+  if (!t.from || !t.to) return 'Odaberite vremenski raspon primarnog termina (od — do).';
+  if (t.from >= t.to) return '"Vrijeme do" mora biti nakon "Vrijeme od".';
   return null;
 }
 
@@ -336,8 +321,12 @@ interface ConfirmationData {
 
 function formatirajTermin(state: WizardState): string {
   if (state.noPreferredTime) return 'Nema preferirani termin';
-  if (!state.preferredDate || !state.preferredTimeFrom || !state.preferredTimeTo) return 'Nema preferirani termin';
-  return `${formatirajDatumPrikaz(state.preferredDate)} (${state.preferredTimeFrom} - ${state.preferredTimeTo})`;
+  if (state.termini.length === 0) return 'Nema preferirani termin';
+  const oznake = ['Primarni', 'Alt. 1', 'Alt. 2'];
+  return state.termini
+    .filter(t => t?.date)
+    .map((t, i) => `${oznake[i]}: ${formatirajDatumPrikaz(t.date)}${t.from && t.to ? ` (${t.from}–${t.to})` : ''}`)
+    .join(' · ');
 }
 
 function formatirajStatusZaPrikaz(status: string): string {
@@ -610,11 +599,7 @@ export function ServiceRequestWizard({
       ) {
         next.locationError = null;
       }
-      const korak3Polja =
-        'preferredDate' in updates ||
-        'preferredTimeFrom' in updates ||
-        'preferredTimeTo' in updates ||
-        'noPreferredTime' in updates;
+      const korak3Polja = 'termini' in updates || 'noPreferredTime' in updates;
       if (korak3Polja) {
         next.timeValidationError = izracunajGreskuPreferiranogVremena(next);
       }
@@ -702,17 +687,8 @@ export function ServiceRequestWizard({
           preferred_schedule: state.noPreferredTime
             ? { termini: [], no_preferred_time: true }
             : {
-                termini: [
-                  {
-                    date: state.preferredDate!,
-                    from: state.preferredTimeFrom,
-                    to:   state.preferredTimeTo,
-                  },
-                ],
+                termini:           state.termini.filter(t => t?.date && t.from && t.to),
                 no_preferred_time: false,
-                ...(state.preferredTimeLabel
-                  ? { preferred_time_label: state.preferredTimeLabel }
-                  : {}),
               },
           triage:
             state.premiumRequested && state.isPremiumUser ? null : (state.triage as TriageOdgovori),
@@ -804,11 +780,8 @@ export function ServiceRequestWizard({
       )}
       {korak === 3 && (
         <KorakTermin
-          preferredDate={state.preferredDate}
-          preferredTimeFrom={state.preferredTimeFrom}
-          preferredTimeTo={state.preferredTimeTo}
+          termini={state.termini}
           noPreferredTime={state.noPreferredTime}
-          preferredTimeLabel={state.preferredTimeLabel}
           validationError={state.timeValidationError ?? greska}
           onUpdate={azuriraj}
         />

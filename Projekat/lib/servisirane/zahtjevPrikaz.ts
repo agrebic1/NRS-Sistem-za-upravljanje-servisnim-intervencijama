@@ -39,7 +39,7 @@ export function preferiraniTerminZaDispecera(
   zahtjev: ServisniZahtjev,
   opcije?: OpcijePreferiranogTerminaDispecer,
 ): {
-  tekstCijeli: string;
+  tekstCijeli:    string;
   imaPreferirani: boolean;
 } {
   const bezPreferiranogTermina =
@@ -52,24 +52,31 @@ export function preferiraniTerminZaDispecera(
     !schedule ||
     schedule.no_preferred_time === true ||
     (schedule.termini?.length ?? 0) === 0;
-  if (nema) {
-    return { tekstCijeli: bezPreferiranogTermina, imaPreferirani: false };
-  }
+  if (nema) return { tekstCijeli: bezPreferiranogTermina, imaPreferirani: false };
+
   const prvi = schedule.termini[0];
-  if (!prvi?.date) {
-    return { tekstCijeli: bezPreferiranogTermina, imaPreferirani: false };
-  }
+  if (!prvi?.date) return { tekstCijeli: bezPreferiranogTermina, imaPreferirani: false };
+
   const datum = formatKratkiDatum(prvi.date);
-  if (prvi.from && prvi.to) {
-    return {
-      tekstCijeli: `${datum}, ${prvi.from}–${prvi.to}`,
-      imaPreferirani: true,
-    };
-  }
-  return {
-    tekstCijeli: datum,
-    imaPreferirani: true,
-  };
+  const tekst = prvi.from && prvi.to ? `${datum}, ${prvi.from}–${prvi.to}` : datum;
+  return { tekstCijeli: tekst, imaPreferirani: true };
+}
+
+/** Returns all preferred slots for dispatcher display (primarni + alternativni). */
+export function sviPreferinaniTermini(
+  zahtjev: ServisniZahtjev,
+): Array<{ datum: string; od?: string; do?: string; tip: string }> {
+  const schedule = zahtjev.preferred_schedule;
+  if (!schedule || schedule.no_preferred_time || !schedule.termini?.length) return [];
+  const tipovi = ['Primarni', 'Alternativni 1', 'Alternativni 2'];
+  return schedule.termini
+    .filter(t => t?.date)
+    .map((t, i) => ({
+      datum: formatKratkiDatum(t.date),
+      od:    t.from || undefined,
+      do:    t.to   || undefined,
+      tip:   tipovi[i] ?? `Termin ${i + 1}`,
+    }));
 }
 
 export function formatPrijavljenoDatumVrijeme(iso: string): string {

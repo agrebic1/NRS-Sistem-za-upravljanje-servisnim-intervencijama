@@ -20,6 +20,8 @@ import { EvidencijaRadaModal } from '@/components/serviser/EvidencijaRadaModal';
 import { IntervencijaChecklist } from '@/components/serviser/IntervencijaChecklist';
 import type { ServisniZahtjev, WorkEvidence, InterventionActivity } from '@/domain/types/servisirane';
 import { labelKategorije } from '@/lib/servisirane/kategorije';
+import { prioritetBoja } from '@/lib/servisirane/statusBoja';
+import { fmtSat, fmtDatumKratki } from '@/lib/format/datumi';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -28,25 +30,12 @@ function fmtDatum(iso: string): string {
     weekday: 'long', day: '2-digit', month: 'long', year: 'numeric',
   });
 }
-function fmtSat(iso: string): string {
-  return new Date(iso).toLocaleTimeString('bs-BA', { hour: '2-digit', minute: '2-digit' });
-}
-function fmtKratki(iso: string): string {
-  return new Date(iso).toLocaleDateString('bs-BA', { day: '2-digit', month: '2-digit', year: 'numeric' });
-}
+const fmtKratki = fmtDatumKratki;
+
 function trajanjeOznaka(min: number): string {
   if (min < 60) return `${min} min`;
   const h = Math.floor(min / 60), m = min % 60;
   return m ? `${h}h ${m}min` : `${h}h`;
-}
-function prioritetBoja(p: string | null): string {
-  switch ((p ?? '').toUpperCase()) {
-    case 'HITNO':    return '#DC2626';
-    case 'KRITIČNO': return '#991B1B';
-    case 'VISOKO':   return '#EA580C';
-    case 'SREDNJE':  return '#D97706';
-    default:         return 'var(--first-secondary)';
-  }
 }
 function jeKasni(z: IntervencijaDetalji): boolean {
   if (!z.termin_planirani_pocetak) return false;

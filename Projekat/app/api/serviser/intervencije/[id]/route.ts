@@ -10,6 +10,10 @@ import { odbijZadatakSchema } from '@/lib/validations/servisirane';
 import {
   notifPrihvatanjeZadatka,
   notifOdbijanjeZadatka,
+  notifKorisnikusServiserNaPutu,
+  notifKorisnikusServiserNaTerenu,
+  notifNovaNapomenaDispecer,
+  notifServiserNaTerenu,
 } from '@/lib/servisirane/notifikacijeHelper';
 
 export const dynamic = 'force-dynamic';
@@ -158,6 +162,17 @@ export async function PATCH(
       if (dodjelaActivity?.autor_id) {
         await notifPrihvatanjeZadatka(db, dodjelaActivity.autor_id, zahtjevId, imeServisera);
       }
+
+      // Notify korisnik that serviser is on the way
+      const { data: zahtjevRow } = await db
+        .from('service_requests')
+        .select('user_id')
+        .eq('id', zahtjevId)
+        .maybeSingle();
+      if (zahtjevRow?.user_id) {
+        await notifKorisnikusServiserNaPutu(db, zahtjevRow.user_id, zahtjevId, imeServisera);
+      }
+
       void zah; // suppress unused variable
       return NextResponse.json({ success: true, novi_status: 'u_radu' });
     }
@@ -176,6 +191,35 @@ export async function PATCH(
         zahtjev_id: zahtjevId, autor_id: user.id, tip: 'status_promjena',
         sadrzaj: 'Serviser je na lokaciji — intervencija u toku.', metadata: { iz: trenutniStatus, u: 'u_izvrsenju' },
       });
+
+      // Notify korisnik + dispecer that serviser is on-site
+      const { data: osoba2 } = await db
+        .from('osoba')
+        .select('ime, prezime')
+        .eq('id_osobe', user.id)
+        .maybeSingle();
+      const imeServ2 = osoba2 ? `${osoba2.ime} ${osoba2.prezime}` : 'Serviser';
+
+      const { data: zahtjevRow2 } = await db
+        .from('service_requests')
+        .select('user_id')
+        .eq('id', zahtjevId)
+        .maybeSingle();
+      if (zahtjevRow2?.user_id) {
+        await notifKorisnikusServiserNaTerenu(db, zahtjevRow2.user_id, zahtjevId, imeServ2);
+      }
+      const { data: dodjelaAkt2 } = await db
+        .from('intervention_activities')
+        .select('autor_id')
+        .eq('zahtjev_id', zahtjevId)
+        .eq('tip', 'dodjela')
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (dodjelaAkt2?.autor_id) {
+        await notifServiserNaTerenu(db, dodjelaAkt2.autor_id, zahtjevId, imeServ2);
+      }
+
       return NextResponse.json({ success: true, novi_status: 'u_izvrsenju' });
     }
 
@@ -189,6 +233,19 @@ export async function PATCH(
         metadata:   null,
       });
       if (insErr) return NextResponse.json({ error: insErr.message }, { status: 500 });
+
+      // Notify dispecer about serviser note
+      const { data: osobaN } = await db
+        .from('osoba').select('ime, prezime').eq('id_osobe', user.id).maybeSingle();
+      const imeNap = osobaN ? `${osobaN.ime} ${osobaN.prezime}` : 'Serviser';
+      const { data: dodjelaAktN } = await db
+        .from('intervention_activities')
+        .select('autor_id').eq('zahtjev_id', zahtjevId).eq('tip', 'dodjela')
+        .order('created_at', { ascending: false }).limit(1).maybeSingle();
+      if (dodjelaAktN?.autor_id) {
+        await notifNovaNapomenaDispecer(db, dodjelaAktN.autor_id, zahtjevId, imeNap);
+      }
+
       return NextResponse.json({ success: true });
     }
 

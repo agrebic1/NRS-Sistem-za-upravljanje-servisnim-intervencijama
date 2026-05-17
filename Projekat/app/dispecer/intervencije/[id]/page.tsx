@@ -21,7 +21,8 @@ import { ImageUploader } from '@/components/shared/ImageUploader';
 import { AktivnostiTimeline } from '@/components/serviser/AktivnostiTimeline';
 import type { ServisniZahtjev, WorkEvidence, InterventionActivity } from '@/domain/types/servisirane';
 import { labelKategorije } from '@/lib/servisirane/kategorije';
-import { nadjiMockIntervenciju } from '@/data/mockIntervencije';
+import { prioritetBoja, statusBoja, statusOznaka } from '@/lib/servisirane/statusBoja';
+import { fmtSat, fmtDatumKratki, fmtDatumVrijeme } from '@/lib/format/datumi';
 
 // ─── Tip ─────────────────────────────────────────────────────────────────────
 
@@ -32,47 +33,12 @@ interface IntervencijaDetalji extends ServisniZahtjev {
 
 // ─── Helperi ─────────────────────────────────────────────────────────────────
 
-function fmtSat(iso: string) {
-  return new Date(iso).toLocaleTimeString('bs-BA', { hour: '2-digit', minute: '2-digit' });
-}
-function fmtDatum(iso: string) {
-  return new Date(iso).toLocaleDateString('bs-BA', { day: '2-digit', month: '2-digit', year: 'numeric' });
-}
-function fmtDatumVrijeme(iso: string) {
-  return new Date(iso).toLocaleString('bs-BA', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-}
+const fmtDatum = fmtDatumKratki;
+
 function trajanjeLabel(min: number) {
   if (min < 60) return `${min} min`;
   const h = Math.floor(min / 60), m = min % 60;
   return m ? `${h}h ${m}min` : `${h}h`;
-}
-function prioritetBoja(p: string | null): string {
-  switch ((p ?? '').toUpperCase()) {
-    case 'HITNO':    return '#DC2626';
-    case 'KRITIČNO': return '#991B1B';
-    case 'VISOKO':   return '#EA580C';
-    case 'SREDNJE':  return '#D97706';
-    default:         return 'var(--first-secondary)';
-  }
-}
-function statusBoja(s: string): string {
-  switch (s) {
-    case 'dodijeljeno':  return 'var(--first-senary)';
-    case 'u_radu':       return 'var(--first-secondary)';
-    case 'u_izvrsenju':  return 'var(--first-secondary)';
-    case 'zavrseno':     return 'var(--first-nonary)';
-    case 'zatvoreno':    return 'var(--first-nonary)';
-    default:             return 'var(--first-nonary)';
-  }
-}
-function statusOznaka(s: string): string {
-  switch (s) {
-    case 'dodijeljeno':  return 'Dodijeljeno';
-    case 'u_radu':       return 'Na putu';
-    case 'u_izvrsenju':  return 'Na terenu';
-    case 'zavrseno':     return 'Završeno';
-    default:             return s;
-  }
 }
 function jeKasni(z: IntervencijaDetalji): boolean {
   if (!z.termin_planirani_pocetak) return false;
@@ -736,20 +702,10 @@ export default function DispecerIntervencijaDetaljiPage() {
     try {
       const r = await fetch(`/api/dispecer/zahtjevi/${id}`, { cache: 'no-store' });
       const d = await r.json();
-      if (r.ok) {
-        setZahtjev(d.zahtjev);
-        setEvidencije(d.evidencije ?? []);
-        setAktivnosti(d.aktivnosti ?? []);
-      } else {
-        const mock = nadjiMockIntervenciju(Number(id));
-        if (mock) {
-          setZahtjev(mock as unknown as IntervencijaDetalji);
-          setEvidencije((mock.evidencije ?? []) as unknown as WorkEvidence[]);
-          setAktivnosti((mock.aktivnosti ?? []) as unknown as InterventionActivity[]);
-        } else {
-          throw new Error(d.error ?? 'Intervencija nije pronađena.');
-        }
-      }
+      if (!r.ok) throw new Error(d.error ?? 'Intervencija nije pronađena.');
+      setZahtjev(d.zahtjev);
+      setEvidencije(d.evidencije ?? []);
+      setAktivnosti(d.aktivnosti ?? []);
     } catch (err) {
       setGreska(err instanceof Error ? err.message : 'Greška pri učitavanju.');
     } finally { setUcitava(false); }
