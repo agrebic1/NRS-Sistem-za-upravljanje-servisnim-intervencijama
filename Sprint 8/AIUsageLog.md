@@ -43,3 +43,33 @@
 | Šta je tim odbacio | Odbačen je koncept u kojem bi svi serviseri imali identične privilegije i operativnu odgovornost na intervenciji. |
 | Rizici, problemi ili greške | Dodatna kompleksnost u planiranju termina i prikazu dostupnosti servisera. |
 | Ko je koristio alat | Amina Grebić |
+
+
+| Polje | Opis |
+|---|---|
+| Datum | 17.05.2026. |
+| Sprint broj | 8 |
+| Alat koji je korišten | Claude AI |
+| Svrha korištenja | Pomoć pri implementaciji serviserskog modula |
+| Kratak opis zadatka | Korisnik je definisao da serviser u sekciji intervencija mora moći otvoriti pojedinačnu intervenciju, pregledati detalje, ažurirati status, unositi napomene i komunicirati sa dispečerom kroz sistem. |
+| Šta je AI generisao | AI je generisao kod i implementacione dijelove za listu intervencija servisera, otvaranje detalja intervencije, prikaz osnovnih informacija, ažuriranje statusa, napomene, komunikaciju dispečer-serviser, historiju aktivnosti, mapu/lokaciju i evidenciju rada, u skladu sa korisničkim zahtjevima i postojećom arhitekturom sistema. |
+| Šta je tim prihvatio | Prihvaćeno je da serviser vidi samo svoje intervencije i da klikom na karticu može otvoriti detaljan prikaz intervencije. Prihvaćen je i koncept komunikacije između servisera i dispečera kroz napomene vezane za konkretnu intervenciju. |
+| Šta je tim izmijenio | Generisani kod i prijedlozi prilagođeni su postojećem serviserskom modulu, postojećem dizajn sistemu i poslovnoj logici aplikacije. |
+| Šta je tim odbacio | Odbačen je pristup u kojem bi serviser vidio nepotrebne administrativne podatke ili tuđe intervencije. Također nije implementiran eksterni chat sistem, nego komunikacija kroz napomene unutar aplikacije. |
+| Rizici, problemi ili greške | Rizik je da serviserski prikaz postane preopterećen informacijama koje nisu potrebne na terenu, zbog čega je zadržan fokus na relevantnim operativnim podacima. |
+| Ko je koristio alat | Amina Grebić |
+
+
+| Polje | Opis |
+|---|---|
+| Datum | 17.05.2026. |
+| Sprint broj | 8 |
+| Alat koji je korišten | Claude AI |
+| Svrha korištenja | Pomoć pri implementaciji fleksibilnog planiranja termina i asistivnog izbora servisera |
+| Kratak opis zadatka | Korisnik je definisao da korisnik prilikom kreiranja zahtjeva može odabrati do tri preferirana termina, a da sistem pri planiranju dispečeru pomogne izborom najpogodnijeg servisera prema kriterijima kao što su stručnost, blizina, dostupnost i opterećenje. |
+| Šta je AI generisao | AI je generisao kod i implementacione prijedloge za izbor više preferiranih termina, scoring/ranking model za preporuku servisera, prikaz najboljeg izbora i djelimičnih poklapanja, kriterije za izbor servisera, odbijanje dodjele uz razlog i ponovno rangiranje kandidata nakon odbijanja servisera. |
+| Šta je tim prihvatio | Prihvaćen je asistivni model u kojem sistem predlaže najpogodnijeg servisera, ali dispečer donosi finalnu odluku. Prihvaćeno je i da korisnik može navesti više termina kako bi dispečer lakše uskladio korisnika i servisera. |
+| Šta je tim izmijenio | Generisana logika i prijedlozi prilagođeni su tako da sistem ne dodjeljuje servisera automatski, nego daje preporuke i objašnjenje podudaranja kandidata. |
+| Šta je tim odbacio | Odbačena je potpuno automatska dodjela servisera bez potvrde dispečera. Također je odbačeno ponovno preporučivanje istog servisera odmah nakon odbijanja dodjele. |
+| Rizici, problemi ili greške | Rizik je povećana kompleksnost planiranja zbog više termina, više kriterija rangiranja i potrebe za ponovnim rangiranjem nakon odbijanja servisera. Zbog toga je naglašeno da scoring logika bude odvojena od UI sloja i usklađena sa postojećom arhitekturom sistema. |
+| Ko je koristio alat | Amina Grebić |
