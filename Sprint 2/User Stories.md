@@ -47,11 +47,12 @@ THEME (Tema)
     │   │
     │   └── FEATURE: Upravljanje korisničkim nalozima (PBI-003)
     │       │
-    │       ├── Story: US-35 Podnosenje zahtjeva za internu ulogu (dispecer/serviser)
+    │       ├── Story: US-35 Podnošenje zahtjeva za internu ulogu (dispečer/serviser)
     │       ├── Story: US-18 Administrativno kreiranje internog korisničkog naloga
     │       ├── Story: US-19 Pregled postojećih korisničkih naloga
     │       ├── Story: US-20 Promjena korisničke uloge
-    │       └── Story: US-21 Deaktivacija korisničkog naloga
+    │       ├── Story: US-21 Deaktivacija korisničkog naloga
+    │       └── Story: US-36 Uređivanje korisničkog naloga
     │
     ├── EPIC: Upravljanje zahtjevima za servisne intervencije
     │   │
@@ -135,15 +136,19 @@ THEME (Tema)
     │       │
     │       └── Story: US-25 Potvrda i zatvaranje intervencije
     │
-    └── EPIC: Komunikacija i historija aktivnosti
+    └── EPIC: Komunikacija, notifikacije i historija aktivnosti
         │
         ├── FEATURE: Napomene na intervenciji (PBI-020)
         │   │
         │   └── Story: US-30 Razmjena napomena na intervenciji
         │
-        └── FEATURE: Historija aktivnosti intervencije (PBI-021)
+        ├── FEATURE: Historija aktivnosti intervencije (PBI-021)
+        │   │
+        │   └── Story: US-32 Pregled historije aktivnosti intervencije
+        │
+        └── FEATURE: Sistemske notifikacije (PBI-022)
             │
-            └── Story: US-32 Pregled historije aktivnosti intervencije
+            └── Story: US-37 Primanje relevantnih sistemskih obavještenja
 ```
 
 # User Stories i Acceptance Criteria
