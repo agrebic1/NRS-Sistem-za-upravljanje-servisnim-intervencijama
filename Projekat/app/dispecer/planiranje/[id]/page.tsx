@@ -902,10 +902,10 @@ export default function DispecerPlaniranjePage() {
             <div className="flex flex-col gap-4">
               {/* Final review */}
               <div className="rounded-2xl p-5" style={sekcija}>
-                <SekcijaHeader
-                  naziv="Pregled plana"
-                  opis="Pregledajte sve odluke prije finalne potvrde."
-                />
+                <h2 className="mb-1 text-base font-bold" style={{ color: 'var(--first-octonary)' }}>Pregled naloga</h2>
+                <p className="mb-5 text-xs" style={{ color: 'var(--first-nonary)' }}>
+                  Pregledajte sve unesene podatke. Za izmjenu pritisnite &quot;Nazad&quot;.
+                </p>
 
                 <div className="flex flex-col gap-2">
                   {/* Zahtjev */}
@@ -1012,6 +1012,33 @@ export default function DispecerPlaniranjePage() {
                   )}
                 </div>
               </div>
+            </div>
+          )}
+
+          {/* ── Korak 5: Potvrda ────────────────────────────────────────────── */}
+          {korak === 5 && (
+            <div className="flex flex-col gap-4">
+              <div className="rounded-2xl p-5" style={sekcija}>
+                <h2 className="mb-1 text-base font-bold" style={{ color: 'var(--first-octonary)' }}>Potvrda dodjele</h2>
+                <p className="mb-5 text-xs" style={{ color: 'var(--first-nonary)' }}>
+                  Klikom na &quot;Dodijeli intervenciju&quot; kreirate radni nalog i obavještavate servisera.
+                </p>
+
+                {/* Sažetak (compact) */}
+                <div className="mb-5 grid grid-cols-2 gap-2 rounded-xl p-4"
+                  style={{ backgroundColor: 'rgb(255 255 255 / 0.65)', border: '1px solid rgb(var(--first-quaternary-rgb)/0.3)' }}>
+                  {[
+                    { label: 'Intervencija', value: naslov },
+                    { label: 'Prioritet', value: wz.odabraniPrioritet || '—' },
+                    { label: 'Termin', value: wz.termin_pocetak_datum ? `${wz.termin_pocetak_datum}${wz.termin_pocetak_vrijemeOd ? ` ${wz.termin_pocetak_vrijemeOd}` : ''}` : '—' },
+                    { label: 'Serviser', value: odabraniServiser ? `${odabraniServiser.ime} ${odabraniServiser.prezime}` : '—' },
+                  ].map(({ label, value }) => (
+                    <div key={label}>
+                      <p className="text-[10px] font-bold uppercase tracking-wide" style={{ color: 'var(--first-nonary)' }}>{label}</p>
+                      <p className="mt-0.5 text-xs font-semibold" style={{ color: 'var(--first-octonary)' }}>{value}</p>
+                    </div>
+                  ))}
+                </div>
 
               {/* Operativna potvrda */}
               <div
