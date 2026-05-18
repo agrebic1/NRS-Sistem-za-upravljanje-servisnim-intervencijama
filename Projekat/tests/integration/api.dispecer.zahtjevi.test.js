@@ -5,13 +5,12 @@ const mockAssertDispatcherAccess = jest.fn();
 jest.mock('@/lib/supabase/server', () => ({
   createClient: () => ({
     auth: { getUser: mockSessionGetUser },
+    from: mockFrom,
   }),
 }));
 
 jest.mock('@/lib/supabase/admin', () => ({
-  createAdminClient: () => ({
-    from: mockFrom,
-  }),
+  createAdminClient: () => ({}),
 }));
 
 jest.mock('@/lib/servisirane/dispecerPristup', () => ({
