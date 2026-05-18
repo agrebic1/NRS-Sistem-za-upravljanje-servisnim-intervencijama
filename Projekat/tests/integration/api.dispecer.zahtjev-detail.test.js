@@ -5,20 +5,46 @@ const mockAssertDispatcherAccess = jest.fn();
 jest.mock('@/lib/supabase/server', () => ({
   createClient: () => ({
     auth: { getUser: mockSessionGetUser },
+    from: mockFrom,
   }),
 }));
 
+// createAdminClient no longer used in this route; mock kept for compat
 jest.mock('@/lib/supabase/admin', () => ({
-  createAdminClient: () => ({
-    from: mockFrom,
-  }),
+  createAdminClient: () => ({ from: jest.fn() }),
 }));
 
 jest.mock('@/lib/servisirane/dispecerPristup', () => ({
   assertDispatcherAccess: (...args) => mockAssertDispatcherAccess(...args),
 }));
 
+jest.mock('@/lib/servisirane/notifikacijeHelper', () => ({
+  notifDodjelaIntervencije:            jest.fn().mockResolvedValue(undefined),
+  notifZatvaranjeIntervencije:         jest.fn().mockResolvedValue(undefined),
+  notifTimDodjela:                     jest.fn().mockResolvedValue(undefined),
+  notifKorisnikusServiserDodijeljen:   jest.fn().mockResolvedValue(undefined),
+  notifKorisnikusIntervencijaZavrsena: jest.fn().mockResolvedValue(undefined),
+  notifKorisnikusIntervencijaZatvorena: jest.fn().mockResolvedValue(undefined),
+  notifKorisnikusZahtjevUObradi:       jest.fn().mockResolvedValue(undefined),
+  notifNovaNapomenaServiser:           jest.fn().mockResolvedValue(undefined),
+}));
+
 const { GET, PATCH } = require('@/app/api/dispecer/zahtjevi/[id]/route');
+
+function flexChain() {
+  return {
+    select:      jest.fn().mockReturnThis(),
+    eq:          jest.fn().mockReturnThis(),
+    order:       jest.fn().mockReturnThis(),
+    limit:       jest.fn().mockReturnThis(),
+    neq:         jest.fn().mockReturnThis(),
+    in:          jest.fn().mockReturnThis(),
+    single:      jest.fn().mockResolvedValue({ data: null, error: null }),
+    maybeSingle: jest.fn().mockResolvedValue({ data: null, error: null }),
+    insert:      jest.fn().mockResolvedValue({ data: null, error: null }),
+    update:      jest.fn(() => ({ eq: jest.fn().mockResolvedValue({ error: null }) })),
+  };
+}
 
 function singleQuery(result) {
   return {
@@ -38,6 +64,10 @@ function maybeSingleQuery(result) {
 
 function updateQuery(result = { error: null }, onUpdate = jest.fn()) {
   return {
+    select:      jest.fn().mockReturnThis(),
+    eq:          jest.fn().mockReturnThis(),
+    single:      jest.fn().mockResolvedValue({ data: null, error: null }),
+    maybeSingle: jest.fn().mockResolvedValue({ data: null, error: null }),
     update: jest.fn((payload) => {
       onUpdate(payload);
       return {
@@ -124,7 +154,7 @@ describe('/api/dispecer/zahtjevi/[id] route', () => {
           error: null,
         });
       }
-      return singleQuery({ data: null, error: null });
+      return flexChain();
     });
 
     const response = await GET(new Request('http://localhost/api/dispecer/zahtjevi/1'), {
@@ -148,7 +178,7 @@ describe('/api/dispecer/zahtjevi/[id] route', () => {
     const onUpdate = jest.fn();
     let serviceCalls = 0;
     mockFrom.mockImplementation((table) => {
-      if (table !== 'service_requests') return singleQuery({ data: null, error: null });
+      if (table !== 'service_requests') return flexChain();
       serviceCalls += 1;
       if (serviceCalls === 1) {
         return singleQuery({ data: { status: 'pending_review', is_premium: false }, error: null });
@@ -197,7 +227,7 @@ describe('/api/dispecer/zahtjevi/[id] route', () => {
     const onUpdate = jest.fn();
     let serviceCalls = 0;
     mockFrom.mockImplementation((table) => {
-      if (table !== 'service_requests') return singleQuery({ data: null, error: null });
+      if (table !== 'service_requests') return flexChain();
       serviceCalls += 1;
       if (serviceCalls === 1) {
         return singleQuery({ data: { status: 'pending_review', is_premium: true }, error: null });
@@ -226,7 +256,7 @@ describe('/api/dispecer/zahtjevi/[id] route', () => {
     const onUpdate = jest.fn();
     let serviceCalls = 0;
     mockFrom.mockImplementation((table) => {
-      if (table !== 'service_requests') return singleQuery({ data: null, error: null });
+      if (table !== 'service_requests') return flexChain();
       serviceCalls += 1;
       if (serviceCalls === 1) {
         return singleQuery({ data: { status: 'na_cekanju', is_premium: false }, error: null });
@@ -273,7 +303,7 @@ describe('/api/dispecer/zahtjevi/[id] route', () => {
     const onUpdate = jest.fn();
     let serviceCalls = 0;
     mockFrom.mockImplementation((table) => {
-      if (table !== 'service_requests') return singleQuery({ data: null, error: null });
+      if (table !== 'service_requests') return flexChain();
       serviceCalls += 1;
       if (serviceCalls === 1) {
         return singleQuery({ data: { status: 'in_review', is_premium: false }, error: null });

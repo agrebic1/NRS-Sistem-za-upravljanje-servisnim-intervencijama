@@ -8,6 +8,7 @@ const mockKreirajEmailInternogNaloga = jest.fn();
 jest.mock('@/lib/supabase/server', () => ({
   createClient: () => ({
     auth: { getUser: mockSessionGetUser },
+    from: mockFrom,
   }),
 }));
 

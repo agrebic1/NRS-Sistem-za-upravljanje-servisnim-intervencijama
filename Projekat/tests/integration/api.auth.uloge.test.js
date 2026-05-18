@@ -4,13 +4,12 @@ const mockFrom = jest.fn();
 jest.mock('@/lib/supabase/server', () => ({
   createClient: () => ({
     auth: { getUser: mockSessionGetUser },
+    from: mockFrom,
   }),
 }));
 
 jest.mock('@/lib/supabase/admin', () => ({
-  createAdminClient: () => ({
-    from: mockFrom,
-  }),
+  createAdminClient: () => ({}),
 }));
 
 const { GET } = require('@/app/api/auth/uloge/route');

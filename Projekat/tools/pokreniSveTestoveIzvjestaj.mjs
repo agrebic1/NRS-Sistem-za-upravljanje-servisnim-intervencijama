@@ -100,12 +100,19 @@ const sprintBreakdown = [
   'Sprint 5: auth/RBAC osnova, registracija, prijava, odjava, sesija, role redirect i kontrola pristupa.',
   'Sprint 6: korisnicki zahtjevi, admin kreiranje korisnika, onboarding partnera i premium tokovi.',
   'Sprint 7: dispecerski dashboard, liste, detalj intervencije, carobnjak, operativni prioritet, statusi i RBAC API provjere.',
+  'Sprint 8: serviserski modul — dodjela, prihvatanje/odbijanje zadatka, statusni prelazi, evidencija rada, napomene, zatvaranje intervencije i RBAC provjere.',
 ];
 
 const sprint7AddedTests = {
   automatic: 42,
   manual:    26,
   note:      'Automatski zbir je porastao sa 69 u Sprintu 6 na 111 u Sprintu 7.',
+};
+
+const sprint8AddedTests = {
+  automatic: 63,
+  manual:    20,
+  note:      'Automatski zbir je porastao sa 111 u Sprintu 7 na 174 u Sprintu 8 (3 unit + 3 integration + 2 E2E fajla).',
 };
 
 const results = [];
@@ -173,6 +180,11 @@ summaryLines.push(
   `- Automatski testovi: +${sprint7AddedTests.automatic} (${sprint7AddedTests.note})`,
   `- Manuelni test scenariji: +${sprint7AddedTests.manual} za SB-07-35`,
   '',
+  '## Dodano u Sprintu 8',
+  '',
+  `- Automatski testovi: +${sprint8AddedTests.automatic} (${sprint8AddedTests.note})`,
+  `- Manuelni test scenariji: +${sprint8AddedTests.manual} za SB-08-01`,
+  '',
   '## Broj pokrenutih testova',
   '',
   `- Unit testovi: ${formatCount(testCounts.unit)}`,
@@ -220,6 +232,8 @@ fs.writeFileSync(
     'Sprint 6: korisnicki/admin/premium tokovi',
     'Sprint 7: dispecerski operativni tok',
     `Dodano u Sprintu 7: +${sprint7AddedTests.automatic} automatska testa; +${sprint7AddedTests.manual} manuelnih scenarija`,
+    'Sprint 8: serviserski modul i zatvaranje intervencije',
+    `Dodano u Sprintu 8: +${sprint8AddedTests.automatic} automatska testa; +${sprint8AddedTests.manual} manuelnih scenarija`,
     `Unit testovi: ${formatCount(testCounts.unit)}`,
     `Integration testovi: ${formatCount(testCounts.integration)}`,
     `Coverage run: ${formatCount(testCounts.coverage)}`,

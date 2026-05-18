@@ -196,13 +196,14 @@ const SYNONIMI_DISPECER_FILTRA: Record<string, string> = {
   carobnjak:            'svi',
   u_toku:               'svi',
   ceka_prioritet:       'novi',
-  ceka_termin:          'u_obradi',
-  ceka_servisera:       'u_obradi',
-  ceka_zavrsnu_potvrdu: 'u_obradi',
-  konacna_potvrda:      'u_obradi',
+  // Stari alias → stari kanon (hop1); stari kanon → novi kanon (hop2)
+  ceka_termin:          'zakazivanje_termina',
+  ceka_servisera:       'dodjela_servisera',
+  ceka_zavrsnu_potvrdu: 'korak_potvrde',
+  konacna_potvrda:      'korak_potvrde',
   intervencija:         'svi',
   teren:                'svi',
-  // Stari sub-filter vrednosti → nova kategorija
+  // Stari kanon → novi kanon
   zakazivanje_termina:  'u_obradi',
   dodjela_servisera:    'u_obradi',
   korak_potvrde:        'u_obradi',
@@ -210,7 +211,11 @@ const SYNONIMI_DISPECER_FILTRA: Record<string, string> = {
 };
 
 export function normalizujDispecerFilterIzParametra(raw: string | null | undefined, dozvoljene: string[]): string {
-  const v = raw?.trim() || 'svi';
-  const mapped = SYNONIMI_DISPECER_FILTRA[v] ?? v;
-  return dozvoljene.includes(mapped) ? mapped : 'svi';
+  const v    = raw?.trim() || 'svi';
+  const hop1 = SYNONIMI_DISPECER_FILTRA[v] ?? v;
+  // Support two-hop: old-alias → old-canonical → new-canonical
+  const hop2 = SYNONIMI_DISPECER_FILTRA[hop1] ?? hop1;
+  if (dozvoljene.includes(hop1)) return hop1;
+  if (dozvoljene.includes(hop2)) return hop2;
+  return 'svi';
 }

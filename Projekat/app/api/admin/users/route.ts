@@ -134,7 +134,7 @@ export async function GET() {
       supabase = createAdminClient();
     } catch {
       return NextResponse.json(
-        { error: 'Upravljanje korisnicima zahtijeva SUPABASE_SERVICE_ROLE_KEY. Dodajte ovu env varijablu u Vercel podešavanja.' },
+        { error: 'Upravljanje korisnicima zahtijeva SUPABASE_SERVICE_ROLE_KEY. Lokalno: dodajte u .env.local. Na Vercel: dodajte u Project Settings → Environment Variables.' },
         { status: 503 }
       );
     }
