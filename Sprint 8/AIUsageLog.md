@@ -15,13 +15,15 @@
 | Ko je koristio alat | Amina Grebić |
 
 
+
+
 | Polje | Opis |
 |---|---|
 | Datum | 16.05.2026. |
 | Sprint broj | 8 |
 | Alat koji je korišten | Claude AI |
-| Svrha korištenja | Definisanje poslovne logike i workflow pravila servisnih intervencija |
-| Kratak opis zadatka | AI alat je korišten za razradu operativnog toka intervencije, statusnih prelaza, planiranja termina i odnosa između dispečera i servisera. |
+| Svrha korištenja | Implementacija poslovne logike i workflow pravila servisnih intervencija |
+| Kratak opis zadatka | AI alat je korišten za implementaciju operativnog toka intervencije, statusnih prelaza, planiranja termina i odnosa između dispečera i servisera. |
 | Šta je AI generisao | Generisani su prijedlozi za workflow statusa, validaciju prelaza između statusa, rollback logiku, audit log pristup, pregled historije aktivnosti i pravila zatvaranja intervencije. |
 | Šta je tim prihvatio | Prihvaćen je status-driven pristup gdje backend validacije predstavljaju izvor istine. Prihvaćena je mogućnost vraćanja intervencije u prethodne faze uz obavezno obrazloženje i audit zapis. |
 | Šta je tim izmijenio | Poslovna pravila dodatno su prilagođena realnim operativnim potrebama i pojednostavljen je dio workflow-a kako bi implementacija bila realistična u okviru sprinta. |
@@ -30,19 +32,23 @@
 | Ko je koristio alat | Amina Grebić |
 
 
+
+
 | Polje | Opis |
 |---|---|
 | Datum | 17.05.2026. |
 | Sprint broj | 8 |
 | Alat koji je korišten | Claude AI |
-| Svrha korištenja | Definisanje modela dodjele servisera i pomoćnog osoblja |
-| Kratak opis zadatka | AI alat je korišten za razradu načina dodjele servisera intervencijama i organizacije pomoćnog servisnog osoblja. |
+| Svrha korištenja | Implementacija modela dodjele servisera i pomoćnog osoblja |
+| Kratak opis zadatka | AI alat je korišten za implementaciju i razradu načina dodjele servisera intervencijama i organizacije pomoćnog servisnog osoblja. |
 | Šta je AI generisao | Generisan je prijedlog modela sa glavnim serviserom i pomoćnim serviserima, uključujući backend relacije, UI prijedloge za team assignment i audit log evidenciju. |
 | Šta je tim prihvatio | Prihvaćen je model gdje intervencija ima jednog glavnog servisera kao odgovornog izvršioca, dok se pomoćni serviseri dodaju samo po potrebi. |
 | Šta je tim izmijenio | Izmijenjen je početni koncept “tima servisera” tako da svi članovi nisu ravnopravni, nego postoji jasna hijerarhija odgovornosti. |
 | Šta je tim odbacio | Odbačen je koncept u kojem bi svi serviseri imali identične privilegije i operativnu odgovornost na intervenciji. |
 | Rizici, problemi ili greške | Dodatna kompleksnost u planiranju termina i prikazu dostupnosti servisera. |
 | Ko je koristio alat | Amina Grebić |
+
+
 
 
 | Polje | Opis |
@@ -60,6 +66,8 @@
 | Ko je koristio alat | Amina Grebić |
 
 
+
+
 | Polje | Opis |
 |---|---|
 | Datum | 17.05.2026. |
@@ -72,4 +80,20 @@
 | Šta je tim izmijenio | Generisana logika i prijedlozi prilagođeni su tako da sistem ne dodjeljuje servisera automatski, nego daje preporuke i objašnjenje podudaranja kandidata. |
 | Šta je tim odbacio | Odbačena je potpuno automatska dodjela servisera bez potvrde dispečera. Također je odbačeno ponovno preporučivanje istog servisera odmah nakon odbijanja dodjele. |
 | Rizici, problemi ili greške | Rizik je povećana kompleksnost planiranja zbog više termina, više kriterija rangiranja i potrebe za ponovnim rangiranjem nakon odbijanja servisera. Zbog toga je naglašeno da scoring logika bude odvojena od UI sloja i usklađena sa postojećom arhitekturom sistema. |
+| Ko je koristio alat | Amina Grebić |
+
+
+
+| Polje | Opis |
+|---|---|
+| Datum | 17.05.2026. |
+| Sprint broj | 8 |
+| Alat koji je korišten | Claude AI |
+| Svrha korištenja | Refactoring, cleanup i standardizacija postojećeg koda sistema |
+| Kratak opis zadatka | Korisnik je zahtijevao završni audit i cleanup aplikacije nakon implementacije većeg broja funkcionalnosti. AI je korišten za generisanje i refaktorisanje koda u skladu sa clean code principima, uklanjanje mrtvog i duplog koda, standardizaciju komponenti i pripremu sistema za dalje održavanje i testiranje. |
+| Šta je AI generisao | AI je generisao refaktorisani kod za uklanjanje dead code-a, standardizaciju reusable helper funkcija, standardizaciju status/prioritet badge komponenti, konsolidaciju tipova, cleanup mock fallback logike, reusable error/loading/empty state komponente i reorganizaciju dijelova poslovne logike u odvojene module. |
+| Šta je tim prihvatio | Prihvaćen je pristup sistematskog cleanup-a i modularizacije poslovne logike. Prihvaćeno je uklanjanje silent mock fallbackova, standardizacija UI stanja i izdvajanje reusable helper funkcija i tipova. |
+| Šta je tim izmijenio | Određeni dijelovi refaktorisanja prilagođeni su postojećoj arhitekturi sistema kako bi se izbjegle velike promjene u strukturi projekta tokom sprinta. |
+| Šta je tim odbacio | Odbačeno je potpuno restrukturiranje aplikacije i uvođenje novih biblioteka koje nisu bile neophodne za trenutni sprint. |
+| Rizici, problemi ili greške | Postojao je rizik regresionih grešaka prilikom uklanjanja fallback logike i reorganizacije reusable komponenti, zbog čega je dodatno provjerena povezanost ruta, redirect logika i korištenje postojećih API poziva. |
 | Ko je koristio alat | Amina Grebić |
