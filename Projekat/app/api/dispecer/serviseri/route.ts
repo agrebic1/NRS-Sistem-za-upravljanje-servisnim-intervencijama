@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { assertDispatcherAccess } from '@/lib/servisirane/dispecerPristup';
 
 export const dynamic = 'force-dynamic';
@@ -15,9 +16,18 @@ export async function GET() {
 
     const db = supabase as any;
 
-    // Pronađi id_uloge za ulogu Serviser — case-insensitive radi sigurnosti.
-    // Direktan FK filter je pouzdaniji od .eq('uloga.naziv', ...) na joined tabeli.
-    const { data: ulogaPodaci, error: ulogaError } = await db
+    // Admin klijent zaobilazi RLS — dispečer mora vidjeti sve zaposlenike,
+    // ne samo vlastiti red. Fallback na session klijent ako ključ nije postavljen.
+    let adminClient: ReturnType<typeof createAdminClient> | null = null;
+    let dbEmp: any;
+    try {
+      adminClient = createAdminClient();
+      dbEmp = adminClient as any;
+    } catch {
+      dbEmp = supabase as any;
+    }
+
+    const { data: ulogaPodaci, error: ulogaError } = await dbEmp
       .from('uloga')
       .select('id_uloge')
       .ilike('naziv', 'Serviser')
@@ -26,19 +36,31 @@ export async function GET() {
     if (ulogaError) return NextResponse.json({ error: ulogaError.message }, { status: 500 });
     if (!ulogaPodaci) return NextResponse.json({ serviseri: [] });
 
-    const { data: uposlenici, error } = await db
+    const { data: uposlenici, error } = await dbEmp
       .from('uposlenici')
       .select(`
         id_uposlenika,
         is_verified,
         osoba!id_uposlenika(ime, prezime)
       `)
-      .eq('id_uloge', ulogaPodaci.id_uloge)
-      .eq('is_verified', true);
+      .eq('id_uloge', ulogaPodaci.id_uloge);
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
-    const serviseriIds = (uposlenici ?? []).map((u: any) => u.id_uposlenika);
+    // Filtriraj suspendirane korisnike (banned_until > sada u auth.users).
+    let aktivniUposlenici = uposlenici ?? [];
+    if (adminClient && aktivniUposlenici.length > 0) {
+      const { data: authData } = await adminClient.auth.admin.listUsers({ perPage: 1000, page: 1 });
+      const sada = new Date();
+      const suspendovaniIds = new Set(
+        (authData?.users ?? [])
+          .filter(u => u.banned_until && new Date(u.banned_until) > sada)
+          .map(u => u.id)
+      );
+      aktivniUposlenici = aktivniUposlenici.filter((u: any) => !suspendovaniIds.has(u.id_uposlenika));
+    }
+
+    const serviseriIds = aktivniUposlenici.map((u: any) => u.id_uposlenika);
 
     let aktivniMap: Record<string, number> = {};
     if (serviseriIds.length > 0) {
@@ -58,7 +80,7 @@ export async function GET() {
       }
     }
 
-    const serviseri = (uposlenici ?? []).map((u: any) => {
+    const serviseri = aktivniUposlenici.map((u: any) => {
       const osoba = Array.isArray(u.osoba) ? u.osoba[0] : u.osoba;
       return {
         id:                u.id_uposlenika,

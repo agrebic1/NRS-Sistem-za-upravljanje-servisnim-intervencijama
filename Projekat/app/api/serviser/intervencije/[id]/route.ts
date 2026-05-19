@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import {
   assertServiserAccess,
   assertServiserVlasnistvo,
@@ -14,6 +15,7 @@ import {
   notifKorisnikusServiserNaTerenu,
   notifNovaNapomenaDispecer,
   notifServiserNaTerenu,
+  notifEvidencijaRada,
 } from '@/lib/servisirane/notifikacijeHelper';
 
 export const dynamic = 'force-dynamic';
@@ -41,10 +43,17 @@ export async function GET(
     const imaPriv = await assertServiserAccess(supabase, user.id);
     if (!imaPriv) return NextResponse.json({ error: 'Pristup odbijen.' }, { status: 403 });
 
-    const provjera = await assertServiserVlasnistvo(supabase, zahtjevId, user.id);
-    if (!provjera.ok) return NextResponse.json({ error: provjera.greska }, { status: 403 });
+    // Admin klijent zaobilazi RLS — serviseri moraju čitati redove gdje su
+    // dodjeljeni (serviser_dodijeljen_id), što session klijent ne može vidjeti.
+    let db: any;
+    try {
+      db = createAdminClient() as any;
+    } catch {
+      db = supabase as any;
+    }
 
-    const db = supabase as any;
+    const provjera = await assertServiserVlasnistvo(db, zahtjevId, user.id);
+    if (!provjera.ok) return NextResponse.json({ error: provjera.greska }, { status: 403 });
 
     const { data: zahtjev, error } = await db
       .from('service_requests')
@@ -89,6 +98,7 @@ export async function GET(
 const akcijaPatchSchema = z.discriminatedUnion('action', [
   z.object({ action: z.literal('prihvati') }),
   z.object({ action: z.literal('pocni') }),
+  z.object({ action: z.literal('zavrsi') }),
   z.object({ action: z.literal('odbij'), razlog: odbijZadatakSchema.shape.razlog }),
   z.object({ action: z.literal('napomena'), sadrzaj: z.string().min(1).max(2000) }),
 ]);
@@ -108,7 +118,14 @@ export async function PATCH(
     const imaPriv = await assertServiserAccess(supabase, user.id);
     if (!imaPriv) return NextResponse.json({ error: 'Pristup odbijen.' }, { status: 403 });
 
-    const provjera = await assertServiserVlasnistvo(supabase, zahtjevId, user.id);
+    let db: any;
+    try {
+      db = createAdminClient() as any;
+    } catch {
+      db = supabase as any;
+    }
+
+    const provjera = await assertServiserVlasnistvo(db, zahtjevId, user.id);
     if (!provjera.ok) return NextResponse.json({ error: provjera.greska }, { status: 403 });
 
     const body     = await request.json();
@@ -119,7 +136,6 @@ export async function PATCH(
 
     const podaci         = rezultat.data;
     const trenutniStatus = provjera.status;
-    const db             = supabase as any;
 
     if (podaci.action === 'prihvati') {
       if (!serviserSmijeMijenjatiStatus(trenutniStatus, 'u_radu')) {
@@ -221,6 +237,53 @@ export async function PATCH(
       }
 
       return NextResponse.json({ success: true, novi_status: 'u_izvrsenju' });
+    }
+
+    // ── Završetak intervencije (serviser) ────────────────────────────────────
+    if (podaci.action === 'zavrsi') {
+      if (trenutniStatus !== 'u_izvrsenju') {
+        return NextResponse.json(
+          { error: `Nije moguće završiti intervenciju u statusu "${trenutniStatus}".` },
+          { status: 400 }
+        );
+      }
+
+      const { count: evidCount } = await (db as any)
+        .from('work_evidence')
+        .select('*', { count: 'exact', head: true })
+        .eq('zahtjev_id', zahtjevId);
+
+      if (!evidCount || evidCount === 0) {
+        return NextResponse.json(
+          { error: 'Intervencija se ne može završiti bez evidencije rada.' },
+          { status: 400 }
+        );
+      }
+
+      const { error } = await db.from('service_requests').update({ status: 'zavrseno' }).eq('id', zahtjevId);
+      if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+      await db.from('intervention_activities').insert({
+        zahtjev_id: zahtjevId,
+        autor_id:   user.id,
+        tip:        'status_promjena',
+        sadrzaj:    'Serviser završio intervenciju — čeka formalno zatvaranje dispečera.',
+        metadata:   { iz: 'u_izvrsenju', u: 'zavrseno' },
+      });
+
+      // Notifikacija dispečeru
+      const { data: osobaZav } = await db
+        .from('osoba').select('ime, prezime').eq('id_osobe', user.id).maybeSingle();
+      const imeZav = osobaZav ? `${osobaZav.ime} ${osobaZav.prezime}` : 'Serviser';
+      const { data: dodjelaAktZav } = await db
+        .from('intervention_activities')
+        .select('autor_id').eq('zahtjev_id', zahtjevId).eq('tip', 'dodjela')
+        .order('created_at', { ascending: false }).limit(1).maybeSingle();
+      if (dodjelaAktZav?.autor_id) {
+        await notifEvidencijaRada(db, dodjelaAktZav.autor_id, zahtjevId, `${imeZav} (završena intervencija)`);
+      }
+
+      return NextResponse.json({ success: true, novi_status: 'zavrseno' });
     }
 
     // ── US-30: Napomena servisera ─────────────────────────────────────────────

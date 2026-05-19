@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { assertServiserAccess, assertServiserVlasnistvo } from '@/lib/servisirane/serviserPristup';
 import { evidencijaRadaSchema } from '@/lib/validations/servisirane';
 import { notifEvidencijaRada } from '@/lib/servisirane/notifikacijeHelper';
@@ -26,7 +27,14 @@ export async function POST(
     const imaPriv = await assertServiserAccess(supabase, user.id);
     if (!imaPriv) return NextResponse.json({ error: 'Pristup odbijen.' }, { status: 403 });
 
-    const provjera = await assertServiserVlasnistvo(supabase, zahtjevId, user.id);
+    let db: any;
+    try {
+      db = createAdminClient() as any;
+    } catch {
+      db = supabase as any;
+    }
+
+    const provjera = await assertServiserVlasnistvo(db, zahtjevId, user.id);
     if (!provjera.ok) return NextResponse.json({ error: provjera.greska }, { status: 403 });
 
     const AKTIVNI = ['u_radu', 'u_izvrsenju', 'dodijeljeno'];
@@ -44,8 +52,6 @@ export async function POST(
     }
 
     const { opis_rada, trajanje_minuta, materijal, napomene } = rezultat.data;
-
-    const db = supabase as any;
 
     const { data: evidencija, error: evErr } = await db
       .from('work_evidence')

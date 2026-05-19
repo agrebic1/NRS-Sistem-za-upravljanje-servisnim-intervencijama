@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
+import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import {
   ArrowLeft, MapPin, Phone, Calendar, Clock,
@@ -225,19 +225,20 @@ function TerminVizual({ zahtjev }: { zahtjev: IntervencijaDetalji }) {
 // ─── Akcije servisera ─────────────────────────────────────────────────────────
 
 function AkcijeServiser({
-  status, zahtjevId, onRefresh, onEvidencija,
+  status, zahtjevId, onRefresh, onEvidencija, imaEvidenciju,
 }: {
   status: string;
   zahtjevId: number;
   onRefresh: () => void;
   onEvidencija: () => void;
+  imaEvidenciju: boolean;
 }) {
   const [showOdbij, setShowOdbij] = useState(false);
   const [razlog,    setRazlog]    = useState('');
   const [jeSlanje,  setJeSlanje]  = useState(false);
   const [greska,    setGreska]    = useState<string | null>(null);
 
-  async function akcija(action: 'prihvati' | 'pocni', razlogOdbijanja?: string) {
+  async function akcija(action: 'prihvati' | 'pocni' | 'zavrsi', razlogOdbijanja?: string) {
     setJeSlanje(true); setGreska(null);
     try {
       const body: Record<string, string> = { action };
@@ -362,14 +363,23 @@ function AkcijeServiser({
 
   if (status === 'u_izvrsenju') {
     return (
-      <button
-        type="button"
-        onClick={onEvidencija}
-        className="flex w-full items-center justify-center gap-2 rounded-2xl py-4 text-sm font-bold transition-all hover:opacity-90"
-        style={{ backgroundColor: 'var(--first-primary)', color: '#fff' }}>
-        <ClipboardCheck className="h-5 w-5" />
-        Evidentiraj rad
-      </button>
+      <div className="rounded-2xl p-5"
+        style={{ backgroundColor: 'rgb(var(--first-secondary-rgb)/0.05)', border: '1px solid rgb(var(--first-secondary-rgb)/0.2)' }}>
+        <div className="mb-4 flex items-center gap-2">
+          <MapPin className="h-4 w-4" style={{ color: 'var(--first-secondary)' }} />
+          <p className="text-sm font-bold" style={{ color: 'var(--first-secondary)' }}>Na terenu — intervencija u toku</p>
+        </div>
+        {greska && <p className="mb-3 text-xs font-medium" style={{ color: '#DC2626' }}>{greska}</p>}
+        <button
+          type="button"
+          onClick={onEvidencija}
+          disabled={jeSlanje}
+          className="flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold transition-all hover:opacity-90 disabled:opacity-60"
+          style={{ backgroundColor: 'var(--first-primary)', color: '#fff' }}>
+          <ClipboardCheck className="h-5 w-5" />
+          {imaEvidenciju ? 'Dodaj još evidencije' : 'Evidentiraj rad'}
+        </button>
+      </div>
     );
   }
 
@@ -382,7 +392,6 @@ function SidebarPanel({ zahtjev, tim }: {
   zahtjev: IntervencijaDetalji;
   tim: Array<{ serviser_id: string; serviser?: { ime: string; prezime: string } | null }>;
 }) {
-  const kasni    = jeKasni(zahtjev);
   const mapsUrl  = zahtjev.latitude && zahtjev.longitude
     ? `https://www.google.com/maps/search/?api=1&query=${zahtjev.latitude},${zahtjev.longitude}`
     : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(zahtjev.address ?? '')}`;
@@ -499,7 +508,10 @@ export default function ServiserIntervencijaDetaljiPage() {
   const [tim,        setTim]        = useState<Array<{ serviser_id: string; serviser?: { ime: string; prezime: string } | null }>>([]);
   const [ucitava,    setUcitava]    = useState(true);
   const [greska,     setGreska]     = useState<string | null>(null);
-  const [pokaziEvid, setPokaziEvid] = useState(false);
+  const [pokaziEvid,      setPokaziEvid]      = useState(false);
+  const [pokaziUspjeh,    setPokaziUspjeh]    = useState(false);
+  const [scrollToZavrsi,  setScrollToZavrsi]  = useState(false);
+  const zavrsiRef = useRef<HTMLDivElement>(null);
 
   async function ucitaj() {
     setUcitava(true); setGreska(null);
@@ -525,7 +537,14 @@ export default function ServiserIntervencijaDetaljiPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { ucitaj(); }, [id]);
 
-  if (ucitava) {
+  useEffect(() => {
+    if (scrollToZavrsi && !ucitava && evidencije.length > 0 && zavrsiRef.current) {
+      setScrollToZavrsi(false);
+      setTimeout(() => zavrsiRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
+    }
+  }, [scrollToZavrsi, ucitava, evidencije.length]);
+
+  if (ucitava && !pokaziEvid && !pokaziUspjeh) {
     return (
       <AppShell uloga="serviser">
         <div className="flex min-h-[50vh] items-center justify-center">
@@ -597,6 +616,19 @@ export default function ServiserIntervencijaDetaljiPage() {
           <RefreshCw className="h-4 w-4" style={{ color: 'var(--first-nonary)' }} />
         </button>
       </div>
+
+      {/* ─── Success banner ─────────────────────────────────────────────────── */}
+      {pokaziUspjeh && (
+        <div className="mb-4 flex items-center gap-3 rounded-2xl px-5 py-3.5"
+          style={{ backgroundColor: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.25)' }}>
+          <svg className="h-5 w-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" style={{ color: '#16A34A' }}>
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          </svg>
+          <p className="text-sm font-semibold" style={{ color: '#16A34A' }}>
+            Evidencija rada je uspješno sačuvana.
+          </p>
+        </div>
+      )}
 
       {/* ─── HERO KARTICA ───────────────────────────────────────────────────── */}
       <div className="mb-5 overflow-hidden rounded-2xl"
@@ -687,6 +719,7 @@ export default function ServiserIntervencijaDetaljiPage() {
               zahtjevId={zahtjev.id}
               onRefresh={ucitaj}
               onEvidencija={() => setPokaziEvid(true)}
+              imaEvidenciju={evidencije.length > 0}
             />
           )}
 
@@ -736,18 +769,20 @@ export default function ServiserIntervencijaDetaljiPage() {
             disabled={!jeAktivna}
           />
 
-          {/* Kontrolna lista */}
-          <div className="rounded-2xl p-5"
-            style={{ backgroundColor: 'rgb(255 255 255/0.85)', border: '1px solid rgb(var(--first-quaternary-rgb)/0.28)' }}>
-            <div className="mb-4 flex items-center gap-2">
-              <div className="flex h-7 w-7 items-center justify-center rounded-lg"
-                style={{ backgroundColor: 'rgb(var(--first-secondary-rgb)/0.1)' }}>
-                <ClipboardCheck className="h-3.5 w-3.5" style={{ color: 'var(--first-secondary)' }} />
+          {/* Kontrolna lista — samo korak 3 (na terenu) */}
+          {zahtjev.status === 'u_izvrsenju' && (
+            <div className="rounded-2xl p-5"
+              style={{ backgroundColor: 'rgb(255 255 255/0.85)', border: '1px solid rgb(var(--first-quaternary-rgb)/0.28)' }}>
+              <div className="mb-4 flex items-center gap-2">
+                <div className="flex h-7 w-7 items-center justify-center rounded-lg"
+                  style={{ backgroundColor: 'rgb(var(--first-secondary-rgb)/0.1)' }}>
+                  <ClipboardCheck className="h-3.5 w-3.5" style={{ color: 'var(--first-secondary)' }} />
+                </div>
+                <p className="text-[10px] font-bold uppercase tracking-wide" style={{ color: 'var(--first-nonary)' }}>Kontrolna lista</p>
               </div>
-              <p className="text-[10px] font-bold uppercase tracking-wide" style={{ color: 'var(--first-nonary)' }}>Kontrolna lista</p>
+              <IntervencijaChecklist status={zahtjev.status} />
             </div>
-            <IntervencijaChecklist status={zahtjev.status} />
-          </div>
+          )}
 
           {/* Evidencija rada */}
           {evidencije.length > 0 && (
@@ -778,6 +813,43 @@ export default function ServiserIntervencijaDetaljiPage() {
                     </div>
                   </div>
                 ))}
+              </div>
+            </div>
+          )}
+
+          {/* Završi intervenciju — zadnji korak (samo kad ima evidencija i status u_izvrsenju) */}
+          {zahtjev.status === 'u_izvrsenju' && evidencije.length > 0 && (
+            <div ref={zavrsiRef} className="rounded-2xl overflow-hidden scroll-mt-4"
+              style={{ border: '2px solid var(--first-primary)', backgroundColor: 'rgb(255 255 255/0.92)' }}>
+              <div className="px-5 py-4" style={{ backgroundColor: 'var(--first-primary)' }}>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-white" />
+                  <p className="text-sm font-bold text-white">Zadnji korak — završi intervenciju</p>
+                </div>
+                <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.75)' }}>
+                  Nakon što ste završili sve radove i evidentirali ih, označite intervenciju kao završenu.
+                </p>
+              </div>
+              <div className="p-5">
+                <p className="mb-4 text-sm" style={{ color: 'var(--first-nonary)' }}>
+                  Dispečer će pregledati evidenciju rada i formalno zatvoriti intervenciju.
+                </p>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    const r = await fetch(`/api/serviser/intervencije/${zahtjev.id}`, {
+                      method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ action: 'zavrsi' }),
+                    });
+                    const d = await r.json();
+                    if (r.ok) { window.scrollTo({ top: 0, behavior: 'smooth' }); ucitaj(); }
+                    else alert(d.error ?? 'Greška pri završavanju.');
+                  }}
+                  className="flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold transition-all hover:opacity-90"
+                  style={{ backgroundColor: 'var(--first-primary)', color: '#fff' }}>
+                  <CheckCircle2 className="h-5 w-5" />
+                  Završi intervenciju
+                </button>
               </div>
             </div>
           )}
@@ -859,13 +931,31 @@ export default function ServiserIntervencijaDetaljiPage() {
               </>
             )}
             {zahtjev.status === 'u_izvrsenju' && (
-              <button
-                type="button"
-                onClick={() => setPokaziEvid(true)}
-                className="flex flex-1 items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold"
-                style={{ backgroundColor: 'var(--first-primary)', color: '#fff' }}>
-                <ClipboardCheck className="h-5 w-5" />Evidentiraj rad
-              </button>
+              <>
+                <button
+                  type="button"
+                  onClick={() => setPokaziEvid(true)}
+                  className="flex flex-1 items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold"
+                  style={{ backgroundColor: 'rgb(var(--first-secondary-rgb)/0.1)', color: 'var(--first-secondary)', border: '1px solid rgb(var(--first-secondary-rgb)/0.2)' }}>
+                  <ClipboardCheck className="h-4 w-4" />
+                  {evidencije.length > 0 ? 'Dodaj evidenciju' : 'Evidentiraj rad'}
+                </button>
+                {evidencije.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      const r = await fetch(`/api/serviser/intervencije/${zahtjev.id}`, {
+                        method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: 'zavrsi' }),
+                      });
+                      if (r.ok) { window.scrollTo({ top: 0, behavior: 'smooth' }); ucitaj(); }
+                    }}
+                    className="flex flex-1 items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold"
+                    style={{ backgroundColor: 'var(--first-primary)', color: '#fff' }}>
+                    <CheckCircle2 className="h-4 w-4" />Završi
+                  </button>
+                )}
+              </>
             )}
           </div>
         </div>
@@ -877,7 +967,11 @@ export default function ServiserIntervencijaDetaljiPage() {
         <EvidencijaRadaModal
           zahtjevId={zahtjev.id}
           onZatvori={() => setPokaziEvid(false)}
-          onUspjeh={() => { setPokaziEvid(false); ucitaj(); }}
+          onUspjeh={() => {
+            setPokaziEvid(false);
+            setScrollToZavrsi(true);
+            ucitaj();
+          }}
         />
       )}
     </AppShell>

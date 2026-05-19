@@ -53,55 +53,6 @@ function filtrirajPoKpi(
   }
 }
 
-// ─── Sljedeća intervencija ────────────────────────────────────────────────────
-
-function SljededcaIntervencija({ intervencija }: { intervencija: IntervencijaZaListu }) {
-  const kat    = labelKategorije(intervencija);
-  const naslov = kat.podkategorija ? `${kat.glavna} — ${kat.podkategorija}` : kat.glavna;
-  const termin = intervencija.termin_planirani_pocetak
-    ? new Date(intervencija.termin_planirani_pocetak).toLocaleString('bs-BA', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })
-    : null;
-
-  return (
-    <Link href={`/serviser/intervencije/${intervencija.id}`} className="block mb-6">
-      <div
-        className="rounded-2xl p-5 border-l-4 transition-shadow hover:shadow-md"
-        style={{
-          backgroundColor: 'rgb(37 99 235 / 0.04)',
-          border:          '1px solid rgb(37 99 235 / 0.2)',
-          borderLeftColor: intervencija.is_premium ? '#E11D48' : 'var(--first-secondary)',
-        }}
-      >
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0 flex-1">
-            <p className="mb-1 text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--first-secondary)' }}>
-              Sljedeća intervencija
-            </p>
-            <h2 className="text-base font-bold leading-snug" style={{ color: 'var(--first-octonary)' }}>
-              {naslov}
-            </h2>
-            <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs" style={{ color: 'var(--first-nonary)' }}>
-              {termin && (
-                <span className="flex items-center gap-1">
-                  <Calendar className="h-3.5 w-3.5" />
-                  {termin}
-                </span>
-              )}
-              <span className="flex items-center gap-1">
-                <MapPin className="h-3.5 w-3.5" />
-                {intervencija.address.length > 45
-                  ? `${intervencija.address.substring(0, 45)}...`
-                  : intervencija.address}
-              </span>
-            </div>
-          </div>
-          <ChevronRight className="mt-1 h-5 w-5 flex-shrink-0" style={{ color: 'var(--first-secondary)' }} />
-        </div>
-      </div>
-    </Link>
-  );
-}
-
 // ─── Kartica intervencije ─────────────────────────────────────────────────────
 
 function IntervencijaKartica({ z }: { z: IntervencijaZaListu }) {
@@ -265,15 +216,6 @@ export default function ServiserPage() {
     [filtriran],
   );
 
-  // Sljedeća intervencija = najbliža buduća s terminima
-  const sljededca = useMemo(() => {
-    const sada = Date.now();
-    return intervencije
-      .filter((z) => z.termin_planirani_pocetak && new Date(z.termin_planirani_pocetak).getTime() >= sada - 3_600_000)
-      .sort((a, b) => new Date(a.termin_planirani_pocetak!).getTime() - new Date(b.termin_planirani_pocetak!).getTime())[0]
-      ?? null;
-  }, [intervencije]);
-
   // ─── Kpi definicije ───────────────────────────────────────────────────────
 
   const kpiKartice = [
@@ -312,9 +254,6 @@ export default function ServiserPage() {
       </div>
 
       {greska && <div className="mb-4"><AlertMessage variant="error" message={greska} /></div>}
-
-      {/* Sljedeća intervencija */}
-      {!ucitava && sljededca && <SljededcaIntervencija intervencija={sljededca} />}
 
       {/* KPI kartice */}
       <div className="mb-6 grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-6">

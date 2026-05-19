@@ -25,23 +25,25 @@ export async function GET(request: Request) {
     const db = supabase as any;
     const statusFiltar = parsirajStatuseIzUpita(request);
 
-    let upit = db
-      .from('service_requests')
-      .select('*')
-      .not('status', 'in', '("zavrseno","otkazano","odbijeno")');
+    let upit = db.from('service_requests').select('*');
 
-    if (statusFiltar) upit = upit.in('status', statusFiltar);
+    if (statusFiltar) {
+      upit = upit.in('status', statusFiltar);
+    } else {
+      upit = upit.not('status', 'in', '("zavrseno","zatvoreno","otkazano","odbijeno")');
+    }
 
     let { data, error } = await upit
       .order('is_premium', { ascending: false })
       .order('created_at', { ascending: true });
 
     if (error?.message?.includes("'is_premium' column")) {
-      let fb = db
-        .from('service_requests')
-        .select('*')
-        .not('status', 'in', '("zavrseno","otkazano","odbijeno")');
-      if (statusFiltar) fb = fb.in('status', statusFiltar);
+      let fb = db.from('service_requests').select('*');
+      if (statusFiltar) {
+        fb = fb.in('status', statusFiltar);
+      } else {
+        fb = fb.not('status', 'in', '("zavrseno","zatvoreno","otkazano","odbijeno")');
+      }
       const fallback = await fb.order('created_at', { ascending: true });
       data = fallback.data;
       error = fallback.error;
