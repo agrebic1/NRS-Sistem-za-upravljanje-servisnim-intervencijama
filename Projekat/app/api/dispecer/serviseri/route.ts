@@ -15,15 +15,25 @@ export async function GET() {
 
     const db = supabase as any;
 
+    // Pronađi id_uloge za ulogu Serviser — case-insensitive radi sigurnosti.
+    // Direktan FK filter je pouzdaniji od .eq('uloga.naziv', ...) na joined tabeli.
+    const { data: ulogaPodaci, error: ulogaError } = await db
+      .from('uloga')
+      .select('id_uloge')
+      .ilike('naziv', 'Serviser')
+      .maybeSingle();
+
+    if (ulogaError) return NextResponse.json({ error: ulogaError.message }, { status: 500 });
+    if (!ulogaPodaci) return NextResponse.json({ serviseri: [] });
+
     const { data: uposlenici, error } = await db
       .from('uposlenici')
       .select(`
         id_uposlenika,
         is_verified,
-        uloga!inner(naziv),
         osoba!id_uposlenika(ime, prezime)
       `)
-      .eq('uloga.naziv', 'Serviser')
+      .eq('id_uloge', ulogaPodaci.id_uloge)
       .eq('is_verified', true);
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
