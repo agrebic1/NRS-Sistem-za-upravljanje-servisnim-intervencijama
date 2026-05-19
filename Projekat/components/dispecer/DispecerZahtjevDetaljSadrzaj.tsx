@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   Check, CheckCircle2, AlertTriangle, User, Phone, MapPin,
   Calendar, Clock, FileText, MessageSquare, Image as ImageIcon,
@@ -592,7 +593,7 @@ function KorakPrioritet({ zahtjev, prioritet, setPrioritet, downgradeRazlog, set
 
 // ─── KORAK 3 — Termin i serviser ──────────────────────────────────────────────
 
-function KorakTerminIServiser({ zahtjev, odabraniDatum, setDatum, odabraniSlot, setSlot, napomene, setNapomene, preporuke, odabraniServiser, setServiser, ucitavaServisere, pomocniServiseri, setPomocniServiseri, konfliktUpozorenje, onOverrideKonflikt }: {
+function KorakTerminIServiser({ zahtjev: _zahtjev, odabraniDatum, setDatum, odabraniSlot, setSlot, napomene, setNapomene, preporuke, odabraniServiser, setServiser, ucitavaServisere, pomocniServiseri, setPomocniServiseri, konfliktUpozorenje, onOverrideKonflikt }: {
   zahtjev: ZahtjevDetalj;
   odabraniDatum: string;
   setDatum: (s: string) => void;
@@ -1152,6 +1153,7 @@ export function DispecerZahtjevDetaljSadrzaj({
   zahtjev,
   requestId,
   onRequestUpdated,
+  hrefNazad,
   fokusKorakTermin = false,
 }: {
   zahtjev: ZahtjevDetalj;
@@ -1161,6 +1163,7 @@ export function DispecerZahtjevDetaljSadrzaj({
   hrefNazad?: string;
   fokusKorakTermin?: boolean;
 }) {
+  const router = useRouter();
   const [aktivniKorak,    setAktivniKorakRaw] = useState(0);
   const [dostignutiKorak, setDostignutiKorak] = useState(() => izracunajDostignutiKorak(zahtjev));
   const [prioritet,       setPrioritet]       = useState<NivoOp>(() => inicijalniPrioritet(zahtjev));
@@ -1176,6 +1179,7 @@ export function DispecerZahtjevDetaljSadrzaj({
   const [jeSlanje,          setJeSlanje]          = useState(false);
   const [greska,            setGreska]            = useState<string | null>(null);
   const [korakGreska,       setKorakGreska]       = useState<string | null>(null);
+  const [dodjelaUspjela,    setDodjelaUspjela]    = useState(false);
   const [pomocniServiseri,  setPomocniServiseri]  = useState<ServiserZaDodjelu[]>([]);
   const [konfliktUpozorenje,setKonfliktUpozorenje]= useState<null | { zahtjev_id: number; pocetak: string; kraj: string }>(null);
 
@@ -1302,6 +1306,7 @@ export function DispecerZahtjevDetaljSadrzaj({
         });
       }
 
+      setDodjelaUspjela(true);
       await osvjeziZahtjev();
       return true;
     } catch (e) {
@@ -1317,6 +1322,14 @@ export function DispecerZahtjevDetaljSadrzaj({
     setJeSlanje(true);
     setGreska(null);
     try {
+      // `potvrdi` akcija radi samo za inbox statuse. Ako je zahtjev već prošao
+      // inbox (dodjelaUspjela = true) ili ima potvrđeni/dodijeljeni status,
+      // nalog je sačuvan — navigiraj na dispatcher pregled.
+      const inboxStatusi = new Set(['na_cekanju', 'pending_review', 'in_review']);
+      if (dodjelaUspjela || !inboxStatusi.has(zahtjev.status)) {
+        router.push(hrefNazad ?? '/dispecer');
+        return;
+      }
       const r = await fetch(`/api/dispecer/zahtjevi/${requestId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -1324,7 +1337,7 @@ export function DispecerZahtjevDetaljSadrzaj({
       });
       const d = await r.json();
       if (!r.ok) throw new Error(d.error ?? 'Greška pri potvrdi naloga.');
-      await osvjeziZahtjev();
+      router.push(hrefNazad ?? '/dispecer');
     } catch (e) {
       setGreska(e instanceof Error ? e.message : 'Greška.');
     } finally {

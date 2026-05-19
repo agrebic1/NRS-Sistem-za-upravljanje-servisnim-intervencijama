@@ -1,9 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { ClipboardCheck, X, Clock, Wrench, FileText, Camera } from 'lucide-react';
+import { ClipboardCheck, X, Clock, Wrench, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
-import { ImageUploader } from '@/components/shared/ImageUploader';
 
 interface EvidencijaRadaModalProps {
   zahtjevId:  number;
@@ -28,12 +27,9 @@ export function EvidencijaRadaModal({ zahtjevId, onZatvori, onUspjeh }: Evidenci
   const [jeSlanje,  setJeSlanje]  = useState(false);
   const [greska,    setGreska]    = useState<string | null>(null);
   // Praćenje ID-a evidentiranog zapisa (za linkanje slika)
-  const [evidencijaId, setEvidencijaId] = useState<number | null>(null);
-
   const opisValid     = opisRada.trim().length >= MIN_OPIS;
   const trajanjeNum   = trajanje ? parseInt(trajanje, 10) : null;
   const trajanjeValid = !trajanje || (trajanjeNum !== null && trajanjeNum > 0 && trajanjeNum <= 1440);
-  const jeEvidentiran = evidencijaId !== null;
 
   async function posalji() {
     if (!opisValid)     { setGreska('Opis rada mora imati najmanje 5 karaktera.'); return; }
@@ -55,8 +51,7 @@ export function EvidencijaRadaModal({ zahtjevId, onZatvori, onUspjeh }: Evidenci
       });
       const d = await r.json();
       if (!r.ok) throw new Error(d.error ?? 'Greška pri evidentiranju.');
-      // Čuvamo ID da bismo slike mogli vezati za ovaj zapis
-      setEvidencijaId(d.evidencija?.id ?? null);
+      onUspjeh();
     } catch (err) {
       setGreska(err instanceof Error ? err.message : 'Greška pri slanju.');
     } finally {
@@ -68,7 +63,7 @@ export function EvidencijaRadaModal({ zahtjevId, onZatvori, onUspjeh }: Evidenci
     <div
       className="fixed inset-0 z-50 flex items-center justify-center px-4 backdrop-blur-sm"
       style={{ backgroundColor: 'rgba(0,0,0,0.45)' }}
-      onClick={(e) => { if (e.target === e.currentTarget && !jeEvidentiran) onZatvori(); }}
+      onClick={(e) => { if (e.target === e.currentTarget && !jeSlanje) onZatvori(); }}
     >
       <div
         className="w-full max-w-lg max-h-[92vh] overflow-y-auto overflow-hidden rounded-2xl shadow-2xl"
@@ -90,7 +85,7 @@ export function EvidencijaRadaModal({ zahtjevId, onZatvori, onUspjeh }: Evidenci
                 Evidencija izvršenog rada
               </h2>
               <p className="text-xs" style={{ color: 'var(--first-nonary)' }}>
-                {jeEvidentiran ? 'Dodajte fotodokumentaciju' : 'Dokumentirajte šta ste uradili'}
+                Dokumentirajte šta ste uradili
               </p>
             </div>
           </div>
@@ -100,8 +95,7 @@ export function EvidencijaRadaModal({ zahtjevId, onZatvori, onUspjeh }: Evidenci
           </button>
         </div>
 
-        {!jeEvidentiran ? (
-          <>
+        <>
             {/* ── Forma ──────────────────────────────────────────────────── */}
             <div className="flex flex-col gap-4 px-6 py-5">
 
@@ -202,48 +196,6 @@ export function EvidencijaRadaModal({ zahtjevId, onZatvori, onUspjeh }: Evidenci
               </Button>
             </div>
           </>
-        ) : (
-          <>
-            {/* ── Korak 2: Upload slika ───────────────────────────────────── */}
-            <div className="px-6 py-5 flex flex-col gap-4">
-              <div className="flex items-start gap-3 rounded-xl p-3"
-                style={{ backgroundColor: 'rgba(34,197,94,0.06)', border: '1px solid rgba(34,197,94,0.2)' }}>
-                <ClipboardCheck className="h-4 w-4 mt-0.5 flex-shrink-0" style={{ color: '#16A34A' }} />
-                <div>
-                  <p className="text-sm font-semibold" style={{ color: '#16A34A' }}>Rad evidentiran</p>
-                  <p className="text-xs mt-0.5" style={{ color: 'var(--first-nonary)' }}>
-                    Možete dodati fotografije kao dokaz obavljenog posla.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-1.5">
-                <div className="flex items-center gap-2">
-                  <Camera className="h-4 w-4" style={{ color: 'var(--first-nonary)' }} />
-                  <label className="text-sm font-semibold" style={{ color: 'var(--first-octonary)' }}>
-                    Fotodokumentacija
-                    <span className="ml-1 font-normal" style={{ color: 'var(--first-nonary)' }}>(opciono)</span>
-                  </label>
-                </div>
-                <ImageUploader
-                  zahtjevId={zahtjevId}
-                  evidencijaId={evidencijaId ?? undefined}
-                  maxFajlova={6}
-                />
-              </div>
-            </div>
-
-            <div className="border-t px-6 py-4" style={{ borderColor: 'rgb(var(--first-quaternary-rgb) / 0.3)' }}>
-              <Button type="button" size="md" onClick={onUspjeh} className="w-full">
-                <ClipboardCheck className="h-4 w-4" />
-                Završi evidenciju
-              </Button>
-              <p className="mt-2 text-center text-[11px]" style={{ color: 'var(--first-nonary)' }}>
-                Slike su opcione — možete završiti i bez fotografija
-              </p>
-            </div>
-          </>
-        )}
       </div>
     </div>
   );

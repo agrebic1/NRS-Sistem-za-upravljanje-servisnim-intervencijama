@@ -22,7 +22,7 @@ interface IntervencijaRed extends ServisniZahtjev {
   serviser?:  { id: string; ime: string; prezime: string } | null;
 }
 
-type KpiFilter = 'sve' | 'hitno' | 'u_izvrsenju' | 'u_radu' | 'dodijeljeno' | 'kasni';
+type KpiFilter = 'sve' | 'hitno' | 'u_izvrsenju' | 'u_radu' | 'dodijeljeno' | 'kasni' | 'zavrseno';
 
 // ─── Helperi ──────────────────────────────────────────────────────────────────
 
@@ -44,6 +44,7 @@ function filtrirajPoKpi(intervencije: IntervencijaRed[], filter: KpiFilter): Int
     case 'u_radu':      return intervencije.filter((z) => z.status === 'u_radu');
     case 'dodijeljeno': return intervencije.filter((z) => z.status === 'dodijeljeno');
     case 'kasni':       return intervencije.filter(jeKasni);
+    case 'zavrseno':    return intervencije.filter((z) => z.status === 'zavrseno' && !(z as any).closed_at);
     default:            return intervencije;
   }
 }
@@ -236,7 +237,7 @@ export default function DispecerIntervencijePage() {
     if (!tiho) { setUcitava(true); setGreska(null); }
     try {
       const r = await fetch(
-        '/api/dispecer/zahtjevi?status=dodijeljeno,u_radu,u_izvrsenju',
+        '/api/dispecer/zahtjevi?status=dodijeljeno,u_radu,u_izvrsenju,zavrseno',
         { cache: 'no-store' },
       );
       const d = await r.json();
@@ -264,6 +265,7 @@ export default function DispecerIntervencijePage() {
   const brNaPutu      = useMemo(() => intervencije.filter((z) => z.status === 'u_radu').length, [intervencije]);
   const brDodijeljeno = useMemo(() => intervencije.filter((z) => z.status === 'dodijeljeno').length, [intervencije]);
   const brKasni       = useMemo(() => intervencije.filter(jeKasni).length, [intervencije]);
+  const brZavrseno    = useMemo(() => intervencije.filter((z) => z.status === 'zavrseno' && !(z as any).closed_at).length, [intervencije]);
 
   const filtriran = useMemo(() => filtrirajPoKpi(intervencije, aktivniKpi), [intervencije, aktivniKpi]);
 
@@ -283,6 +285,7 @@ export default function DispecerIntervencijePage() {
     { key: 'u_radu'      as KpiFilter, oznaka: 'Na putu',        v: brNaPutu,      boja: 'var(--first-secondary)',    Ikona: Truck         },
     { key: 'dodijeljeno' as KpiFilter, oznaka: 'Čekaju prihv.',  v: brDodijeljeno, boja: '#D97706',                   Ikona: Clock         },
     { key: 'kasni'       as KpiFilter, oznaka: 'Kašnjenja',      v: brKasni,       boja: brKasni > 0 ? '#DC2626' : 'var(--first-nonary)', Ikona: AlertCircle },
+    { key: 'zavrseno'   as KpiFilter, oznaka: 'Čeka zatvaranje', v: brZavrseno,    boja: brZavrseno > 0 ? '#D97706' : 'var(--first-nonary)', Ikona: CheckCircle2 },
   ];
 
   const aktivniLabel = kpiKartice.find((k) => k.key === aktivniKpi)?.oznaka ?? 'Sve aktivne';
@@ -326,7 +329,7 @@ export default function DispecerIntervencijePage() {
       {greska && <div className="mb-5"><AlertMessage variant="error" message={greska} /></div>}
 
       {/* KPI kartice */}
-      <div className="mb-6 grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-6">
+      <div className="mb-6 grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-7">
         {kpiKartice.map(({ key, oznaka, v, boja, Ikona }) => (
           <KpiKartica
             key={key}

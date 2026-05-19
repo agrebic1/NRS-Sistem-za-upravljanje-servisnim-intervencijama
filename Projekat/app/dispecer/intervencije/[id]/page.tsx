@@ -1011,7 +1011,7 @@ export default function DispecerIntervencijaDetaljiPage() {
           </SekcijaKartica>
 
           {/* Formalno zatvaranje */}
-          {zahtjev.status === 'zavrseno' && (
+          {zahtjev.status === 'zavrseno' && !zahtjev.closed_at && (
             <div className="rounded-2xl overflow-hidden"
               style={{ border: '2px solid rgba(16,37,65,0.2)', backgroundColor: 'rgb(255 255 255/0.92)' }}>
               <div className="px-5 py-4" style={{ backgroundColor: 'var(--first-primary)' }}>
@@ -1078,7 +1078,7 @@ export default function DispecerIntervencijaDetaljiPage() {
           )}
 
           {/* Zatvorena — read-only badge */}
-          {zahtjev.status === 'zatvoreno' && (
+          {zahtjev.status === 'zavrseno' && zahtjev.closed_at && (
             <div className="flex items-center gap-3 rounded-2xl px-5 py-4"
               style={{ backgroundColor: 'rgb(var(--first-primary-rgb)/0.04)', border: '2px solid rgb(var(--first-primary-rgb)/0.18)' }}>
               <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl"

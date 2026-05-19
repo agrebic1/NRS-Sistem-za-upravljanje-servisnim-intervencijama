@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { assertServiserAccess } from '@/lib/servisirane/serviserPristup';
 
 export const dynamic = 'force-dynamic';
@@ -13,7 +14,13 @@ export async function GET() {
     const imaPriv = await assertServiserAccess(supabase, user.id);
     if (!imaPriv) return NextResponse.json({ error: 'Pristup odbijen.' }, { status: 403 });
 
-    const db = supabase as any;
+    // Admin klijent zaobilazi RLS za čitanje dodijeljenih intervencija.
+    let db: any;
+    try {
+      db = createAdminClient() as any;
+    } catch {
+      db = supabase as any;
+    }
 
     // 1. Intervencije gdje je glavni serviser
     const { data: glavneData, error: glavnaErr } = await db

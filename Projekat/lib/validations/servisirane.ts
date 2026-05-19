@@ -212,8 +212,8 @@ export const odbijZadatakSchema = z.object({
 export const dodijelijeSchema = z.object({
   action:                   z.literal('dodijeli'),
   serviser_id:              z.string().uuid('Neispravan ID servisera'),
-  termin_planirani_pocetak: z.string().datetime({ offset: true }).optional().nullable(),
-  termin_planirani_kraj:    z.string().datetime({ offset: true }).optional().nullable(),
+  termin_planirani_pocetak: z.string().datetime({ offset: true, local: true }).optional().nullable(),
+  termin_planirani_kraj:    z.string().datetime({ offset: true, local: true }).optional().nullable(),
   procijenjeno_trajanje:    z.number().int().min(5).max(1440).optional().nullable(),
   dispecer_napomene:        z.string().max(1000).optional().nullable(),
 });

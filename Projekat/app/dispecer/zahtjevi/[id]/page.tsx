@@ -3,7 +3,7 @@
 import { Suspense, useEffect, useState } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, CheckCircle2, ChevronRight, X } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, ChevronRight, Lock, AlertTriangle, X } from 'lucide-react';
 import { AppShell } from '@/components/layout/AppShell';
 import { AlertMessage } from '@/components/ui/AlertMessage';
 import { Button } from '@/components/ui/Button';
@@ -159,11 +159,107 @@ function ZatvorIntervencijePanel({
   );
 }
 
+function ZatvoriFormalnoPanel({
+  zahtjevId,
+  imaEvidenciju,
+  onUspjeh,
+}: {
+  zahtjevId:    number;
+  imaEvidenciju: boolean;
+  onUspjeh:     () => void;
+}) {
+  const [napomene,     setNapomene]     = useState('');
+  const [potvrdjeno,   setPotvrdjeno]   = useState(false);
+  const [jeSlanje,     setJeSlanje]     = useState(false);
+  const [greska,       setGreska]       = useState<string | null>(null);
+
+  async function zatvori() {
+    if (!potvrdjeno) return;
+    setJeSlanje(true); setGreska(null);
+    try {
+      const r = await fetch(`/api/dispecer/zahtjevi/${zahtjevId}`, {
+        method:  'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ action: 'zatvoriFormalno', closure_note: napomene.trim() || null }),
+      });
+      const d = await r.json();
+      if (!r.ok) throw new Error(d.error ?? 'Greška pri zatvaranju.');
+      onUspjeh();
+    } catch (err) {
+      setGreska(err instanceof Error ? err.message : 'Greška.');
+    } finally { setJeSlanje(false); }
+  }
+
+  return (
+    <div className="mt-6 rounded-2xl overflow-hidden"
+      style={{ border: '2px solid rgb(var(--first-primary-rgb)/0.25)', backgroundColor: 'rgb(255 255 255/0.95)' }}>
+      <div className="px-5 py-4" style={{ backgroundColor: 'var(--first-primary)' }}>
+        <div className="flex items-center gap-2">
+          <Lock className="h-4 w-4 text-white" />
+          <p className="text-sm font-bold text-white">Formalno zatvaranje intervencije</p>
+        </div>
+        <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.75)' }}>
+          Serviser je završio intervenciju. Pregledajte evidenciju i formalno zatvorite.
+        </p>
+      </div>
+      <div className="p-5 flex flex-col gap-4">
+        {!imaEvidenciju && (
+          <div className="flex items-start gap-2 rounded-xl p-3"
+            style={{ backgroundColor: 'rgba(220,38,38,0.05)', border: '1px solid rgba(220,38,38,0.2)' }}>
+            <AlertTriangle className="h-4 w-4 flex-shrink-0 mt-0.5" style={{ color: '#DC2626' }} />
+            <p className="text-sm" style={{ color: '#DC2626' }}>
+              Zatvaranje nije moguće — serviser još nije evidentirao obavljeni rad.
+            </p>
+          </div>
+        )}
+        <div className="flex flex-col gap-1.5">
+          <label className="text-sm font-semibold" style={{ color: 'var(--first-octonary)' }}>
+            Napomena pri zatvaranju
+            <span className="ml-1 font-normal" style={{ color: 'var(--first-nonary)' }}>(opciono)</span>
+          </label>
+          <textarea
+            rows={3}
+            value={napomene}
+            onChange={(e) => setNapomene(e.target.value)}
+            disabled={!imaEvidenciju}
+            placeholder="Eventualne napomene za arhiv..."
+            className="w-full resize-none rounded-xl border px-4 py-2.5 text-sm focus:outline-none disabled:opacity-50"
+            style={{ borderColor: 'rgb(var(--first-quaternary-rgb)/0.4)', color: 'var(--first-octonary)' }}
+          />
+        </div>
+        <label className="flex cursor-pointer items-start gap-3">
+          <input
+            type="checkbox"
+            checked={potvrdjeno}
+            onChange={(e) => setPotvrdjeno(e.target.checked)}
+            disabled={!imaEvidenciju}
+            className="mt-0.5 h-4 w-4 flex-shrink-0 cursor-pointer rounded"
+          />
+          <p className="text-sm font-semibold leading-relaxed" style={{ color: 'var(--first-octonary)' }}>
+            Potvrđujem da je intervencija pregledana i da je obavljeni posao dokumentovan.
+          </p>
+        </label>
+        {greska && <p className="text-xs font-medium" style={{ color: '#DC2626' }}>{greska}</p>}
+        <button
+          type="button"
+          onClick={zatvori}
+          disabled={!potvrdjeno || !imaEvidenciju || jeSlanje}
+          className="flex w-full items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold transition-all hover:opacity-90 disabled:opacity-40"
+          style={{ backgroundColor: 'var(--first-primary)', color: '#fff' }}>
+          <Lock className="h-4 w-4" />
+          {jeSlanje ? 'Zatvaranje...' : 'Zatvori intervenciju'}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function DispecerZahtjevDetaljPage() {
   const { id } = useParams<{ id: string }>();
-  const [zahtjev, setZahtjev] = useState<ZahtjevDetalj | null>(null);
-  const [ucitava, setUcitava] = useState(true);
-  const [greska, setGreska] = useState<string | null>(null);
+  const [zahtjev,    setZahtjev]    = useState<ZahtjevDetalj | null>(null);
+  const [evidencije, setEvidencije] = useState<unknown[]>([]);
+  const [ucitava,    setUcitava]    = useState(true);
+  const [greska,     setGreska]     = useState<string | null>(null);
 
   async function ucitaj() {
     try {
@@ -171,6 +267,7 @@ export default function DispecerZahtjevDetaljPage() {
       const d = await r.json();
       if (!r.ok) throw new Error(d.error ?? 'Zahtjev nije pronađen.');
       setZahtjev(d.zahtjev);
+      setEvidencije(d.evidencije ?? []);
     } catch (err) {
       setGreska(err instanceof Error ? err.message : 'Greška pri učitavanju podataka.');
     } finally {
@@ -264,6 +361,14 @@ export default function DispecerZahtjevDetaljPage() {
             {STATUSI_ZA_ZATVARANJE.has(zahtjev.status) && (
               <ZatvorIntervencijePanel
                 zahtjevId={zahtjev.id}
+                onUspjeh={ucitaj}
+              />
+            )}
+
+            {zahtjev.status === 'zavrseno' && !(zahtjev as any).closed_at && (
+              <ZatvoriFormalnoPanel
+                zahtjevId={zahtjev.id}
+                imaEvidenciju={evidencije.length > 0}
                 onUspjeh={ucitaj}
               />
             )}

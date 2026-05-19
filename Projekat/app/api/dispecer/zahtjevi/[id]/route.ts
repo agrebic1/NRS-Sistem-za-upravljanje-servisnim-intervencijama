@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { assertDispatcherAccess } from '@/lib/servisirane/dispecerPristup';
 import { korisnickiBrojZahtjevaZaId } from '@/lib/servisirane/korisnickiBrojZahtjeva';
 import { premiumZahtijevaObrazlozenjeSmanjenjaPrioriteta } from '@/lib/servisirane/operativniPrioritet';
@@ -9,7 +10,6 @@ import { provjeriKonfliktServiseraNaTerminu } from '@/lib/servisirane/konfliktiT
 import {
   notifDodjelaIntervencije,
   notifZatvaranjeIntervencije,
-  notifTimDodjela,
   notifKorisnikusServiserDodijeljen,
   notifKorisnikusIntervencijaZavrsena,
   notifKorisnikusIntervencijaZatvorena,
@@ -99,7 +99,14 @@ export async function GET(
       return NextResponse.json({ error: 'Pristup odbijen.' }, { status: 403 });
     }
 
-    const db = supabase as any;
+    // Admin klijent zaobilazi RLS za čitanje work_evidence i intervention_activities
+    let db: any;
+    try {
+      db = createAdminClient() as any;
+    } catch {
+      db = supabase as any;
+    }
+
     const { data: zahtjev, error } = await db
       .from('service_requests')
       .select('*')
@@ -195,7 +202,15 @@ export async function PATCH(
       return NextResponse.json({ error: 'Pristup odbijen.' }, { status: 403 });
     }
 
-    const db = supabase as any;
+    // Admin klijent zaobilazi RLS za pisanje u service_requests.
+    // Auth provjera je već urađena via assertDispatcherAccess iznad.
+    let db: any;
+    try {
+      db = createAdminClient() as any;
+    } catch {
+      db = supabase as any;
+    }
+
     const body     = await request.json();
     const rezultat = actionSchema.safeParse(body);
 
@@ -205,7 +220,7 @@ export async function PATCH(
 
     const { data: zahtjev } = await db
       .from('service_requests')
-      .select('status, is_premium')
+      .select('status, is_premium, closed_at')
       .eq('id', requestId)
       .single();
 
@@ -259,7 +274,7 @@ export async function PATCH(
 
     // ── Dodjela servisera (s provjerom konflikta termina) ─────────────────────
     if (podaci.action === 'dodijeli') {
-      const DOZVOLJENI_ZA_DODJELU = new Set(['potvrdeno', 'dodijeljeno']);
+      const DOZVOLJENI_ZA_DODJELU = new Set(['potvrdeno', 'dodijeljeno', 'na_cekanju', 'pending_review', 'in_review']);
       if (!DOZVOLJENI_ZA_DODJELU.has(zahtjev.status)) {
         return NextResponse.json(
           { error: 'Dodjela servisera moguća je samo za potvrđene zahtjeve.' },
@@ -408,11 +423,17 @@ export async function PATCH(
       return NextResponse.json({ success: true, novi_status: 'zavrseno' });
     }
 
-    // ── Formalno zatvaranje intervencije (status: zavrseno → zatvoreno) ────────
+    // ── Formalno zatvaranje intervencije (zavrseno + closed_at) ──────────────
     if (podaci.action === 'zatvoriFormalno') {
       if (zahtjev.status !== 'zavrseno') {
         return NextResponse.json(
           { error: 'Formalno zatvaranje moguće je samo za intervencije u statusu "zavrseno".' },
+          { status: 400 }
+        );
+      }
+      if (zahtjev.closed_at) {
+        return NextResponse.json(
+          { error: 'Intervencija je već formalno zatvorena.' },
           { status: 400 }
         );
       }
@@ -433,7 +454,6 @@ export async function PATCH(
       const { error: updErr } = await db
         .from('service_requests')
         .update({
-          status:       'zatvoreno',
           closed_at:    new Date().toISOString(),
           closed_by:    user.id,
           closure_note: podaci.closure_note?.trim() || null,
@@ -449,7 +469,7 @@ export async function PATCH(
         sadrzaj:    podaci.closure_note?.trim()
           ? `Intervencija formalno zatvorena. Napomena: ${podaci.closure_note.trim()}`
           : 'Intervencija formalno zatvorena.',
-        metadata:   { iz: 'zavrseno', u: 'zatvoreno' },
+        metadata:   { iz: 'zavrseno', u: 'zavrseno_zatvoreno' },
       });
 
       // Notifikacije svim servisirima u timu
@@ -480,7 +500,7 @@ export async function PATCH(
         await notifKorisnikusIntervencijaZatvorena(db, zahtjevZatv.user_id, requestId);
       }
 
-      return NextResponse.json({ success: true, novi_status: 'zatvoreno' });
+      return NextResponse.json({ success: true, novi_status: 'zavrseno_zatvoreno' });
     }
 
     if (!PENDING_STATUSES.has(zahtjev.status)) {
