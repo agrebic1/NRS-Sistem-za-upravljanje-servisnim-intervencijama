@@ -77,14 +77,6 @@ Izvor: `Projekat/docs/testing/SB-08-XX/BUG_SB-08-XX_Sprint8_ServiserManualFlows.
 
 - Otvoreni bugovi: 0
 
-## Artefakti
-
-- sprint izvještaj: `Projekat/docs/testing/SB-08-XX/IZVJESTAJ_SB-08-XX_Sprint8_Testiranje.md`
-- sign-off: `Projekat/docs/testing/SB-08-XX/SIGNOFF_SB-08-XX_QA-SA.md`
-- test case matrica: `Projekat/docs/testing/SB-08-XX/TC_SB-08-XX_Sprint8_ServiserManualFlows.csv`
-- manual execution: `Projekat/docs/testing/SB-08-XX/EXEC_SB-08-XX_Sprint8_ServiserManualFlows.csv`
-- automatski timestamp izvještaji: `Projekat/docs/testing/Izvjestaji/`
-- zadnji run pointer: `Projekat/docs/testing/Izvjestaji/ZADNJI_RUN.txt`
 
 ## Zaključak
 
