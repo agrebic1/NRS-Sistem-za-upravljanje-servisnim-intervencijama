@@ -2110,6 +2110,124 @@ Zavisi od svih storyja koji mijenjaju stanje intervencije: prijava zahtjeva za s
   - **THEN** Premium zadatak mora biti pri vrhu liste uz jasnu oznaku hitnosti.
 
 ---
+## US-36 — Uređivanje korisničkog naloga
+
+**Opis:**  
+Kao administrator, želim urediti podatke postojećeg korisničkog naloga, kako bih mogao ispraviti netačne podatke i održavati ažurne informacije o korisnicima sistema.
+
+**Poslovna vrijednost:**  
+Ovaj story je važan jer omogućava administratoru da održava tačne i ažurne korisničke podatke bez potrebe za kreiranjem novog naloga. Time se smanjuje broj duplih naloga, čuva kontinuitet korisničke historije i poboljšava upravljanje korisnicima sistema.
+
+**Prioritet:**  
+Srednji
+
+**Pretpostavke i otvorena pitanja:**  
+
+Pretpostavka: Administrator ima pravo pristupa sekciji za upravljanje korisničkim nalozima.
+
+Otvorena pitanja: Koja polja administrator smije uređivati, a koja se ne smiju mijenjati zbog sigurnosti i integriteta sistema?
+
+**Veze sa drugim storyjima:**  
+Povezano sa storyjima za pregled postojećih korisničkih naloga (US-19), promjenu korisničke uloge (US-20), deaktivaciju korisničkog naloga (US-21) i kontrolu pristupa prema korisničkoj ulozi (US-04).
+
+**Acceptance Criteria:**
+
+- **AC1: Otvaranje forme za uređivanje korisnika**
+
+  - **GIVEN** administrator pregleda listu korisničkih naloga  
+  - **WHEN** odabere opciju za uređivanje konkretnog korisnika  
+  - **THEN** sistem prikazuje formu sa postojećim podacima tog korisnika
+
+- **AC2: Uspješna izmjena korisničkih podataka**
+
+  - **GIVEN** administrator izmijeni dozvoljena polja korisničkog naloga  
+  - **WHEN** potvrdi izmjene  
+  - **THEN** sistem sprema nove podatke i prikazuje ažurirane informacije o korisniku
+
+- **AC3: Validacija obaveznih podataka**
+
+  - **GIVEN** administrator izbriše ili neispravno popuni obavezno polje  
+  - **WHEN** pokuša sačuvati izmjene  
+  - **THEN** sistem ne sprema promjene i prikazuje validacijsku poruku
+
+- **AC4: Zaštita sistemski osjetljivih podataka**
+
+  - **GIVEN** administrator uređuje korisnički nalog  
+  - **WHEN** sistem prikaže formu za uređivanje  
+  - **THEN** sistem ne dozvoljava direktnu izmjenu podataka koji se ne smiju mijenjati ručno, kao što su interni identifikator naloga ili sistemski audit podaci
+
+- **AC5: Evidentiranje izmjene korisničkog naloga**
+
+  - **GIVEN** administrator uspješno izmijeni korisnički nalog  
+  - **WHEN** sistem spremi promjene  
+  - **THEN** sistem evidentira ko je izvršio izmjenu, kada je izvršena i koja polja su promijenjena
+
+- **AC6: Ograničenje pristupa uređivanju korisnika**
+
+  - **GIVEN** korisnik nema administratorsku ulogu ili odgovarajuće ovlaštenje  
+  - **WHEN** pokuša pristupiti formi za uređivanje korisničkog naloga  
+  - **THEN** sistem mu ne dozvoljava pristup toj funkcionalnosti
+
+---
+## US-37 — Primanje relevantnih sistemskih obavještenja
+
+**Opis:**  
+Kao korisnik sistema, želim primati relevantne sistemske obavještenja, kako bih bio pravovremeno informisan o promjenama koje se odnose na moje zahtjeve, intervencije ili zaduženja.
+
+**Poslovna vrijednost:**  
+Ovaj story je važan jer omogućava bolju komunikaciju između sistema i korisnika. Pravovremena obavještenja smanjuju potrebu za ručnim provjerama, ubrzavaju reakciju korisnika i pomažu da se operativni proces odvija bez nepotrebnih zastoja.
+
+**Prioritet:**  
+Srednji
+
+**Pretpostavke i otvorena pitanja:**  
+
+Pretpostavka: Sistem može prepoznati koji događaji su relevantni za kojeg korisnika na osnovu njegove uloge i povezanosti sa zahtjevom ili intervencijom.
+
+Otvorena pitanja: Da li se u MVP verziji obavještenja prikazuju samo unutar aplikacije ili se kasnije planira slanje putem emaila, SMS-a ili push notifikacija?
+
+**Veze sa drugim storyjima:**  
+Povezano sa storyjima za pregled vlastitog zahtjeva (US-06), pregled otvorenih intervencija (US-07), dodjelu intervencije serviseru (US-09), ažuriranje statusa intervencije (US-14), prihvatanje i odbijanje zadatka (US-22, US-23) i historiju aktivnosti intervencije (US-32).
+
+**Acceptance Criteria:**
+
+- **AC1: Kreiranje obavještenja nakon relevantne promjene**
+
+  - **GIVEN** u sistemu se desi relevantna promjena, kao što je promjena statusa, dodjela servisera ili potvrda termina  
+  - **WHEN** sistem uspješno evidentira tu promjenu  
+  - **THEN** sistem kreira obavještenje za korisnike na koje se promjena odnosi
+
+- **AC2: Prikaz obavještenja korisniku**
+
+  - **GIVEN** korisnik ima novo obavještenje  
+  - **WHEN** se prijavi u sistem ili otvori sekciju obavještenja  
+  - **THEN** sistem prikazuje obavještenje sa osnovnim informacijama o događaju
+
+- **AC3: Obavještenja prema korisničkoj ulozi**
+
+  - **GIVEN** korisnik ima određenu ulogu u sistemu  
+  - **WHEN** sistem generiše obavještenje  
+  - **THEN** korisnik prima samo obavještenja koja su relevantna za njegovu ulogu i odgovornost
+
+- **AC4: Označavanje obavještenja kao pročitanog**
+
+  - **GIVEN** korisnik ima nepročitano obavještenje  
+  - **WHEN** otvori obavještenje ili ga označi kao pročitano  
+  - **THEN** sistem mijenja status obavještenja u pročitano
+
+- **AC5: Sprečavanje prikaza tuđih obavještenja**
+
+  - **GIVEN** korisnik pokuša pristupiti obavještenju koje nije namijenjeno njemu  
+  - **WHEN** sistem provjeri pravo pristupa  
+  - **THEN** sistem ne dozvoljava prikaz tog obavještenja
+
+- **AC6: Prikaz praznog stanja**
+
+  - **GIVEN** korisnik nema nijedno aktivno obavještenje  
+  - **WHEN** otvori sekciju obavještenja  
+  - **THEN** sistem prikazuje poruku da trenutno nema novih obavještenja
+
+---
 
 # Raspodjela zadataka po sprintovima i sprint ciljevi:
 
