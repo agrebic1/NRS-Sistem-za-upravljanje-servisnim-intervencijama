@@ -69,7 +69,7 @@ Izvor: `Projekat/docs/testing/SB-08-XX/EXEC_SB-08-XX_Sprint8_ServiserManualFlows
 - Nije prošlo: 0
 - Blokirano: 0
 - Čeka ručnu QA potvrdu: 0
-- Izvršilac: Ajla Ćesir; datum izvrsenja: 18/05/2026
+- Izvršioci: Eldin Begić, Hamza Bunar, Kerim Gazić, Suada Peci; datum izvrsenja: 19/05/2026
 
 ## Bug status
 
