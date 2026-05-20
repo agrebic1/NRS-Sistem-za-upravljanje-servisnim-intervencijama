@@ -97,3 +97,45 @@
 | Šta je tim odbacio | Odbačeno je potpuno restrukturiranje aplikacije i uvođenje novih biblioteka koje nisu bile neophodne za trenutni sprint. |
 | Rizici, problemi ili greške | Postojao je rizik regresionih grešaka prilikom uklanjanja fallback logike i reorganizacije reusable komponenti, zbog čega je dodatno provjerena povezanost ruta, redirect logika i korištenje postojećih API poziva. |
 | Ko je koristio alat | Amina Grebić |
+
+| Polje | Opis |
+|---|---|
+| Datum | 19.05.2026. |
+| Sprint broj | 8 |
+| Alat koji je korišten | Claude AI |
+| Svrha korištenja | Planiranje testiranja kompleksnog operativnog toka intervencije |
+| Kratak opis zadatka | AI alat je korišten za definisanje test plana koji pokriva cijeli tok od kreiranja zahtjeva do zatvaranja intervencije, uključujući identifikaciju kritičnih test scenarija, rubnih slučajeva i prioritizaciju test slučajeva prema riziku. |
+| Šta je AI generisao | Generisan je strukturirani test plan sa popisom prioritetnih test scenarija za tok: zahtjev → dodjela → intervencija u toku → završetak → zatvaranje. Predloženi su scenariji za sretni tok, alternativne tokove (odbijanje, vraćanje, rollback statusa) i rubne slučajeve (zatvaranje bez evidentiranog rada, nedozvoljeni prelazi statusa). |
+| Šta je tim prihvatio | Prihvaćena je struktura test plana sa prioritizacijom scenarija prema kritičnosti, pristup testiranja po korisničkim ulogama (korisnik usluge, dispečer, serviser) i lista minimalnih uslova za prolaz QA sign-off. |
+| Šta je tim izmijenio | Opseg testiranja je sužen na scenarije koji su implementirani u okviru Sprinta 8, a dio predloženih E2E scenarija prebačen je u naredni sprint. |
+| Šta je tim odbacio | Odbačeno je uvođenje automatizovanih E2E testova za kompleksne višekorisničke tokove u ovoj fazi zbog ograničenja sprinta. |
+| Rizici, problemi ili greške | Uočen je rizik nepotpunog pokrića testiranjem zbog velikog broja statusa i korisničkih uloga; smanjen fokusiranjem na kritične putanje i RBAC provjere. |
+| Ko je koristio alat | Ajna Ičić |
+
+| Polje | Opis |
+|---|---|
+| Datum | 19.05.2026. |
+| Sprint broj | 8 |
+| Alat koji je korišten | Claude AI |
+| Svrha korištenja | Dijagnostika i popravka grešaka u operativnom toku intervencije |
+| Kratak opis zadatka | Tokom testiranja otkrivene su greške u toku zahtjev → intervencija → završetak intervencije → zatvaranje intervencije. AI alat je korišten za analizu uzroka grešaka, identifikaciju mjesta prekida toka i generisanje ispravki za statusne prelaze, validacije i API pozive koji nisu funkcionisali ispravno. |
+| Šta je AI generisao | Generisane su ispravke za logiku statusnih prelaza (nedozvoljeni prelaz iz aktivne intervencije direktno u zatvoreno bez evidencije rada), popravka API validacija za završetak intervencije i usklađivanje prikaza statusa između dispečerskog i serviserskog modula. Predložen je i revidirani dijagram toka sa jasno definisanim dozvoljenim i nedozvoljenim prelazima. |
+| Šta je tim prihvatio | Prihvaćena je ispravka validacije koja sprečava zatvaranje intervencije bez evidentiranog izvršenog rada. Prihvaćeno je i usklađivanje naziva statusa između frontenda i baze podataka kako bi prikaz bio konzistentan za sve uloge. |
+| Šta je tim izmijenio | Poruke o greškama prilagođene su bosanskom jeziku i učinjene su razumljivijim za krajnjeg korisnika umjesto tehničkih opisa koji su AI inicijalno predložio. |
+| Šta je tim odbacio | Odbačen je prijedlog za automatsko zatvaranje intervencije nakon isteka definisanog roka bez eksplicitne dispečerske potvrde. |
+| Rizici, problemi ili greške | Greška u toku je uzrokovala da se intervencija mogla zatvoriti bez evidentiranog rada; ispravka je verifikovana ponovnim prolazom kroz test scenarije sretnog toka i alternativnih tokova. |
+| Ko je koristio alat | Ajna Ičić |
+
+| Polje | Opis |
+|---|---|
+| Datum | 20.05.2026. |
+| Sprint broj | 8 |
+| Alat koji je korišten | Claude AI |
+| Svrha korištenja | Izvršavanje testova i generisanje izvještaja o testiranju za Sprint 8 |
+| Kratak opis zadatka | AI alat je korišten za podršku pri izvršavanju ručnih testova kompleksnog operativnog toka, strukturiranje nalaza iz testiranja i generisanje QA izvještaja sa statusom prolaznosti, pronađenim greškama i QA sign-off rezimeom. |
+| Šta je AI generisao | Generisana je struktura izvještaja testiranja sa tabelama test slučajeva (očekivani vs. stvarni rezultat, status PASS/FAIL), format za evidentiranje bugova sa severity oznakom i konsolidovani QA sign-off sa pregledom pokrivenosti user storija. |
+| Šta je tim prihvatio | Prihvaćen je format izvještaja sa jasnim PASS/FAIL statusima, pregledom pokrivenosti po user storiju i rezimeom otvorenih nalaza. Prihvaćena je i klasifikacija grešaka po prioritetu (kritično, visoko, nisko). |
+| Šta je tim izmijenio | Prilagođeni su nazivi kolona i struktura tabela kako bi bili usklađeni sa formatom koji tim koristi od Sprinta 5, a dio automatski generisanih komentara je ručno dorađen. |
+| Šta je tim odbacio | Odbačeno je generisanje Screenshot putanja kao obaveznih dokaza u tabelama, u skladu sa odlukom iz prethodnih sprintova. |
+| Rizici, problemi ili greške | Postojao je rizik nekonzistentnosti između ručno izvršenih testova i generisanog izvještaja; smanjen direktnom validacijom svakog unosa prije finalizacije dokumenta. |
+| Ko je koristio alat | Ajna Ičić |
