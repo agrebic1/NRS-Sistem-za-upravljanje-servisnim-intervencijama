@@ -1,4 +1,4 @@
-# Izvjestaj testiranja
+# Izvještaj testiranja
 ## Sprint 8
 
 Datum: 18/05/2026
@@ -79,13 +79,13 @@ Izvor: `Projekat/docs/testing/SB-08-XX/BUG_SB-08-XX_Sprint8_ServiserManualFlows.
 
 ## Artefakti
 
-- sprint izvjestaj: `Projekat/docs/testing/SB-08-XX/IZVJESTAJ_SB-08-XX_Sprint8_Testiranje.md`
+- sprint izvještaj: `Projekat/docs/testing/SB-08-XX/IZVJESTAJ_SB-08-XX_Sprint8_Testiranje.md`
 - sign-off: `Projekat/docs/testing/SB-08-XX/SIGNOFF_SB-08-XX_QA-SA.md`
 - test case matrica: `Projekat/docs/testing/SB-08-XX/TC_SB-08-XX_Sprint8_ServiserManualFlows.csv`
 - manual execution: `Projekat/docs/testing/SB-08-XX/EXEC_SB-08-XX_Sprint8_ServiserManualFlows.csv`
 - automatski timestamp izvještaji: `Projekat/docs/testing/Izvjestaji/`
 - zadnji run pointer: `Projekat/docs/testing/Izvjestaji/ZADNJI_RUN.txt`
 
-## Zakljucak
+## Zaključak
 
-Sprint 8 automatsko i manuelno testiranje je uspjesno zavrseno. Svi automatski testovi prolaze (225/225), nema otvorenih bugova u evidenciji, a pokrivenost kriticnih modula je iznad trazenog praga. Svi manualni testovi za serviserski operativni tok (SB-08-XX) izvrseni su sa statusom PASSED; QA sign-off: Ajna Ičić, 18/05/2026. Detalji u `Projekat/docs/testing/SB-08-XX/`.
+Sprint 8 automatsko i manuelno testiranje je uspješno završeno. Svi automatski testovi prolaze (225/225), nema otvorenih bugova u evidenciji, a pokrivenost kritićnih modula je iznad traženog praga. Svi manualni testovi za serviserski operativni tok (SB-08-XX) izvršeni su sa statusom PASSED; QA sign-off: Ajna Ičić, 18/05/2026. Detalji u `Projekat/docs/testing/SB-08-XX/`.
